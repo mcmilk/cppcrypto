@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppcrypto", "cppcrypto\cppcrypto.vcxproj", "{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "digest", "digest\digest.vcxproj", "{96461543-0BE0-4377-8DC4-7B08F9F55F5A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5} = {8978C0F5-41B2-4455-8D7A-63ACA8B063C5}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|win32 = Debug|win32
+		Debug|x64 = Debug|x64
+		Release - MT|win32 = Release - MT|win32
+		Release - MT|x64 = Release - MT|x64
+		Release|win32 = Release|win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Debug|win32.ActiveCfg = Debug|Win32
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Debug|win32.Build.0 = Debug|Win32
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Debug|x64.ActiveCfg = Debug|x64
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Debug|x64.Build.0 = Debug|x64
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Release - MT|win32.ActiveCfg = Release - MT|Win32
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Release - MT|win32.Build.0 = Release - MT|Win32
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Release - MT|x64.ActiveCfg = Release - MT|x64
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Release - MT|x64.Build.0 = Release - MT|x64
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Release|win32.ActiveCfg = Release|Win32
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Release|win32.Build.0 = Release|Win32
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Release|x64.ActiveCfg = Release|x64
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}.Release|x64.Build.0 = Release|x64
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Debug|win32.ActiveCfg = Debug|Win32
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Debug|win32.Build.0 = Debug|Win32
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Debug|x64.ActiveCfg = Debug|x64
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Debug|x64.Build.0 = Debug|x64
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release - MT|win32.ActiveCfg = Release - MT|Win32
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release - MT|win32.Build.0 = Release - MT|Win32
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release - MT|x64.ActiveCfg = Release - MT|x64
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release - MT|x64.Build.0 = Release - MT|x64
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release|win32.ActiveCfg = Release|Win32
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release|win32.Build.0 = Release|Win32
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release|x64.ActiveCfg = Release|x64
+		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
