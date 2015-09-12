@@ -1,4 +1,4 @@
-﻿/* groestl-intr-aes.h     Aug 2011
+/* groestl-intr-aes.h     Aug 2011
 *
 * Groestl implementation with intrinsics using ssse3, sse4.1, and aes
 * instructions.

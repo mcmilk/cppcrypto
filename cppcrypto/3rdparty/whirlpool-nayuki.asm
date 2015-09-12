@@ -28,7 +28,9 @@
 # 1 "whirlpool.S"
 # 28 "whirlpool.S"
 .globl _whirlpool_compress_asm
+.globl whirlpool_compress_asm
 _whirlpool_compress_asm:
+whirlpool_compress_asm:
 # 83 "whirlpool.S"
  pushl %ebx
  pushl %esi

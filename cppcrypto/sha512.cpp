@@ -5,8 +5,16 @@ This code is released under Simplified BSD License (see license.txt).
 #include <malloc.h>
 #include "cpuinfo.h"
 #include "sha512.h"
+#include <memory.h>
 
 //#define DEBUG
+
+#ifndef _MSC_VER
+#define _aligned_malloc(a, b) aligned_alloc(b, a)
+#define _aligned_free free
+#define _byteswap_uint64 __builtin_bswap64
+#define _byteswap_ulong __builtin_bswap32
+#endif
 
 extern "C"
 {
@@ -30,6 +38,7 @@ namespace cppcrypto
 	sha512::sha512()
 	{
 		H = (uint64_t*)_aligned_malloc(sizeof(uint64_t) * 8, 32);
+#ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::avx2() && cpu_info::bmi2())
 			transfunc = [this](void* m, uint64_t num_blks)
@@ -51,6 +60,7 @@ namespace cppcrypto
 						sha512_compress_nayuki(H, (uint8_t*)m + i * 128);
 				};
 		else
+#endif
 #endif
 			transfunc = bind(&sha512::transform, this, std::placeholders::_1, std::placeholders::_2);
 	}

@@ -4,8 +4,21 @@ This code is released under Simplified BSD License (see license.txt).
 
 #include "cpuinfo.h"
 #include "blake.h"
+#include <memory.h>
 
 //#define DEBUG
+
+#ifndef _MSC_VER
+#define _aligned_malloc(a, b) aligned_alloc(b, a)
+#define _aligned_free free
+#define _byteswap_uint64 __builtin_bswap64
+#define _byteswap_ulong __builtin_bswap32
+
+static inline uint64_t _rotr64(uint64_t x, unsigned n)
+{
+        return (x >> n) | (x << (64 - n));
+}
+#endif
 
 extern "C"
 {
@@ -161,8 +174,8 @@ namespace cppcrypto
 	void blake256::final(uint8_t* hash)
 	{
 		bool padding = !pos;
-		m[pos++] = pos == 55 && hashbitlen() == 256 ? 0x81 : 0x80;
-		if (pos > 56)
+		m[pos] = pos == 55 && hashbitlen() == 256 ? 0x81 : 0x80;
+		if (++pos > 56)
 		{
 			memset(m + pos, 0, 64 - pos);
 			transfunc(false);
@@ -308,8 +321,8 @@ namespace cppcrypto
 	void blake512::final(uint8_t* hash)
 	{
 		bool padding = !pos;
-		m[pos++] = pos == 111 && hashbitlen() == 512 ? 0x81 : 0x80;
-		if (pos > 112)
+		m[pos] = pos == 111 && hashbitlen() == 512 ? 0x81 : 0x80;
+		if (++pos > 112)
 		{
 			memset(m + pos, 0, 128 - pos);
 			transfunc(false);
@@ -368,6 +381,7 @@ namespace cppcrypto
 		H = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 8, 64);
 		m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 64, 64);
 
+#ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::avx())
 			transfunc = [this](bool padding) {
@@ -387,6 +401,7 @@ namespace cppcrypto
 		else if (cpu_info::sse2())
 			transfunc = [this](bool padding) { blake256_compress_sse2(H, padding, total, m); };
 		else
+#endif
 			transfunc = bind(&blake256::transform, this, std::placeholders::_1);
 	}
 
@@ -402,11 +417,13 @@ namespace cppcrypto
 		H = (uint64_t*)_aligned_malloc(sizeof(uint64_t) * 8, 64);
 		m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 128, 64);
 
+#ifndef NO_OPTIMIZED_VERSIONS
 			if (cpu_info::sse41())
 				transfunc = [this](bool padding) { blake512_compress_sse41(H, total, padding, m); };
 			else if (cpu_info::sse2())
 				transfunc = [this](bool padding) { blake512_compress_sse2(H, total, padding, m); };
 			else
+#endif
 				transfunc = bind(&blake512::transform, this, std::placeholders::_1);
 	}
 

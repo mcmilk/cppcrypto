@@ -4,7 +4,7 @@ This code is released under Simplified BSD License (see license.txt).
 #ifndef PERFTIMER_H
 #define PERFTIMER_H
 
-#include <windows.h>
+#include <chrono>
 
 class perftimer
 {
@@ -14,8 +14,12 @@ public:
     double elapsed() const;
 
 private:
-    LARGE_INTEGER liHighResCount;
-    LARGE_INTEGER liFrequency;
+#ifdef _MSC_VER
+	LARGE_INTEGER liHighResCount;
+	LARGE_INTEGER liFrequency;
+#else
+    std::chrono::high_resolution_clock::time_point clk_;
+#endif
 };
 
 #endif

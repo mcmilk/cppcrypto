@@ -9,7 +9,9 @@
 #include <string.h>
 #include <immintrin.h>
 #include <emmintrin.h>
+#ifdef _MSC_VER
 #include <intrin.h>
+#endif
 
 #define AVOID_BRANCHING 1
 #include "blake512-sse41-rounds.h"
@@ -20,6 +22,7 @@ typedef unsigned char u8;
 
 
 #ifndef _M_X64
+#ifdef _MSC_VER
 #if _MSC_VER < 1900
 __inline __m128i _mm_set_epi64x(int64_t i0, int64_t i1) {
 	union {
@@ -41,6 +44,7 @@ __inline __m128i _mm_set1_epi64x(int64_t a)
 	return _mm_set1_epi64(u.m);
 }
 #pragma warning(default:4799)
+#endif
 #endif
 #endif
 
@@ -136,26 +140,37 @@ int blake512_compress_sse41(u64* h, u64 total, int padding, const u8 * datablock
 	row1l = _mm_xor_si128(row3l, row1l);
 	row1h = _mm_xor_si128(row3h, row1h);
 
-	
+#ifdef _MSC_VER
 	h[0] ^= row1l.m128i_u64[0];
 	h[1] ^= row1l.m128i_u64[1];
 	h[2] ^= row1h.m128i_u64[0];
 	h[3] ^= row1h.m128i_u64[1];
+#else
+        const int64_t *r1l64 = (const int64_t*) &row1l;
+        const int64_t *r1h64 = (const int64_t*) &row1h;
+	h[0] ^= r1l64[0];
+	h[1] ^= r1l64[1];
+	h[2] ^= r1h64[0];
+	h[3] ^= r1h64[1];
+#endif
 
 	row2l = _mm_xor_si128(row4l, row2l);
 	row2h = _mm_xor_si128(row4h, row2h);
 
+#ifdef _MSC_VER
 	h[4] ^= row2l.m128i_u64[0];
 	h[5] ^= row2l.m128i_u64[1];
 	h[6] ^= row2h.m128i_u64[0];
 	h[7] ^= row2h.m128i_u64[1];
+#else
+        const int64_t *r2l64 = (const int64_t*) &row2l;
+        const int64_t *r2h64 = (const int64_t*) &row2h;
+	h[4] ^= r2l64[0];
+	h[5] ^= r2l64[1];
+	h[6] ^= r2h64[0];
+	h[7] ^= r2h64[1];
 
-	//state->h[0] = _mm_xor_si128(row1l, state->h[0]);
-	//state->h[1] = _mm_xor_si128(row1h, state->h[1]);
-
-
-	//state->h[2] = _mm_xor_si128(row2l, state->h[2]);
-	//state->h[3] = _mm_xor_si128(row2h, state->h[3]);
+#endif
 
 	return 0;
 }

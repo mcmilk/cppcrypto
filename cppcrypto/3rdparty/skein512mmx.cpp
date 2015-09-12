@@ -52,6 +52,9 @@ __inline __int64 _mm_get_pi64x(const __m64 i) {
 	return u.i;
 }
 #pragma warning(default:4799)
+#else
+#define _mm_set_pi64x(a) (__m64)a
+#define _mm_get_pi64x(a) (uint64_t)a
 #endif
 void Skein_512_Process_Block_mmx(uint64_t* T, uint64_t* X, const uint8_t *blkPtr, size_t blkCnt, size_t byteCntAdd)
 {

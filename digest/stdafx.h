@@ -5,10 +5,11 @@
 
 #pragma once
 
+#ifdef _MSC_VER
 #include "targetver.h"
+#endif
 
 #include <stdio.h>
-#include <tchar.h>
 #include "../cppcrypto/cppcrypto.h"
 #include <iostream>
 #include <iomanip>
@@ -19,6 +20,10 @@
 #include <memory>
 #include <map>
 #include <regex>
+
+#ifdef _MSC_VER
+#include <Windows.h>
+#endif
 
 
 // TODO: reference additional headers your program requires here

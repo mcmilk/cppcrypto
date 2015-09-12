@@ -9,6 +9,25 @@ This code is released under Simplified BSD License (see license.txt).
 using namespace std;
 using namespace cppcrypto;
 
+#ifndef _MSC_VER
+#define wchar_t char
+#define _T(A) A
+#define _stat64 stat
+#define _wstat64 stat
+#define wstring string
+#define wmain main
+#define wregex regex
+#define wsmatch smatch
+#define wcerr cerr
+#define wcout cout
+#define wifstream ifstream
+#define wprintf printf
+#define wsprintf sprintf
+#else
+#define _T(A) L ## A
+#endif
+
+
 long long file_size(const wchar_t* pathname)
 {
 	struct _stat64 st_stat;
@@ -23,7 +42,7 @@ bool file_exists(const wchar_t* path)
 	return !_wstat64(path, &st_stat);
 }
 
-inline std::wstring& rtrim(std::wstring& str, const wchar_t* chars = L" \t\r\n")
+inline std::wstring& rtrim(std::wstring& str, const wchar_t* chars = _T(" \t\r\n"))
 {
 	return str.erase(str.find_last_not_of(chars) + 1);
 }
@@ -33,10 +52,10 @@ bool is_directory(const wchar_t* path)
 	std::wstring spath(path);
 	struct _stat64 st_stat;
 
-	rtrim(spath, L"/\\");
+	rtrim(spath, _T("/\\"));
 
-	if (spath.length() > 1 && *spath.rbegin() == L':')
-		spath += L'/';
+	if (spath.length() > 1 && *spath.rbegin() == _T(':'))
+		spath += _T('/');
 
 	return !_wstat64(spath.c_str(), &st_stat) && (st_stat.st_mode & S_IFDIR);
 }
@@ -51,7 +70,7 @@ bool hash_file(const wchar_t* filename, vector<char>* hashsum, int hashbitlen, c
 
 	hash->init();
 
-	if (fileSize == std::numeric_limits<size_t>::max())
+	if (static_cast<unsigned long long>(fileSize) == std::numeric_limits<size_t>::max())
 		return false;
 
 	file.open(filename, ios::in | ios::binary);
@@ -61,7 +80,7 @@ bool hash_file(const wchar_t* filename, vector<char>* hashsum, int hashbitlen, c
 
 	while (read < fileSize)
 	{
-		long long blockSize = std::min(long long(sizeof(buffer)), fileSize - read);
+		long long blockSize = std::min(static_cast<long long>(sizeof(buffer)), fileSize - read);
 
 		if (!file.read(buffer, blockSize))
 			return false;
@@ -78,22 +97,16 @@ bool hash_file(const wchar_t* filename, vector<char>* hashsum, int hashbitlen, c
 }
 
 
-static void print_hex(uint8_t *key, int len)
-{
-	int i;
-	for (i = 0; i< len; i++) printf("%02x", key[i]);  puts("");
-}
-
 void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, wstring filename)
 {
 	perftimer timer;
 
 	if (!file_exists(filename.c_str())) {
-		wcerr << filename << L": No such file or directory" << endl;
+		wcerr << filename << _T(": No such file or directory") << endl;
 		return;
 	}
 	if (is_directory(filename.c_str())) {
-		wcerr << filename << L": Is a directory" << endl;
+		wcerr << filename << _T(": Is a directory") << endl;
 		return;
 	}
 
@@ -120,16 +133,16 @@ void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, ws
 
 	for (auto it = hashes.begin(); it != hashes.end(); ++it)
 	{
-		wcout << it->first << L" ";
+		wcout << it->first << _T(" ");
 
 		timer.reset();
 		for (long i = 0; i < iterations; i++)
 		{
 			it->second->hash_string(message, static_cast<size_t>(fileSize), hash);
 		}
-		wcout << fixed << timer.elapsed() << L" ";
+		wcout << fixed << timer.elapsed() << _T(" ");
 		for (int i = 0; i < (it->second->hashbitlen() + 7) / 8; i++)
-			wcout << setfill(L'0') << setw(2) << hex << (unsigned char)hash[i];
+			wcout << setfill(_T('0')) << setw(2) << hex << (unsigned int)hash[i];
 		wcout << endl;
 	}
 }
@@ -140,7 +153,7 @@ void checksumfile(const wchar_t* filename, crypto_hash* hash)
 	wstring str;
 	wifstream file(filename, ios::in);
 	while (getline(file, str)) {
-		wregex parts(L"^(\\w+)\\s+(.+)$");
+		wregex parts(_T("^(\\w+)\\s+(.+)$"));
 		wsmatch sm;
 		if (regex_search(str, sm, parts)) {
 			wstring fn = sm.str(2);
@@ -149,46 +162,46 @@ void checksumfile(const wchar_t* filename, crypto_hash* hash)
 			bool ret = hash_file(fn.c_str(), &res, hash->hashbitlen(), hash);
 			if (ret) {
 				for (int i = 0; i < (hash->hashbitlen() + 7) / 8; i++)
-					wsprintf(buf + i * 2, L"%02x", (unsigned char)res[i]);
+					wsprintf(buf + i * 2, _T("%02x"), (unsigned char)res[i]);
 			}
 			else
 				wcerr << "Error for " << fn << endl;
-			wcout << fn << ": " << (wstring(buf) == sm.str(1) ? L"OK" : L"FAILED") << endl;
+			wcout << fn << ": " << (wstring(buf) == sm.str(1) ? _T("OK") : _T("FAILED")) << endl;
 		}
 	}
 }
 
-int _tmain(int argc, _TCHAR* argv[])
+int wmain(int argc, wchar_t* argv[])
 {
 	map<wstring, unique_ptr<crypto_hash>> hashes;
-	hashes.emplace(make_pair(L"sha256", unique_ptr<crypto_hash>(new sha256)));
-	hashes.emplace(make_pair(L"groestl256", unique_ptr<crypto_hash>(new groestl256)));
-	hashes.emplace(make_pair(L"blake256", unique_ptr<crypto_hash>(new blake256)));
+	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));
+	hashes.emplace(make_pair(_T("groestl256"), unique_ptr<crypto_hash>(new groestl256)));
+	hashes.emplace(make_pair(_T("blake256"), unique_ptr<crypto_hash>(new blake256)));
 
-	hashes.emplace(make_pair(L"groestl512", unique_ptr<crypto_hash>(new groestl512)));
-	hashes.emplace(make_pair(L"sha512", unique_ptr<crypto_hash>(new sha512)));
-	hashes.emplace(make_pair(L"sha512/256", unique_ptr<crypto_hash>(new sha512_256)));
-	hashes.emplace(make_pair(L"sha512/224", unique_ptr<crypto_hash>(new sha512_224)));
-	hashes.emplace(make_pair(L"sha384", unique_ptr<crypto_hash>(new sha384)));
-	hashes.emplace(make_pair(L"groestl384", unique_ptr<crypto_hash>(new groestl384)));
-	hashes.emplace(make_pair(L"groestl224", unique_ptr<crypto_hash>(new groestl224)));
+	hashes.emplace(make_pair(_T("groestl512"), unique_ptr<crypto_hash>(new groestl512)));
+	hashes.emplace(make_pair(_T("sha512"), unique_ptr<crypto_hash>(new sha512)));
+	hashes.emplace(make_pair(_T("sha512/256"), unique_ptr<crypto_hash>(new sha512_256)));
+	hashes.emplace(make_pair(_T("sha512/224"), unique_ptr<crypto_hash>(new sha512_224)));
+	hashes.emplace(make_pair(_T("sha384"), unique_ptr<crypto_hash>(new sha384)));
+	hashes.emplace(make_pair(_T("groestl384"), unique_ptr<crypto_hash>(new groestl384)));
+	hashes.emplace(make_pair(_T("groestl224"), unique_ptr<crypto_hash>(new groestl224)));
 
-	hashes.emplace(make_pair(L"skein512/256", unique_ptr<crypto_hash>(new skein512_256)));
-	hashes.emplace(make_pair(L"skein512/512", unique_ptr<crypto_hash>(new skein512_512)));
-	hashes.emplace(make_pair(L"blake512", unique_ptr<crypto_hash>(new blake512)));
-	hashes.emplace(make_pair(L"blake384", unique_ptr<crypto_hash>(new blake384)));
-	hashes.emplace(make_pair(L"blake224", unique_ptr<crypto_hash>(new blake224)));
-	hashes.emplace(make_pair(L"skein512/384", unique_ptr<crypto_hash>(new skein512_384)));
-	hashes.emplace(make_pair(L"skein512/224", unique_ptr<crypto_hash>(new skein512_224)));
+	hashes.emplace(make_pair(_T("skein512/256"), unique_ptr<crypto_hash>(new skein512_256)));
+	hashes.emplace(make_pair(_T("skein512/512"), unique_ptr<crypto_hash>(new skein512_512)));
+	hashes.emplace(make_pair(_T("blake512"), unique_ptr<crypto_hash>(new blake512)));
+	hashes.emplace(make_pair(_T("blake384"), unique_ptr<crypto_hash>(new blake384)));
+	hashes.emplace(make_pair(_T("blake224"), unique_ptr<crypto_hash>(new blake224)));
+	hashes.emplace(make_pair(_T("skein512/384"), unique_ptr<crypto_hash>(new skein512_384)));
+	hashes.emplace(make_pair(_T("skein512/224"), unique_ptr<crypto_hash>(new skein512_224)));
 
-	hashes.emplace(make_pair(L"skein256/256", unique_ptr<crypto_hash>(new skein256_256)));
-	hashes.emplace(make_pair(L"skein256/224", unique_ptr<crypto_hash>(new skein256_224)));
-	hashes.emplace(make_pair(L"skein1024/1024", unique_ptr<crypto_hash>(new skein1024_1024)));
-	hashes.emplace(make_pair(L"skein1024/512", unique_ptr<crypto_hash>(new skein1024_512)));
-	hashes.emplace(make_pair(L"skein1024/384", unique_ptr<crypto_hash>(new skein1024_384)));
-	hashes.emplace(make_pair(L"sha224", unique_ptr<crypto_hash>(new sha224)));
+	hashes.emplace(make_pair(_T("skein256/256"), unique_ptr<crypto_hash>(new skein256_256)));
+	hashes.emplace(make_pair(_T("skein256/224"), unique_ptr<crypto_hash>(new skein256_224)));
+	hashes.emplace(make_pair(_T("skein1024/1024"), unique_ptr<crypto_hash>(new skein1024_1024)));
+	hashes.emplace(make_pair(_T("skein1024/512"), unique_ptr<crypto_hash>(new skein1024_512)));
+	hashes.emplace(make_pair(_T("skein1024/384"), unique_ptr<crypto_hash>(new skein1024_384)));
+	hashes.emplace(make_pair(_T("sha224"), unique_ptr<crypto_hash>(new sha224)));
 
-	hashes.emplace(make_pair(L"whirlpool", unique_ptr<crypto_hash>(new whirlpool)));
+	hashes.emplace(make_pair(_T("whirlpool"), unique_ptr<crypto_hash>(new whirlpool)));
 
 	if (argc < 3)
 	{
@@ -201,10 +214,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		return 1;
 	}
 
-	bool checking = wstring(argv[1]) == L"-c";
+	bool checking = wstring(argv[1]) == _T("-c");
 	wstring hash = argv[checking ? 2 : 1];
 
-	if (hash == L"test")
+	if (hash == _T("test"))
 	{
 		long iterations = 0;
 		if (argc != 4 || (iterations = stol(argv[2])) < 1)
@@ -219,7 +232,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	auto hashit = hashes.find(hash);
 	if (hashit == hashes.end())
 	{
-		wcerr << L"Unknown hash algorithm: " << hash << endl;
+		wcerr << _T("Unknown hash algorithm: ") << hash << endl;
 		return 2;
 	}
 
@@ -229,11 +242,11 @@ int _tmain(int argc, _TCHAR* argv[])
 			continue;
 		}
 		if (!file_exists(argv[i])) {
-			wcerr << argv[i] << L": No such file or directory" << endl;
+			wcerr << argv[i] << _T(": No such file or directory") << endl;
 			continue;
 		}
 		if (is_directory(argv[i])) {
-			wcerr << argv[i] << L": Is a directory" << endl;
+			wcerr << argv[i] << _T(": Is a directory") << endl;
 			continue;
 		}
 		vector<char> res;
@@ -241,10 +254,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			for (int b = 0; b < (hashit->second->hashbitlen() + 7) / 8; b++)
 				printf("%02x", (unsigned char)res[b]);
-			wprintf(L"  %s\n", argv[i]);
+			wprintf(_T("  %s\n"), argv[i]);
 		}
 		else
-			wcerr << L"Error for " << argv[i] << endl;
+			wcerr << _T("Error for ") << argv[i] << endl;
 	}
 
 	return 0;

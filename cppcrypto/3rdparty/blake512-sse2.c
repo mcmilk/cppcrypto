@@ -15,8 +15,10 @@
 #include <string.h>
 #include <stdio.h>
 #include <emmintrin.h>
-#include <intrin.h>
 #include <stdint.h>
+#ifdef _MSC_VER
+#include <intrin.h>
+#endif
 
 #ifndef _M_X64
 __inline __m128i i64tom128i(int64_t i0, int64_t i1) {
@@ -57,23 +59,6 @@ typedef unsigned char u8;
 
 #define _mm_set_pi64x(a) a
 
-
-#define U8TO32(p) _byteswap_uint32(*(u32 *) (p))
-#define U32TO8(p, v) *(u32 *) (p) = _byteswap_uint32(v);
-#define U8TO64(p)  _byteswap_uint64(*(u64 *) (p))
-#define U64TO8(p, v) *(u64 *) (p) = _byteswap_uint64(v);
-//
-//#define U8TO32(p) \
-//  (((u32)((p)[0]) << 24) | ((u32)((p)[1]) << 16) | \
-//   ((u32)((p)[2]) <<  8) | ((u32)((p)[3])      ))
-//#define U8TO64(p) \
-//  (((u64)U8TO32(p) << 32) | (u64)U8TO32((p) + 4))
-//#define U32TO8(p, v) \
-//    (p)[0] = (u8)((v) >> 24); (p)[1] = (u8)((v) >> 16); \
-//    (p)[2] = (u8)((v) >>  8); (p)[3] = (u8)((v)      ); 
-//#define U64TO8(p, v) \
-//    U32TO8((p),     (u32)((v) >> 32));	\
-//    U32TO8((p) + 4, (u32)((v)      )); 
 
 #define LOADU(p)  _mm_loadu_si128( (__m128i *)(p) )
 #define BSWAP64(r) do { \

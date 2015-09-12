@@ -23,7 +23,9 @@
 # 
 
 .globl _sha512_compress_nayuki
+.globl sha512_compress_nayuki
 _sha512_compress_nayuki:
+sha512_compress_nayuki:
 # 123 "sha512.S"
  movl %esp, %ecx
  subl $192, %esp

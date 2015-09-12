@@ -4,16 +4,30 @@ This code is released under Simplified BSD License (see license.txt).
 
 #include "cpuinfo.h"
 #include "sha256.h"
+#include <memory.h>
 
 //#define DEBUG
+
+#ifndef _MSC_VER
+#define _aligned_malloc(a, b) aligned_alloc(b, a)
+#define _aligned_free free
+#define _byteswap_uint64 __builtin_bswap64
+#define _byteswap_ulong __builtin_bswap32
+#define __fastcall 
+#endif
 
 #ifdef _M_X64
 extern "C"
 {
 	void sha256_sse4(void *input_data, uint32_t digest[8], uint64_t num_blks);
 	void sha256_rorx(void *input_data, uint32_t digest[8], uint64_t num_blks);
-	void __fastcall X86_SHA256_HashBlocks(uint32_t *state, const uint32_t *data, size_t len);
+#ifndef _MSC_VER
 }
+#endif
+	void __fastcall X86_SHA256_HashBlocks(uint32_t *state, const uint32_t *data, size_t len);
+#ifdef _MSC_VER
+}
+#endif
 #else
 //	void sha256_sse4_intr(void *input_data, uint32_t digest[8], uint64_t num_blks);
 	void __fastcall X86_SHA256_HashBlocks(uint32_t *state, const uint32_t *data, size_t len);
@@ -29,6 +43,7 @@ namespace cppcrypto
 	sha256::sha256()
 	{
 		H = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 8, 32);
+#ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::avx2() && cpu_info::bmi2())
 			transfunc = [this](void* m, uint64_t num_blks)
@@ -56,11 +71,17 @@ namespace cppcrypto
 				X86_SHA256_HashBlocks(H, (const uint32_t*)m, static_cast<size_t>(num_blks * 64));
 			};
 			else
-
+#endif
 		transfunc = bind(&sha256::transform, this, std::placeholders::_1, std::placeholders::_2);
 	}
 
-	extern const __declspec(align(16)) uint32_t SHA256_K[64] = {
+	extern const
+#ifdef _MSC_VER
+ __declspec(align(16)) 
+#else
+__attribute__ ((aligned (16)))
+#endif
+	uint32_t SHA256_K[64] = {
 		0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
 		0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
 		0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,

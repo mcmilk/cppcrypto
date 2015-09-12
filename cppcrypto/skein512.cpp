@@ -4,8 +4,20 @@ This code is released under Simplified BSD License (see license.txt).
 
 #include "cpuinfo.h"
 #include "skein512.h"
+#include <memory.h>
 
 //#define DEBUG
+
+#ifndef _MSC_VER
+#define _aligned_malloc(a, b) aligned_alloc(b, a)
+#define _aligned_free free
+
+static inline uint64_t _rotl64(uint64_t x, unsigned n)
+{
+        return (x << n) | (x >> (64 - n));
+}
+#endif
+
 
 #ifndef _M_X64
 void Skein_512_Process_Block_mmx(uint64_t* T, uint64_t* X, const uint8_t *blkPtr, size_t blkCnt, size_t byteCntAdd);

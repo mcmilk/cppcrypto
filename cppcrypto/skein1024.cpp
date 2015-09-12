@@ -4,8 +4,19 @@ This code is released under Simplified BSD License (see license.txt).
 
 #include "cpuinfo.h"
 #include "skein1024.h"
+#include <memory.h>
 
 //#define DEBUG
+
+#ifndef _MSC_VER
+#define _aligned_malloc(a, b) aligned_alloc(b, a)
+#define _aligned_free free
+
+static inline uint64_t _rotl64(uint64_t x, unsigned n)
+{
+        return (x << n) | (x >> (64 - n));
+}
+#endif
 
 namespace cppcrypto
 {

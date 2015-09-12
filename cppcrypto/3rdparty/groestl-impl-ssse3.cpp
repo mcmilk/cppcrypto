@@ -1,4 +1,4 @@
-﻿/* groestl-intr-vperm.h     Aug 2011
+/* groestl-intr-vperm.h     Aug 2011
 *
 * Groestl implementation with intrinsics using ssse3 instructions.
 * Author: Günther A. Roland, Martin Schläffer
@@ -633,6 +633,8 @@
 
 void groestl_impl_ssse3_256::INIT(uint64_t* h)
 {
+	uint8_t i = 0;
+	SET_CONSTANTS_256();
 	__m128i* const chaining = (__m128i*) h;
 	__m128i xmm0, xmm1 = _mm_setzero_si128(), xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
 	__m128i xmm8, xmm9, xmm10, /*xmm11,*/ xmm12, xmm13, xmm14, xmm15;
@@ -1080,6 +1082,8 @@ void groestl_impl_ssse3_256::OF(uint64_t* h)
 
 void groestl_impl_ssse3_512::INIT(uint64_t* h)
 {
+	uint8_t i = 0;
+	SET_CONSTANTS_512();
 	__m128i* const chaining = (__m128i*) h;
 	__m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
 	__m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
@@ -1282,12 +1286,8 @@ void groestl_impl_ssse3_512::OF(uint64_t* h)
 
 groestl_impl_ssse3_256::groestl_impl_ssse3_256()
 {
-	uint8_t i = 0;
-	SET_CONSTANTS_256();
 }
 
 groestl_impl_ssse3_512::groestl_impl_ssse3_512()
 {
-	uint8_t i = 0;
-	SET_CONSTANTS_512();
 }

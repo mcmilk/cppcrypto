@@ -6,6 +6,13 @@ This code is released under Simplified BSD License (see license.txt).
 #include "cpuinfo.h"
 #include "whirlpool.h"
 #include <functional>
+#include <memory.h>
+
+#ifndef _MSC_VER
+#define _aligned_malloc(a, b) aligned_alloc(b, a)
+#define _aligned_free free
+#define _byteswap_uint64 __builtin_bswap64
+#endif
 
 //#define DEBUG
 

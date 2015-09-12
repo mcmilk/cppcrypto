@@ -4,8 +4,15 @@ This code is released under Simplified BSD License (see license.txt).
 
 #include "cpuinfo.h"
 #include "groestl.h"
+#include <memory.h>
 
 //#define DEBUG
+
+#ifndef _MSC_VER
+#define _aligned_malloc(a, b) aligned_alloc(b, a)
+#define _aligned_free free
+#define _byteswap_uint64 __builtin_bswap64
+#endif
 
 namespace cppcrypto
 {
@@ -845,6 +852,7 @@ groestl256::groestl256()
 {
 	h = (uint64_t*)_aligned_malloc(sizeof(uint64_t)*8, 32);
 	m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 64, 32);
+#ifndef NO_OPTIMIZED_VERSIONS
 	if (cpu_info::aesni())
 	{
 		void* p = _aligned_malloc(sizeof(groestl_impl_aesni_256), 32);
@@ -855,6 +863,7 @@ groestl256::groestl256()
 		void* p = _aligned_malloc(sizeof(groestl_impl_ssse3_256),32);
 		impl_ = new (p)groestl_impl_ssse3_256;
 	}
+#endif
 }
 
 groestl512::groestl512()
@@ -862,6 +871,7 @@ groestl512::groestl512()
 {
 	h = (uint64_t*)_aligned_malloc(sizeof(uint64_t) * 16, 32);
 	m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 128, 32);
+#ifndef NO_OPTIMIZED_VERSIONS
 	if (cpu_info::aesni())
 	{
 		void* p = _aligned_malloc(sizeof(groestl_impl_aesni_512), 32);
@@ -872,6 +882,7 @@ groestl512::groestl512()
 		void* p = _aligned_malloc(sizeof(groestl_impl_ssse3_512), 32);
 		impl_ = new (p)groestl_impl_ssse3_512;
 	}
+#endif
 
 }
 

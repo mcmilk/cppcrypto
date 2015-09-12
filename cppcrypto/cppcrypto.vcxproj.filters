@@ -89,9 +89,6 @@
     <ClCompile Include="3rdparty\sha256-cryptopp-x86.cpp">
       <Filter>3rdparty</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\blake256-sse.c">
-      <Filter>3rdparty</Filter>
-    </ClCompile>
     <ClCompile Include="whirlpool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -115,6 +112,12 @@
     </ClCompile>
     <ClCompile Include="blake.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\blake256-sse2.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\blake256-sse41.c">
+      <Filter>3rdparty</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
