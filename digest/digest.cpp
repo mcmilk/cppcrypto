@@ -202,6 +202,8 @@ int wmain(int argc, wchar_t* argv[])
 	hashes.emplace(make_pair(_T("sha224"), unique_ptr<crypto_hash>(new sha224)));
 
 	hashes.emplace(make_pair(_T("whirlpool"), unique_ptr<crypto_hash>(new whirlpool)));
+	hashes.emplace(make_pair(_T("kupyna256"), unique_ptr<crypto_hash>(new kupyna256)));
+	hashes.emplace(make_pair(_T("kupyna512"), unique_ptr<crypto_hash>(new kupyna512)));
 
 	if (argc < 3)
 	{

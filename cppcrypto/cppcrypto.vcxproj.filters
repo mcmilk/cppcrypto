@@ -63,6 +63,9 @@
     <ClInclude Include="blake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="kupyna.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -118,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="3rdparty\blake256-sse41.c">
       <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="kupyna.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,5 +9,6 @@
 #include "sha256.h"
 #include "sha512.h"
 #include "whirlpool.h"
+#include "kupyna.h"
 
 #endif

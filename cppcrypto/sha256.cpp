@@ -92,47 +92,47 @@ __attribute__ ((aligned (16)))
 		0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 	};
 
-	inline uint32_t rotr(uint32_t x, int n)
+	static inline uint32_t rotr(uint32_t x, int n)
 	{
 		return (x >> n) | (x << (32 - n));
 	}
 
-	inline uint32_t shr(uint32_t x, int n)
+	static inline uint32_t shr(uint32_t x, int n)
 	{
 		return x >> n;
 	}
 
-	inline uint32_t rotl(uint32_t x, int n)
+	static inline uint32_t rotl(uint32_t x, int n)
 	{
 		return (x << n) | (x >> (32 - n));
 	}
 
-	inline uint32_t Ch(uint32_t x, uint32_t y, uint32_t z)
+	static inline uint32_t Ch(uint32_t x, uint32_t y, uint32_t z)
 	{
 		return (x & y) ^ (~x & z);
 	}
 
-	inline uint32_t Maj(uint32_t x, uint32_t y, uint32_t z)
+	static inline uint32_t Maj(uint32_t x, uint32_t y, uint32_t z)
 	{
 		return (x & y) ^ (x & z) ^ (y & z);
 	}
 
-	inline uint32_t sum0(uint32_t x)
+	static inline uint32_t sum0(uint32_t x)
 	{
 		return rotr(x, 2) ^ rotr(x, 13) ^ rotr(x, 22);
 	}
 
-	inline uint32_t sum1(uint32_t x)
+	static inline uint32_t sum1(uint32_t x)
 	{
 		return rotr(x, 6) ^ rotr(x, 11) ^ rotr(x, 25);
 	}
 
-	inline uint32_t sigma0(uint32_t x)
+	static inline uint32_t sigma0(uint32_t x)
 	{
 		return rotr(x, 7) ^ rotr(x, 18) ^ shr(x, 3);
 	}
 
-	inline uint32_t sigma1(uint32_t x)
+	static inline uint32_t sigma1(uint32_t x)
 	{
 		return rotr(x, 17) ^ rotr(x, 19) ^ shr(x, 10);
 	}

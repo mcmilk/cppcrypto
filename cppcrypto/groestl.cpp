@@ -558,7 +558,7 @@ namespace cppcrypto
 		}
 	};
 
-inline void roundP(uint64_t* x, uint64_t* y, uint64_t i)
+static inline void roundP(uint64_t* x, uint64_t* y, uint64_t i)
 {
 	for (int idx = 0; idx < 8; idx++)
 		x[idx] ^= ((uint64_t)idx << 4) ^ i;
@@ -568,7 +568,7 @@ inline void roundP(uint64_t* x, uint64_t* y, uint64_t i)
 		^ T[4][(uint8_t)(x[(c + 4) % 8] >> 32)] ^ T[5][(uint8_t)(x[(c + 5) % 8] >> 40)] ^ T[6][(uint8_t)(x[(c + 6) % 8] >> 48)] ^ T[7][(uint8_t)(x[(c + 7) % 8] >> 56)];
 }
 
-inline void roundQ(uint64_t* x, uint64_t* y, uint64_t i)
+static inline void roundQ(uint64_t* x, uint64_t* y, uint64_t i)
 {
 	for (int idx = 0; idx < 8; idx++)
 		x[idx] ^= (0xffffffffffffffffull - ((uint64_t)idx << 60)) ^ i;
@@ -753,7 +753,7 @@ void groestl512::final(uint8_t* hash)
 #endif
 }
 
-inline void roundP_512(uint64_t* x, uint64_t* y, uint64_t i)
+static inline void roundP_512(uint64_t* x, uint64_t* y, uint64_t i)
 {
 	for (int idx = 0; idx < 16; idx++)
 		x[idx] ^= ((uint64_t)idx << 4) ^ i;
@@ -763,7 +763,7 @@ inline void roundP_512(uint64_t* x, uint64_t* y, uint64_t i)
 		^ T[4][(uint8_t)(x[(c + 4) % 16] >> 32)] ^ T[5][(uint8_t)(x[(c + 5) % 16] >> 40)] ^ T[6][(uint8_t)(x[(c + 6) % 16] >> 48)] ^ T[7][(uint8_t)(x[(c + 11) % 16] >> 56)];
 }
 
-inline void roundQ_512(uint64_t* x, uint64_t* y, uint64_t i)
+static inline void roundQ_512(uint64_t* x, uint64_t* y, uint64_t i)
 {
 	for (int idx = 0; idx < 16; idx++)
 		x[idx] ^= (0xffffffffffffffffull - ((uint64_t)idx << 60)) ^ i;

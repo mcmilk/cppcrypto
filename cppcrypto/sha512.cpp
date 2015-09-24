@@ -88,47 +88,47 @@ namespace cppcrypto
 		0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 	};
 
-	inline uint64_t rotr(uint64_t x, int n)
+	static inline uint64_t rotr(uint64_t x, int n)
 	{
 		return (x >> n) | (x << (64 - n));
 	}
 
-	inline uint64_t shr(uint64_t x, int n)
+	static inline uint64_t shr(uint64_t x, int n)
 	{
 		return x >> n;
 	}
 
-	inline uint64_t rotl(uint64_t x, int n)
+	static inline uint64_t rotl(uint64_t x, int n)
 	{
 		return (x << n) | (x >> (64 - n));
 	}
 
-	inline uint64_t Ch(uint64_t x, uint64_t y, uint64_t z)
+	static inline uint64_t Ch(uint64_t x, uint64_t y, uint64_t z)
 	{
 		return (x & y) ^ (~x & z);
 	}
 
-	inline uint64_t Maj(uint64_t x, uint64_t y, uint64_t z)
+	static inline uint64_t Maj(uint64_t x, uint64_t y, uint64_t z)
 	{
 		return (x & y) ^ (x & z) ^ (y & z);
 	}
 
-	inline uint64_t sum0(uint64_t x)
+	static inline uint64_t sum0(uint64_t x)
 	{
 		return rotr(x, 28) ^ rotr(x, 34) ^ rotr(x, 39);
 	}
 
-	inline uint64_t sum1(uint64_t x)
+	static inline uint64_t sum1(uint64_t x)
 	{
 		return rotr(x, 14) ^ rotr(x, 18) ^ rotr(x, 41);
 	}
 
-	inline uint64_t sigma0(uint64_t x)
+	static inline uint64_t sigma0(uint64_t x)
 	{
 		return rotr(x, 1) ^ rotr(x, 8) ^ shr(x, 7);
 	}
 
-	inline uint64_t sigma1(uint64_t x)
+	static inline uint64_t sigma1(uint64_t x)
 	{
 		return rotr(x, 19) ^ rotr(x, 61) ^ shr(x, 6);
 	}

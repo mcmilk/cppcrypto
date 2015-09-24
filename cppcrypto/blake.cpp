@@ -52,7 +52,7 @@ namespace cppcrypto
 		{ 10, 2, 8, 4, 7, 6, 1, 5, 15, 11, 9, 14, 3, 12, 13, 0 }
 	};
 
-	inline uint32_t rotrblk(uint32_t x, int n)
+	static inline uint32_t rotrblk(uint32_t x, int n)
 	{
 		return (x >> n) | (x << (32 - n));
 	}
@@ -88,7 +88,7 @@ namespace cppcrypto
 		total = 0;
 	};
 
-	inline void G(int r, int i, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t* M) 
+	static inline void G(int r, int i, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t* M) 
 	{
 		a = a + b + (M[S[r % 10][2 * i]] ^ (cppcrypto::c)[S[r % 10][2 * i + 1]]);
 		d = rotrblk(d ^ a, 16);
@@ -100,7 +100,7 @@ namespace cppcrypto
 		b = rotrblk(b ^ c, 7);
 	}
 
-	inline void round(int r, uint32_t* M, uint32_t* v) 
+	static inline void round(int r, uint32_t* M, uint32_t* v) 
 	{
 		G(r, 0, v[0], v[4], v[8], v[12], M);
 		G(r, 1, v[1], v[5], v[9], v[13], M);
@@ -237,7 +237,7 @@ namespace cppcrypto
 		total = 0;
 	};
 
-	inline void G512(int r, int i, uint64_t& a, uint64_t& b, uint64_t& c, uint64_t& d, uint64_t* M) 
+	static inline void G512(int r, int i, uint64_t& a, uint64_t& b, uint64_t& c, uint64_t& d, uint64_t* M) 
 	{
 		a = a + b + (M[S[r % 10][2 * i]] ^ (c512)[S[r % 10][2 * i + 1]]);
 		d = _rotr64(d ^ a, 32);
@@ -249,7 +249,7 @@ namespace cppcrypto
 		b = _rotr64(b ^ c, 11);
 	}
 
-	inline void round512(int r, uint64_t* M, uint64_t* v) 
+	static inline void round512(int r, uint64_t* M, uint64_t* v) 
 	{
 		G512(r, 0, v[0], v[4], v[8], v[12], M);
 		G512(r, 1, v[1], v[5], v[9], v[13], M);

@@ -237,6 +237,7 @@
     <ClInclude Include="crypto_hash.h" />
     <ClInclude Include="groestl-impl.h" />
     <ClInclude Include="groestl.h" />
+    <ClInclude Include="kupyna.h" />
     <ClInclude Include="sha256.h" />
     <ClInclude Include="sha512.h" />
     <ClInclude Include="skein1024.h" />
@@ -260,6 +261,7 @@
     <ClCompile Include="3rdparty\groestl-impl-aesni.cpp" />
     <ClCompile Include="3rdparty\groestl-impl-ssse3.cpp" />
     <ClCompile Include="groestl.cpp" />
+    <ClCompile Include="kupyna.cpp" />
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="sha512.cpp" />
     <ClCompile Include="skein1024.cpp" />
