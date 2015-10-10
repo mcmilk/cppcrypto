@@ -589,7 +589,7 @@ void groestl256::update(const uint8_t* data, size_t len)
 		data += 64 - pos;
 		pos = 0;
 	}
-	memcpy(m, data, len);
+	memcpy(m+pos, data, len);
 	pos += len;
 	total += len * 8;
 }
@@ -718,7 +718,7 @@ void groestl512::update(const uint8_t* data, size_t len)
 		data += 128 - pos;
 		pos = 0;
 	}
-	memcpy(m, data, len);
+	memcpy(m+pos, data, len);
 	pos += len;
 	total += len * 8;
 }
@@ -855,13 +855,13 @@ groestl256::groestl256()
 #ifndef NO_OPTIMIZED_VERSIONS
 	if (cpu_info::aesni())
 	{
-		void* p = _aligned_malloc(sizeof(groestl_impl_aesni_256), 32);
-		impl_ = new (p)groestl_impl_aesni_256;
+		void* p = _aligned_malloc(sizeof(detail::groestl_impl_aesni_256), 32);
+		impl_ = new (p)detail::groestl_impl_aesni_256;
 	}
 	else if (cpu_info::ssse3())
 	{
-		void* p = _aligned_malloc(sizeof(groestl_impl_ssse3_256),32);
-		impl_ = new (p)groestl_impl_ssse3_256;
+		void* p = _aligned_malloc(sizeof(detail::groestl_impl_ssse3_256), 32);
+		impl_ = new (p)detail::groestl_impl_ssse3_256;
 	}
 #endif
 }
@@ -874,13 +874,13 @@ groestl512::groestl512()
 #ifndef NO_OPTIMIZED_VERSIONS
 	if (cpu_info::aesni())
 	{
-		void* p = _aligned_malloc(sizeof(groestl_impl_aesni_512), 32);
-		impl_ = new (p)groestl_impl_aesni_512;
+		void* p = _aligned_malloc(sizeof(detail::groestl_impl_aesni_512), 32);
+		impl_ = new (p)detail::groestl_impl_aesni_512;
 	}
 	else if (cpu_info::ssse3())
 	{
-		void* p = _aligned_malloc(sizeof(groestl_impl_ssse3_512), 32);
-		impl_ = new (p)groestl_impl_ssse3_512;
+		void* p = _aligned_malloc(sizeof(detail::groestl_impl_ssse3_512), 32);
+		impl_ = new (p)detail::groestl_impl_ssse3_512;
 	}
 #endif
 

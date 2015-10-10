@@ -23,6 +23,8 @@ namespace cppcrypto
 		void final(uint8_t* hash);
 
 		int hashbitlen() const { return 512; }
+		int blockbitlen() const { return 512; }
+		crypto_hash* clone() const { return new whirlpool; }
 
 	private:
 		void transform();

@@ -79,7 +79,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 %
-% In additional to these licenses, cppcrypto contains public-domain or non-copyrighed code written by:
+% In additional to these licenses, cppcrypto contains public-domain or non-copyrighted code written by:
 %
 % Wei Dai
 % Jean-Philippe Aumasson

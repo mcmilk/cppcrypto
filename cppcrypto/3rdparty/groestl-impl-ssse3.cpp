@@ -16,6 +16,9 @@
 #include <stdint.h>
 #include "../groestl-impl.h"
 
+namespace cppcrypto {
+	namespace detail {
+
 /* some sizes (number of bytes) */
 #define ROWS 8
 #define LENGTHFIELDLEN ROWS
@@ -1291,3 +1294,6 @@ groestl_impl_ssse3_256::groestl_impl_ssse3_256()
 groestl_impl_ssse3_512::groestl_impl_ssse3_512()
 {
 }
+
+	} // namespace detail
+} // namespace cppcrypto

@@ -873,6 +873,7 @@ vpxor xmm7, xmm7, [const_z + 3*64 + 48]
 	pop rdi
 %endif
  pop rbp
+
  ret
 
 section .rodata

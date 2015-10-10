@@ -21,9 +21,15 @@ namespace cppcrypto
 		void final(uint8_t* hash);
 
 		int hashbitlen() const { return 1024; }
+		int blockbitlen() const { return 1024; }
+		crypto_hash* clone() const { return new skein1024_1024; }
 
 	protected:
 		void transform(void* m, uint64_t num_blks, size_t reallen);
+#if defined(_MSC_VER) && defined(_M_X64)
+		void transform_rorx(void* m, uint64_t num_blks, size_t reallen);
+#endif
+		std::function<void(void*, uint64_t, size_t)> transfunc;
 
 		uint64_t* H;
 		uint8_t m[128];
@@ -38,6 +44,7 @@ namespace cppcrypto
 		void init();
 
 		int hashbitlen() const { return 512; }
+		crypto_hash* clone() const { return new skein1024_512; }
 	};
 
 	class skein1024_384 : public skein1024_1024
@@ -46,6 +53,16 @@ namespace cppcrypto
 		void init();
 
 		int hashbitlen() const { return 384; }
+		crypto_hash* clone() const { return new skein1024_384; }
+	};
+
+	class skein1024_256 : public skein1024_1024
+	{
+	public:
+		void init();
+
+		int hashbitlen() const { return 256; }
+		crypto_hash* clone() const { return new skein1024_256; }
 	};
 
 }

@@ -10,5 +10,8 @@
 #include "sha512.h"
 #include "whirlpool.h"
 #include "kupyna.h"
+#include "rijndael.h"
+#include "cbc.h"
+#include "hmac.h"
 
 #endif

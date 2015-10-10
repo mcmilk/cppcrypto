@@ -153,6 +153,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -174,6 +175,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -232,12 +234,17 @@
     <ClInclude Include="3rdparty\rounds.sse41.h" />
     <ClInclude Include="blake.h" />
     <ClInclude Include="3rdparty\blake512-sse41-rounds.h" />
+    <ClInclude Include="block_cipher.h" />
+    <ClInclude Include="cbc.h" />
     <ClInclude Include="cppcrypto.h" />
     <ClInclude Include="cpuinfo.h" />
     <ClInclude Include="crypto_hash.h" />
     <ClInclude Include="groestl-impl.h" />
     <ClInclude Include="groestl.h" />
+    <ClInclude Include="hmac.h" />
     <ClInclude Include="kupyna.h" />
+    <ClInclude Include="rijndael-impl.h" />
+    <ClInclude Include="rijndael.h" />
     <ClInclude Include="sha256.h" />
     <ClInclude Include="sha512.h" />
     <ClInclude Include="skein1024.h" />
@@ -256,12 +263,17 @@
     <ClCompile Include="blake.cpp" />
     <ClCompile Include="3rdparty\blake512-sse2.c" />
     <ClCompile Include="3rdparty\blake512-sse41.c" />
+    <ClCompile Include="cbc.cpp" />
     <ClCompile Include="cpuinfo.cpp" />
     <ClCompile Include="crypto_hash.cpp" />
     <ClCompile Include="3rdparty\groestl-impl-aesni.cpp" />
     <ClCompile Include="3rdparty\groestl-impl-ssse3.cpp" />
     <ClCompile Include="groestl.cpp" />
+    <ClCompile Include="hmac.cpp" />
     <ClCompile Include="kupyna.cpp" />
+    <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
+    <ClCompile Include="rijndael-impl-aesni.cpp" />
+    <ClCompile Include="rijndael.cpp" />
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="sha512.cpp" />
     <ClCompile Include="skein1024.cpp" />

@@ -22,6 +22,8 @@ namespace cppcrypto
 		void final(uint8_t* hash);
 
 		int hashbitlen() const { return 256; }
+		int blockbitlen() const { return 512; }
+		crypto_hash* clone() const { return new sha256; }
 
 	protected:
 		void transform(void* m, uint64_t num_blks);
@@ -39,6 +41,7 @@ namespace cppcrypto
 		void init();
 
 		int hashbitlen() const { return 224; }
+		crypto_hash* clone() const { return new sha224; }
 	};
 
 }

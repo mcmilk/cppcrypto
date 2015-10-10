@@ -45,7 +45,7 @@ namespace cppcrypto
 			total += (bytes)* 8;
 			data += bytes;
 		}
-		memcpy(m, data, len);
+		memcpy(m+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}
@@ -64,6 +64,30 @@ namespace cppcrypto
 		total = 0;
 	};
 
+
+#define G(G0, G1, G2, G3, C0, C1) \
+	G0 += G1; \
+	G1 = _rotl64(G1, C0) ^ G0; \
+	G2 += G3; \
+	G3 = _rotl64(G3, C1) ^ G2;
+
+#define KS(r) \
+	G0 += keys[(r + 1) % 5]; \
+	G1 += keys[(r + 2) % 5] + tweaks[(r + 1) % 3]; \
+	G2 += keys[(r + 3) % 5] + tweaks[(r + 2) % 3]; \
+	G3 += keys[(r + 4) % 5] + r + 1;
+
+#define G8(r) \
+	G(G0, G1, G2, G3, 14, 16); \
+	G(G0, G3, G2, G1, 52, 57); \
+	G(G0, G1, G2, G3, 23, 40); \
+	G(G0, G3, G2, G1, 5, 37); \
+	KS(r); \
+	G(G0, G1, G2, G3, 25, 33); \
+	G(G0, G3, G2, G1, 46, 12); \
+	G(G0, G1, G2, G3, 58, 22); \
+	G(G0, G3, G2, G1, 32, 32); \
+	KS(r + 1);
 
 	void skein256_256::transform(void* m, uint64_t num_blks, size_t reallen)
 	{
@@ -85,16 +109,6 @@ namespace cppcrypto
 			tweaks[2] = tweaks[0] ^ tweaks[1];
 			keys[4] = 0x1BD11BDAA9FC1A22ULL ^ keys[0] ^ keys[1] ^ keys[2] ^ keys[3];
 
-#ifdef DEBUG
-			printf("transform; tweaks: ");
-			for (int i = 0; i < 3; i++)
-				printf("%llx ", tweaks[i]);
-			printf("\nkeys:\n");
-			for (int i = 0; i < 5; i++)
-				printf("%llx ", keys[i]);
-			printf("\n");
-#endif
-
 			G0 = M[0] + keys[0];
 			G1 = M[1] + keys[1];
 			G2 = M[2] + keys[2];
@@ -102,929 +116,25 @@ namespace cppcrypto
 			G1 += tweaks[0];
 			G2 += tweaks[1];
 
-#ifdef DEBUG
-			printf("message:\n");
-			for (int i = 0; i < 4; i++)
-				printf("%llx ", M[i]);
-			printf("\n");
-#endif
-
-
-#ifdef DEBUG
-			printf("before rounds:\n");
-			for (int i = 0; i < 4; i++)
-				printf("%llx ", G[i]);
-			printf("\n");
-#endif
-			
 			// The loop is fully unrolled for performance reasons
-			//for (int s = 0; s < 72 / 8; s++)
-			{
-				// ZERO
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
+			G8(0);
+			G8(2);
+			G8(4);
+			G8(6);
+			G8(8);
+			G8(10);
+			G8(12);
+			G8(14);
+			G8(16);
 
-#ifdef DEBUG
-				printf("round %d:\n", 0 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 0 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(0 * 2 + 1) % 5];
-				G1 += keys[(0 * 2 + 2) % 5] + tweaks[(0 * 2 + 1) % 3];
-				G2 += keys[(0 * 2 + 3) % 5] + tweaks[(0 * 2 + 2) % 3];
-				G3 += keys[(0 * 2 + 4) % 5] + 0 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 0 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 0 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 0 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(0 * 2 + 2) % 5];
-				G1 += keys[(0 * 2 + 3) % 5] + tweaks[(0 * 2 + 2) % 3];
-				G2 += keys[(0 * 2 + 4) % 5] + tweaks[(0 * 2 + 3) % 3];
-				G3 += keys[(0 * 2 + 5) % 5] + 0 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 0 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-
-				// ONE
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 1 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 1 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(1 * 2 + 1) % 5];
-				G1 += keys[(1 * 2 + 2) % 5] + tweaks[(1 * 2 + 1) % 3];
-				G2 += keys[(1 * 2 + 3) % 5] + tweaks[(1 * 2 + 2) % 3];
-				G3 += keys[(1 * 2 + 4) % 5] + 1 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 1 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 1 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 1 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(1 * 2 + 2) % 5];
-				G1 += keys[(1 * 2 + 3) % 5] + tweaks[(1 * 2 + 2) % 3];
-				G2 += keys[(1 * 2 + 4) % 5] + tweaks[(1 * 2 + 3) % 3];
-				G3 += keys[(1 * 2 + 5) % 5] + 1 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 1 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-
-				// TWO
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 2 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 2 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(2 * 2 + 1) % 5];
-				G1 += keys[(2 * 2 + 2) % 5] + tweaks[(2 * 2 + 1) % 3];
-				G2 += keys[(2 * 2 + 3) % 5] + tweaks[(2 * 2 + 2) % 3];
-				G3 += keys[(2 * 2 + 4) % 5] + 2 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 2 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 2 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 2 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(2 * 2 + 2) % 5];
-				G1 += keys[(2 * 2 + 3) % 5] + tweaks[(2 * 2 + 2) % 3];
-				G2 += keys[(2 * 2 + 4) % 5] + tweaks[(2 * 2 + 3) % 3];
-				G3 += keys[(2 * 2 + 5) % 5] + 2 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 2 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-
-				// THREE
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(3 * 2 + 1) % 5];
-				G1 += keys[(3 * 2 + 2) % 5] + tweaks[(3 * 2 + 1) % 3];
-				G2 += keys[(3 * 2 + 3) % 5] + tweaks[(3 * 2 + 2) % 3];
-				G3 += keys[(3 * 2 + 4) % 5] + 3 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(3 * 2 + 2) % 5];
-				G1 += keys[(3 * 2 + 3) % 5] + tweaks[(3 * 2 + 2) % 3];
-				G2 += keys[(3 * 2 + 4) % 5] + tweaks[(3 * 2 + 3) % 3];
-				G3 += keys[(3 * 2 + 5) % 5] + 3 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// FOUR
-
-				// THREE
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(4 * 2 + 1) % 5];
-				G1 += keys[(4 * 2 + 2) % 5] + tweaks[(4 * 2 + 1) % 3];
-				G2 += keys[(4 * 2 + 3) % 5] + tweaks[(4 * 2 + 2) % 3];
-				G3 += keys[(4 * 2 + 4) % 5] + 4 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(4 * 2 + 2) % 5];
-				G1 += keys[(4 * 2 + 3) % 5] + tweaks[(4 * 2 + 2) % 3];
-				G2 += keys[(4 * 2 + 4) % 5] + tweaks[(4 * 2 + 3) % 3];
-				G3 += keys[(4 * 2 + 5) % 5] + 4 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// FIVE
-
-				// THREE
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(5 * 2 + 1) % 5];
-				G1 += keys[(5 * 2 + 2) % 5] + tweaks[(5 * 2 + 1) % 3];
-				G2 += keys[(5 * 2 + 3) % 5] + tweaks[(5 * 2 + 2) % 3];
-				G3 += keys[(5 * 2 + 4) % 5] + 5 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(5 * 2 + 2) % 5];
-				G1 += keys[(5 * 2 + 3) % 5] + tweaks[(5 * 2 + 2) % 3];
-				G2 += keys[(5 * 2 + 4) % 5] + tweaks[(5 * 2 + 3) % 3];
-				G3 += keys[(5 * 2 + 5) % 5] + 5 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-
-				// SIX
-
-				// THREE
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(6 * 2 + 1) % 5];
-				G1 += keys[(6 * 2 + 2) % 5] + tweaks[(6 * 2 + 1) % 3];
-				G2 += keys[(6 * 2 + 3) % 5] + tweaks[(6 * 2 + 2) % 3];
-				G3 += keys[(6 * 2 + 4) % 5] + 6 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(6 * 2 + 2) % 5];
-				G1 += keys[(6 * 2 + 3) % 5] + tweaks[(6 * 2 + 2) % 3];
-				G2 += keys[(6 * 2 + 4) % 5] + tweaks[(6 * 2 + 3) % 3];
-				G3 += keys[(6 * 2 + 5) % 5] + 6 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-				// SEVEN
-
-				// THREE
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(7 * 2 + 1) % 5];
-				G1 += keys[(7 * 2 + 2) % 5] + tweaks[(7 * 2 + 1) % 3];
-				G2 += keys[(7 * 2 + 3) % 5] + tweaks[(7 * 2 + 2) % 3];
-				G3 += keys[(7 * 2 + 4) % 5] + 7 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(7 * 2 + 2) % 5];
-				G1 += keys[(7 * 2 + 3) % 5] + tweaks[(7 * 2 + 2) % 3];
-				G2 += keys[(7 * 2 + 4) % 5] + tweaks[(7 * 2 + 3) % 3];
-				G3 += keys[(7 * 2 + 5) % 5] + 7 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// EIGHT
-
-				// THREE
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 14) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 16) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 52) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 57) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 23) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 40) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 5) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 37) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 4);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(8 * 2 + 1) % 5];
-				G1 += keys[(8 * 2 + 2) % 5] + tweaks[(8 * 2 + 1) % 3];
-				G2 += keys[(8 * 2 + 3) % 5] + tweaks[(8 * 2 + 2) % 3];
-				G3 += keys[(8 * 2 + 4) % 5] + 8 * 2 + 1;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// four rounds
-				G0 += G1;
-				G1 = _rotl64(G1, 25) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 33) ^ G2;
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 1);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				G0 += G3;
-				G3 = _rotl64(G3, 46) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 12) ^ G2;
-
-				G0 += G1;
-				G1 = _rotl64(G1, 58) ^ G0;
-				G2 += G3;
-				G3 = _rotl64(G3, 22) ^ G2;
-
-				G0 += G3;
-				G3 = _rotl64(G3, 32) ^ G0;
-				G2 += G1;
-				G1 = _rotl64(G1, 32) ^ G2;
-
-
-#ifdef DEBUG
-				printf("round %d:\n", 3 * 8 + 8);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-				// key schedule
-				G0 += keys[(8 * 2 + 2) % 5];
-				G1 += keys[(8 * 2 + 3) % 5] + tweaks[(8 * 2 + 2) % 3];
-				G2 += keys[(8 * 2 + 4) % 5] + tweaks[(8 * 2 + 3) % 3];
-				G3 += keys[(8 * 2 + 5) % 5] + 8 * 2 + 2;
-
-#ifdef DEBUG
-				printf("key schedule %d:\n", 3 * 2 + 2);
-				for (int i = 0; i < 4; i++)
-					printf("%llx ", G[i]);
-				printf("\n");
-#endif
-
-
-			}
 			tweaks[1] &= ~(64ULL << 56);
 			tweak[0] = tweaks[0];
 			tweak[1] = tweaks[1];
-			//for (int i = 0; i < 4; i++)
-				H[0] = G0 ^ M[0];
-				H[1] = G1 ^ M[1];
-				H[2] = G2 ^ M[2];
-				H[3] = G3 ^ M[3];
+			
+			H[0] = G0 ^ M[0];
+			H[1] = G1 ^ M[1];
+			H[2] = G2 ^ M[2];
+			H[3] = G3 ^ M[3];
 		}
 
 	}
@@ -1055,6 +165,34 @@ namespace cppcrypto
 		H[1] = 0x876D568608C5191C;
 		H[2] = 0x99CB88D7D7F53884;
 		H[3] = 0x384BDDB1AEDDB5DE;
+
+		pos = 0;
+		total = 0;
+	};
+
+	void skein256_160::init()
+	{
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (48ULL << 56);
+
+		H[0] = 0x1420231472825E98;
+		H[1] = 0x2AC4E9A25A77E590;
+		H[2] = 0xD47A58568838D63E;
+		H[3] = 0x2DD2E4968586AB7D;
+
+		pos = 0;
+		total = 0;
+	};
+
+	void skein256_128::init()
+	{
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (48ULL << 56);
+
+		H[0] = 0xE1111906964D7260;
+		H[1] = 0x883DAAA77C8D811C;
+		H[2] = 0x10080DF491960F7A;
+		H[3] = 0xCCF7DDE5B45BC1C2;
 
 		pos = 0;
 		total = 0;

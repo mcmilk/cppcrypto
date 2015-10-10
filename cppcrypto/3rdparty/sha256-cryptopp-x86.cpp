@@ -12,9 +12,9 @@ namespace cppcrypto
 	extern const __declspec(align(16)) uint32_t SHA256_K[64];
 }
 
+#ifndef _M_X64
 	void __fastcall X86_SHA256_HashBlocks(uint32_t *state, const uint32_t *data, size_t len)
 	{
-#ifndef _M_X64
 		__asm {mov edi, [len]}
 		__asm {lea esi, [cppcrypto::SHA256_K + 48 * 4]}
 		__asm {push ebp}
@@ -134,5 +134,5 @@ namespace cppcrypto
 		__asm {label5:}
 		__asm {pop esp}
 		__asm {pop ebp}
-#endif
 	}
+#endif

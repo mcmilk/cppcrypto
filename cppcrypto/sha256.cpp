@@ -5,7 +5,6 @@ This code is released under Simplified BSD License (see license.txt).
 #include "cpuinfo.h"
 #include "sha256.h"
 #include <memory.h>
-
 //#define DEBUG
 
 #ifndef _MSC_VER
@@ -157,7 +156,7 @@ __attribute__ ((aligned (16)))
 			total += (bytes)* 8;
 			data += bytes;
 		}
-		memcpy(m, data, len);
+		memcpy(m+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}

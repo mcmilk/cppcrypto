@@ -7,6 +7,7 @@ This code is released under Simplified BSD License (see license.txt).
 #include <memory.h>
 
 //#define DEBUG
+//#define NO_OPTIMIZED_VERSIONS
 
 #ifndef _MSC_VER
 #define _aligned_malloc(a, b) aligned_alloc(b, a)
@@ -18,6 +19,8 @@ static inline uint64_t _rotr64(uint64_t x, unsigned n)
 {
         return (x >> n) | (x << (64 - n));
 }
+#else
+#define inline __forceinline
 #endif
 
 extern "C"
@@ -39,7 +42,7 @@ namespace cppcrypto
 		0x452821E6, 0x38D01377, 0xBE5466CF, 0x34E90C6C, 0xC0AC29B7, 0xC97C50DD, 0x3F84D5B5, 0xB5470917
 	};
 
-	static const uint32_t S[10][16] = {
+	static const uint32_t S[20][16] = {
 		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
 		{ 14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 },
 		{ 11, 8, 12, 0, 5, 2, 15, 13, 10, 14, 3, 6, 7, 1, 9, 4 },
@@ -68,7 +71,7 @@ namespace cppcrypto
 			data += 64 - pos;
 			pos = 0;
 		}
-		memcpy(m, data, len);
+		memcpy(m+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}
@@ -88,7 +91,7 @@ namespace cppcrypto
 		total = 0;
 	};
 
-	static inline void G(int r, int i, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t* M) 
+	static inline void G(int r, int i, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t* M)
 	{
 		a = a + b + (M[S[r % 10][2 * i]] ^ (cppcrypto::c)[S[r % 10][2 * i + 1]]);
 		d = rotrblk(d ^ a, 16);
@@ -118,7 +121,6 @@ namespace cppcrypto
 
 	}
 
-
 	void blake256::transform(bool padding)
 	{
 		uint32_t M[16];
@@ -142,10 +144,11 @@ namespace cppcrypto
 #endif
 
 		uint32_t v[16];
-		for (int t = 0; t < 8; t++)
-			v[t] = H[t];
-		for (int t = 0; t < 4; t++)
-			v[8 + t] = s[t] ^ c[t];
+		memcpy(v, H, sizeof(uint32_t) * 8);
+		v[8 + 0] = s[0] ^ c[0];
+		v[8 + 1] = s[1] ^ c[1];
+		v[8 + 2] = s[2] ^ c[2];
+		v[8 + 3] = s[3] ^ c[3];
 		v[12] = t0 ^ c[4];
 		v[13] = t0 ^ c[5];
 		v[14] = t1 ^ c[6];
@@ -156,14 +159,30 @@ namespace cppcrypto
 			v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15]);
 #endif
 
-		for (int r = 0; r < 14; r++)
-			round(r, M, v);
+		// The loop is fully unrolled for performance reasons
+		round(0, M, v);
+		round(1, M, v);
+		round(2, M, v);
+		round(3, M, v);
+		round(4, M, v);
+		round(5, M, v);
+		round(6, M, v);
+		round(7, M, v);
+		round(8, M, v);
+		round(9, M, v);
+		round(10, M, v);
+		round(11, M, v);
+		round(12, M, v);
+		round(13, M, v);
 
-		for (int i = 0; i < 4; i++)
-		{
-			H[i] = H[i] ^ s[i] ^ v[i] ^ v[i + 8];
-			H[i + 4] = H[i + 4] ^ s[i] ^ v[i + 4] ^ v[i + 8 + 4];
-		}
+		H[0] = H[0] ^ s[0] ^ v[0] ^ v[0 + 8];
+		H[0 + 4] = H[0 + 4] ^ s[0] ^ v[0 + 4] ^ v[0 + 8 + 4];
+		H[1] = H[1] ^ s[1] ^ v[1] ^ v[1 + 8];
+		H[1 + 4] = H[1 + 4] ^ s[1] ^ v[1 + 4] ^ v[1 + 8 + 4];
+		H[2] = H[2] ^ s[2] ^ v[2] ^ v[2 + 8];
+		H[2 + 4] = H[2 + 4] ^ s[2] ^ v[2 + 4] ^ v[2 + 8 + 4];
+		H[3] = H[3] ^ s[3] ^ v[3] ^ v[3 + 8];
+		H[3 + 4] = H[3 + 4] ^ s[3] ^ v[3 + 4] ^ v[3 + 8 + 4];
 
 #ifdef	DEBUG
 		printf("H[0] - H[7]: %08X %08X %08X %08X %08X %08X %08X %08X\n",
@@ -209,7 +228,7 @@ namespace cppcrypto
 			data += 128 - pos;
 			pos = 0;
 		}
-		memcpy(m, data, len);
+		memcpy(m+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}
@@ -289,10 +308,11 @@ namespace cppcrypto
 #endif
 
 		uint64_t v[16];
-		for (int t = 0; t < 8; t++)
-			v[t] = H[t];
-		for (int t = 0; t < 4; t++)
-			v[8 + t] = s[t] ^ c512[t];
+		memcpy(v, H, sizeof(uint64_t)*8);
+		v[8 + 0] = s[0] ^ c512[0];
+		v[8 + 1] = s[1] ^ c512[1];
+		v[8 + 2] = s[2] ^ c512[2];
+		v[8 + 3] = s[3] ^ c512[3];
 		v[12] = t0 ^ c512[4];
 		v[13] = t0 ^ c512[5];
 		v[14] = t1 ^ c512[6];
@@ -303,14 +323,32 @@ namespace cppcrypto
 			v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15]);
 #endif
 
-		for (int r = 0; r < 16; r++)
-			round512(r, M, v);
+		// The loop is fully unrolled for performance reasons
+		round512(0, M, v);
+		round512(1, M, v);
+		round512(2, M, v);
+		round512(3, M, v);
+		round512(4, M, v);
+		round512(5, M, v);
+		round512(6, M, v);
+		round512(7, M, v);
+		round512(8, M, v);
+		round512(9, M, v);
+		round512(10, M, v);
+		round512(11, M, v);
+		round512(12, M, v);
+		round512(13, M, v);
+		round512(14, M, v);
+		round512(15, M, v);
 
-		for (int i = 0; i < 4; i++)
-		{
-			H[i] = H[i] ^ s[i] ^ v[i] ^ v[i + 8];
-			H[i + 4] = H[i + 4] ^ s[i] ^ v[i + 4] ^ v[i + 8 + 4];
-		}
+		H[0] = H[0] ^ s[0] ^ v[0] ^ v[0 + 8];
+		H[0 + 4] = H[0 + 4] ^ s[0] ^ v[0 + 4] ^ v[0 + 8 + 4];
+		H[1] = H[1] ^ s[1] ^ v[1] ^ v[1 + 8];
+		H[1 + 4] = H[1 + 4] ^ s[1] ^ v[1 + 4] ^ v[1 + 8 + 4];
+		H[2] = H[2] ^ s[2] ^ v[2] ^ v[2 + 8];
+		H[2 + 4] = H[2 + 4] ^ s[2] ^ v[2 + 4] ^ v[2 + 8 + 4];
+		H[3] = H[3] ^ s[3] ^ v[3] ^ v[3 + 8];
+		H[3 + 4] = H[3 + 4] ^ s[3] ^ v[3 + 4] ^ v[3 + 8 + 4];
 
 #ifdef	DEBUG
 		printf("H[0] - H[7]: %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx\n",
@@ -383,7 +421,7 @@ namespace cppcrypto
 
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
-		if (cpu_info::avx())
+		if (cpu_info::avx() && false)
 			transfunc = [this](bool padding) {
 			uint32_t t[2];
 			if (!padding)
@@ -393,6 +431,7 @@ namespace cppcrypto
 			}
 
 			blake256_compress_avxs(H, m, padding, t); 
+			//_mm256_zeroall();
 			};
 		else
 #endif

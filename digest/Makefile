@@ -1,4 +1,4 @@
-PREFIX       ?= /usr/local
+PREFIX       ?= /usr
 BINDIR       ?= $(PREFIX)/bin
 MAKE_DIR     ?= install -d
 INSTALL_DATA ?= install

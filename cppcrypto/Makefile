@@ -1,18 +1,22 @@
-PREFIX       ?= /usr/local
+PREFIX       ?= /usr
+ifeq ($(shell getconf LONG_BIT), 64)
+LIBDIR       ?= $(PREFIX)/lib64
+else
 LIBDIR       ?= $(PREFIX)/lib
+endif
 INCLUDEDIR   ?= $(PREFIX)/include/cppcrypto
 MAKE_DIR     ?= install -d
 INSTALL_DATA ?= install
 
 CXX=g++
-CFLAGS=-O2 -Wall -g -fstack-protector -DNDEBUG
-CXXFLAGS=-O2 -Wall -g -fstack-protector -fpermissive -std=gnu++11 -DNDEBUG
+CFLAGS=-O2 -Wall -g -fstack-protector -DNDEBUG -msse2
+CXXFLAGS=-O2 -Wall -g -fstack-protector -fpermissive -std=gnu++11 -DNDEBUG -msse2
 LDFLAGS=-Wl,-z,now -Wl,-z,relro -Wl,-soname,libcppcrypto.so.0
 
 
 OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1024.o whirlpool.o crypto_hash.o \
       blake256-sse2.o blake256-sse41.o blake512-sse2.o blake512-sse41.o groestl-impl-ssse3.o groestl-impl-aesni.o \
-      kupyna.o
+      kupyna.o rijndael.o cbc.o hmac.o rijndael-impl-aesni.o rijndael-impl-aesni-avx2.o
 
 OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha256-cryptopp-x86-linux.o
 OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o sha256-cryptopp-x64-linux.o 
@@ -79,6 +83,12 @@ groestl-impl-ssse3.o: 3rdparty/groestl-impl-ssse3.cpp
 
 groestl-impl-aesni.o: 3rdparty/groestl-impl-aesni.cpp
 	$(CXX) -c $(CXXFLAGS) -mssse3 -maes 3rdparty/groestl-impl-aesni.cpp
+
+rijndael-impl-aesni.o: rijndael-impl-aesni.cpp
+	$(CXX) -c $(CXXFLAGS) -msse4.1 -maes rijndael-impl-aesni.cpp
+
+rijndael-impl-aesni-avx2.o: rijndael-impl-aesni-avx2.cpp
+	$(CXX) -c $(CXXFLAGS) -mavx2 -maes rijndael-impl-aesni-avx2.cpp
 
 skein512mmx.o: 3rdparty/skein512mmx.cpp
 	$(CXX) -c $(CXXFLAGS) -msse2 3rdparty/skein512mmx.cpp

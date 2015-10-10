@@ -1,0 +1,22 @@
+
+cppcrypto-0.04
+
+New block algorithm: Rijndael with block sizes 128, 256 and key sizes 128, 160, 192, 224, 256.
+Encryption modes: CBC.
+MAC functions: HMAC.
+
+cppcrypto-0.03
+
+New hash algorithm: Kupyna
+
+cppcrypto-0.02
+
+New supported platforms: Linux x86_64 and i586 (using gcc 5.1.1)
+
+cppcrypto-0.01
+
+Initial version.
+Supported hash algorithms: BLAKE, Groestl, SHA-2 (incl. SHA512/224 and SHA512/256),
+Skein-256, Skein-512, Skein-1024, Whirlpool.
+Supported platforms: Windows (32bit and 64bit)
+Supported compilers: Visual C++ 2013, Visual C++ 2015.

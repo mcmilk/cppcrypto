@@ -1,8 +1,24 @@
 cppcrypto is a small BSD-licensed C++ library providing some cryptographic primitives.
 It has no external dependencies.
 
-At the moment it supports only hash functions: blake, groestl, sha-2 (incl. sha512/224 and sha512/256),
-skein-256, skein-512, skein-1024, whirlpool, kupyna.
+At the moment it supports the following primitives.
+
+1) Hash functions: blake, groestl, sha-2 (incl. sha512/224 and sha512/256), skein-256, skein-512, skein-1024,
+whirlpool, kupyna.
+
+To get the full list of supported hash algorithms, run 'digest' in hash function performance test mode:
+
+  digest test <number_of_iterations> <filename>
+
+2) Block ciphers: Rijndael with block sizes 128, 256 and key sizes 128, 160, 192, 224, 256
+(all variants are accelerated using AES-NI instructions, if available). 
+
+To get the full list of supported block ciphers, run 'digest' in block cipher performance test mode:
+
+  digest bctest <number_of_iterations> <filename>
+
+3) Encryption modes: CBC.
+4) MAC functions: HMAC.
 
 The library detects CPU type at runtime and uses optimized implementations where possible.
 
@@ -13,32 +29,33 @@ Sample usage:
 
     #include "cppcrypto.h"
 
+    // Calculate SHA-512/256 hash of a string
     string str = "The quick brown fox jumps over the lazy dog";
     uint8_t hash[32];
     
     sha512_256().hash_string(str, hash);
 
 
-If you need to calculate hash of long message using chunks of data, use the "traditional" init/update/final interface:
-
+If you need to calculate hash of long message using chunks of data, use the init/update/final interface:
 
     sha512_256 hasher;
     uint8_t hash[32];
     
     hasher.init();
-    hasher.update(data1, datalen2);
-    hasher.update(data2, datalen2);
+    hasher.update(chunk1, chunk1len);
+    hasher.update(chunk2, chunk2len);
     ...
     hasher.final(hash);
 
 
 Also included is a command-line utility 'digest.exe' which can be used to calculate hash sum of any file(s)
-using any of the supported algorithms (similar to md5sum), for example:
-
+using any of the supported algorithms (similar to md5sum), for example, if you want to calculate
+Skein-512/256 hash of a file, you can run:
 
    digest skein512/256 file.ext
 
-Like md5sum, it can also verify checksums saved in a file, for example:
+Like md5sum, it can also verify checksums saved in a file, for example, if you want to verify saved
+Groestl hashes, you can run:
 
    digest -c groestl256 checksums.grøstl
 

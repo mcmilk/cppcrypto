@@ -21,6 +21,8 @@ namespace cppcrypto
 		void final(uint8_t* hash);
 
 		int hashbitlen() const { return 256; }
+		int blockbitlen() const { return 512; }
+		crypto_hash* clone() const { return new blake256; }
 
 	protected:
 		void transform(bool padding);
@@ -44,6 +46,8 @@ namespace cppcrypto
 		void final(uint8_t* hash);
 
 		int hashbitlen() const { return 512; }
+		int blockbitlen() const { return 1024; }
+		crypto_hash* clone() const { return new blake512; }
 
 	protected:
 		void transform(bool padding);
@@ -61,7 +65,7 @@ namespace cppcrypto
 	public:
 		void init();
 		int hashbitlen() const { return 384; }
-
+		crypto_hash* clone() const { return new blake384; }
 	};
 
 	class blake224 : public blake256
@@ -69,7 +73,7 @@ namespace cppcrypto
 	public:
 		void init();
 		int hashbitlen() const { return 224; }
-
+		crypto_hash* clone() const { return new blake224; }
 	};
 
 }

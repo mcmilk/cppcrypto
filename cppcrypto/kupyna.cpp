@@ -617,7 +617,7 @@ namespace cppcrypto
 			data += 64 - pos;
 			pos = 0;
 		}
-		memcpy(m, data, len);
+		memcpy(m+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}
@@ -823,7 +823,7 @@ namespace cppcrypto
 			data += 128 - pos;
 			pos = 0;
 		}
-		memcpy(m, data, len);
+		memcpy(m+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}

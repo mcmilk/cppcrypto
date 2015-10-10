@@ -13,6 +13,8 @@
 #include <wmmintrin.h>
 #include "../groestl-impl.h"
 
+namespace cppcrypto {
+	namespace detail {
 
 /* some sizes (number of bytes) */
 #define ROWS 8
@@ -353,8 +355,8 @@ K. Matusiewicz, 2011/05/29 */
 void groestl_impl_aesni_256::INIT(uint64_t* h)
 {
 	__m128i* const chaining = (__m128i*) h;
-	static __m128i xmm0, /*xmm1,*/ xmm2, /*xmm3, xmm4, xmm5,*/ xmm6, xmm7;
-	static __m128i /*xmm8, xmm9, xmm10, xmm11,*/ xmm12, xmm13, xmm14, xmm15;
+	__m128i xmm0, /*xmm1,*/ xmm2, /*xmm3, xmm4, xmm5,*/ xmm6, xmm7;
+	__m128i /*xmm8, xmm9, xmm10, xmm11,*/ xmm12, xmm13, xmm14, xmm15;
 
 	/* load IV into registers xmm12 - xmm15 */
 	xmm12 = chaining[0];
@@ -377,11 +379,11 @@ void groestl_impl_aesni_256::TF(uint64_t* h, uint64_t* m)
 {
 	__m128i* const chaining = (__m128i*) h;
 	__m128i* const message = (__m128i*) m;
-	static __m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
-	static __m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
-	static __m128i TEMP0;
-	static __m128i TEMP1;
-	static __m128i TEMP2;
+	__m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
+	__m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
+	__m128i TEMP0;
+	__m128i TEMP1;
+	__m128i TEMP2;
 
 #ifdef IACA_TRACE
 	IACA_START;
@@ -451,11 +453,11 @@ void groestl_impl_aesni_256::TF(uint64_t* h, uint64_t* m)
 void groestl_impl_aesni_256::OF(uint64_t* h)
 {
 	__m128i* const chaining = (__m128i*) h;
-	static __m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
-	static __m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
-	static __m128i TEMP0;
-	static __m128i TEMP1;
-	static __m128i TEMP2;
+	__m128i xmm0 = _mm_setzero_si128(), xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
+	__m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
+	__m128i TEMP0;
+	__m128i TEMP1;
+	__m128i TEMP2;
 
 	/* load CV into registers xmm8, xmm10, xmm12, xmm14 */
 	xmm8 = chaining[0];
@@ -764,8 +766,8 @@ void groestl_impl_aesni_256::OF(uint64_t* h)
 void groestl_impl_aesni_512::INIT(uint64_t* h)
 {
 	__m128i* const chaining = (__m128i*) h;
-	static __m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
-	static __m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
+	__m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
+	__m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
 
 	/* load IV into registers xmm8 - xmm15 */
 	xmm8 = chaining[0];
@@ -795,12 +797,12 @@ void groestl_impl_aesni_512::TF(uint64_t* h, uint64_t* m)
 {
 	__m128i* const chaining = (__m128i*) h;
 	__m128i* const message = (__m128i*) m;
-	static __m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
-	static __m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
-	static __m128i QTEMP[8];
-	static __m128i TEMP0;
-	static __m128i TEMP1;
-	static __m128i TEMP2;
+	__m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
+	__m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
+	__m128i QTEMP[8];
+	__m128i TEMP0;
+	__m128i TEMP1;
+	__m128i TEMP2;
 
 #ifdef IACA_TRACE
 	IACA_START;
@@ -910,11 +912,11 @@ void groestl_impl_aesni_512::TF(uint64_t* h, uint64_t* m)
 void groestl_impl_aesni_512::OF(uint64_t* h)
 {
 	__m128i* const chaining = (__m128i*) h;
-	static __m128i xmm0, xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
-	static __m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
-	static __m128i TEMP0;
-	static __m128i TEMP1;
-	static __m128i TEMP2;
+	__m128i xmm0 = _mm_setzero_si128(), xmm1, xmm2, xmm3, xmm4, xmm5, xmm6, xmm7;
+	__m128i xmm8, xmm9, xmm10, xmm11, xmm12, xmm13, xmm14, xmm15;
+	__m128i TEMP0;
+	__m128i TEMP1;
+	__m128i TEMP2;
 
 	/* load CV into registers xmm8 - xmm15 */
 	xmm8 = chaining[0];
@@ -967,3 +969,6 @@ groestl_impl_aesni_512::groestl_impl_aesni_512()
 	uint8_t i = 0;
 	SET_CONSTANTS_512();
 }
+
+	} // namespace detail
+} // namespace cppcrypto

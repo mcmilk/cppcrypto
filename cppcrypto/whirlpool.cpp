@@ -580,7 +580,7 @@ namespace cppcrypto
 			data += 64 - pos;
 			pos = 0;
 		}
-		memcpy(m, data, len);
+		memcpy(m+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}

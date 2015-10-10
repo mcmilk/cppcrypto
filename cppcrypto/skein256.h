@@ -22,6 +22,8 @@ namespace cppcrypto
 		void final(uint8_t* hash);
 
 		int hashbitlen() const { return 256; }
+		int blockbitlen() const { return 256; }
+		crypto_hash* clone() const { return new skein256_256; }
 
 	protected:
 		void transform(void* m, uint64_t num_blks, size_t reallen);
@@ -40,6 +42,25 @@ namespace cppcrypto
 		void init();
 
 		int hashbitlen() const { return 224; }
+		crypto_hash* clone() const { return new skein256_224; }
+	};
+
+	class skein256_160 : public skein256_256
+	{
+	public:
+		void init();
+
+		int hashbitlen() const { return 160; }
+		crypto_hash* clone() const { return new skein256_160; }
+	};
+
+	class skein256_128 : public skein256_256
+	{
+	public:
+		void init();
+
+		int hashbitlen() const { return 128; }
+		crypto_hash* clone() const { return new skein256_128; }
 	};
 
 }

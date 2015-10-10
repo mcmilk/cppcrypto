@@ -23,6 +23,8 @@ namespace cppcrypto
 		void final(uint8_t* hash);
 
 		int hashbitlen() const { return 256; }
+		int blockbitlen() const { return 512; }
+		crypto_hash* clone() const { return new groestl256; }
 
 	private:
 		void transform();
@@ -32,7 +34,7 @@ namespace cppcrypto
 		uint8_t* m;
 		size_t pos;
 		uint64_t total;
-		groestl_impl* impl_;
+		detail::groestl_impl* impl_;
 	};
 
 	class groestl512 : public crypto_hash
@@ -46,6 +48,8 @@ namespace cppcrypto
 		void final(uint8_t* hash);
 
 		int hashbitlen() const { return 512; }
+		int blockbitlen() const { return 1024; }
+		crypto_hash* clone() const { return new groestl512; }
 
 	private:
 		void transform();
@@ -55,19 +59,21 @@ namespace cppcrypto
 		uint8_t* m;
 		size_t pos;
 		uint64_t total;
-		groestl_impl* impl_;
+		detail::groestl_impl* impl_;
 	};
 
 	class groestl384 : public groestl512
 	{
 	public:
 		int hashbitlen() const { return 384; }
+		crypto_hash* clone() const { return new groestl384; }
 	};
 
 	class groestl224 : public groestl256
 	{
 	public:
 		int hashbitlen() const { return 224; }
+		crypto_hash* clone() const { return new groestl224; }
 	};
 
 }

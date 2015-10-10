@@ -23,6 +23,7 @@ using namespace cppcrypto;
 #define wifstream ifstream
 #define wprintf printf
 #define wsprintf sprintf
+#define sscanf_s sscanf
 #else
 #define _T(A) L ## A
 #endif
@@ -97,6 +98,39 @@ bool hash_file(const wchar_t* filename, vector<char>* hashsum, int hashbitlen, c
 }
 
 
+void block_cipher_perf_test(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations)
+{
+	perftimer timer;
+	unsigned char pt[512];
+	unsigned char ct[512];
+	unsigned char key[512];
+	memset(pt, 0, sizeof(pt));
+	memset(key, 0, sizeof(key));
+
+	for (auto it = ciphers.begin(); it != ciphers.end(); ++it)
+	{
+		wcout << it->first << _T(" ");
+
+		timer.reset();
+		for (long i = 0; i < iterations; i++)
+		{
+			it->second->init(key, block_cipher::encryption);
+			it->second->encryptBlock(pt, ct);
+		}
+		wcout << fixed << timer.elapsed() << _T(" ");
+		timer.reset();
+		for (long i = 0; i < iterations; i++)
+		{
+			it->second->init(key, block_cipher::decryption);
+			it->second->encryptBlock(ct, pt);
+		}
+		wcout << fixed << timer.elapsed() << _T(" ");
+		wcout << endl;
+	}
+
+
+}
+
 void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, wstring filename)
 {
 	perftimer timer;
@@ -112,7 +146,7 @@ void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, ws
 
 	long long fileSize = file_size(filename.c_str());
 
-	if (fileSize > 10000000)
+	if (fileSize > 20000000)
 	{
 		cerr << "File is too big.\n";
 		return;
@@ -140,11 +174,122 @@ void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, ws
 		{
 			it->second->hash_string(message, static_cast<size_t>(fileSize), hash);
 		}
-		wcout << fixed << timer.elapsed() << _T(" ");
+		double seconds = timer.elapsed();
+		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) 
+			<< (static_cast<double>(fileSize) / 1024.0 / 1024.0 * static_cast<double>(iterations) / seconds) << _T(" MB/s) ");
 		for (int i = 0; i < (it->second->hashbitlen() + 7) / 8; i++)
 			wcout << setfill(_T('0')) << setw(2) << hex << (unsigned int)hash[i];
 		wcout << endl;
 	}
+}
+
+
+void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations, wstring filename)
+{
+	perftimer timer;
+
+	if (!file_exists(filename.c_str())) {
+		wcerr << filename << _T(": No such file or directory") << endl;
+		return;
+	}
+	if (is_directory(filename.c_str())) {
+		wcerr << filename << _T(": Is a directory") << endl;
+		return;
+	}
+
+	long long fileSize = file_size(filename.c_str());
+
+	if (fileSize > 20000000)
+	{
+		cerr << "File is too big.\n";
+		return;
+	}
+
+	char* message = new char[static_cast<size_t>(fileSize)];
+
+	ifstream file;
+	file.open(filename, ios::in | ios::binary);
+	if (!file)
+		return;
+
+	if (!file.read(message, fileSize))
+		return;
+
+	file.close();
+	unsigned char* ct = new unsigned char[static_cast<size_t>(fileSize + 1024*2)];
+	unsigned char* pt = new unsigned char[static_cast<size_t>(fileSize + 1024 * 2)];
+	unsigned char key[1024];
+	unsigned char iv[1024];
+	unsigned char* next = ct;
+	memset(key, 0, sizeof(key));
+	memset(iv, 0, sizeof(iv));
+	for (int i = 0; i < 16; i++)
+		iv[i] = i;
+
+	key[0] = 0x2b;
+	key[1] = 0x7e;
+	key[2] = 0x15;
+	key[3] = 0x16;
+	key[4] = 0x28;
+	key[5] = 0xae;
+	key[6] = 0xd2;
+	key[7] = 0xa6;
+	key[8] = 0xab;
+	key[9] = 0xf7;
+	key[10] = 0x15;
+	key[11] = 0x88;
+	key[12] = 0x09;
+	key[13] = 0xcf;
+	key[14] = 0x4f;
+	key[15] = 0x3c;
+	cbc cbc;
+	for (auto it = ciphers.begin(); it != ciphers.end(); ++it)
+	{
+		wcout << it->first << _T(" ");
+		cbc.setCipher(*it->second);
+		timer.reset();
+		size_t resultlen;
+		for (long i = 0; i < iterations; i++)
+		{
+			cbc.encryptInit(key, iv);
+			next = ct;
+			cbc.encryptUpdate((uint8_t*)message, static_cast<size_t>(fileSize), ct, resultlen);
+			next += resultlen;
+			cbc.encryptFinal(next, resultlen);
+		}
+		next += resultlen;
+		double seconds = timer.elapsed();
+		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s) ");
+
+#ifdef DUMP_TEST_ENCRYPTION
+		ofstream ofile(filename + _T(".") + it->first, ios::out | ios::binary);
+		ofile.write((const char*)ct, next - ct);
+#endif
+
+		uint8_t* next2 = pt;
+		timer.reset();
+		for (long i = 0; i < iterations; i++)
+		{
+			cbc.decryptInit(key, iv);
+			next2 = pt;
+			cbc.decryptUpdate((uint8_t*)ct, next-ct, next2, resultlen);
+			next2 += resultlen;
+			cbc.decryptFinal(next2, resultlen);
+		}
+		next2 += resultlen;
+		seconds = timer.elapsed();
+		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s)");
+
+#ifdef DUMP_TEST_ENCRYPTION
+		ofstream odfile(filename + _T(".") + it->first + _T(".decrypted"), ios::out | ios::binary);
+		odfile.write((const char*)pt, next2 - pt);
+#endif
+
+		if (memcmp(pt, message, static_cast<size_t>(fileSize)))
+			wcout << _T(" ERROR");
+		wcout << endl;
+	}
+	delete[] ct;
 }
 
 
@@ -171,8 +316,66 @@ void checksumfile(const wchar_t* filename, crypto_hash* hash)
 	}
 }
 
+void hex2array(const string& hex, uint8_t* array)
+{
+	const char* pos = hex.c_str();
+	for (size_t count = 0; count < hex.size()/2; count++) {
+		sscanf_s(pos, "%2hhx", array+count);
+		pos += 2;
+	}
+}
+
+void test_vector(block_cipher* bc, const wstring& filename)
+{
+	ifstream file(filename, ios::in | ios::binary);
+	string line;
+	uint8_t key[128], pt[128], ct[128], res[128];
+	uint32_t count = 0;
+	regex eq(R"((\w+)\s*=\s*(\w+))");
+	while (getline(file, line))
+	{
+		line.erase(line.find_last_not_of("\r\n \t") + 1);
+		smatch sm;
+		if (regex_match(line, sm, eq))
+		{
+			string second = sm.str(2);
+			if (sm.str(1) == "PT")
+				hex2array(second, pt);
+			if (sm.str(1) == "KEY")
+				hex2array(second, key);
+			if (sm.str(1) == "CT")
+			{
+				hex2array(second, ct);
+				bc->init(key, bc->encryption);
+				bc->encryptBlock(pt, res);
+				if (memcmp(ct, res, second.length() / 2))
+					cerr << "Error for test " << count << " (encryption)" << endl;
+				bc->init(key, bc->decryption);
+				bc->decryptBlock(ct, res);
+				if (memcmp(pt, res, second.length() / 2))
+					cerr << "Error for test " << count << " (decryption)" << endl;
+				count++;
+			}
+
+		}
+	}
+	cout << count << " tests completed." << endl;
+}
+
 int wmain(int argc, wchar_t* argv[])
 {
+	map<wstring, unique_ptr<block_cipher>> block_ciphers;
+	block_ciphers.emplace(make_pair(_T("rijndael128-128"), unique_ptr<block_cipher>(new rijndael128_128)));
+	block_ciphers.emplace(make_pair(_T("rijndael128-160"), unique_ptr<block_cipher>(new rijndael128_160)));
+	block_ciphers.emplace(make_pair(_T("rijndael128-192"), unique_ptr<block_cipher>(new rijndael128_192)));
+	block_ciphers.emplace(make_pair(_T("rijndael128-224"), unique_ptr<block_cipher>(new rijndael128_224)));
+	block_ciphers.emplace(make_pair(_T("rijndael128-256"), unique_ptr<block_cipher>(new rijndael128_256)));
+	block_ciphers.emplace(make_pair(_T("rijndael256-256"), unique_ptr<block_cipher>(new rijndael256_256)));
+	block_ciphers.emplace(make_pair(_T("rijndael256-128"), unique_ptr<block_cipher>(new rijndael256_128)));
+	block_ciphers.emplace(make_pair(_T("rijndael256-224"), unique_ptr<block_cipher>(new rijndael256_224)));
+	block_ciphers.emplace(make_pair(_T("rijndael256-160"), unique_ptr<block_cipher>(new rijndael256_160)));
+	block_ciphers.emplace(make_pair(_T("rijndael256-192"), unique_ptr<block_cipher>(new rijndael256_192)));
+
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));
 	hashes.emplace(make_pair(_T("groestl256"), unique_ptr<crypto_hash>(new groestl256)));
@@ -204,6 +407,19 @@ int wmain(int argc, wchar_t* argv[])
 	hashes.emplace(make_pair(_T("whirlpool"), unique_ptr<crypto_hash>(new whirlpool)));
 	hashes.emplace(make_pair(_T("kupyna256"), unique_ptr<crypto_hash>(new kupyna256)));
 	hashes.emplace(make_pair(_T("kupyna512"), unique_ptr<crypto_hash>(new kupyna512)));
+	hashes.emplace(make_pair(_T("skein512/128"), unique_ptr<crypto_hash>(new skein512_128)));
+	hashes.emplace(make_pair(_T("skein512/160"), unique_ptr<crypto_hash>(new skein512_160)));
+	hashes.emplace(make_pair(_T("skein256/128"), unique_ptr<crypto_hash>(new skein256_128)));
+	hashes.emplace(make_pair(_T("skein256/160"), unique_ptr<crypto_hash>(new skein256_160)));
+	hashes.emplace(make_pair(_T("skein1024/256"), unique_ptr<crypto_hash>(new skein1024_256)));
+
+#ifdef HMAC_TEST
+	uint8_t hmackey[64];
+	hmackey[0] = 'k';
+	hmackey[1] = 'e';
+	hmackey[2] = 'y';
+	hashes.emplace(make_pair(_T("hmac-sha256"), unique_ptr<crypto_hash>(new hmac(sha256(), hmackey, 3))));
+#endif
 
 	if (argc < 3)
 	{
@@ -219,6 +435,37 @@ int wmain(int argc, wchar_t* argv[])
 	bool checking = wstring(argv[1]) == _T("-c");
 	wstring hash = argv[checking ? 2 : 1];
 
+	if (hash == _T("-tv"))
+	{
+		if (argc != 4)
+		{
+			cerr << "Syntax: digest -tv <algorithm> <filename>" << endl;
+			return 3;
+		}
+		hash = argv[2];
+		auto hashit = block_ciphers.find(hash);
+		if (hashit == block_ciphers.end())
+		{
+			wcerr << _T("Unknown block cipher algorithm: ") << hash << endl;
+			return 2;
+		}
+
+		test_vector(hashit->second.get(), argv[3]);
+		return 0;
+	}
+
+	if (hash == _T("bcperftest"))
+	{
+		long iterations = stol(argv[2]);
+		if (iterations < 1)
+		{
+			cerr << "Syntax: digest bcperftest" << endl;
+			return 3;
+		}
+		block_cipher_perf_test(block_ciphers, iterations);
+		return 0;
+	}
+
 	if (hash == _T("test"))
 	{
 		long iterations = 0;
@@ -228,6 +475,18 @@ int wmain(int argc, wchar_t* argv[])
 			return 3;
 		}
 		perftest(hashes, iterations, argv[3]);
+		return 0;
+	}
+
+	if (hash == _T("bctest"))
+	{
+		long iterations = 0;
+		if (argc != 4 || (iterations = stol(argv[2])) < 1)
+		{
+			cerr << "Syntax: digest bctest <iterations> <filename>" << endl;
+			return 3;
+		}
+		bcperftest(block_ciphers, iterations, argv[3]);
 		return 0;
 	}
 

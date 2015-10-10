@@ -66,6 +66,21 @@
     <ClInclude Include="kupyna.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="rijndael.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="block_cipher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rijndael-impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cbc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hmac.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -125,11 +140,21 @@
     <ClCompile Include="kupyna.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <MASM Include="3rdparty\sha256-cryptopp-x64.asm">
-      <Filter>3rdparty</Filter>
-    </MASM>
+    <ClCompile Include="rijndael.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rijndael-impl-aesni.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cbc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hmac.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rijndael-impl-aesni-avx2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <YASM Include="3rdparty\sha256_avx1.asm">
@@ -162,5 +187,10 @@
     <YASM Include="3rdparty\whirlpool-nayuki.asm">
       <Filter>3rdparty</Filter>
     </YASM>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="3rdparty\sha256-cryptopp-x64.asm">
+      <Filter>Source Files</Filter>
+    </MASM>
   </ItemGroup>
 </Project>
