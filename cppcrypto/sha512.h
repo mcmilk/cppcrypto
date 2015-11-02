@@ -1,4 +1,5 @@
 /******************************************************************************
+This file is part of cppcrypto library (http://cppcrypto.sourceforge.net/).
 This code is released under Simplified BSD License (see license.txt).
 ******************************************************************************/
 

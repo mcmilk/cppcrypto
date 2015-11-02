@@ -232,6 +232,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\rounds.sse41.h" />
+    <ClInclude Include="anubis.h" />
     <ClInclude Include="blake.h" />
     <ClInclude Include="3rdparty\blake512-sse41-rounds.h" />
     <ClInclude Include="block_cipher.h" />
@@ -243,6 +244,7 @@
     <ClInclude Include="groestl.h" />
     <ClInclude Include="hmac.h" />
     <ClInclude Include="kupyna.h" />
+    <ClInclude Include="pbkdf2.h" />
     <ClInclude Include="rijndael-impl.h" />
     <ClInclude Include="rijndael.h" />
     <ClInclude Include="sha256.h" />
@@ -251,6 +253,7 @@
     <ClInclude Include="skein256.h" />
     <ClInclude Include="skein512.h" />
     <ClInclude Include="whirlpool.h" />
+    <ClInclude Include="ctr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdparty\blake256-sse2.c" />
@@ -260,6 +263,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="anubis.cpp" />
     <ClCompile Include="blake.cpp" />
     <ClCompile Include="3rdparty\blake512-sse2.c" />
     <ClCompile Include="3rdparty\blake512-sse41.c" />
@@ -268,9 +272,11 @@
     <ClCompile Include="crypto_hash.cpp" />
     <ClCompile Include="3rdparty\groestl-impl-aesni.cpp" />
     <ClCompile Include="3rdparty\groestl-impl-ssse3.cpp" />
+    <ClCompile Include="ctr.cpp" />
     <ClCompile Include="groestl.cpp" />
     <ClCompile Include="hmac.cpp" />
     <ClCompile Include="kupyna.cpp" />
+    <ClCompile Include="pbkdf2.cpp" />
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
     <ClCompile Include="rijndael-impl-aesni.cpp" />
     <ClCompile Include="rijndael.cpp" />

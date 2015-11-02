@@ -4,9 +4,19 @@
 
 namespace cppcrypto
 {
+	hmac::hmac(const crypto_hash& hash, const std::string& key)
+		: ipad_(0), opad_(0), hash_(hash.clone())
+	{
+		construct(reinterpret_cast<const uint8_t*>(&key[0]), key.length());
+	}
 
 	hmac::hmac(const crypto_hash& hash, const uint8_t* key, size_t keylen)
 		: ipad_(0), opad_(0), hash_(hash.clone())
+	{
+		construct(key, keylen);
+	}
+
+	void hmac::construct(const uint8_t* key, size_t keylen)
 	{
 		int nb = blockbitlen() / 8;
 		ipad_ = new uint8_t[nb];

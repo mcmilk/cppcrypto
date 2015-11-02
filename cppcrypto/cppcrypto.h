@@ -13,5 +13,8 @@
 #include "rijndael.h"
 #include "cbc.h"
 #include "hmac.h"
+#include "anubis.h"
+#include "pbkdf2.h"
+#include "ctr.h"
 
 #endif

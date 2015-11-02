@@ -17,8 +17,8 @@ namespace cppcrypto
 
 		virtual ~block_cipher() {}
 
-		virtual int blockSize() const = 0;
-		virtual int keySize() const = 0;
+		virtual int blocksize() const = 0;
+		virtual int keysize() const = 0;
 		virtual block_cipher* clone() const = 0;
 
 		virtual bool init(const uint8_t* key, block_cipher::direction direction) = 0;

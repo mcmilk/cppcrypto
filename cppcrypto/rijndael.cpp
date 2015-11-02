@@ -1195,6 +1195,494 @@ namespace cppcrypto
 #endif
 	}
 
+#define KEYIMC192(i) \
+		w[i*6] = IT[0][S[uint8_t(w[i*6] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6] >> 16))]] ^ IT[2][S[uint8_t(w[i*6] >> 8)]] ^ IT[3][S[uint8_t(w[i*6])]]; \
+		w[i*6+1] = IT[0][S[uint8_t(w[i*6+1] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+1] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+1] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+1])]]; \
+		w[i*6+2] = IT[0][S[uint8_t(w[i*6+2] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+2] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+2] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+2])]]; \
+		w[i*6+3] = IT[0][S[uint8_t(w[i*6+3] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+3] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+3] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+3])]]; \
+		w[i*6+4] = IT[0][S[uint8_t(w[i*6+4] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+4] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+4] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+4])]]; \
+		w[i*6+5] = IT[0][S[uint8_t(w[i*6+5] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+5] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+5] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+5])]];
+
+#define ROUND192(r) \
+		t0 = W_[r*6 + 0] ^ T[0][uint8_t(s0 >> 24)] ^ T[1][uint8_t(s1 >> 16)] ^ T[2][uint8_t(s2 >> 8)] ^ T[3][uint8_t(s3)];\
+		t1 = W_[r*6 + 1] ^ T[0][uint8_t(s1 >> 24)] ^ T[1][uint8_t(s2 >> 16)] ^ T[2][uint8_t(s3 >> 8)] ^ T[3][uint8_t(s4)];\
+		t2 = W_[r*6 + 2] ^ T[0][uint8_t(s2 >> 24)] ^ T[1][uint8_t(s3 >> 16)] ^ T[2][uint8_t(s4 >> 8)] ^ T[3][uint8_t(s5)];\
+		t3 = W_[r*6 + 3] ^ T[0][uint8_t(s3 >> 24)] ^ T[1][uint8_t(s4 >> 16)] ^ T[2][uint8_t(s5 >> 8)] ^ T[3][uint8_t(s0)];\
+		t4 = W_[r*6 + 4] ^ T[0][uint8_t(s4 >> 24)] ^ T[1][uint8_t(s5 >> 16)] ^ T[2][uint8_t(s0 >> 8)] ^ T[3][uint8_t(s1)];\
+		t5 = W_[r*6 + 5] ^ T[0][uint8_t(s5 >> 24)] ^ T[1][uint8_t(s0 >> 16)] ^ T[2][uint8_t(s1 >> 8)] ^ T[3][uint8_t(s2)];\
+		s0 = t0;\
+		s1 = t1;\
+		s2 = t2;\
+		s3 = t3;\
+		s4 = t4;\
+		s5 = t5;
+
+#define LROUND192(r) \
+	s0 = W_[r*6 + 0] ^ uint32_t(S[t0 >> 24]) << 24 ^ uint32_t(S[(t1 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t2 >> 8) & 0xff]) << 8 ^ uint32_t(S[t3 & 0xff]); \
+	s1 = W_[r*6 + 1] ^ uint32_t(S[t1 >> 24]) << 24 ^ uint32_t(S[(t2 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t3 >> 8) & 0xff]) << 8 ^ uint32_t(S[t4 & 0xff]); \
+	s2 = W_[r*6 + 2] ^ uint32_t(S[t2 >> 24]) << 24 ^ uint32_t(S[(t3 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t4 >> 8) & 0xff]) << 8 ^ uint32_t(S[t5 & 0xff]); \
+	s3 = W_[r*6 + 3] ^ uint32_t(S[t3 >> 24]) << 24 ^ uint32_t(S[(t4 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t5 >> 8) & 0xff]) << 8 ^ uint32_t(S[t0 & 0xff]); \
+	s4 = W_[r*6 + 4] ^ uint32_t(S[t4 >> 24]) << 24 ^ uint32_t(S[(t5 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(S[t1 & 0xff]); \
+	s5 = W_[r*6 + 5] ^ uint32_t(S[t5 >> 24]) << 24 ^ uint32_t(S[(t0 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(S[t2 & 0xff]); \
+	*(uint32_t*)out = _byteswap_ulong(s0); \
+	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
+	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
+	*(uint32_t*)(out + 12) = _byteswap_ulong(s3);\
+	*(uint32_t*)(out + 16) = _byteswap_ulong(s4);\
+	*(uint32_t*)(out + 20) = _byteswap_ulong(s5);
+
+#define IROUND192(r) \
+	t0 = W_[r*6 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s5 >> 16)] ^ IT[2][uint8_t(s4 >> 8)] ^ IT[3][uint8_t(s3)]; \
+	t1 = W_[r*6 + 1] ^ IT[0][uint8_t(s1 >> 24)] ^ IT[1][uint8_t(s0 >> 16)] ^ IT[2][uint8_t(s5 >> 8)] ^ IT[3][uint8_t(s4)]; \
+	t2 = W_[r*6 + 2] ^ IT[0][uint8_t(s2 >> 24)] ^ IT[1][uint8_t(s1 >> 16)] ^ IT[2][uint8_t(s0 >> 8)] ^ IT[3][uint8_t(s5)]; \
+	t3 = W_[r*6 + 3] ^ IT[0][uint8_t(s3 >> 24)] ^ IT[1][uint8_t(s2 >> 16)] ^ IT[2][uint8_t(s1 >> 8)] ^ IT[3][uint8_t(s0)]; \
+	t4 = W_[r*6 + 4] ^ IT[0][uint8_t(s4 >> 24)] ^ IT[1][uint8_t(s3 >> 16)] ^ IT[2][uint8_t(s2 >> 8)] ^ IT[3][uint8_t(s1)]; \
+	t5 = W_[r*6 + 5] ^ IT[0][uint8_t(s5 >> 24)] ^ IT[1][uint8_t(s4 >> 16)] ^ IT[2][uint8_t(s3 >> 8)] ^ IT[3][uint8_t(s2)]; \
+	s0 = t0;\
+	s1 = t1;\
+	s2 = t2;\
+	s3 = t3;\
+	s4 = t4;\
+	s5 = t5;
+
+#define ILROUND192(r) \
+	s0 = W_[r*6 + 0] ^ uint32_t(IS[t0 >> 24]) << 24 ^ uint32_t(IS[(t5 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t4 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t3 & 0xff]); \
+	s1 = W_[r*6 + 1] ^ uint32_t(IS[t1 >> 24]) << 24 ^ uint32_t(IS[(t0 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t5 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t4 & 0xff]); \
+	s2 = W_[r*6 + 2] ^ uint32_t(IS[t2 >> 24]) << 24 ^ uint32_t(IS[(t1 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t5 & 0xff]); \
+	s3 = W_[r*6 + 3] ^ uint32_t(IS[t3 >> 24]) << 24 ^ uint32_t(IS[(t2 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t0 & 0xff]); \
+	s4 = W_[r*6 + 4] ^ uint32_t(IS[t4 >> 24]) << 24 ^ uint32_t(IS[(t3 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t2 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t1 & 0xff]); \
+	s5 = W_[r*6 + 5] ^ uint32_t(IS[t5 >> 24]) << 24 ^ uint32_t(IS[(t4 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t3 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t2 & 0xff]); \
+	*(uint32_t*)out = _byteswap_ulong(s0); \
+	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
+	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
+	*(uint32_t*)(out + 12) = _byteswap_ulong(s3); \
+	*(uint32_t*)(out + 16) = _byteswap_ulong(s4); \
+	*(uint32_t*)(out + 20) = _byteswap_ulong(s5);
+
+#define FROUND192() \
+	uint32_t s0 = _byteswap_ulong(*(uint32_t*)in); \
+	uint32_t s1 = _byteswap_ulong(*(uint32_t*)(in + 4)); \
+	uint32_t s2 = _byteswap_ulong(*(uint32_t*)(in + 8)); \
+	uint32_t s3 = _byteswap_ulong(*(uint32_t*)(in + 12)); \
+	uint32_t s4 = _byteswap_ulong(*(uint32_t*)(in + 16)); \
+	uint32_t s5 = _byteswap_ulong(*(uint32_t*)(in + 20)); \
+	s0 ^= W_[0]; \
+	s1 ^= W_[1]; \
+	s2 ^= W_[2]; \
+	s3 ^= W_[3]; \
+	s4 ^= W_[4]; \
+	s5 ^= W_[5]; \
+	uint32_t t0, t1, t2, t3, t4, t5;
+
+#define KEYSWAP192(Nr) \
+	for (int i = 0; i < 6 * Nr / 2; i += 6) \
+			{ \
+		std::swap(w[i + 0], w[6 * Nr + 0 - i]); \
+		std::swap(w[i + 1], w[6 * Nr + 1 - i]); \
+		std::swap(w[i + 2], w[6 * Nr + 2 - i]); \
+		std::swap(w[i + 3], w[6 * Nr + 3 - i]); \
+		std::swap(w[i + 4], w[6 * Nr + 4 - i]); \
+		std::swap(w[i + 5], w[6 * Nr + 5 - i]); \
+			}
+
+	bool rijndael192_128::init(const uint8_t* key, block_cipher::direction direction)
+	{
+		if (impl_)
+			return impl_->init(key, direction);
+
+		for (int i = 0; i < 4 /* Nk */; i++)
+			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+
+		uint32_t* w = W_;
+		for (int i = 0; i < 19; i++) {
+			uint32_t temp = w[3];
+			w[4] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+				^ RC[i];
+			w[5] = w[1] ^ w[4];
+
+			if (i == 18)
+				break;
+
+			w[6] = w[2] ^ w[5];
+			w[7] = w[3] ^ w[6];
+			w += 4;
+		}
+
+		if (direction == block_cipher::decryption)
+		{
+			w = W_;
+			KEYSWAP192(12);
+			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11);
+		}
+
+#ifdef DEBUG
+		for (int b = 0; b < 44; b++)
+			printf("%08x ", W_[b]);
+		printf("\n");
+#endif
+		return true;
+	}
+
+	void rijndael192_128::encryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->encryptBlock(in, out);
+
+		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
+	}
+
+	void rijndael192_128::decryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->decryptBlock(in, out);
+
+		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); ILROUND192(12);
+	}
+
+	rijndael192_128::rijndael192_128()
+		: impl_(0)
+	{
+		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 78 /* Nb * (nr_ + 1) */, 64);
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::aesni() && cpu_info::sse41())
+		{
+			void* p = _aligned_malloc(sizeof(detail::rijndael192_128_impl_aesni), 32);
+			impl_ = new (p)detail::rijndael192_128_impl_aesni;
+		}
+#endif
+
+	}
+
+	rijndael192_128::~rijndael192_128()
+	{
+		if (impl_)
+		{
+			impl_->~rijndael_impl();
+			_aligned_free(impl_);
+		}
+		_aligned_free(W_);
+	}
+
+
+	bool rijndael192_160::init(const uint8_t* key, block_cipher::direction direction)
+	{
+		if (impl_)
+			return impl_->init(key, direction);
+
+		for (int i = 0; i < 5 /* Nk */; i++)
+			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+
+		uint32_t* w = W_;
+		for (int i = 0;; i++) {
+			uint32_t temp = w[4];
+			w[5] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+				^ RC[i];
+			w[6] = w[1] ^ w[5];
+			w[7] = w[2] ^ w[6];
+
+			if (i == 14)
+				break;
+
+			w[8] = w[3] ^ w[7];
+			w[9] = w[4] ^ w[8];
+			w += 5;
+		}
+
+		if (direction == block_cipher::decryption)
+		{
+			w = W_;
+			KEYSWAP192(12);
+			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11);
+		}
+
+#ifdef DEBUG
+		for (int b = 0; b < 44; b++)
+			printf("%08x ", W_[b]);
+		printf("\n");
+#endif
+		return true;
+	}
+
+	void rijndael192_160::encryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->encryptBlock(in, out);
+
+		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
+	}
+
+	void rijndael192_160::decryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->decryptBlock(in, out);
+
+		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); ILROUND192(12);
+	}
+
+	rijndael192_160::rijndael192_160()
+		: impl_(0)
+	{
+		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 78 /* Nb * (nr_ + 1) */, 64);
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::aesni() && cpu_info::avx2())
+		{
+			void* p = _aligned_malloc(sizeof(detail::rijndael192_160_impl_aesni), 32);
+			impl_ = new (p)detail::rijndael192_160_impl_aesni;
+		}
+#endif
+
+	}
+
+	rijndael192_160::~rijndael192_160()
+	{
+		if (impl_)
+		{
+			impl_->~rijndael_impl();
+			_aligned_free(impl_);
+		}
+		_aligned_free(W_);
+	}
+
+
+
+	bool rijndael192_192::init(const uint8_t* key, block_cipher::direction direction)
+	{
+		if (impl_)
+			return impl_->init(key, direction);
+
+		for (int i = 0; i < 6 /* Nk */; i++)
+			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+
+		uint32_t* w = W_;
+		for (int i = 0; i < 12; i++) {
+			uint32_t temp = w[5];
+			w[6] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+				^ RC[i];
+			w[7] = w[1] ^ w[6];
+			w[8] = w[2] ^ w[7];
+			w[9] = w[3] ^ w[8];
+			w[10] = w[4] ^ w[9];
+			w[11] = w[5] ^ w[10];
+			w += 6;
+		}
+
+		if (direction == block_cipher::decryption)
+		{
+			w = W_;
+			KEYSWAP192(12);
+			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11);
+		}
+
+#ifdef DEBUG
+		for (int b = 0; b < 44; b++)
+			printf("%08x ", W_[b]);
+		printf("\n");
+#endif
+		return true;
+	}
+
+	void rijndael192_192::encryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->encryptBlock(in, out);
+
+		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
+	}
+
+	void rijndael192_192::decryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->decryptBlock(in, out);
+
+		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); ILROUND192(12);
+	}
+
+	rijndael192_192::rijndael192_192()
+		: impl_(0)
+	{
+		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 78 /* Nb * (nr_ + 1) */, 64);
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::aesni() && cpu_info::sse41())
+		{
+			void* p = _aligned_malloc(sizeof(detail::rijndael192_192_impl_aesni), 32);
+			impl_ = new (p)detail::rijndael192_192_impl_aesni;
+		}
+#endif
+
+	}
+
+	rijndael192_192::~rijndael192_192()
+	{
+		if (impl_)
+		{
+			impl_->~rijndael_impl();
+			_aligned_free(impl_);
+		}
+		_aligned_free(W_);
+	}
+
+
+	bool rijndael192_224::init(const uint8_t* key, block_cipher::direction direction)
+	{
+		if (impl_)
+			return impl_->init(key, direction);
+
+		for (int i = 0; i < 7 /* Nk */; i++)
+			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+
+		uint32_t* w = W_;
+		for (int i = 0; i < 11; i++) {
+			w[7] = w[0] ^ (uint32_t(S[uint8_t(w[6] >> 24)])) ^ (uint32_t(S[uint8_t(w[6])]) << 8) ^ (uint32_t(S[uint8_t(w[6] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[6] >> 16)]) << 24)
+				^ RC[i];
+			w[8] = w[1] ^ w[7];
+			w[9] = w[2] ^ w[8];
+			w[10] = w[3] ^ w[9];
+
+			uint32_t temp = w[10];
+			w[11] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[12] = w[5] ^ w[11];
+			w[13] = w[6] ^ w[12];
+			w += 7;
+		}
+
+		if (direction == block_cipher::decryption)
+		{
+			w = W_;
+			KEYSWAP192(13);
+			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11); KEYIMC192(12);
+		}
+
+#ifdef DEBUG
+		for (int b = 0; b < 44; b++)
+			printf("%08x ", W_[b]);
+		printf("\n");
+#endif
+		return true;
+	}
+
+	void rijndael192_224::encryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->encryptBlock(in, out);
+
+		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); ROUND192(12); LROUND192(13);
+	}
+
+	void rijndael192_224::decryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->decryptBlock(in, out);
+
+		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); IROUND192(12); ILROUND192(13);
+	}
+
+	rijndael192_224::rijndael192_224()
+		: impl_(0)
+	{
+		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 84 /* Nb * (nr_ + 1) */, 64);
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::aesni() && cpu_info::avx2())
+		{
+			void* p = _aligned_malloc(sizeof(detail::rijndael192_224_impl_aesni), 32);
+			impl_ = new (p)detail::rijndael192_224_impl_aesni;
+		}
+#endif
+
+	}
+
+	rijndael192_224::~rijndael192_224()
+	{
+		if (impl_)
+		{
+			impl_->~rijndael_impl();
+			_aligned_free(impl_);
+		}
+		_aligned_free(W_);
+	}
+
+
+	bool rijndael192_256::init(const uint8_t* key, block_cipher::direction direction)
+	{
+		if (impl_)
+			return impl_->init(key, direction);
+
+		for (int i = 0; i < 8 /* Nk */; i++)
+			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+
+		uint32_t* w = W_;
+		for (int i = 0;; i++) {
+			w[8] = w[0] ^ (uint32_t(S[uint8_t(w[7] >> 24)])) ^ (uint32_t(S[uint8_t(w[7])]) << 8) ^ (uint32_t(S[uint8_t(w[7] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[7] >> 16)]) << 24)
+				^ RC[i];
+			w[9] = w[1] ^ w[8];
+
+			if (i == 10)
+				break;
+
+			w[10] = w[2] ^ w[9];
+			w[11] = w[3] ^ w[10];
+
+			uint32_t temp = w[11];
+			w[12] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[13] = w[5] ^ w[12];
+			w[14] = w[6] ^ w[13];
+			w[15] = w[7] ^ w[14];
+			w += 8;
+		}
+
+		if (direction == block_cipher::decryption)
+		{
+			w = W_;
+			KEYSWAP192(14);
+			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11); KEYIMC192(12); KEYIMC192(13);
+		}
+
+#ifdef DEBUG
+		for (int b = 0; b < 44; b++)
+			printf("%08x ", W_[b]);
+		printf("\n");
+#endif
+		return true;
+	}
+
+	void rijndael192_256::encryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->encryptBlock(in, out);
+
+		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); ROUND192(12); ROUND192(13); LROUND192(14);
+	}
+
+	void rijndael192_256::decryptBlock(const uint8_t* in, uint8_t* out)
+	{
+		if (impl_)
+			return impl_->decryptBlock(in, out);
+
+		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); IROUND192(12); IROUND192(13); ILROUND192(14);
+	}
+
+	rijndael192_256::rijndael192_256()
+		: impl_(0)
+	{
+		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 90 /* Nb * (nr_ + 1) */, 64);
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::aesni() && cpu_info::sse41())
+		{
+			void* p = _aligned_malloc(sizeof(detail::rijndael192_256_impl_aesni), 32);
+			impl_ = new (p)detail::rijndael192_256_impl_aesni;
+		}
+#endif
+
+	}
+
+	rijndael192_256::~rijndael192_256()
+	{
+		if (impl_)
+		{
+			impl_->~rijndael_impl();
+			_aligned_free(impl_);
+		}
+		_aligned_free(W_);
+	}
 
 }
 

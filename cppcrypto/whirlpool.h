@@ -27,10 +27,10 @@ namespace cppcrypto
 		crypto_hash* clone() const { return new whirlpool; }
 
 	private:
-		void transform();
+		void transform(void* m, uint64_t num_blks);
 		void outputTransform();
 
-		std::function<void()> transfunc;
+		std::function<void(void*, uint64_t)> transfunc;
 		uint64_t* h;
 		uint8_t* m;
 		size_t pos;

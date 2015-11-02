@@ -571,14 +571,23 @@ namespace cppcrypto
 
 	void whirlpool::update(const uint8_t* data, size_t len)
 	{
-		while (pos + len >= 64)
+		if (pos && pos + len >= 64)
 		{
 			memcpy(m + pos, data, 64 - pos);
-			transfunc();
+			transfunc(m, 1);
 			len -= 64 - pos;
 			total += (64 - pos) * 8;
 			data += 64 - pos;
 			pos = 0;
+		}
+		if (len >= 64)
+		{
+			size_t blocks = len / 64;
+			size_t bytes = blocks * 64;
+			transfunc((void*)(data), blocks);
+			len -= bytes;
+			total += (bytes)* 8;
+			data += bytes;
 		}
 		memcpy(m+pos, data, len);
 		pos += len;
@@ -596,12 +605,12 @@ namespace cppcrypto
 		if (pos > 32)
 		{
 			memset(m + pos, 0, 64 - pos);
-			transfunc();
+			transfunc(m, 1);
 			pos = 0;
 		}
 		memset(m + pos, 0, 56 - pos);
 		memcpy(m + (64 - 8), &mlen, 64 / 8);
-		transfunc();
+		transfunc(m, 1);
 		memcpy(hash, h, hashbitlen() / 8);
 
 #ifdef DEBUG
@@ -623,40 +632,44 @@ namespace cppcrypto
 	};
 
 
-	void whirlpool::transform()
+	void whirlpool::transform(void* m, uint64_t num_blks)
 	{
-		// This optimized Whirlpool compression function is taken from the Whirlpool File Checker by vampire77.
-		// Source files can be used without any restriction and are provided without any warranty.
+		for (uint64_t b = 0; b < num_blks; b++)
+		{
+			// This optimized Whirlpool compression function is taken from the Whirlpool File Checker by vampire77.
+			// Source files can be used without any restriction and are provided without any warranty.
 
-		union { unsigned char ch[64]; unsigned long long ll[8]; } K, state;
-		unsigned long long L[8];
-		int r, i;
+			union { unsigned char ch[64]; unsigned long long ll[8]; } K, state;
+			unsigned long long L[8];
+			int r, i;
 
-		i = 0; do state.ll[i] = (K.ll[i] = h[i]) ^ ((unsigned long long*)m)[i]; while (++i < 8);
+			i = 0; do state.ll[i] = (K.ll[i] = h[i]) ^ ((unsigned long long*)m)[i]; while (++i < 8);
 
-		r = 0; do {
-			L[0] = T[0][K.ch[0 * 8 + 0]] ^ T[1][K.ch[7 * 8 + 1]] ^ T[2][K.ch[6 * 8 + 2]] ^ T[3][K.ch[5 * 8 + 3]] ^ T[4][K.ch[4 * 8 + 4]] ^ T[5][K.ch[3 * 8 + 5]] ^ T[6][K.ch[2 * 8 + 6]] ^ T[7][K.ch[1 * 8 + 7]] ^ RC[r];
-			L[1] = T[0][K.ch[1 * 8 + 0]] ^ T[1][K.ch[0 * 8 + 1]] ^ T[2][K.ch[7 * 8 + 2]] ^ T[3][K.ch[6 * 8 + 3]] ^ T[4][K.ch[5 * 8 + 4]] ^ T[5][K.ch[4 * 8 + 5]] ^ T[6][K.ch[3 * 8 + 6]] ^ T[7][K.ch[2 * 8 + 7]];
-			L[2] = T[0][K.ch[2 * 8 + 0]] ^ T[1][K.ch[1 * 8 + 1]] ^ T[2][K.ch[0 * 8 + 2]] ^ T[3][K.ch[7 * 8 + 3]] ^ T[4][K.ch[6 * 8 + 4]] ^ T[5][K.ch[5 * 8 + 5]] ^ T[6][K.ch[4 * 8 + 6]] ^ T[7][K.ch[3 * 8 + 7]];
-			L[3] = T[0][K.ch[3 * 8 + 0]] ^ T[1][K.ch[2 * 8 + 1]] ^ T[2][K.ch[1 * 8 + 2]] ^ T[3][K.ch[0 * 8 + 3]] ^ T[4][K.ch[7 * 8 + 4]] ^ T[5][K.ch[6 * 8 + 5]] ^ T[6][K.ch[5 * 8 + 6]] ^ T[7][K.ch[4 * 8 + 7]];
-			L[4] = T[0][K.ch[4 * 8 + 0]] ^ T[1][K.ch[3 * 8 + 1]] ^ T[2][K.ch[2 * 8 + 2]] ^ T[3][K.ch[1 * 8 + 3]] ^ T[4][K.ch[0 * 8 + 4]] ^ T[5][K.ch[7 * 8 + 5]] ^ T[6][K.ch[6 * 8 + 6]] ^ T[7][K.ch[5 * 8 + 7]];
-			L[5] = T[0][K.ch[5 * 8 + 0]] ^ T[1][K.ch[4 * 8 + 1]] ^ T[2][K.ch[3 * 8 + 2]] ^ T[3][K.ch[2 * 8 + 3]] ^ T[4][K.ch[1 * 8 + 4]] ^ T[5][K.ch[0 * 8 + 5]] ^ T[6][K.ch[7 * 8 + 6]] ^ T[7][K.ch[6 * 8 + 7]];
-			L[6] = T[0][K.ch[6 * 8 + 0]] ^ T[1][K.ch[5 * 8 + 1]] ^ T[2][K.ch[4 * 8 + 2]] ^ T[3][K.ch[3 * 8 + 3]] ^ T[4][K.ch[2 * 8 + 4]] ^ T[5][K.ch[1 * 8 + 5]] ^ T[6][K.ch[0 * 8 + 6]] ^ T[7][K.ch[7 * 8 + 7]];
-			L[7] = T[0][K.ch[7 * 8 + 0]] ^ T[1][K.ch[6 * 8 + 1]] ^ T[2][K.ch[5 * 8 + 2]] ^ T[3][K.ch[4 * 8 + 3]] ^ T[4][K.ch[3 * 8 + 4]] ^ T[5][K.ch[2 * 8 + 5]] ^ T[6][K.ch[1 * 8 + 6]] ^ T[7][K.ch[0 * 8 + 7]];
+			r = 0; do {
+				L[0] = T[0][K.ch[0 * 8 + 0]] ^ T[1][K.ch[7 * 8 + 1]] ^ T[2][K.ch[6 * 8 + 2]] ^ T[3][K.ch[5 * 8 + 3]] ^ T[4][K.ch[4 * 8 + 4]] ^ T[5][K.ch[3 * 8 + 5]] ^ T[6][K.ch[2 * 8 + 6]] ^ T[7][K.ch[1 * 8 + 7]] ^ RC[r];
+				L[1] = T[0][K.ch[1 * 8 + 0]] ^ T[1][K.ch[0 * 8 + 1]] ^ T[2][K.ch[7 * 8 + 2]] ^ T[3][K.ch[6 * 8 + 3]] ^ T[4][K.ch[5 * 8 + 4]] ^ T[5][K.ch[4 * 8 + 5]] ^ T[6][K.ch[3 * 8 + 6]] ^ T[7][K.ch[2 * 8 + 7]];
+				L[2] = T[0][K.ch[2 * 8 + 0]] ^ T[1][K.ch[1 * 8 + 1]] ^ T[2][K.ch[0 * 8 + 2]] ^ T[3][K.ch[7 * 8 + 3]] ^ T[4][K.ch[6 * 8 + 4]] ^ T[5][K.ch[5 * 8 + 5]] ^ T[6][K.ch[4 * 8 + 6]] ^ T[7][K.ch[3 * 8 + 7]];
+				L[3] = T[0][K.ch[3 * 8 + 0]] ^ T[1][K.ch[2 * 8 + 1]] ^ T[2][K.ch[1 * 8 + 2]] ^ T[3][K.ch[0 * 8 + 3]] ^ T[4][K.ch[7 * 8 + 4]] ^ T[5][K.ch[6 * 8 + 5]] ^ T[6][K.ch[5 * 8 + 6]] ^ T[7][K.ch[4 * 8 + 7]];
+				L[4] = T[0][K.ch[4 * 8 + 0]] ^ T[1][K.ch[3 * 8 + 1]] ^ T[2][K.ch[2 * 8 + 2]] ^ T[3][K.ch[1 * 8 + 3]] ^ T[4][K.ch[0 * 8 + 4]] ^ T[5][K.ch[7 * 8 + 5]] ^ T[6][K.ch[6 * 8 + 6]] ^ T[7][K.ch[5 * 8 + 7]];
+				L[5] = T[0][K.ch[5 * 8 + 0]] ^ T[1][K.ch[4 * 8 + 1]] ^ T[2][K.ch[3 * 8 + 2]] ^ T[3][K.ch[2 * 8 + 3]] ^ T[4][K.ch[1 * 8 + 4]] ^ T[5][K.ch[0 * 8 + 5]] ^ T[6][K.ch[7 * 8 + 6]] ^ T[7][K.ch[6 * 8 + 7]];
+				L[6] = T[0][K.ch[6 * 8 + 0]] ^ T[1][K.ch[5 * 8 + 1]] ^ T[2][K.ch[4 * 8 + 2]] ^ T[3][K.ch[3 * 8 + 3]] ^ T[4][K.ch[2 * 8 + 4]] ^ T[5][K.ch[1 * 8 + 5]] ^ T[6][K.ch[0 * 8 + 6]] ^ T[7][K.ch[7 * 8 + 7]];
+				L[7] = T[0][K.ch[7 * 8 + 0]] ^ T[1][K.ch[6 * 8 + 1]] ^ T[2][K.ch[5 * 8 + 2]] ^ T[3][K.ch[4 * 8 + 3]] ^ T[4][K.ch[3 * 8 + 4]] ^ T[5][K.ch[2 * 8 + 5]] ^ T[6][K.ch[1 * 8 + 6]] ^ T[7][K.ch[0 * 8 + 7]];
 
-			L[0] = (K.ll[0] = L[0]) ^ T[0][state.ch[0 * 8 + 0]] ^ T[1][state.ch[7 * 8 + 1]] ^ T[2][state.ch[6 * 8 + 2]] ^ T[3][state.ch[5 * 8 + 3]] ^ T[4][state.ch[4 * 8 + 4]] ^ T[5][state.ch[3 * 8 + 5]] ^ T[6][state.ch[2 * 8 + 6]] ^ T[7][state.ch[1 * 8 + 7]];
-			L[1] = (K.ll[1] = L[1]) ^ T[0][state.ch[1 * 8 + 0]] ^ T[1][state.ch[0 * 8 + 1]] ^ T[2][state.ch[7 * 8 + 2]] ^ T[3][state.ch[6 * 8 + 3]] ^ T[4][state.ch[5 * 8 + 4]] ^ T[5][state.ch[4 * 8 + 5]] ^ T[6][state.ch[3 * 8 + 6]] ^ T[7][state.ch[2 * 8 + 7]];
-			L[2] = (K.ll[2] = L[2]) ^ T[0][state.ch[2 * 8 + 0]] ^ T[1][state.ch[1 * 8 + 1]] ^ T[2][state.ch[0 * 8 + 2]] ^ T[3][state.ch[7 * 8 + 3]] ^ T[4][state.ch[6 * 8 + 4]] ^ T[5][state.ch[5 * 8 + 5]] ^ T[6][state.ch[4 * 8 + 6]] ^ T[7][state.ch[3 * 8 + 7]];
-			L[3] = (K.ll[3] = L[3]) ^ T[0][state.ch[3 * 8 + 0]] ^ T[1][state.ch[2 * 8 + 1]] ^ T[2][state.ch[1 * 8 + 2]] ^ T[3][state.ch[0 * 8 + 3]] ^ T[4][state.ch[7 * 8 + 4]] ^ T[5][state.ch[6 * 8 + 5]] ^ T[6][state.ch[5 * 8 + 6]] ^ T[7][state.ch[4 * 8 + 7]];
-			L[4] = (K.ll[4] = L[4]) ^ T[0][state.ch[4 * 8 + 0]] ^ T[1][state.ch[3 * 8 + 1]] ^ T[2][state.ch[2 * 8 + 2]] ^ T[3][state.ch[1 * 8 + 3]] ^ T[4][state.ch[0 * 8 + 4]] ^ T[5][state.ch[7 * 8 + 5]] ^ T[6][state.ch[6 * 8 + 6]] ^ T[7][state.ch[5 * 8 + 7]];
-			L[5] = (K.ll[5] = L[5]) ^ T[0][state.ch[5 * 8 + 0]] ^ T[1][state.ch[4 * 8 + 1]] ^ T[2][state.ch[3 * 8 + 2]] ^ T[3][state.ch[2 * 8 + 3]] ^ T[4][state.ch[1 * 8 + 4]] ^ T[5][state.ch[0 * 8 + 5]] ^ T[6][state.ch[7 * 8 + 6]] ^ T[7][state.ch[6 * 8 + 7]];
-			L[6] = (K.ll[6] = L[6]) ^ T[0][state.ch[6 * 8 + 0]] ^ T[1][state.ch[5 * 8 + 1]] ^ T[2][state.ch[4 * 8 + 2]] ^ T[3][state.ch[3 * 8 + 3]] ^ T[4][state.ch[2 * 8 + 4]] ^ T[5][state.ch[1 * 8 + 5]] ^ T[6][state.ch[0 * 8 + 6]] ^ T[7][state.ch[7 * 8 + 7]];
-			L[7] = (K.ll[7] = L[7]) ^ T[0][state.ch[7 * 8 + 0]] ^ T[1][state.ch[6 * 8 + 1]] ^ T[2][state.ch[5 * 8 + 2]] ^ T[3][state.ch[4 * 8 + 3]] ^ T[4][state.ch[3 * 8 + 4]] ^ T[5][state.ch[2 * 8 + 5]] ^ T[6][state.ch[1 * 8 + 6]] ^ T[7][state.ch[0 * 8 + 7]];
+				L[0] = (K.ll[0] = L[0]) ^ T[0][state.ch[0 * 8 + 0]] ^ T[1][state.ch[7 * 8 + 1]] ^ T[2][state.ch[6 * 8 + 2]] ^ T[3][state.ch[5 * 8 + 3]] ^ T[4][state.ch[4 * 8 + 4]] ^ T[5][state.ch[3 * 8 + 5]] ^ T[6][state.ch[2 * 8 + 6]] ^ T[7][state.ch[1 * 8 + 7]];
+				L[1] = (K.ll[1] = L[1]) ^ T[0][state.ch[1 * 8 + 0]] ^ T[1][state.ch[0 * 8 + 1]] ^ T[2][state.ch[7 * 8 + 2]] ^ T[3][state.ch[6 * 8 + 3]] ^ T[4][state.ch[5 * 8 + 4]] ^ T[5][state.ch[4 * 8 + 5]] ^ T[6][state.ch[3 * 8 + 6]] ^ T[7][state.ch[2 * 8 + 7]];
+				L[2] = (K.ll[2] = L[2]) ^ T[0][state.ch[2 * 8 + 0]] ^ T[1][state.ch[1 * 8 + 1]] ^ T[2][state.ch[0 * 8 + 2]] ^ T[3][state.ch[7 * 8 + 3]] ^ T[4][state.ch[6 * 8 + 4]] ^ T[5][state.ch[5 * 8 + 5]] ^ T[6][state.ch[4 * 8 + 6]] ^ T[7][state.ch[3 * 8 + 7]];
+				L[3] = (K.ll[3] = L[3]) ^ T[0][state.ch[3 * 8 + 0]] ^ T[1][state.ch[2 * 8 + 1]] ^ T[2][state.ch[1 * 8 + 2]] ^ T[3][state.ch[0 * 8 + 3]] ^ T[4][state.ch[7 * 8 + 4]] ^ T[5][state.ch[6 * 8 + 5]] ^ T[6][state.ch[5 * 8 + 6]] ^ T[7][state.ch[4 * 8 + 7]];
+				L[4] = (K.ll[4] = L[4]) ^ T[0][state.ch[4 * 8 + 0]] ^ T[1][state.ch[3 * 8 + 1]] ^ T[2][state.ch[2 * 8 + 2]] ^ T[3][state.ch[1 * 8 + 3]] ^ T[4][state.ch[0 * 8 + 4]] ^ T[5][state.ch[7 * 8 + 5]] ^ T[6][state.ch[6 * 8 + 6]] ^ T[7][state.ch[5 * 8 + 7]];
+				L[5] = (K.ll[5] = L[5]) ^ T[0][state.ch[5 * 8 + 0]] ^ T[1][state.ch[4 * 8 + 1]] ^ T[2][state.ch[3 * 8 + 2]] ^ T[3][state.ch[2 * 8 + 3]] ^ T[4][state.ch[1 * 8 + 4]] ^ T[5][state.ch[0 * 8 + 5]] ^ T[6][state.ch[7 * 8 + 6]] ^ T[7][state.ch[6 * 8 + 7]];
+				L[6] = (K.ll[6] = L[6]) ^ T[0][state.ch[6 * 8 + 0]] ^ T[1][state.ch[5 * 8 + 1]] ^ T[2][state.ch[4 * 8 + 2]] ^ T[3][state.ch[3 * 8 + 3]] ^ T[4][state.ch[2 * 8 + 4]] ^ T[5][state.ch[1 * 8 + 5]] ^ T[6][state.ch[0 * 8 + 6]] ^ T[7][state.ch[7 * 8 + 7]];
+				L[7] = (K.ll[7] = L[7]) ^ T[0][state.ch[7 * 8 + 0]] ^ T[1][state.ch[6 * 8 + 1]] ^ T[2][state.ch[5 * 8 + 2]] ^ T[3][state.ch[4 * 8 + 3]] ^ T[4][state.ch[3 * 8 + 4]] ^ T[5][state.ch[2 * 8 + 5]] ^ T[6][state.ch[1 * 8 + 6]] ^ T[7][state.ch[0 * 8 + 7]];
 
-			memcpy(state.ll, L, sizeof(L));
-		} while (++r < 10);
+				memcpy(state.ll, L, sizeof(L));
+			} while (++r < 10);
 
-		i = 0; do h[i] ^= L[i] ^ ((unsigned long long*)m)[i]; while (++i < 8);
+			i = 0; do h[i] ^= L[i] ^ ((unsigned long long*)m)[i]; while (++i < 8);
+			m = ((unsigned long long*)m)+8;
+		}
 	}
 
 	whirlpool::whirlpool() 
@@ -666,10 +679,10 @@ namespace cppcrypto
 
 #ifndef _M_X64
 		if (cpu_info::sse2())
-			transfunc = [this]() { whirlpool_compress_asm((uint8_t*)h, m); };
+			transfunc = [this](void* mp, uint64_t num_blks) { for (uint64_t b = 0; b < num_blks; b++) whirlpool_compress_asm((uint8_t*)h, ((const uint8_t*)mp)+b*64); };
 		else
 #endif
-			transfunc = std::bind(&whirlpool::transform, this);
+			transfunc = std::bind(&whirlpool::transform, this, std::placeholders::_1, std::placeholders::_2);
 	}
 	whirlpool::~whirlpool()
 	{

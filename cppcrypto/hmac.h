@@ -16,6 +16,7 @@ namespace cppcrypto
 	{
 	public:
 		hmac(const crypto_hash& hash, const uint8_t* key, size_t keylen);
+		hmac(const crypto_hash& hash, const std::string& key);
 		virtual ~hmac();
 
 		void init();
@@ -28,6 +29,7 @@ namespace cppcrypto
 
 	private:
 		hmac(const hmac&);
+		void construct(const uint8_t* key, size_t keylen);
 
 		uint8_t* ipad_;
 		uint8_t* opad_;

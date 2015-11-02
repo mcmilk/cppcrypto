@@ -1,4 +1,11 @@
 
+cppcrypto-0.05
+
+New block algorithm: Anubis with key sizes 128, 160, 192, 224, 256, 288, 320.
+New block algorithm: Rijndael with block size 192 and key sizes 128, 160, 192, 224, 256.
+Key derivation functions: PBKDF2.
+Encryption modes: CTR.
+
 cppcrypto-0.04
 
 New block algorithm: Rijndael with block sizes 128, 256 and key sizes 128, 160, 192, 224, 256.

@@ -81,6 +81,15 @@
     <ClInclude Include="hmac.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="anubis.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pbkdf2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ctr.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -153,6 +162,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="anubis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pbkdf2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ctr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

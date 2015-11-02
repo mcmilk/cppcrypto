@@ -6,10 +6,11 @@
 
 namespace cppcrypto
 {
-
-cbc::cbc()
-	: block_(0), iv_(0), pos(0), nb_(0)
+cbc::cbc(const block_cipher& cipher)
+	: block_(0), iv_(0), pos(0), nb_(cipher.blocksize() / 8), cipher_(cipher.clone())
 {
+	block_ = new uint8_t[nb_];
+	iv_ = new uint8_t[nb_];
 }
 
 cbc::~cbc()
@@ -18,27 +19,13 @@ cbc::~cbc()
 	delete[] iv_;
 }
 
-void cbc::setCipher(const block_cipher& cipher)
+void cbc::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, block_cipher::direction direction)
 {
-	cipher_.reset(cipher.clone());
-	delete[] block_;
-	delete[] iv_;
-	nb_ = cipher_->blockSize() / 8;
-	block_ = new uint8_t[nb_];
-	iv_ = new uint8_t[nb_];
-}
-
-void cbc::encryptInit(const uint8_t* key, const uint8_t* iv)
-{
-	cipher_->init(key, block_cipher::encryption);
-	memcpy(iv_, iv, nb_);
-	pos = 0;
-}
-
-void cbc::decryptInit(const uint8_t* key, const uint8_t* iv)
-{
-	cipher_->init(key, block_cipher::decryption);
-	memcpy(iv_, iv, nb_);
+	assert(keylen == cipher_->keysize() / 8);
+	assert(ivlen <= nb_);
+	cipher_->init(key, direction);
+	memcpy(iv_, iv, ivlen);
+	memset(iv_ + ivlen, 0, nb_ - ivlen);
 	pos = 0;
 }
 
@@ -263,6 +250,88 @@ void cbc::decryptFinal(uint8_t* out, size_t& resultlen)
 	int padding = block_[pos - 1];
 	resultlen = nb_ - padding;
 	memcpy(out, block_, resultlen);
+}
+
+void cbc::encryptUpdate(const uint8_t* in, size_t len, std::ostream& out)
+{
+	uint8_t buf[1024];
+	size_t maxsize = sizeof(buf) - nb_;
+	for (size_t i = 0; i < len; i += maxsize)
+	{
+		size_t resultlen;
+		encryptUpdate(in + i, std::min(maxsize, len - i), buf, resultlen);
+		if (resultlen)
+			out.write(reinterpret_cast<char*>(buf), resultlen);
+	}
+
+}
+
+void cbc::encryptFinal(std::ostream& out)
+{
+	uint8_t buf[1024];
+	size_t resultlen;
+	encryptFinal(buf, resultlen);
+	if (resultlen)
+		out.write(reinterpret_cast<char*>(buf), resultlen);
+}
+
+void cbc::decryptUpdate(const uint8_t* in, size_t len, std::ostream& out)
+{
+	uint8_t buf[1024];
+	size_t maxsize = sizeof(buf) - nb_;
+	for (size_t i = 0; i < len; i += maxsize)
+	{
+		size_t resultlen;
+		decryptUpdate(in + i, std::min(maxsize, len - i), buf, resultlen);
+		if (resultlen)
+			out.write(reinterpret_cast<char*>(buf), resultlen);
+	}
+
+}
+
+void cbc::decryptFinal(std::ostream& out)
+{
+	uint8_t buf[1024];
+	size_t resultlen;
+	decryptFinal(buf, resultlen);
+	if (resultlen)
+		out.write(reinterpret_cast<char*>(buf), resultlen);
+}
+
+void cbc::encryptUpdate(const uint8_t* in, size_t len, std::vector<uint8_t>& out)
+{
+	auto oldsize = out.size();
+	out.resize(oldsize + ((pos + len) / nb_) * nb_);
+	size_t resultlen;
+	encryptUpdate(in, len, &out[oldsize], resultlen);
+	assert(resultlen == out.size() - oldsize);
+}
+
+void cbc::encryptFinal(std::vector<uint8_t>& out)
+{
+	auto oldsize = out.size();
+	out.resize(oldsize + nb_);
+	size_t resultlen;
+	encryptFinal(&out[oldsize], resultlen);
+	assert(resultlen == out.size() - oldsize);
+}
+
+void cbc::decryptUpdate(const uint8_t* in, size_t len, std::vector<uint8_t>& out)
+{
+	auto oldsize = out.size();
+	out.resize(oldsize + ((pos + len - 1) / nb_) * nb_);
+	size_t resultlen;
+	decryptUpdate(in, len, &out[oldsize], resultlen);
+	assert(resultlen == out.size() - oldsize);
+}
+
+void cbc::decryptFinal(std::vector<uint8_t>& out)
+{
+	auto oldsize = out.size();
+	out.resize(oldsize + nb_);
+	size_t resultlen;
+	decryptFinal(&out[oldsize], resultlen);
+	out.resize(oldsize + resultlen);
 }
 
 }
