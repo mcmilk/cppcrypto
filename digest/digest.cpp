@@ -63,7 +63,7 @@ bool is_directory(const wchar_t* path)
 }
 
 
-bool hash_file(const wchar_t* filename, vector<char>* hashsum, int hashbitlen, crypto_hash* hash)
+bool hash_file(const wchar_t* filename, vector<char>* hashsum, int hashsize, crypto_hash* hash)
 {
 	ifstream file;
 	char buffer[10240];
@@ -92,7 +92,7 @@ bool hash_file(const wchar_t* filename, vector<char>* hashsum, int hashbitlen, c
 		hash->update((const uint8_t*)buffer, static_cast<size_t>(blockSize));
 	}
 
-	hashsum->resize(hashbitlen/8);
+	hashsum->resize(hashsize/8);
 	hash->final((uint8_t*)(&((*hashsum)[0])));
 
 	return true;
@@ -116,14 +116,14 @@ void block_cipher_perf_test(map<wstring, unique_ptr<block_cipher>>& ciphers, lon
 		for (long i = 0; i < iterations; i++)
 		{
 			it->second->init(key, block_cipher::encryption);
-			it->second->encryptBlock(pt, ct);
+			it->second->encrypt_block(pt, ct);
 		}
 		wcout << fixed << timer.elapsed() << _T(" ");
 		timer.reset();
 		for (long i = 0; i < iterations; i++)
 		{
 			it->second->init(key, block_cipher::decryption);
-			it->second->encryptBlock(ct, pt);
+			it->second->decrypt_block(ct, pt);
 		}
 		wcout << fixed << timer.elapsed() << _T(" ");
 		wcout << endl;
@@ -178,7 +178,7 @@ void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, ws
 		double seconds = timer.elapsed();
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) 
 			<< (static_cast<double>(fileSize) / 1024.0 / 1024.0 * static_cast<double>(iterations) / seconds) << _T(" MB/s) ");
-		for (int i = 0; i < (it->second->hashbitlen() + 7) / 8; i++)
+		for (int i = 0; i < (it->second->hashsize() + 7) / 8; i++)
 			wcout << setfill(_T('0')) << setw(2) << hex << (unsigned int)hash[i];
 		wcout << endl;
 	}
@@ -254,9 +254,9 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		{
 			cbc.init(key, it->second->keysize()/8, iv,it->second->blocksize()/8 ,block_cipher::encryption);
 			next = ct;
-			cbc.encryptUpdate((uint8_t*)message, static_cast<size_t>(fileSize), ct, resultlen);
+			cbc.encrypt_update((uint8_t*)message, static_cast<size_t>(fileSize), ct, resultlen);
 			next += resultlen;
-			cbc.encryptFinal(next, resultlen);
+			cbc.encrypt_final(next, resultlen);
 		}
 		next += resultlen;
 		double seconds = timer.elapsed();
@@ -273,9 +273,9 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		{
 			cbc.init(key, it->second->keysize()/8, iv, it->second->blocksize()/8, block_cipher::decryption);
 			next2 = pt;
-			cbc.decryptUpdate((uint8_t*)ct, next-ct, next2, resultlen);
+			cbc.decrypt_update((uint8_t*)ct, next-ct, next2, resultlen);
 			next2 += resultlen;
-			cbc.decryptFinal(next2, resultlen);
+			cbc.decrypt_final(next2, resultlen);
 		}
 		next2 += resultlen;
 		seconds = timer.elapsed();
@@ -340,9 +340,9 @@ void checksumfile(const wchar_t* filename, crypto_hash* hash)
 			wstring fn = sm.str(2);
 			wchar_t buf[129];
 			vector<char> res;
-			bool ret = hash_file(fn.c_str(), &res, hash->hashbitlen(), hash);
+			bool ret = hash_file(fn.c_str(), &res, hash->hashsize(), hash);
 			if (ret) {
-				for (int i = 0; i < (hash->hashbitlen() + 7) / 8; i++)
+				for (int i = 0; i < (hash->hashsize() + 7) / 8; i++)
 					wsprintf(buf + i * 2, _T("%02x"), (unsigned char)res[i]);
 			}
 			else
@@ -383,11 +383,11 @@ void test_vector(block_cipher* bc, const wstring& filename)
 			{
 				hex2array(second, ct);
 				bc->init(key, bc->encryption);
-				bc->encryptBlock(pt, res);
+				bc->encrypt_block(pt, res);
 				if (memcmp(ct, res, second.length() / 2))
 					cerr << "Error for test " << count << " (encryption)" << endl;
 				bc->init(key, bc->decryption);
-				bc->decryptBlock(ct, res);
+				bc->decrypt_block(ct, res);
 				if (memcmp(pt, res, second.length() / 2))
 					cerr << "Error for test " << count << " (decryption)" << endl;
 				count++;
@@ -427,6 +427,10 @@ int wmain(int argc, wchar_t* argv[])
 	block_ciphers.emplace(make_pair(_T("rijndael192-224"), unique_ptr<block_cipher>(new rijndael192_224)));
 	block_ciphers.emplace(make_pair(_T("rijndael192-256"), unique_ptr<block_cipher>(new rijndael192_256)));
 
+	block_ciphers.emplace(make_pair(_T("twofish128"), unique_ptr<block_cipher>(new twofish128)));
+	block_ciphers.emplace(make_pair(_T("twofish192"), unique_ptr<block_cipher>(new twofish192)));
+	block_ciphers.emplace(make_pair(_T("twofish256"), unique_ptr<block_cipher>(new twofish256)));
+
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));
 	hashes.emplace(make_pair(_T("groestl256"), unique_ptr<crypto_hash>(new groestl256)));
@@ -463,6 +467,11 @@ int wmain(int argc, wchar_t* argv[])
 	hashes.emplace(make_pair(_T("skein256/128"), unique_ptr<crypto_hash>(new skein256_128)));
 	hashes.emplace(make_pair(_T("skein256/160"), unique_ptr<crypto_hash>(new skein256_160)));
 	hashes.emplace(make_pair(_T("skein1024/256"), unique_ptr<crypto_hash>(new skein1024_256)));
+
+	hashes.emplace(make_pair(_T("sha3_512"), unique_ptr<crypto_hash>(new sha3_512)));
+	hashes.emplace(make_pair(_T("sha3_256"), unique_ptr<crypto_hash>(new sha3_256)));
+	hashes.emplace(make_pair(_T("sha3_384"), unique_ptr<crypto_hash>(new sha3_384)));
+	hashes.emplace(make_pair(_T("sha3_224"), unique_ptr<crypto_hash>(new sha3_224)));
 
 	if (argc < 3)
 	{
@@ -554,9 +563,9 @@ int wmain(int argc, wchar_t* argv[])
 			continue;
 		}
 		vector<char> res;
-		if (hash_file(argv[i], &res, hashit->second->hashbitlen(), hashit->second.get()))
+		if (hash_file(argv[i], &res, hashit->second->hashsize(), hashit->second.get()))
 		{
-			for (int b = 0; b < (hashit->second->hashbitlen() + 7) / 8; b++)
+			for (int b = 0; b < (hashit->second->hashsize() + 7) / 8; b++)
 				printf("%02x", (unsigned char)res[b]);
 			wprintf(_T("  %s\n"), argv[i]);
 		}

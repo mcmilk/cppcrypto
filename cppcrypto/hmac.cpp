@@ -18,7 +18,7 @@ namespace cppcrypto
 
 	void hmac::construct(const uint8_t* key, size_t keylen)
 	{
-		int nb = blockbitlen() / 8;
+		int nb = blocksize() / 8;
 		ipad_ = new uint8_t[nb];
 		opad_ = new uint8_t[nb];
 		memset(ipad_, 0, nb);
@@ -27,7 +27,7 @@ namespace cppcrypto
 		if (keylen > static_cast<size_t>(nb))
 		{
 			hash_->hash_string(key, keylen, ipad_);
-			memcpy(opad_, ipad_, hashbitlen()/8);
+			memcpy(opad_, ipad_, hashsize()/8);
 		}
 		else
 		{
@@ -56,16 +56,16 @@ namespace cppcrypto
 	void hmac::init()
 	{
 		hash_->init();
-		hash_->update(ipad_, blockbitlen()/8); 
+		hash_->update(ipad_, blocksize()/8); 
 	};
 
 	void hmac::final(uint8_t* hash)
 	{
-		uint8_t* temp = new uint8_t[hashbitlen()/8];
+		uint8_t* temp = new uint8_t[hashsize()/8];
 		hash_->final(temp);
 		hash_->init();
-		hash_->update(opad_, blockbitlen()/8);
-		hash_->update(temp, hashbitlen()/8);
+		hash_->update(opad_, blocksize()/8);
+		hash_->update(temp, hashsize()/8);
 		delete[] temp;
 		hash_->final(hash);
 	}
@@ -73,7 +73,7 @@ namespace cppcrypto
 	crypto_hash* hmac::clone() const
 	{
 		hmac* clone = new hmac(*hash_, ipad_, 0);
-		int nb = blockbitlen() / 8;
+		int nb = blocksize() / 8;
 		memcpy(clone->ipad_, ipad_, nb);
 		memcpy(clone->opad_, opad_, nb);
 		return clone;

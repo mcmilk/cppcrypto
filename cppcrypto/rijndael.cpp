@@ -443,18 +443,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_128::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_128::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); LROUND(10);
 	}
 
-	void rijndael128_128::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_128::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND(); IROUND(1); IROUND(2); IROUND(3); IROUND(4); IROUND(5); IROUND(6); IROUND(7); IROUND(8); IROUND(9); ILROUND(10);
 	}
@@ -525,18 +525,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_192::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_192::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); ROUND(10); ROUND(11); LROUND(12);
 	}
 
-	void rijndael128_192::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_192::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND(); IROUND(1); IROUND(2); IROUND(3); IROUND(4); IROUND(5); IROUND(6); IROUND(7); IROUND(8); IROUND(9); IROUND(10); IROUND(11); ILROUND(12);
 	}
@@ -606,18 +606,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_256::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_256::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); ROUND(10); ROUND(11); ROUND(12); ROUND(13); LROUND(14);
 	}
 
-	void rijndael128_256::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_256::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND(); IROUND(1); IROUND(2); IROUND(3); IROUND(4); IROUND(5); IROUND(6); IROUND(7); IROUND(8); IROUND(9); IROUND(10); IROUND(11); IROUND(12); IROUND(13); ILROUND(14);
 	}
@@ -683,18 +683,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_224::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_224::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); ROUND(10); ROUND(11); ROUND(12); LROUND(13);
 	}
 
-	void rijndael128_224::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_224::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND(); IROUND(1); IROUND(2); IROUND(3); IROUND(4); IROUND(5); IROUND(6); IROUND(7); IROUND(8); IROUND(9); IROUND(10); IROUND(11); IROUND(12); ILROUND(13);
 	}
@@ -762,18 +762,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_160::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_160::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); ROUND(10); LROUND(11);
 	}
 
-	void rijndael128_160::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael128_160::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND(); IROUND(1); IROUND(2); IROUND(3); IROUND(4); IROUND(5); IROUND(6); IROUND(7); IROUND(8); IROUND(9); IROUND(10); ILROUND(11);
 	}
@@ -955,18 +955,18 @@ namespace cppcrypto
 
 	namespace detail
 	{
-		void rijndael256::encryptBlock(const uint8_t* in, uint8_t* out)
+		void rijndael256::encrypt_block(const uint8_t* in, uint8_t* out)
 		{
 			if (impl_)
-				return impl_->encryptBlock(in, out);
+				return impl_->encrypt_block(in, out);
 
 			FROUND256(); ROUND256(1); ROUND256(2); ROUND256(3); ROUND256(4); ROUND256(5); ROUND256(6); ROUND256(7); ROUND256(8); ROUND256(9); ROUND256(10); ROUND256(11); ROUND256(12); ROUND256(13); LROUND256(14);
 		}
 
-		void rijndael256::decryptBlock(const uint8_t* in, uint8_t* out)
+		void rijndael256::decrypt_block(const uint8_t* in, uint8_t* out)
 		{
 			if (impl_)
-				return impl_->decryptBlock(in, out);
+				return impl_->decrypt_block(in, out);
 
 			FROUND256(); IROUND256(1); IROUND256(2); IROUND256(3); IROUND256(4); IROUND256(5); IROUND256(6); IROUND256(7); IROUND256(8); IROUND256(9); IROUND256(10); IROUND256(11); IROUND256(12); IROUND256(13); ILROUND256(14);
 		}
@@ -1323,18 +1323,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_128::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_128::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
 	}
 
-	void rijndael192_128::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_128::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); ILROUND192(12);
 	}
@@ -1403,18 +1403,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_160::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_160::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
 	}
 
-	void rijndael192_160::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_160::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); ILROUND192(12);
 	}
@@ -1481,18 +1481,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_192::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_192::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
 	}
 
-	void rijndael192_192::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_192::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); ILROUND192(12);
 	}
@@ -1560,18 +1560,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_224::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_224::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); ROUND192(12); LROUND192(13);
 	}
 
-	void rijndael192_224::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_224::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); IROUND192(12); ILROUND192(13);
 	}
@@ -1644,18 +1644,18 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_256::encryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_256::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->encryptBlock(in, out);
+			return impl_->encrypt_block(in, out);
 
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); ROUND192(12); ROUND192(13); LROUND192(14);
 	}
 
-	void rijndael192_256::decryptBlock(const uint8_t* in, uint8_t* out)
+	void rijndael192_256::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		if (impl_)
-			return impl_->decryptBlock(in, out);
+			return impl_->decrypt_block(in, out);
 
 		FROUND192(); IROUND192(1); IROUND192(2); IROUND192(3); IROUND192(4); IROUND192(5); IROUND192(6); IROUND192(7); IROUND192(8); IROUND192(9); IROUND192(10); IROUND192(11); IROUND192(12); IROUND192(13); ILROUND192(14);
 	}

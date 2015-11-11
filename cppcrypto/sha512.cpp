@@ -261,7 +261,7 @@ namespace cppcrypto
 		{
 			H[i] = _byteswap_uint64(H[i]);
 		}
-		memcpy(hash, H, hashbitlen()/8);
+		memcpy(hash, H, hashsize()/8);
 	}
 
 

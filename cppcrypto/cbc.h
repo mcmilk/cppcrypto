@@ -18,22 +18,22 @@ namespace cppcrypto
 
 		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, block_cipher::direction direction);
 
-		void encryptUpdate(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
-		void encryptFinal(uint8_t* out, size_t& resultlen);
-		void decryptUpdate(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
-		void decryptFinal(uint8_t* out, size_t& resultlen);
+		void encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
+		void encrypt_final(uint8_t* out, size_t& resultlen);
+		void decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
+		void decrypt_final(uint8_t* out, size_t& resultlen);
 
 		// These slower variants append the output to the vector, dynamically resizing the vector as needed
-		void encryptUpdate(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
-		void encryptFinal(std::vector<uint8_t>& out);
-		void decryptUpdate(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
-		void decryptFinal(std::vector<uint8_t>& out);
+		void encrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
+		void encrypt_final(std::vector<uint8_t>& out);
+		void decrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
+		void decrypt_final(std::vector<uint8_t>& out);
 
 		// These slower variants write the output to std::ostream
-		void encryptUpdate(const uint8_t* in, size_t len, std::ostream& out);
-		void encryptFinal(std::ostream& out);
-		void decryptUpdate(const uint8_t* in, size_t len, std::ostream& out);
-		void decryptFinal(std::ostream& out);
+		void encrypt_update(const uint8_t* in, size_t len, std::ostream& out);
+		void encrypt_final(std::ostream& out);
+		void decrypt_update(const uint8_t* in, size_t len, std::ostream& out);
+		void decrypt_final(std::ostream& out);
 
 	private:
 		cbc(const cbc&);

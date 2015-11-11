@@ -14,7 +14,7 @@ namespace cppcrypto
 {
 	void PBKDF2(hmac& hmac, const uint8_t* salt, size_t salt_len, int iterations, uint8_t* dk, size_t dklen)
 	{
-		size_t hlen = hmac.hashbitlen() / 8;
+		size_t hlen = hmac.hashsize() / 8;
 		uint8_t* res = dk;
 		uint8_t* temp1 = new uint8_t[hlen*2];
 		size_t remaining = dklen;

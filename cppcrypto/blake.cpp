@@ -193,7 +193,7 @@ namespace cppcrypto
 	void blake256::final(uint8_t* hash)
 	{
 		bool padding = !pos;
-		m[pos] = pos == 55 && hashbitlen() == 256 ? 0x81 : 0x80;
+		m[pos] = pos == 55 && hashsize() == 256 ? 0x81 : 0x80;
 		if (++pos > 56)
 		{
 			memset(m + pos, 0, 64 - pos);
@@ -204,7 +204,7 @@ namespace cppcrypto
 		if (pos < 56)
 		{
 			memset(m + pos, 0, 55 - pos);
-			m[55] = hashbitlen() == 256 ? 0x01 : 0x00;
+			m[55] = hashsize() == 256 ? 0x01 : 0x00;
 		}
 		uint64_t mlen = _byteswap_uint64(total);
 		memcpy(m + (64 - 8), &mlen, 64 / 8);
@@ -213,7 +213,7 @@ namespace cppcrypto
 		{
 			H[i] = _byteswap_ulong(H[i]);
 		}
-		memcpy(hash, H, hashbitlen()/8);
+		memcpy(hash, H, hashsize()/8);
 	}
 
 
@@ -359,7 +359,7 @@ namespace cppcrypto
 	void blake512::final(uint8_t* hash)
 	{
 		bool padding = !pos;
-		m[pos] = pos == 111 && hashbitlen() == 512 ? 0x81 : 0x80;
+		m[pos] = pos == 111 && hashsize() == 512 ? 0x81 : 0x80;
 		if (++pos > 112)
 		{
 			memset(m + pos, 0, 128 - pos);
@@ -370,7 +370,7 @@ namespace cppcrypto
 		if (pos < 112)
 		{
 			memset(m + pos, 0, 111 - pos);
-			m[111] = hashbitlen() == 512 ? 0x01 : 0x00;
+			m[111] = hashsize() == 512 ? 0x01 : 0x00;
 		}
 		uint64_t mlen = _byteswap_uint64(total);
 		memset(m + (128 - 16), 0, sizeof(uint64_t));
@@ -380,7 +380,7 @@ namespace cppcrypto
 		{
 			H[i] = _byteswap_uint64(H[i]);
 		}
-		memcpy(hash, H, hashbitlen()/8);
+		memcpy(hash, H, hashsize()/8);
 	}
 
 

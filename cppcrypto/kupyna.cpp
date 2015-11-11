@@ -717,7 +717,7 @@ namespace cppcrypto
 		transform();
 		outputTransform();
 
-		memcpy(hash, (uint8_t*)h + 64 - hashbitlen()/8, hashbitlen()/8);
+		memcpy(hash, (uint8_t*)h + 64 - hashsize()/8, hashsize()/8);
 
 #ifdef DEBUG
 		dump_state("post-final", h);
@@ -923,7 +923,7 @@ namespace cppcrypto
 		transform();
 		outputTransform();
 
-		memcpy(hash, (uint8_t*)h + 128 - hashbitlen() / 8, hashbitlen() / 8);
+		memcpy(hash, (uint8_t*)h + 128 - hashsize() / 8, hashsize() / 8);
 
 #ifdef DEBUG
 		dump_state("post-final", h);

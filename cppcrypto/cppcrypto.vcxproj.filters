@@ -90,6 +90,24 @@
     <ClInclude Include="ctr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="twofish.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sha3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakF-1600-interface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakF-1600-int-set.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakF-1600-opt64-settings.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakSponge.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -173,6 +191,24 @@
     <ClCompile Include="ctr.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="block_cipher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="twofish.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sha3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\KeccakF-1600-opt64.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\KeccakSponge.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\sha3_impl_ssse3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <YASM Include="3rdparty\sha256_avx1.asm">
@@ -210,5 +246,9 @@
     <MASM Include="3rdparty\sha256-cryptopp-x64.asm">
       <Filter>Source Files</Filter>
     </MASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rdparty\KeccakF-1600-simd128.macros" />
+    <None Include="3rdparty\KeccakF-1600-unrolling.macros" />
   </ItemGroup>
 </Project>

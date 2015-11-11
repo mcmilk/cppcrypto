@@ -231,6 +231,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdparty\KeccakF-1600-int-set.h" />
+    <ClInclude Include="3rdparty\KeccakF-1600-interface.h" />
+    <ClInclude Include="3rdparty\KeccakF-1600-opt64-settings.h" />
+    <ClInclude Include="3rdparty\KeccakSponge.h" />
     <ClInclude Include="3rdparty\rounds.sse41.h" />
     <ClInclude Include="anubis.h" />
     <ClInclude Include="blake.h" />
@@ -248,25 +252,31 @@
     <ClInclude Include="rijndael-impl.h" />
     <ClInclude Include="rijndael.h" />
     <ClInclude Include="sha256.h" />
+    <ClInclude Include="sha3.h" />
     <ClInclude Include="sha512.h" />
     <ClInclude Include="skein1024.h" />
     <ClInclude Include="skein256.h" />
     <ClInclude Include="skein512.h" />
+    <ClInclude Include="twofish.h" />
     <ClInclude Include="whirlpool.h" />
     <ClInclude Include="ctr.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdparty\blake256-sse2.c" />
     <ClCompile Include="3rdparty\blake256-sse41.c" />
+    <ClCompile Include="3rdparty\KeccakF-1600-opt64.c" />
+    <ClCompile Include="3rdparty\KeccakSponge.c" />
     <ClCompile Include="3rdparty\sha256-cryptopp-x86.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="3rdparty\sha3_impl_ssse3.cpp" />
     <ClCompile Include="anubis.cpp" />
     <ClCompile Include="blake.cpp" />
     <ClCompile Include="3rdparty\blake512-sse2.c" />
     <ClCompile Include="3rdparty\blake512-sse41.c" />
+    <ClCompile Include="block_cipher.cpp" />
     <ClCompile Include="cbc.cpp" />
     <ClCompile Include="cpuinfo.cpp" />
     <ClCompile Include="crypto_hash.cpp" />
@@ -281,6 +291,7 @@
     <ClCompile Include="rijndael-impl-aesni.cpp" />
     <ClCompile Include="rijndael.cpp" />
     <ClCompile Include="sha256.cpp" />
+    <ClCompile Include="sha3.cpp" />
     <ClCompile Include="sha512.cpp" />
     <ClCompile Include="skein1024.cpp" />
     <ClCompile Include="skein256.cpp" />
@@ -290,6 +301,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="twofish.cpp" />
     <ClCompile Include="whirlpool.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -378,6 +390,10 @@
       <Parser Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</Parser>
       <Parser Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</Parser>
     </YASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rdparty\KeccakF-1600-simd128.macros" />
+    <None Include="3rdparty\KeccakF-1600-unrolling.macros" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

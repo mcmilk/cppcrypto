@@ -3,21 +3,21 @@ It has no external dependencies.
 
 At the moment it supports the following primitives.
 
-1) Hash functions: blake, groestl, sha-2 (incl. sha512/224 and sha512/256), skein-256, skein-512, skein-1024,
+1) Hash functions: blake, groestl, sha-2 (incl. sha512/224 and sha512/256), sha-3, skein-256, skein-512, skein-1024,
 whirlpool, kupyna.
 
 To get the full list of supported hash algorithms, run 'digest' in hash function performance test mode:
 
   digest test <number_of_iterations> <filename>
 
-2) Block ciphers: Rijndael with block sizes 128, 256 and key sizes 128, 160, 192, 224, 256
-(all variants are accelerated using AES-NI instructions, if available). 
+2) Block ciphers: Anubis, Rijndael with block sizes 128, 192, 256 and key sizes 128, 160, 192, 224, 256
+(all variants are accelerated using AES-NI instructions, if available), Twofish.
 
 To get the full list of supported block ciphers, run 'digest' in block cipher performance test mode:
 
   digest bctest <number_of_iterations> <filename>
 
-3) Encryption modes: CBC.
+3) Encryption modes: CBC, CTR.
 4) MAC functions: HMAC.
 
 The library detects CPU type at runtime and uses optimized implementations where possible.
@@ -70,3 +70,5 @@ If you use the precompiled libraries on Windows then you don't need yasm.
 Just link against cppcryptomd.lib or cppcryptomt.lib depending on your /MT or /MD settings. 
 
 If you are on Linux, just run make and make install as usual.
+
+For more information, see the web site: http://cppcrypto.sourceforge.net

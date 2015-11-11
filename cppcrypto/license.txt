@@ -91,4 +91,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 % Krystian Matusiewicz
 % Daniel J. Bernstein
 % vampire77
-
+% Guido Bertoni
+% Joan Daemen
+% Michaël Peeters
+% Gilles Van Assche

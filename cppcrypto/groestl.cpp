@@ -670,7 +670,7 @@ void groestl256::final(uint8_t* hash)
 	outputTransform();
 
 	uint8_t* s = (uint8_t*)h;
-	for (int i = 64 - hashbitlen() / 8, j = 0; i < 64; i++, j++) {
+	for (int i = 64 - hashsize() / 8, j = 0; i < 64; i++, j++) {
 		hash[j] = s[i];
 	}
 #ifdef DEBUG
@@ -683,7 +683,7 @@ void groestl256::init()
 	pos = 0;
 	total = 0;
 	memset(h, 0, sizeof(uint64_t)*8);
-	h[7] = _byteswap_uint64(hashbitlen());
+	h[7] = _byteswap_uint64(hashsize());
 
 	if (impl_)
 		impl_->INIT(h);
@@ -698,7 +698,7 @@ void groestl512::init()
 	pos = 0;
 	total = 0;
 	memset(h, 0, sizeof(uint64_t)*16);
-	h[15] = _byteswap_uint64(hashbitlen());
+	h[15] = _byteswap_uint64(hashsize());
 
 	if (impl_)
 		impl_->INIT(h);
@@ -745,7 +745,7 @@ void groestl512::final(uint8_t* hash)
 	outputTransform();
 
 	uint8_t* s = (uint8_t*)h;
-	for (int i = 128 - hashbitlen()/8, j = 0; i < 128; i++, j++) {
+	for (int i = 128 - hashsize()/8, j = 0; i < 128; i++, j++) {
 		hash[j] = s[i];
 	}
 #ifdef DEBUG

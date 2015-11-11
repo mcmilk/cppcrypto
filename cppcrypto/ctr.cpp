@@ -79,7 +79,7 @@ namespace cppcrypto
 
 	static inline void incrementCounter(uint8_t* ctr, size_t nb, uint8_t* block, block_cipher* cipher)
 	{
-		cipher->encryptBlock(ctr, block);
+		cipher->encrypt_block(ctr, block);
 		bool carry = true;
 		for (size_t i = nb - 1; i >= 0 && carry; i--)
 			carry = !++ctr[i];

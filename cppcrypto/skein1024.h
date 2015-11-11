@@ -20,8 +20,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashbitlen() const { return 1024; }
-		int blockbitlen() const { return 1024; }
+		int hashsize() const { return 1024; }
+		int blocksize() const { return 1024; }
 		crypto_hash* clone() const { return new skein1024_1024; }
 
 	protected:
@@ -43,7 +43,7 @@ namespace cppcrypto
 	public:
 		void init();
 
-		int hashbitlen() const { return 512; }
+		int hashsize() const { return 512; }
 		crypto_hash* clone() const { return new skein1024_512; }
 	};
 
@@ -52,7 +52,7 @@ namespace cppcrypto
 	public:
 		void init();
 
-		int hashbitlen() const { return 384; }
+		int hashsize() const { return 384; }
 		crypto_hash* clone() const { return new skein1024_384; }
 	};
 
@@ -61,7 +61,7 @@ namespace cppcrypto
 	public:
 		void init();
 
-		int hashbitlen() const { return 256; }
+		int hashsize() const { return 256; }
 		crypto_hash* clone() const { return new skein1024_256; }
 	};
 

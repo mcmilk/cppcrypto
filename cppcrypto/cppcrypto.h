@@ -16,5 +16,7 @@
 #include "anubis.h"
 #include "pbkdf2.h"
 #include "ctr.h"
+#include "twofish.h"
+#include "sha3.h"
 
 #endif

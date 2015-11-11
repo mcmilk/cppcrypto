@@ -611,7 +611,7 @@ namespace cppcrypto
 		memset(m + pos, 0, 56 - pos);
 		memcpy(m + (64 - 8), &mlen, 64 / 8);
 		transfunc(m, 1);
-		memcpy(hash, h, hashbitlen() / 8);
+		memcpy(hash, h, hashsize() / 8);
 
 #ifdef DEBUG
 		dump_state("post-final", h);

@@ -555,7 +555,7 @@ namespace cppcrypto
 	}
 
 	template<int B>
-	static inline void anubis_encryptBlock(const uint8_t* in, uint8_t* out, uint32_t W_[][4])
+	static inline void anubis_encrypt_block(const uint8_t* in, uint8_t* out, uint32_t W_[][4])
 	{
 		const int N = B / 32;
 		const int R = 8 + N;
@@ -599,14 +599,14 @@ namespace cppcrypto
 		return anubis_init<128>(key, direction, W_);
 	}
 
-	void anubis128::encryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis128::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<128>(in, out, W_);
+		return anubis_encrypt_block<128>(in, out, W_);
 	}
 
-	void anubis128::decryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis128::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<128>(in, out, W_);
+		return anubis_encrypt_block<128>(in, out, W_);
 	}
 
 	bool anubis160::init(const uint8_t* key, block_cipher::direction direction)
@@ -614,14 +614,14 @@ namespace cppcrypto
 		return anubis_init<160>(key, direction, W_);
 	}
 
-	void anubis160::encryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis160::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<160>(in, out, W_);
+		return anubis_encrypt_block<160>(in, out, W_);
 	}
 
-	void anubis160::decryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis160::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<160>(in, out, W_);
+		return anubis_encrypt_block<160>(in, out, W_);
 	}
 
 	bool anubis192::init(const uint8_t* key, block_cipher::direction direction)
@@ -629,14 +629,14 @@ namespace cppcrypto
 		return anubis_init<192>(key, direction, W_);
 	}
 
-	void anubis192::encryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis192::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<192>(in, out, W_);
+		return anubis_encrypt_block<192>(in, out, W_);
 	}
 
-	void anubis192::decryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis192::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<192>(in, out, W_);
+		return anubis_encrypt_block<192>(in, out, W_);
 	}
 
 	bool anubis224::init(const uint8_t* key, block_cipher::direction direction)
@@ -644,14 +644,14 @@ namespace cppcrypto
 		return anubis_init<224>(key, direction, W_);
 	}
 
-	void anubis224::encryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis224::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<224>(in, out, W_);
+		return anubis_encrypt_block<224>(in, out, W_);
 	}
 
-	void anubis224::decryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis224::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<224>(in, out, W_);
+		return anubis_encrypt_block<224>(in, out, W_);
 	}
 
 	bool anubis256::init(const uint8_t* key, block_cipher::direction direction)
@@ -659,14 +659,14 @@ namespace cppcrypto
 		return anubis_init<256>(key, direction, W_);
 	}
 
-	void anubis256::encryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis256::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<256>(in, out, W_);
+		return anubis_encrypt_block<256>(in, out, W_);
 	}
 
-	void anubis256::decryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis256::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<256>(in, out, W_);
+		return anubis_encrypt_block<256>(in, out, W_);
 	}
 
 	bool anubis288::init(const uint8_t* key, block_cipher::direction direction)
@@ -674,14 +674,14 @@ namespace cppcrypto
 		return anubis_init<288>(key, direction, W_);
 	}
 
-	void anubis288::encryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis288::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<288>(in, out, W_);
+		return anubis_encrypt_block<288>(in, out, W_);
 	}
 
-	void anubis288::decryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis288::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<288>(in, out, W_);
+		return anubis_encrypt_block<288>(in, out, W_);
 	}
 
 	bool anubis320::init(const uint8_t* key, block_cipher::direction direction)
@@ -689,23 +689,22 @@ namespace cppcrypto
 		return anubis_init<320>(key, direction, W_);
 	}
 
-	void anubis320::encryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis320::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<320>(in, out, W_);
+		return anubis_encrypt_block<320>(in, out, W_);
 	}
 
-	void anubis320::decryptBlock(const uint8_t* in, uint8_t* out)
+	void anubis320::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		return anubis_encryptBlock<320>(in, out, W_);
+		return anubis_encrypt_block<320>(in, out, W_);
 	}
 
 #if 0
-	uint8_t MultiplyGF(uint8_t x, uint8_t y) {
-		int i;
+	static uint8_t mul_gf_11d(uint8_t x, uint8_t y) {
 		uint8_t r = 0;
 		uint8_t hbit = 0;
-		for (i = 0; i < 8; ++i) {
-			if ((y & 0x1) == 1)
+		while (y) {
+			if (y & 1)
 				r ^= x;
 			hbit = x & 0x80;
 			x <<= 1;
@@ -716,10 +715,10 @@ namespace cppcrypto
 		return r;
 	}
 
-	uint8_t PowGF(uint8_t x, uint8_t y) {
+	static uint8_t pow_gf_11d(uint8_t x, uint8_t y) {
 		uint8_t res = 1;
 		for (int i = 0; i < y; i++)
-			res = MultiplyGF(res, x);
+			res = mul_gf_11d(res, x);
 
 		return res;
 	}
@@ -758,14 +757,14 @@ namespace cppcrypto
 
 				// generate T5:
 				//uint8_t v1 = c;
-				//uint8_t v2 = MultiplyGF(c, 2);
-				//uint8_t v3 = MultiplyGF(c, 6);
-				//uint8_t v4 = MultiplyGF(c, 8);
+				//uint8_t v2 = mul_gf_11d(c, 2);
+				//uint8_t v3 = mul_gf_11d(c, 6);
+				//uint8_t v4 = mul_gf_11d(c, 8);
 
 				uint8_t v1 = s;
-				uint8_t v2 = MultiplyGF(s, PowGF(2, i));
-				uint8_t v3 = MultiplyGF(s, PowGF(6, i));
-				uint8_t v4 = MultiplyGF(s, PowGF(8, i));
+				uint8_t v2 = mul_gf_11d(s, pow_gf_11d(2, i));
+				uint8_t v3 = mul_gf_11d(s, pow_gf_11d(6, i));
+				uint8_t v4 = mul_gf_11d(s, pow_gf_11d(8, i));
 				uint32_t res = (uint32_t(v1) << 24) ^ (uint32_t(v2) << 16) ^ (uint32_t(v3) << 8) ^ (uint32_t(v4));
 				printf("0x%08xU", res);
 				if (c == 255)
@@ -793,29 +792,29 @@ namespace cppcrypto
 				if (i == 0)
 				{
 					v1 = s;
-					v2 = MultiplyGF(s, 2);
-					v3 = MultiplyGF(s, 4);
-					v4 = MultiplyGF(s, 6);
+					v2 = mul_gf_11d(s, 2);
+					v3 = mul_gf_11d(s, 4);
+					v4 = mul_gf_11d(s, 6);
 				}
 				else if (i == 1)
 				{
-					v1 = MultiplyGF(s, 2);
+					v1 = mul_gf_11d(s, 2);
 					v2 = s;
-					v3 = MultiplyGF(s, 6);
-					v4 = MultiplyGF(s, 4);
+					v3 = mul_gf_11d(s, 6);
+					v4 = mul_gf_11d(s, 4);
 				}
 				else if (i == 2)
 				{
-					v1 = MultiplyGF(s, 4);
-					v2 = MultiplyGF(s, 6);
+					v1 = mul_gf_11d(s, 4);
+					v2 = mul_gf_11d(s, 6);
 					v3 = s;
-					v4 = MultiplyGF(s, 2);
+					v4 = mul_gf_11d(s, 2);
 				}
 				else if (i == 3)
 				{
-					v1 = MultiplyGF(s, 6);
-					v2 = MultiplyGF(s, 4);
-					v3 = MultiplyGF(s, 2);
+					v1 = mul_gf_11d(s, 6);
+					v2 = mul_gf_11d(s, 4);
+					v3 = mul_gf_11d(s, 2);
 					v4 = s;
 				}
 				uint32_t res = (uint32_t(v1) << 24) ^ (uint32_t(v2) << 16) ^ (uint32_t(v3) << 8) ^ (uint32_t(v4));

@@ -23,8 +23,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael128_128; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -42,8 +42,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael128_160; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -61,8 +61,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael128_192; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -80,8 +80,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael128_224; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -99,8 +99,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael128_256; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -117,8 +117,8 @@ namespace cppcrypto
 
 			int blocksize() const { return 256; }
 
-			void encryptBlock(const uint8_t* in, uint8_t* out);
-			void decryptBlock(const uint8_t* in, uint8_t* out);
+			void encrypt_block(const uint8_t* in, uint8_t* out);
+			void decrypt_block(const uint8_t* in, uint8_t* out);
 
 		protected:
 			uint32_t* W_;
@@ -192,8 +192,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael192_128; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -211,8 +211,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael192_160; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -231,8 +231,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael192_192; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -250,8 +250,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael192_224; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;
@@ -269,8 +269,8 @@ namespace cppcrypto
 		block_cipher* clone() const { return new rijndael192_256; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encryptBlock(const uint8_t* in, uint8_t* out);
-		void decryptBlock(const uint8_t* in, uint8_t* out);
+		void encrypt_block(const uint8_t* in, uint8_t* out);
+		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
 		uint32_t* W_;

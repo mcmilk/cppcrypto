@@ -171,7 +171,7 @@ namespace cppcrypto
 		memset(m, 0, 64);
 		transfunc(m, 1, 8);
 
-		memcpy(hash, H, hashbitlen() / 8);
+		memcpy(hash, H, hashsize() / 8);
 	}
 
 

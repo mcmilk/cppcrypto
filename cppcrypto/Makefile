@@ -16,7 +16,8 @@ LDFLAGS=-Wl,-z,now -Wl,-z,relro -Wl,-soname,libcppcrypto.so.0
 
 OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1024.o whirlpool.o crypto_hash.o \
       blake256-sse2.o blake256-sse41.o blake512-sse2.o blake512-sse41.o groestl-impl-ssse3.o groestl-impl-aesni.o \
-      kupyna.o rijndael.o cbc.o hmac.o rijndael-impl-aesni.o rijndael-impl-aesni-avx2.o pbkdf2.o anubis.o ctr.o
+      kupyna.o rijndael.o cbc.o hmac.o rijndael-impl-aesni.o rijndael-impl-aesni-avx2.o pbkdf2.o anubis.o ctr.o \
+      block_cipher.o twofish.o sha3.o sha3_impl_ssse3.o KeccakF-1600-opt64.o KeccakSponge.o
 
 OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha256-cryptopp-x86-linux.o
 OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o sha256-cryptopp-x64-linux.o 
@@ -103,4 +104,13 @@ whirlpool-nayuki.o: 3rdparty/whirlpool-nayuki.asm
 
 sha256-cryptopp-x86-linux.o: 3rdparty/sha256-cryptopp-x86-linux.cpp
 	$(CXX) -c $(CXXFLAGS) -msse2 3rdparty/sha256-cryptopp-x86-linux.cpp
+
+sha3_impl_ssse3.o: 3rdparty/sha3_impl_ssse3.cpp
+	$(CXX) -c $(CXXFLAGS) -mssse3 3rdparty/sha3_impl_ssse3.cpp
+
+KeccakSponge.o: 3rdparty/KeccakSponge.c
+	$(CC) -c $(CFLAGS) -mssse3 3rdparty/KeccakSponge.c
+
+KeccakF-1600-opt64.o: 3rdparty/KeccakF-1600-opt64.c
+	$(CC) -c $(CFLAGS) -mssse3 3rdparty/KeccakF-1600-opt64.c
 

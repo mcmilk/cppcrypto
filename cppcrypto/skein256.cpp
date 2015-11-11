@@ -153,7 +153,7 @@ namespace cppcrypto
 		memset(m, 0, 32);
 		transfunc(m, 1, 8);
 
-		memcpy(hash, H, hashbitlen() / 8);
+		memcpy(hash, H, hashsize() / 8);
 	}
 
 	void skein256_224::init()
