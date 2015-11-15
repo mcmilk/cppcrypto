@@ -1,11 +1,13 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #ifndef CPPCRYPTO_SKEIN512_H
 #define CPPCRYPTO_SKEIN512_H
 
 #include "crypto_hash.h"
+#include "alignedarray.h"
 #include <functional>
 
 namespace cppcrypto
@@ -29,7 +31,7 @@ namespace cppcrypto
 		void transform(void* m, uint64_t num_blks, size_t reallen);
 		std::function<void(void*, uint64_t, size_t)> transfunc;
 
-		uint64_t* H;
+		aligned_pod_array<uint64_t, 8, 32> H;
 		uint8_t m[64];
 		size_t pos;
 		uint64_t total;

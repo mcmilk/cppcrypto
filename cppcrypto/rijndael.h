@@ -1,11 +1,13 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #ifndef CPPCRYPTO_RIJNDAEL_H
 #define CPPCRYPTO_RIJNDAEL_H
 
 #include <stdint.h>
+#include "alignedarray.h"
 #include "block_cipher.h"
 #include "rijndael-impl.h"
 
@@ -27,7 +29,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 44, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -46,7 +48,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 48, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -65,7 +67,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 52, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -84,7 +86,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 56, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -103,7 +105,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 60, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -121,7 +123,7 @@ namespace cppcrypto
 			void decrypt_block(const uint8_t* in, uint8_t* out);
 
 		protected:
-			uint32_t* W_;
+			aligned_pod_array<uint32_t, 120, 64> W_;
 			detail::rijndael_impl* impl_;
 		};
 	}
@@ -196,7 +198,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 78, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -215,7 +217,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 78, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -235,7 +237,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 78, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -254,7 +256,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 84, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 
@@ -273,7 +275,7 @@ namespace cppcrypto
 		void decrypt_block(const uint8_t* in, uint8_t* out);
 
 	private:
-		uint32_t* W_;
+		aligned_pod_array<uint32_t, 90, 64> W_;
 		detail::rijndael_impl* impl_;
 	};
 

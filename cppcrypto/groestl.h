@@ -1,12 +1,15 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
+
 #ifndef CPPCRYPTO_GROESTL_H
 #define CPPCRYPTO_GROESTL_H
 
 #include "crypto_hash.h"
 #include <functional>
 #include <memory>
+#include "alignedarray.h"
 #include "groestl-impl.h"
 
 namespace cppcrypto
@@ -30,11 +33,11 @@ namespace cppcrypto
 		void transform();
 		void outputTransform();
 
-		uint64_t* h;
-		uint8_t* m;
+		aligned_pod_array<uint64_t, 8, 32> h;
+		aligned_pod_array<uint8_t, 64, 32> m;
 		size_t pos;
 		uint64_t total;
-		detail::groestl_impl* impl_;
+		aligned_impl_ptr<detail::groestl_impl, 32> impl_;
 	};
 
 	class groestl512 : public crypto_hash
@@ -55,11 +58,11 @@ namespace cppcrypto
 		void transform();
 		void outputTransform();
 
-		uint64_t* h;
-		uint8_t* m;
+		aligned_pod_array<uint64_t, 16, 32> h;
+		aligned_pod_array<uint8_t, 128, 32> m;
 		size_t pos;
 		uint64_t total;
-		detail::groestl_impl* impl_;
+		aligned_impl_ptr<detail::groestl_impl, 32> impl_;
 	};
 
 	class groestl384 : public groestl512

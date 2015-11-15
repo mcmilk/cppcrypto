@@ -18,5 +18,10 @@
 #include "ctr.h"
 #include "twofish.h"
 #include "sha3.h"
+#include "jh.h"
+#include "sha1.h"
+#include "streebog.h"
+#include "sm3.h"
+#include "md5.h"
 
 #endif

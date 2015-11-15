@@ -1,6 +1,7 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include "rijndael.h"
 #include <memory.h>
@@ -10,7 +11,7 @@ This code is released under Simplified BSD License (see license.txt).
 #include <algorithm>
 #include "cpuinfo.h"
 
-//#define DEBUG
+//#define CPPCRYPTO_DEBUG
 //#define NO_OPTIMIZED_VERSIONS
 
 #ifndef _MSC_VER
@@ -435,7 +436,7 @@ namespace cppcrypto
 			KEYIMC(1); KEYIMC(2); KEYIMC(3); KEYIMC(4); KEYIMC(5); KEYIMC(6); KEYIMC(7); KEYIMC(8); KEYIMC(9);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 44; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -462,7 +463,6 @@ namespace cppcrypto
 	rijndael128_128::rijndael128_128()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 44 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
@@ -480,7 +480,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 	bool rijndael128_192::init(const uint8_t* key, block_cipher::direction direction)
@@ -517,7 +516,7 @@ namespace cppcrypto
 
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 52; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -544,7 +543,6 @@ namespace cppcrypto
 	rijndael128_192::rijndael128_192()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 52 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
@@ -561,7 +559,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 	bool rijndael128_256::init(const uint8_t* key, block_cipher::direction direction)
@@ -598,7 +595,7 @@ namespace cppcrypto
 			KEYSWAP(14);
 			KEYIMC(1); KEYIMC(2); KEYIMC(3); KEYIMC(4); KEYIMC(5); KEYIMC(6); KEYIMC(7); KEYIMC(8); KEYIMC(9); KEYIMC(10); KEYIMC(11); KEYIMC(12); KEYIMC(13);
 		}
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 60; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -625,7 +622,6 @@ namespace cppcrypto
 	rijndael128_256::rijndael128_256()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 60 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
@@ -642,7 +638,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 	bool rijndael128_224::init(const uint8_t* key, block_cipher::direction direction)
@@ -675,7 +670,7 @@ namespace cppcrypto
 			KEYSWAP(13);
 			KEYIMC(1); KEYIMC(2); KEYIMC(3); KEYIMC(4); KEYIMC(5); KEYIMC(6); KEYIMC(7); KEYIMC(8); KEYIMC(9); KEYIMC(10); KEYIMC(11); KEYIMC(12);
 		}
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 60; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -702,7 +697,6 @@ namespace cppcrypto
 	rijndael128_224::rijndael128_224()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 56 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
@@ -719,7 +713,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 	bool rijndael128_160::init(const uint8_t* key, block_cipher::direction direction)
@@ -754,7 +747,7 @@ namespace cppcrypto
 			KEYIMC(1); KEYIMC(2); KEYIMC(3); KEYIMC(4); KEYIMC(5); KEYIMC(6); KEYIMC(7); KEYIMC(8); KEYIMC(9); KEYIMC(10);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 52; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -781,7 +774,6 @@ namespace cppcrypto
 	rijndael128_160::rijndael128_160()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 48 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
@@ -798,7 +790,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 #define KEYIMC256(i) \
@@ -945,7 +936,7 @@ namespace cppcrypto
 			KEYSWAP256(14);
 			KEYIMC256(1); KEYIMC256(2); KEYIMC256(3); KEYIMC256(4); KEYIMC256(5); KEYIMC256(6); KEYIMC256(7); KEYIMC256(8); KEYIMC256(9); KEYIMC256(10); KEYIMC256(11); KEYIMC256(12); KEYIMC256(13);
 		}
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 60; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -974,7 +965,6 @@ namespace cppcrypto
 		rijndael256::rijndael256()
 			: impl_(0)
 		{
-			W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 120 /* Nb * (nr_ + 1) */, 64);
 		}
 
 		rijndael256::~rijndael256()
@@ -984,7 +974,6 @@ namespace cppcrypto
 				impl_->~rijndael_impl();
 				_aligned_free(impl_);
 			}
-			_aligned_free(W_);
 		}
 
 	}
@@ -1026,7 +1015,7 @@ namespace cppcrypto
 			KEYSWAP256(14);
 			KEYIMC256(1); KEYIMC256(2); KEYIMC256(3); KEYIMC256(4); KEYIMC256(5); KEYIMC256(6); KEYIMC256(7); KEYIMC256(8); KEYIMC256(9); KEYIMC256(10); KEYIMC256(11); KEYIMC256(12); KEYIMC256(13);
 		}
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 60; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1081,7 +1070,7 @@ namespace cppcrypto
 			KEYIMC256(1); KEYIMC256(2); KEYIMC256(3); KEYIMC256(4); KEYIMC256(5); KEYIMC256(6); KEYIMC256(7); KEYIMC256(8); KEYIMC256(9); KEYIMC256(10); KEYIMC256(11); KEYIMC256(12); KEYIMC256(13);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 60; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1128,7 +1117,7 @@ namespace cppcrypto
 			KEYIMC256(1); KEYIMC256(2); KEYIMC256(3); KEYIMC256(4); KEYIMC256(5); KEYIMC256(6); KEYIMC256(7); KEYIMC256(8); KEYIMC256(9); KEYIMC256(10); KEYIMC256(11); KEYIMC256(12); KEYIMC256(13);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 52; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1176,7 +1165,7 @@ namespace cppcrypto
 			KEYIMC256(1); KEYIMC256(2); KEYIMC256(3); KEYIMC256(4); KEYIMC256(5); KEYIMC256(6); KEYIMC256(7); KEYIMC256(8); KEYIMC256(9); KEYIMC256(10); KEYIMC256(11); KEYIMC256(12); KEYIMC256(13);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 52; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1315,7 +1304,7 @@ namespace cppcrypto
 			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 44; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1342,7 +1331,6 @@ namespace cppcrypto
 	rijndael192_128::rijndael192_128()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 78 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
@@ -1360,7 +1348,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 
@@ -1395,7 +1382,7 @@ namespace cppcrypto
 			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 44; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1422,7 +1409,6 @@ namespace cppcrypto
 	rijndael192_160::rijndael192_160()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 78 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
@@ -1440,7 +1426,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 
@@ -1473,7 +1458,7 @@ namespace cppcrypto
 			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 44; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1500,7 +1485,6 @@ namespace cppcrypto
 	rijndael192_192::rijndael192_192()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 78 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
@@ -1518,7 +1502,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 
@@ -1552,7 +1535,7 @@ namespace cppcrypto
 			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11); KEYIMC192(12);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 44; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1579,7 +1562,6 @@ namespace cppcrypto
 	rijndael192_224::rijndael192_224()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 84 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
@@ -1597,7 +1579,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 
@@ -1636,7 +1617,7 @@ namespace cppcrypto
 			KEYIMC192(1); KEYIMC192(2); KEYIMC192(3); KEYIMC192(4); KEYIMC192(5); KEYIMC192(6); KEYIMC192(7); KEYIMC192(8); KEYIMC192(9); KEYIMC192(10); KEYIMC192(11); KEYIMC192(12); KEYIMC192(13);
 		}
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		for (int b = 0; b < 44; b++)
 			printf("%08x ", W_[b]);
 		printf("\n");
@@ -1663,7 +1644,6 @@ namespace cppcrypto
 	rijndael192_256::rijndael192_256()
 		: impl_(0)
 	{
-		W_ = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 90 /* Nb * (nr_ + 1) */, 64);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
@@ -1681,7 +1661,6 @@ namespace cppcrypto
 			impl_->~rijndael_impl();
 			_aligned_free(impl_);
 		}
-		_aligned_free(W_);
 	}
 
 }

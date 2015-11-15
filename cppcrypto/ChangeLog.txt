@@ -1,3 +1,7 @@
+cppcrypto-0.07
+
+New hash algorithms: JH, MD5, SHA-1, SM3, Streebog
+
 cppcrypto-0.06
 
 New block cipher algorithm: Twofish

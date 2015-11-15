@@ -1,6 +1,3 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
 #ifndef GROESTLIMPL_H
 #define GROESTLIMPL_H
 

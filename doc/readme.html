@@ -1,0 +1,453 @@
+<html>
+<head>
+
+
+<meta http-equiv="cache-control" content="max-age=0" />
+<meta http-equiv="cache-control" content="no-cache" />
+<meta http-equiv="expires" content="0" />
+<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+<meta http-equiv="pragma" content="no-cache" />
+
+
+<meta charset="UTF-8">
+<style type="text/css">
+table, th, td {
+   border-width: 1px;
+   border-style: solid;
+   border-collapse: collapse;
+   text-align:center;
+   padding: 1px 5px 1px 5px;
+}
+th {
+   background-color: lightyellow;
+}
+th.thh {
+   background-color: lightcyan;
+}
+th.ths, th.thsa {
+   border-top-width: 2px;
+   font-style: italic;
+/*   background-color: #FFF8DC; */
+   font-weight: bold;
+/*#FCDFFF;*/
+}
+th.thsa {
+   border-left-width: 2px;
+   border-right-width: 2px;
+   background-color: lightyellow;
+}
+th.arch {
+   border-top-width: 2px;
+   font-style: italic;
+   font-weight: normal;
+}
+th.direction {
+   font-weight: normal;
+}
+td.best {
+   background-color: #D8FBD8;
+}
+td.algorithm {
+   border-left-width: 2px;
+   border-right-width: 2px;
+   background-color: lightyellow;
+}
+.left {
+   border-left-width: 2px;
+}
+.top {
+   border-top-width: 2px;
+}
+.bottom {
+   border-bottom-width: 2px;
+}
+.right {
+   border-right-width: 2px;
+}
+td.descr {
+/*   text-align: left; */
+}
+</style>
+</head>
+<body>
+<h1>cppcrypto library</h1>
+<h2>1. Introduction</h2>
+<p>cppcrypto is a small cross-platform BSD-licensed C++ library providing some cryptographic primitives. It has no external dependencies.</p>
+<p>The library thrives to be as fast as possible. CPU type is detected at runtime and the fastest implementation is selected dynamically.</p>
+<p><b>Supported compilers:</b> Visual C++ 2013, Visual C++ 2015 on Windows; gcc 5.1.1 or later on Linux (not tested with older versions).
+<br><b>Supported architectures:</b> x86_64 and x86.</p>
+<p><a href="https://sourceforge.net/projects/cppcrypto/files">Download cppcrypto from sourceforge</a></p>
+<p>Full list of supported cryptographic primitives is described below.
+<h2>2. Hash algorithms</h2>
+<h3>2.1. Interface description</h3>
+<p>All hash algorithms derive from <code>crypto_hash</code> class and implement its interface.</p>
+<pre>
+    class crypto_hash
+    {
+    public:
+        virtual void init() = 0;
+        virtual void update(const uint8_t* data, size_t len) = 0;
+        virtual void final(uint8_t* hash) = 0;
+
+        virtual int hashsize() const = 0;
+        virtual int blocksize() const = 0;
+
+        void hash_string(const uint8_t* data, size_t len, uint8_t* hash);
+        void hash_string(const char* data, size_t len, uint8_t* hash);
+        void hash_string(const std::string& data, uint8_t* hash);
+    };
+</pre>
+<p>If you have a short message, you can calculate the hash using a single <code>hash_string()</code> call.
+Otherwise, call <code>init()</code> to start hashing,
+then call <code>update()</code> any number of times to add the next chunk of data, and finally call <code>final()</code> to get the hash.
+<br>The <code>hash</code> parameter should point to a buffer large enough to accept the hash of correspondent size (length in bytes is <code>hashsize()/8</code>).</p>
+<h3>2.2. Supported algorithms</h3>
+<p>Classes derived from <code>crypto_hash</code>:</p>
+<table>
+<tr><th>Class Name</th><th>Description</th></tr>
+<tr>
+<td><code>blake224</code><br><code>blake256</code><br><code>blake384</code><br><code>blake512</code></td>
+<td class="descr"><b>BLAKE</b> hash function (one of SHA-3 finalists) with output sizes 224/256/384/512 bits.<br>This is one of the fastest hash functions and we recommend it you are free to choose.</td>
+</tr>
+<tr>
+<td><code>groestl224</code><br><code>groestl256</code><br><code>groestl384</code><br><code>groestl512</code></td>
+<td class="descr"><b>Grøstl</b> hash function (one of SHA-3 finalists) with output sizes 224/256/384/512 bits.</td>
+</tr>
+<tr>
+<td><code>jh224</code><br><code>jh256</code><br><code>jh384</code><br><code>jh512</code></td>
+<td class="descr"><b>JH</b> hash function (one of SHA-3 finalists) with output sizes 224/256/384/512 bits.</td>
+</tr>
+<tr>
+<td><code>kupyna256</code><br><code>kupyna512</code></td>
+<td class="descr"><b>Kupyna</b> hash function (Ukrainian national standard DSTU 7564:2014) with output sizes 256/512 bits.<br>224/384-bit functions are not provided because they are identical to the truncated 256/512-bit output.</td>
+<!--<td class="descr"><b>Kupyna</b> hash function (Ukrainian national standard DSTU 7564:2014) with output sizes 256/512 bits.<br>Functions with output size 224/384 bits are not provided because their output is identical<br>to the output from 256/512 functions truncated to the corresponding number of bytes.</td>-->
+</tr>
+<tr>
+<td><code>md5</code></td>
+<td class="descr"><b>MD5</b> hash function. Not secure and therefore not recommended; use only if you need it for compatibility.</td>
+</tr>
+<tr>
+<td><code>sha1</code></td>
+<td class="descr"><b>SHA-1</b> hash function. Not secure and therefore not recommended; use only if you need it for compatibility.</td>
+</tr>
+<tr>
+<td><code>sha224</code><br><code>sha256</code><br><code>sha384</code><br><code>sha512</code><br><code>sha512_224</code><br><code>sha512_256</code></td>
+<td class="descr"><b>SHA-2</b> hash function (NIST standard FIPS 180-4).<br>New functions <code>sha512_224</code> and <code>sha512_256</code> are faster than <code>sha224</code> and <code>sha256</code> on 64-bit platforms.</td>
+<!--<td class="descr"><b>SHA-2</b> hash function (NIST standard FIPS 180-4).<br>New functions <code>sha512_224</code> and <code>sha512_256</code> from the latest revision of the standard are faster than <code>sha224</code> and <code>sha256</code> on 64-bit platforms.</td>-->
+</tr>
+<tr>
+<td><code>sha3_224</code><br><code>sha3_256</code><br><code>sha3_384</code><br><code>sha3_512</code></td>
+<td class="descr"><b>SHA-3</b> hash function (NIST standard FIPS 202) based on Keccak algorithm.</td>
+</tr>
+<tr>
+<td><code>skein256_128</code><br><code>skein256_160</code><br><code>skein256_224</code><br><code>skein256_256</code></td>
+<td class="descr"><b>Skein</b> hash function (one of SHA-3 finalists) with block size 256 bits and output sizes 128/160/224/256 bits.<br>These functions are slower than <code>skein512</code>, so use them only if you need them for compatibility.</td>
+</tr>
+<tr>
+<td><code>skein512_128</code><br><code>skein512_160</code><br><code>skein512_224</code><br><code>skein512_256</code><br><code>skein512_384</code><br><code>skein512_512</code></td>
+<td class="descr"><b>Skein</b> hash function (one of SHA-3 finalists) with block size 512 bits and output sizes 128/160/224/256/384/512 bits.<br>This is one of the fastest hash functions and we recommend it if you are free to choose.</td>
+</tr>
+<tr>
+<td><code>skein1024_256</code><br><code>skein1024_384</code><br><code>skein1024_512</code><br><code>skein1024_1024</code></td>
+<td class="descr"><b>Skein</b> hash function (one of SHA-3 finalists) with block size 1024 bits and output sizes 256/384/512/1024 bits.</td>
+</tr>
+<tr>
+<td><code>sm3</code></td>
+<td class="descr"><b>SM3</b> hash function (Chinese national standard) with output size 256 bits.</td>
+</tr>
+<tr>
+<td><code>streebog256</code><br><code>streebog512</code></td>
+<td class="descr"><b>Streebog</b> hash function (Russian standard GOST R 34.11-2012) with output sizes 256/512 bits.</td>
+</tr>
+<tr>
+<td><code>whirlpool</code></td>
+<td class="descr"><b>Whirlpool</b> hash function (recommended by NESSIE) with output size 512 bits.</td>
+</tr>
+</table>
+<h3>2.3. Usage example</h3>
+<p>The following snippet calculates BLAKE-256 hash of a string using a single function call:</p>
+<pre>
+    uint8_t hash[256/8];
+    blake256().hash_string("The quick brown fox jumps over the lazy dog", hash);
+    // Now <i>hash</i> contains the hash
+</pre>
+<p>The following snippet demonstrates how to calculate the hash of a very long message using the init/update/final interface:</p>
+<p></p>
+<pre>
+    blake256 hasher;
+    uint8_t hash[256/8];
+    
+    hasher.init();
+    hasher.update(datachunk1, chunk1len);
+    hasher.update(datachunk2, chunk2len);
+    ...
+    hasher.final(hash); // Now <i>hash</i> contains the hash
+</pre>
+<h3>2.4. Hashing performance</h3>
+<p>Performance of various hash algorithms on three different test systems is provided in the table below (in megabytes per second).
+In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and 512 bits is highlighted in green.
+<br>Note how 64-bit builds outperform 32-bit builds. For some algorithms 64-bit build is 3 times faster than 32-bit build on the same PC.</p>
+<table>
+<tr><th colspan="7" class="thh left top right bottom">Performance in megabytes per second (MB/s), higher number means faster<br><i>(measured by calculating a hash of a 130Kb file 100,000 times)</i></th></tr>
+<tr>
+<th class="left right">Algorithm</th><th colspan="2" class="right">PC: Intel Xeon E5-1650 v3<br>(Haswell-EP)<br>OS: Win7 x64<br>Compiler: VC++2015</th><th colspan="2" class="right">PC: Intel Core i7 930<br>(Nehalem)<br>OS: Win7 x64<br>Compiler: VC++2015</th><th colspan="2" class="right">PC: Intel Core i3-3217U<br>(Ivy Bridge w/o AESNI)<br>OS: Win7 x64<br>Compiler: VC++2015</th>
+</tr>
+<tr>
+</tr>
+<tr><th class="thsa">128-bit digest</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+</tr>
+<tr><td class="algorithm">MD5</td><td>528</td><td class="right">509</td><td>382</td><td class="right">352</td><td>262</td><td class="right">252</td></tr>
+<tr><td class="algorithm">Skein-256/128</td><td>383</td><td class="right">210</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-512/128</td><td>517</td><td class="right">234</td><td>340</td><td class="right">181</td><td>231</td><td class="right">112</td></tr>
+<tr><th class="thsa">160-bit digest</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+</tr>
+<tr><td class="algorithm">Skein-256/160</td><td>383</td><td class="right">210</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-512/160</td><td>517</td><td class="right">234</td><td>340</td><td class="right">181</td><td>231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">SHA-1</td><td>789</td><td class="right">522</td><td>480</td><td class="right">392</td><td>361</td><td class="right">247</td></tr>
+<tr><th class="thsa">224-bit digest</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+</tr>
+<tr><td class="algorithm">BLAKE-224</td><td>423</td><td class="best right">417</td><td>271</td><td class="right">151</td><td>208</td><td class="best right">204</td></tr>
+<tr><td class="algorithm">Groestl-224</td><td>326</td><td class="right">270</td><td>112</td><td class="right">99</td><td>73</td><td class="right">71</td></tr>
+<tr><td class="algorithm">JH-224</td><td>206</td><td class="right">146</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
+<tr><td class="algorithm">SHA-224</td><td>398</td><td class="right">293</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
+<tr><td class="algorithm">SHA-512/224</td><td class="best">552</td><td class="right">211</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
+<tr><td class="algorithm">SHA3-224</td><td>270</td><td class="right">243</td><td>174</td><td class="right">143</td><td>122</td><td class="right">109</td></tr>
+<tr><td class="algorithm">Skein-256/224</td><td>383</td><td class="right">210</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-512/224</td><td>517</td><td class="right">234</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
+
+<tr><th class="thsa">256-bit digest</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+</tr>
+<tr><td class="algorithm">BLAKE-256</td><td>423</td><td class="best right">417</td><td>271</td><td class="right">151</td><td>208</td><td class="best right">204</td></tr>
+<tr><td class="algorithm">Groestl-256</td><td>326</td><td class="right">270</td><td>112</td><td class="right">99</td><td>73</td><td class="right">71</td></tr>
+<tr><td class="algorithm">JH-256</td><td>206</td><td class="right">146</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
+<tr><td class="algorithm">Kupyna-256</td><td>127</td><td class="right">54</td><td>77</td><td class="right">28</td><td>53</td><td class="right">25</td></tr>
+<tr><td class="algorithm">SHA-256</td><td>398</td><td class="right">293</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
+<tr><td class="algorithm">SHA-512/256</td><td class="best">552</td><td class="right">211</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
+<tr><td class="algorithm">SHA3-256</td><td>256</td><td class="right">227</td><td>164</td><td class="right">133</td><td>114</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-256/256</td><td>383</td><td class="right">210</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-512/256</td><td>517</td><td class="right">234</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">Skein-1024/256</td><td>406</td><td class="right">106</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
+<tr><td class="algorithm">SM3</td><td>186</td><td class="right">140</td><td>117</td><td class="right">101</td><td>81</td><td class="right">70</td></tr>
+<tr><td class="algorithm">Streebog-256</td><td>112</td><td class="right">64</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
+
+<tr><th class="thsa">384-bit digest</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+</tr>
+
+<tr><td class="algorithm">BLAKE-384</td><td>471</td><td class="best right">411</td><td class="best">340</td><td class="best right">217</td><td>227</td><td class="best right">202</td></tr>
+<tr><td class="algorithm">Groestl-384</td><td>246</td><td class="right">197</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
+<tr><td class="algorithm">JH-384</td><td>206</td><td class="right">146</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
+<tr><td class="algorithm">SHA-384</td><td class="best">552</td><td class="right">211</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
+<tr><td class="algorithm">SHA3-384</td><td>194</td><td class="right">175</td><td>126</td><td class="right">103</td><td>89</td><td class="right">79</td></tr>
+<tr><td class="algorithm">Skein-512/384</td><td>517</td><td class="right">234</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">Skein-1024/384</td><td>406</td><td class="right">106</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
+
+<tr><th class="thsa">512-bit digest</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+</tr>
+<tr><td class="algorithm">BLAKE-512</td><td>471</td><td class="best right">411</td><td class="best">340</td><td class="best right">217</td><td>227</td><td class="best right">202</td></tr>
+<tr><td class="algorithm">Groestl-512</td><td>246</td><td class="right">197</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
+<tr><td class="algorithm">JH-512</td><td>206</td><td class="right">146</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
+<tr><td class="algorithm">Kupyna-512</td><td>81</td><td class="right">43</td><td>49</td><td class="right">22</td><td>23</td><td class="right">20</td></tr>
+<tr><td class="algorithm">SHA-512</td><td class="best">552</td><td class="right">211</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
+<tr><td class="algorithm">SHA3-512</td><td>136</td><td class="right">122</td><td>81</td><td class="right">72</td><td>61</td><td class="right">49</td></tr>
+<tr><td class="algorithm">Skein-512/512</td><td>517</td><td class="right">234</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">Skein-1024/512</td><td>406</td><td class="right">106</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
+<tr><td class="algorithm">Streebog-512</td><td>112</td><td class="right">64</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
+<tr><td class="algorithm">Whirlpool</td><td>150</td><td class="right">125</td><td>80</td><td class="right">89</td><td>61</td><td class="right">58</td></tr>
+
+<tr><th class="thsa">1024-bit digest</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+</tr>
+<tr><td class="algorithm bottom">Skein-1024/1024</td><td class="bottom">406</td><td class="bottom right">106</td><td class="bottom">217</td><td class="bottom right">63</td><td class="bottom">144</td><td class="bottom right">38</td></tr>
+
+</table>
+<p>You can run the hashing performance test on your own PC using the following command:</p>
+<pre>    digest test &lt;number_of_iterations&gt; &lt;filename_to_hash&gt;</pre>
+<h2>3. MAC algorithms</h2>
+<p>Class <code>hmac</code> is also derived from <code>crypto_hash</code> and implements the same interface. The only difference is that you need to pass a reference to a hash algorithm and a key in the constructor.
+<pre>
+    hmac(const crypto_hash& hash, const uint8_t* key, size_t keylen);
+</pre>
+<p>The key can be of any length and you can use any of the supported hash algorithms to calculate HMAC. The following sample calculates HMAC-SHA-256 of a string &quot;The quick brown fox jumps over the lazy dog&quot; with key &quot;key&quot;:</p>
+<pre>
+    uint8_t hmackey[3];
+    hmackey[0] = 'k';
+    hmackey[1] = 'e';
+    hmackey[2] = 'y';
+    hmac mac(sha256(), hmackey, sizeof(hmackey));
+    uint8_t result[32];
+    mac.hash_string("The quick brown fox jumps over the lazy dog", result);
+</pre>
+<h2>4. Block cipher algorithms</h2>
+<h3>2.1. Interface description</h3>
+<p>All block cipher algorithms derive from <code>block_cipher</code> class and implement its interface.</p>
+<pre>
+    class block_cipher
+    {
+    public:
+        enum direction { encryption, decryption };
+
+        virtual ~block_cipher() {}
+
+        virtual int blocksize() const = 0;
+        virtual int keysize() const = 0;
+        virtual block_cipher* clone() const = 0;
+
+        virtual bool init(const uint8_t* key, block_cipher::direction direction) = 0;
+        virtual void encrypt_block(const uint8_t* in, uint8_t* out) = 0;
+        virtual void decrypt_block(const uint8_t* in, uint8_t* out) = 0;
+    };
+</pre>
+<p>This class provide a low-level interface to the block cipher. To start encryption or decryption, call <code>init()</code> (<code>key</code> should point to a key of <code>keysize()/8</code> bytes), then call <code>encrypt_block()</code> or <code>decrypt_block()</code> to encrypt or decrypt a block of <code>blocksize()/8</code> bytes.<br>In practice in most cases you probably want a higher-level interface such as <code>cbc</code> class described below.</p>
+</html>
+<h3>2.2. Supported algorithms</h3>
+<p>Classes derived from <code>block_cipher</code>:</p>
+<table>
+<tr><th>Class Name</th><th>Description</th></tr>
+<tr>
+<td><code>anubis128</code><br><code>anubis160</code><br><code>anubis192</code><br><code>anubis224</code><br><code>anubis256</code><br><code>anubis288</code><br><code>anubis320</code></td>
+<td class="descr"><b>Anubis</b> with block size 128 bits and key sizes 128/160/192/224/256/288/320 bits.</td>
+</tr>
+<tr>
+<td><code>rijndael128_128</code><br><code>rijndael128_160</code><br><code>rijndael128_192</code><br><code>rijndael128_224</code><br><code>rijndael128_256</code></td>
+<td class="descr"><b>Rijndael</b> with block size 128 bits and key sizes 128/160/192/224/256 bits.<br>Rijndael with block size 128 bits and key size 128, 192, 256 bits is also known as <b>AES-128, AES-192, AES-256</b>.</td>
+</tr>
+<tr>
+<td><code>rijndael192_128</code><br><code>rijndael192_160</code><br><code>rijndael192_192</code><br><code>rijndael192_224</code><br><code>rijndael192_256</code></td>
+<td class="descr"><b>Rijndael</b> with block size 192 bits and key sizes 128/160/192/224/256 bits.</td>
+</tr>
+<tr>
+<td><code>rijndael256_128</code><br><code>rijndael256_160</code><br><code>rijndael256_192</code><br><code>rijndael256_224</code><br><code>rijndael256_256</code></td>
+<td class="descr"><b>Rijndael</b> with block size 256 bits and key sizes 128/160/192/224/256 bits.</td>
+</tr>
+<tr>
+<td><code>twofish128</code><br><code>twofish192</code><br><code>twofish256</code></td>
+<td class="descr"><b>Twofish</b> with block size 128 bits and key sizes 128/192/256 bits.</td>
+</tr>
+</table>
+<h2>5. Encryption modes</h2>
+<h3>5.1. CBC mode</h3>
+<p>Class <code>cbc</code> implements the following interface:</p>
+<pre>
+    cbc(const block_cipher& cipher);
+
+    void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, block_cipher::direction direction);
+
+    void encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
+    void encrypt_final(uint8_t* out, size_t& resultlen);
+
+    void decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
+    void decrypt_final(uint8_t* out, size_t& resultlen);
+</pre>
+<p>The functions are similar to the ones from the <code>crypto_hash</code> class. To start encryption, pass one of the block ciphers to the constructor and initialize encryption using <code>init()</code> function. The length of the key in bytes should be equal to <code>keysize()/8</code> of the block cipher, and the length of the initialization vector (<code>iv</code>) in bytes should be equal to <code>blocksize()/8</code> of the block cipher. Then call <code>encrypt_update()</code> any number of times to add the next chunk of data of variable length. The <code>out</code> argument should point to the next location where the encrypted output should be written; <code>resultlen</code> is the number of bytes written to <code>out</code> as the result of the function call.</p>
+<p>When all input is consumed by <code>encrypt_update()</code> function, call <code>encrypt_final()</code> to finish the encryption. At this stage the final block will be written to <code>out</code>. Because the class implements PKCS#7 padding, the overall size of the output buffer should be equal to the size of the input rounded up to the block size of the cipher algorithm, plus one additional full block if the input size is the exact multiple of the block size. It is responsibility of the caller to make sure the buffer is large enough.</p>
+<p>Decryption is done in a similar way.</p>
+<p>A simpler but slower interface accepts a reference to <code>std::vector&lt;uint8_t&gt;</code> and appends encryption or decryption result to this vector, which is dynamically resized as needed, so that you do not need to calculate and allocate a buffer of proper size in advance:</p>
+<pre>
+    void encrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
+    void encrypt_final(std::vector<uint8_t>& out);
+
+    void decrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
+    void decrypt_final(std::vector<uint8_t>& out);
+</pre>
+<p>An even simpler but more slower interface writes the output to <code>std::ostream</code>:</p>
+<pre>
+    void encrypt_update(const uint8_t* in, size_t len, std::ostream& out);
+    void encrypt_final(std::ostream& out);
+
+    void decrypt_update(const uint8_t* in, size_t len, std::ostream& out);
+    void decrypt_final(std::ostream& out);
+</pre>
+<p>Note that even if you use the interface which writes to ostream or vector, you still need to call <code>init()</code> to set up the key and initialization vector.</p>
+<h3>5.2. CTR mode</h3>
+<p>Class <code>ctr</code> implements the following interface:</p>
+<pre>
+    ctr(const block_cipher& cipher);
+
+    void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, block_cipher::direction direction);
+    void encrypt(const uint8_t* in, size_t len, uint8_t* out);
+    void decrypt(const uint8_t* in, size_t len, uint8_t* out);
+</pre>
+<p>CTR mode turns block cipher into a stream cipher, so no padding is needed in this mode and the size of the output buffer must be the same as the size of the input data.
+The length of the key in bytes should be equal to <code>keysize()/8</code> of the block cipher, and the length of the initialization vector (<code>iv</code>) in bytes should be equal to or smaller than <code>blocksize()/8</code> of the block cipher.
+Since all output is produced immediately, no finalization function is needed in this mode.</p>
+<h3>5.3. Encryption performance</h3>
+<table>
+<tr><th colspan="3" class="thh left top right">
+Performance in megabytes per second (MB/s), higher number means faster<br><i>(measured by encrypting a 130Kb file in CBC mode 100,000 times)</i>
+</th></tr>
+<tr>
+<th rowspan="2" class="left right top bottom">Algorithm</th><th colspan="2" class="left right top">PC: Intel Xeon E5-1650 v3<br>(Haswell-EP)<br>OS: Win7 x64<br>Compiler: VC++2015</th>
+</tr>
+<tr>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+</tr>
+<tr><td class="algorithm">Anubis-128</td><td class="top">219</td><td class="right top">134</td>
+<tr><td class="algorithm">Anubis-160</td><td>205</td><td class="right">124</td>
+<tr><td class="algorithm">Anubis-192</td><td>191</td><td class="right">117</td>
+<tr><td class="algorithm">Anubis-224</td><td>180</td><td class="right">109</td>
+<tr><td class="algorithm">Anubis-256</td><td>172</td><td class="right">103</td>
+<tr><td class="algorithm">Anubis-288</td><td>161</td><td class="right">97</td>
+<tr><td class="algorithm">Anubis-320</td><td>155</td><td class="right">92</td>
+<tr><td class="algorithm top">Rijndael-128/128</td><td class="top">643</td><td class="right top">639</td>
+<tr><td class="algorithm">Rijndael-128/160</td><td>590</td><td class="right">588</td>
+<tr><td class="algorithm">Rijndael-128/192</td><td>551</td><td class="right">550</td>
+<tr><td class="algorithm">Rijndael-128/224</td><td>516</td><td class="right">513</td>
+<tr><td class="algorithm">Rijndael-128/256</td><td>480</td><td class="right">477</td>
+<tr><td class="algorithm top">Rijndael-192/128</td><td class="top">330</td><td class="right top">295</td>
+<tr><td class="algorithm">Rijndael-192/160</td><td>330</td><td class="right">295</td>
+<tr><td class="algorithm">Rijndael-192/192</td><td>330</td><td class="right">295</td>
+<tr><td class="algorithm">Rijndael-192/224</td><td>317</td><td class="right">280</td>
+<tr><td class="algorithm">Rijndael-192/256</td><td>302</td><td class="right">271</td>
+<tr><td class="algorithm top">Rijndael-256/128</td><td class="top">512</td><td class="right top">502</td>
+<tr><td class="algorithm">Rijndael-256/160</td><td>512</td><td class="right">502</td>
+<tr><td class="algorithm">Rijndael-256/192</td><td>512</td><td class="right">502</td>
+<tr><td class="algorithm">Rijndael-256/224</td><td>512</td><td class="right">502</td>
+<tr><td class="algorithm">Rijndael-256/256</td><td>512</td><td class="right">502</td>
+<tr><td class="algorithm top">Twofish-128</td><td class="top">166</td><td class="right top">146</td>
+<tr><td class="algorithm">Twofish-192</td><td>166</td><td class="right">146</td>
+<tr><td class="algorithm bottom">Twofish-256</td><td class="bottom">166</td><td class="right bottom">146</td>
+</table>
+<p>You can run the encryption performance test on your own PC using the following command:</p>
+<pre>    digest bctest &lt;number_of_iterations&gt; &lt;filename_to_encrypt&gt;</pre>
+<h2>6. Key derivation functions</h2>
+<p>Function pbkdf2 has the following prototype:</p>
+<pre>
+    void pbkdf2(hmac& hmac, const uint8_t* salt, size_t salt_len, int iterations, uint8_t* dk, size_t dklen);
+</pre>
+<p>You can use this function to derive an encryption key from a password. The password should be passed to the constructor of <code>hmac</code> object as the key.</p>
+<p>The following snippet generates a 256-bit key from password "password" and salt "salt" using PBKDF2 algorithm with 100000 iterations of HMAC-SHA256:</p>
+<pre>
+    hmac hmac(sha256(), "password");
+    uint8_t key[256 / 8];
+    pbkdf2(hmac, (const uint8_t*)"salt", 4, 100000, key, sizeof(key));
+</pre>
+<h2>7. Digest utility</h2>
+<p>Also included is a command-line utility 'digest.exe' which can be used to calculate message digest of any file(s) using any of the supported hash algorithms (similar to md5sum), for example, if you want to calculate
+Skein-512/256 hash of a file, you can run:</p>
+<pre>
+   digest skein512/256 file.ext
+</pre
+<p>You can save the checksums to a text file using the following command:</p>
+<pre>
+   digest skein512/256 * > checksums.skein
+</pre
+<p>Like md5sum, the utility can also verify checksums saved in a file, for example, if you want to verify the hashes saved
+by the previous command, you can run:</p>
+<pre>
+   digest -c skein512/256 checksums.skein
+</pre>
+<h2>8. Platform notes</h2>
+<p>To build cppcrypto from the sources you need to have yasm installed.</p>
+<p>If you are on Windows, note that the latest stable release of vsyasm (1.3.0) ships vsyasm.props file which is not compatible with Visual Studio 2013 and 2015, so you have to fix it manually or use the one included in the cppcrypto source arhive.</p>
+<p>If you use the precompiled libraries on Windows then you don't need yasm.
+Just link against cppcryptomd.lib or cppcryptomt.lib depending on your /MT or /MD settings.
+</p>
+<p>If you are on Linux, just run make and make install as usual. Tested on the latest openSUSE Tumbleweed x86_64 and openSUSE Tumbleweed i586.</p>
+<p><a href="https://sourceforge.net/projects/cppcrypto/files">Download cppcrypto from sourceforge</a></p>
+<p></p>

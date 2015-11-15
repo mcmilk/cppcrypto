@@ -243,6 +243,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 	key[13] = 0xcf;
 	key[14] = 0x4f;
 	key[15] = 0x3c;
+	wcout << _T("Cipher\t\tCBC encrypt\t\tCBC decrypt\t\tCTR encrypt\t\tCTR decrypt") << endl;
 	for (auto it = ciphers.begin(); it != ciphers.end(); ++it)
 	{
 		wcout << it->first << _T(" ");
@@ -472,6 +473,16 @@ int wmain(int argc, wchar_t* argv[])
 	hashes.emplace(make_pair(_T("sha3_256"), unique_ptr<crypto_hash>(new sha3_256)));
 	hashes.emplace(make_pair(_T("sha3_384"), unique_ptr<crypto_hash>(new sha3_384)));
 	hashes.emplace(make_pair(_T("sha3_224"), unique_ptr<crypto_hash>(new sha3_224)));
+	hashes.emplace(make_pair(_T("jh512"), unique_ptr<crypto_hash>(new jh512)));
+	hashes.emplace(make_pair(_T("jh384"), unique_ptr<crypto_hash>(new jh384)));
+	hashes.emplace(make_pair(_T("jh224"), unique_ptr<crypto_hash>(new jh224)));
+	hashes.emplace(make_pair(_T("jh256"), unique_ptr<crypto_hash>(new jh256)));
+	hashes.emplace(make_pair(_T("sha1"), unique_ptr<crypto_hash>(new sha1)));
+
+	hashes.emplace(make_pair(_T("streebog512"), unique_ptr<crypto_hash>(new streebog512)));
+	hashes.emplace(make_pair(_T("streebog256"), unique_ptr<crypto_hash>(new streebog256)));
+	hashes.emplace(make_pair(_T("sm3"), unique_ptr<crypto_hash>(new sm3)));
+	hashes.emplace(make_pair(_T("md5"), unique_ptr<crypto_hash>(new md5)));
 
 	if (argc < 3)
 	{

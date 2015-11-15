@@ -1,17 +1,15 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include "cpuinfo.h"
 #include "skein512.h"
 #include <memory.h>
 
-//#define DEBUG
+//#define CPPCRYPTO_DEBUG
 
 #ifndef _MSC_VER
-#define _aligned_malloc(a, b) aligned_alloc(b, a)
-#define _aligned_free free
-
 static inline uint64_t _rotl64(uint64_t x, unsigned n)
 {
         return (x << n) | (x >> (64 - n));
@@ -268,11 +266,12 @@ namespace cppcrypto
 
 	skein512_512::skein512_512()
 	{
-		H = (uint64_t*)_aligned_malloc(sizeof(uint64_t) * 8, 32);
+#ifndef NO_OPTIMIZED_VERSIONS
 #ifndef _M_X64
 		if (cpu_info::mmx())
 			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { Skein_512_Process_Block_mmx(tweak, H, (uint8_t*)m, static_cast<size_t>(num_blks), reallen); };
 		else
+#endif
 #endif
 			transfunc = bind(&skein512_512::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
@@ -280,7 +279,6 @@ namespace cppcrypto
 
 	skein512_512::~skein512_512()
 	{
-		_aligned_free(H);
 	}
 
 }

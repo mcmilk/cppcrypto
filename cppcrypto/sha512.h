@@ -1,12 +1,14 @@
-/******************************************************************************
-This file is part of cppcrypto library (http://cppcrypto.sourceforge.net/).
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #ifndef CPPCRYPTO_SHA512_H
 #define CPPCRYPTO_SHA512_H
 
 #include "crypto_hash.h"
+#include "alignedarray.h"
+#include <array>
 #include <functional>
 
 namespace cppcrypto
@@ -30,8 +32,8 @@ namespace cppcrypto
 		void transform(void* m, uint64_t num_blks);
 
 		std::function<void(void*, uint64_t)> transfunc;
-		uint64_t* H;
-		uint8_t m[128];
+		aligned_pod_array<uint64_t, 8, 32> H;
+		std::array<uint8_t, 128> m;
 		size_t pos;
 		uint64_t total;
 	};

@@ -1,6 +1,7 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include "twofish.h"
 #include <memory.h>
@@ -15,7 +16,7 @@ This code is released under Simplified BSD License (see license.txt).
 #define _byteswap_ulong __builtin_bswap32
 #endif
 
-//#define DEBUG 1
+//#define CPPCRYPTO_DEBUG
 
 namespace cppcrypto
 {
@@ -500,7 +501,7 @@ namespace cppcrypto
 			rk[i] = a;
 			rk[i + 1] = _rotl(a + b, 9);
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 			printf("rk[%d]: %08X\n", i, rk[i]);
 			printf("rk[%d]: %08X\n", i+1, rk[i+1]);
 #endif
@@ -552,7 +553,7 @@ namespace cppcrypto
 			x1 ^= rk[7];
 
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 			printf("x0[last]: %08X\n", x2);
 			printf("x1[last]: %08X\n", x3);
 			printf("x2[last]: %08X\n", x0);
@@ -564,7 +565,7 @@ namespace cppcrypto
 			*(((uint32_t*)out) + 2) = x0;
 			*(((uint32_t*)out) + 3) = x1;
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 			for (int i = 0; i < 128 / 8; i++)
 				printf("%02X", out[i]);
 			printf("\n");
@@ -621,7 +622,7 @@ namespace cppcrypto
 			rk[i] = a;
 			rk[i + 1] = _rotl(a + b, 9);
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 			printf("rk[%d]: %08X\n", i, rk[i]);
 			printf("rk[%d]: %08X\n", i+1, rk[i+1]);
 #endif
@@ -659,7 +660,7 @@ namespace cppcrypto
 			rk[i] = a;
 			rk[i + 1] = _rotl(a + b, 9);
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 			printf("rk[%d]: %08X\n", i, rk[i]);
 			printf("rk[%d]: %08X\n", i+1, rk[i+1]);
 #endif

@@ -1,3 +1,8 @@
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
+
 #include "ctr.h"
 #include "cpuinfo.h"
 #include <assert.h>

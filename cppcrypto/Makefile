@@ -17,11 +17,12 @@ LDFLAGS=-Wl,-z,now -Wl,-z,relro -Wl,-soname,libcppcrypto.so.0
 OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1024.o whirlpool.o crypto_hash.o \
       blake256-sse2.o blake256-sse41.o blake512-sse2.o blake512-sse41.o groestl-impl-ssse3.o groestl-impl-aesni.o \
       kupyna.o rijndael.o cbc.o hmac.o rijndael-impl-aesni.o rijndael-impl-aesni-avx2.o pbkdf2.o anubis.o ctr.o \
-      block_cipher.o twofish.o sha3.o sha3_impl_ssse3.o KeccakF-1600-opt64.o KeccakSponge.o
+      block_cipher.o twofish.o sha3.o sha3_impl_ssse3.o KeccakF-1600-opt64.o KeccakSponge.o jh.o sha1.o \
+      jh-impl-sse.o streebog.o gost3411-2012-sse41.o sm3.o md5.o
 
-OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha256-cryptopp-x86-linux.o
-OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o sha256-cryptopp-x64-linux.o 
-
+OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha256-cryptopp-x86-linux.o sha1-nayuki.o
+OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o sha256-cryptopp-x64-linux.o \
+         sha1_ssse3.o gost3411-2012-sse2.o
 
 ifeq ($(shell getconf LONG_BIT), 64)
 #ifeq ($(shell uname --hardware-platform), 86_64)
@@ -114,3 +115,17 @@ KeccakSponge.o: 3rdparty/KeccakSponge.c
 KeccakF-1600-opt64.o: 3rdparty/KeccakF-1600-opt64.c
 	$(CC) -c $(CFLAGS) -mssse3 3rdparty/KeccakF-1600-opt64.c
 
+sha1-nayuki.o: 3rdparty/sha1-nayuki.asm
+	as -o sha1-nayuki.o 3rdparty/sha1-nayuki.asm
+
+sha1_ssse3.o: 3rdparty/sha1_ssse3.asm
+	yasm -f elf64 -o sha1_ssse3.o 3rdparty/sha1_ssse3.asm
+
+jh-impl-sse.o: 3rdparty/jh-impl-sse.cpp
+	$(CXX) -c $(CXXFLAGS) -msse2 3rdparty/jh-impl-sse.cpp
+
+gost3411-2012-sse2.o: 3rdparty/gost3411-2012-sse2.c
+	$(CC) -c $(CFLAGS) -msse2 3rdparty/gost3411-2012-sse2.c
+
+gost3411-2012-sse41.o: 3rdparty/gost3411-2012-sse41.c
+	$(CC) -c $(CFLAGS) -msse4.1 3rdparty/gost3411-2012-sse41.c

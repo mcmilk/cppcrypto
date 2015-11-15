@@ -1,15 +1,14 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include "cpuinfo.h"
 #include "sha256.h"
 #include <memory.h>
-//#define DEBUG
+//#define CPPCRYPTO_DEBUG
 
 #ifndef _MSC_VER
-#define _aligned_malloc(a, b) aligned_alloc(b, a)
-#define _aligned_free free
 #define _byteswap_uint64 __builtin_bswap64
 #define _byteswap_ulong __builtin_bswap32
 #define __fastcall 
@@ -36,12 +35,10 @@ namespace cppcrypto
 {
 	sha256::~sha256()
 	{
-		_aligned_free(H);
 	}
 
 	sha256::sha256()
 	{
-		H = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 8, 32);
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::avx2() && cpu_info::bmi2())
@@ -54,13 +51,13 @@ namespace cppcrypto
 		};
 		else 
 		if (cpu_info::sse41())
-			transfunc = bind(&sha256_sse4, std::placeholders::_1, H, std::placeholders::_2);
+			transfunc = bind(&sha256_sse4, std::placeholders::_1, H.get(), std::placeholders::_2);
 		else
 #else
 #if 0
 
 		if (InstructionSet::sse41())
-			transfunc = bind(&sha256_sse4_intr, std::placeholders::_1, H, std::placeholders::_2);
+			transfunc = bind(&sha256_sse4_intr, std::placeholders::_1, H.get(), std::placeholders::_2);
 		else
 #endif
 #endif
@@ -140,8 +137,8 @@ __attribute__ ((aligned (16)))
 	{
 		if (pos && pos + len >= 64)
 		{
-			memcpy(m + pos, data, 64 - pos);
-			transfunc(m, 1);
+			memcpy(&m[0] + pos, data, 64 - pos);
+			transfunc(&m[0], 1);
 			len -= 64 - pos;
 			total += (64 - pos) * 8;
 			data += 64 - pos;
@@ -156,7 +153,7 @@ __attribute__ ((aligned (16)))
 			total += (bytes)* 8;
 			data += bytes;
 		}
-		memcpy(m+pos, data, len);
+		memcpy(&m[0]+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}
@@ -184,7 +181,7 @@ __attribute__ ((aligned (16)))
 			{
 				M[i] = _byteswap_ulong((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
 			}
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 			printf("M1 - M8: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
 				M[0], M[1], M[2], M[3], M[4], M[5], M[6], M[7], M[8], M[9], M[10], M[11], M[12], M[13], M[14], M[15]);
 #endif
@@ -204,7 +201,7 @@ __attribute__ ((aligned (16)))
 			uint32_t g = H[6];
 			uint32_t h = H[7];
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 			printf("===============================================\n");
 			printf("i = %d: %08X %08X %08X %08X %08X %08X %08X %08X\n",
 				-1, a, b, c, d, e, f, g, h);
@@ -222,7 +219,7 @@ __attribute__ ((aligned (16)))
 				c = b;
 				b = a;
 				a = T1 + T2;
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 				printf("t = %d: %08X %08X %08X %08X %08X %08X %08X %08X (T1=%08X T2=%08X)\n",
 					t, a, b, c, d, e, f, g, h, T1, T2);
 #endif
@@ -236,7 +233,7 @@ __attribute__ ((aligned (16)))
 			H[5] += f;
 			H[6] += g;
 			H[7] += h;
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 			printf("H[0] - H[7]: %08X %08X %08X %08X %08X %08X %08X %08X\n",
 				H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
 #endif
@@ -248,16 +245,14 @@ __attribute__ ((aligned (16)))
 		m[pos++] = 0x80;
 		if (pos > 56)
 		{
-			memset(m + pos, 0, 64 - pos);
-			//transform(m,1);
-			transfunc(m, 1);
+			memset(&m[0] + pos, 0, 64 - pos);
+			transfunc(&m[0], 1);
 			pos = 0;
 		}
-		memset(m + pos, 0, 56 - pos);
+		memset(&m[0] + pos, 0, 56 - pos);
 		uint64_t mlen = _byteswap_uint64(total);
-		memcpy(m + (64 - 8), &mlen, 64 / 8);
-		transfunc(m, 1);
-		//transform(m,1);
+		memcpy(&m[0] + (64 - 8), &mlen, 64 / 8);
+		transfunc(&m[0], 1);
 		for (int i = 0; i < 8; i++)
 		{
 			H[i] = _byteswap_ulong(H[i]);

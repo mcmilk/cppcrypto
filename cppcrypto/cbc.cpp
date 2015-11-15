@@ -1,3 +1,8 @@
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
+
 #include "cbc.h"
 #include "cpuinfo.h"
 #include <assert.h>
@@ -105,8 +110,6 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 			{
 				xor_block_128(in, prev, block_);
 				cipher_->encrypt_block(block_, out);
-
-				//cipher_->encrypt_block(in, out);
 				prev = out;
 				in += 16;
 				out += 16;

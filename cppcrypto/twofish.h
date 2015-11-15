@@ -1,6 +1,7 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #ifndef CPPCRYPTO_TWOFISH_H
 #define CPPCRYPTO_TWOFISH_H

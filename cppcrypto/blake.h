@@ -1,11 +1,15 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
+
 #ifndef CPPCRYPTO_BLAKE256_H
 #define CPPCRYPTO_BLAKE256_H
 
 #include "crypto_hash.h"
+#include "alignedarray.h"
 #include <functional>
+#include <array>
 
 namespace cppcrypto
 {
@@ -28,9 +32,9 @@ namespace cppcrypto
 		void transform(bool padding);
 
 		std::function<void(bool)> transfunc;
-		uint32_t* H;
-		uint32_t s[4];
-		uint8_t* m;
+		aligned_pod_array<uint32_t, 8, 64> H;
+		std::array<uint32_t, 4> s;
+		aligned_pod_array<uint8_t, 64, 64> m;
 		size_t pos;
 		uint64_t total;
 	};
@@ -53,9 +57,9 @@ namespace cppcrypto
 		void transform(bool padding);
 
 		std::function<void(bool)> transfunc;
-		uint64_t* H;
-		uint64_t s[4];
-		uint8_t* m;
+		aligned_pod_array<uint64_t, 8, 64> H;
+		std::array<uint64_t, 4> s;
+		aligned_pod_array<uint8_t, 128, 64> m;
 		size_t pos;
 		uint64_t total;
 	};

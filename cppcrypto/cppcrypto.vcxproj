@@ -231,6 +231,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdparty\gost3411-2012-sse2.h" />
+    <ClInclude Include="jh-impl.h" />
+    <ClInclude Include="jh.h" />
+    <ClInclude Include="alignedarray.h" />
     <ClInclude Include="3rdparty\KeccakF-1600-int-set.h" />
     <ClInclude Include="3rdparty\KeccakF-1600-interface.h" />
     <ClInclude Include="3rdparty\KeccakF-1600-opt64-settings.h" />
@@ -248,15 +252,19 @@
     <ClInclude Include="groestl.h" />
     <ClInclude Include="hmac.h" />
     <ClInclude Include="kupyna.h" />
+    <ClInclude Include="md5.h" />
     <ClInclude Include="pbkdf2.h" />
     <ClInclude Include="rijndael-impl.h" />
     <ClInclude Include="rijndael.h" />
+    <ClInclude Include="sha1.h" />
     <ClInclude Include="sha256.h" />
     <ClInclude Include="sha3.h" />
     <ClInclude Include="sha512.h" />
     <ClInclude Include="skein1024.h" />
     <ClInclude Include="skein256.h" />
     <ClInclude Include="skein512.h" />
+    <ClInclude Include="sm3.h" />
+    <ClInclude Include="streebog.h" />
     <ClInclude Include="twofish.h" />
     <ClInclude Include="whirlpool.h" />
     <ClInclude Include="ctr.h" />
@@ -264,6 +272,12 @@
   <ItemGroup>
     <ClCompile Include="3rdparty\blake256-sse2.c" />
     <ClCompile Include="3rdparty\blake256-sse41.c" />
+    <ClCompile Include="3rdparty\gost3411-2012-sse2.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="3rdparty\gost3411-2012-sse41.c" />
+    <ClCompile Include="3rdparty\jh-impl-sse.cpp" />
+    <ClCompile Include="jh.cpp" />
     <ClCompile Include="3rdparty\KeccakF-1600-opt64.c" />
     <ClCompile Include="3rdparty\KeccakSponge.c" />
     <ClCompile Include="3rdparty\sha256-cryptopp-x86.cpp">
@@ -286,10 +300,12 @@
     <ClCompile Include="groestl.cpp" />
     <ClCompile Include="hmac.cpp" />
     <ClCompile Include="kupyna.cpp" />
+    <ClCompile Include="md5.cpp" />
     <ClCompile Include="pbkdf2.cpp" />
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
     <ClCompile Include="rijndael-impl-aesni.cpp" />
     <ClCompile Include="rijndael.cpp" />
+    <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="sha3.cpp" />
     <ClCompile Include="sha512.cpp" />
@@ -301,6 +317,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="sm3.cpp" />
+    <ClCompile Include="streebog.cpp" />
     <ClCompile Include="twofish.cpp" />
     <ClCompile Include="whirlpool.cpp" />
   </ItemGroup>
@@ -316,6 +334,25 @@
       <Defines Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WIN64</Defines>
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN64</Defines>
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WIN64</Defines>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">true</ExcludedFromBuild>
+    </YASM>
+    <YASM Include="3rdparty\sha1-nayuki.asm">
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</PreProc>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</Parser>
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</PreProc>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</Parser>
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1</PreProc>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1</Parser>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
+    </YASM>
+    <YASM Include="3rdparty\sha1_ssse3.asm">
+      <Defines Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN_ABI</Defines>
+      <Defines Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WIN_ABI</Defines>
+      <Defines Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WIN_ABI</Defines>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">true</ExcludedFromBuild>

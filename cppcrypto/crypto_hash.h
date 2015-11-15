@@ -1,6 +1,8 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
+
 #ifndef CPPCRYPTO_HASH_H
 #define CPPCRYPTO_HASH_H
 
@@ -29,7 +31,8 @@ public:
 	void hash_string(const std::string& data, uint8_t* hash);
 
 private:
-	crypto_hash(const crypto_hash&);
+	crypto_hash(const crypto_hash&) = delete;
+	void operator=(const crypto_hash&) = delete;
 };
 
 }

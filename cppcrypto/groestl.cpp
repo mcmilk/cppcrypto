@@ -1,23 +1,22 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include "cpuinfo.h"
 #include "groestl.h"
 #include <memory.h>
 
-//#define DEBUG
+//#define CPPCRYPTO_DEBUG
 
 #ifndef _MSC_VER
-#define _aligned_malloc(a, b) aligned_alloc(b, a)
-#define _aligned_free free
 #define _byteswap_uint64 __builtin_bswap64
 #endif
 
 namespace cppcrypto
 {
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	void dump_state(const char* name, uint64_t* y, int elements = 8)
 	{
 		printf("%s: ", name);
@@ -621,14 +620,14 @@ void groestl256::outputTransform()
 void groestl256::transform()
 {
 	if (impl_)
-		return impl_->TF(h, (uint64_t*)m);
+		return impl_->TF(h, (uint64_t*)m.get());
 
 	uint64_t AQ1[8], AQ2[8], AP1[8], AP2[8];
 
 	for (int column = 0; column < 8; column++)
 	{
-		AP1[column] = h[column] ^ ((uint64_t*)m)[column];
-		AQ1[column] = ((uint64_t*)m)[column];
+		AP1[column] = h[column] ^ ((uint64_t*)m.get())[column];
+		AQ1[column] = ((uint64_t*)m.get())[column];
 	}
 
 	for (uint64_t r = 0; r < 10; r += 2)
@@ -643,14 +642,14 @@ void groestl256::transform()
 	{
 		h[column] = AP1[column] ^ AQ1[column] ^ h[column];
 	}
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	dump_state("transform", h);
 #endif
 }
 
 void groestl256::final(uint8_t* hash)
 {
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	dump_state("pre-final", h);
 #endif
 	m[pos++] = 0x80;
@@ -669,11 +668,11 @@ void groestl256::final(uint8_t* hash)
 	transform();
 	outputTransform();
 
-	uint8_t* s = (uint8_t*)h;
+	uint8_t* s = (uint8_t*)h.get();
 	for (int i = 64 - hashsize() / 8, j = 0; i < 64; i++, j++) {
 		hash[j] = s[i];
 	}
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	dump_state("post-final", h);
 #endif
 }
@@ -687,7 +686,7 @@ void groestl256::init()
 
 	if (impl_)
 		impl_->INIT(h);
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	dump_state("init", h);
 #endif
 };
@@ -702,7 +701,7 @@ void groestl512::init()
 
 	if (impl_)
 		impl_->INIT(h);
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	dump_state("init", h, 16);
 #endif
 };
@@ -725,7 +724,7 @@ void groestl512::update(const uint8_t* data, size_t len)
 
 void groestl512::final(uint8_t* hash)
 {
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	dump_state("pre-final", h, 16);
 #endif
 	m[pos++] = 0x80;
@@ -744,11 +743,11 @@ void groestl512::final(uint8_t* hash)
 	transform();
 	outputTransform();
 
-	uint8_t* s = (uint8_t*)h;
+	uint8_t* s = (uint8_t*)h.get();
 	for (int i = 128 - hashsize()/8, j = 0; i < 128; i++, j++) {
 		hash[j] = s[i];
 	}
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	dump_state("post-final", h, 16);
 #endif
 }
@@ -798,14 +797,14 @@ void groestl512::outputTransform()
 void groestl512::transform()
 {
 	if (impl_)
-		return impl_->TF(h, (uint64_t*)m);
+		return impl_->TF(h.get(), (uint64_t*)m.get());
 
 	uint64_t AQ1[16], AQ2[16], AP1[16], AP2[16];
 
 	for (int column = 0; column < 16; column++)
 	{
-		AP1[column] = h[column] ^ ((uint64_t*)m)[column];
-		AQ1[column] = ((uint64_t*)m)[column];
+		AP1[column] = h[column] ^ ((uint64_t*)m.get())[column];
+		AQ1[column] = ((uint64_t*)m.get())[column];
 	}
 
 	for (uint64_t r = 0; r < 14; r += 2)
@@ -820,67 +819,43 @@ void groestl512::transform()
 	{
 		h[column] = AP1[column] ^ AQ1[column] ^ h[column];
 	}
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 	dump_state("transform", h, 16);
 #endif
 }
 
 groestl256::~groestl256()
 {
-	if (impl_)
-	{
-		impl_->~groestl_impl();
-		_aligned_free(impl_);
-	}
-	_aligned_free(h);
-	_aligned_free(m);
 }
 
 groestl512::~groestl512()
 {
-	if (impl_)
-	{
-		impl_->~groestl_impl();
-		_aligned_free(impl_);
-	}
-	_aligned_free(h);
-	_aligned_free(m);
 }
 
 groestl256::groestl256()
-	: impl_(0)
 {
-	h = (uint64_t*)_aligned_malloc(sizeof(uint64_t)*8, 32);
-	m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 64, 32);
 #ifndef NO_OPTIMIZED_VERSIONS
 	if (cpu_info::aesni())
 	{
-		void* p = _aligned_malloc(sizeof(detail::groestl_impl_aesni_256), 32);
-		impl_ = new (p)detail::groestl_impl_aesni_256;
+		impl_.create<detail::groestl_impl_aesni_256>();
 	}
 	else if (cpu_info::ssse3())
 	{
-		void* p = _aligned_malloc(sizeof(detail::groestl_impl_ssse3_256), 32);
-		impl_ = new (p)detail::groestl_impl_ssse3_256;
+		impl_.create<detail::groestl_impl_ssse3_256>();
 	}
 #endif
 }
 
 groestl512::groestl512()
-	: impl_(0)
 {
-	h = (uint64_t*)_aligned_malloc(sizeof(uint64_t) * 16, 32);
-	m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 128, 32);
 #ifndef NO_OPTIMIZED_VERSIONS
 	if (cpu_info::aesni())
 	{
-		void* p = _aligned_malloc(sizeof(detail::groestl_impl_aesni_512), 32);
-		impl_ = new (p)detail::groestl_impl_aesni_512;
+		impl_.create<detail::groestl_impl_aesni_512>();
 	}
 	else if (cpu_info::ssse3())
 	{
-		void* p = _aligned_malloc(sizeof(detail::groestl_impl_ssse3_512), 32);
-		impl_ = new (p)detail::groestl_impl_ssse3_512;
+		impl_.create<detail::groestl_impl_ssse3_512>();
 	}
 #endif
 

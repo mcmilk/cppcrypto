@@ -1,6 +1,7 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include <malloc.h>
 #include "cpuinfo.h"
@@ -327,8 +328,10 @@ namespace cppcrypto
 	sha3_512::sha3_512()
 		: impl_(0)
 	{
+#ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::ssse3())
 			impl_ = new detail::sha3_impl_ssse3;
+#endif
 	}
 	sha3_512::~sha3_512()
 	{
@@ -337,8 +340,10 @@ namespace cppcrypto
 	sha3_256::sha3_256()
 		: impl_(0)
 	{
+#ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::ssse3())
 			impl_ = new detail::sha3_impl_ssse3;
+#endif
 	}
 	sha3_256::~sha3_256()
 	{
@@ -347,8 +352,10 @@ namespace cppcrypto
 	sha3_384::sha3_384()
 		: impl_(0)
 	{
+#ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::ssse3())
 			impl_ = new detail::sha3_impl_ssse3;
+#endif
 	}
 	sha3_384::~sha3_384()
 	{
@@ -357,11 +364,14 @@ namespace cppcrypto
 	sha3_224::sha3_224()
 		: impl_(0)
 	{
+#ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::ssse3())
 			impl_ = new detail::sha3_impl_ssse3;
+#endif
 	}
 	sha3_224::~sha3_224()
 	{
 		delete impl_;
 	}
+
 }

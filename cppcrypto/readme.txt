@@ -3,8 +3,8 @@ It has no external dependencies.
 
 At the moment it supports the following primitives.
 
-1) Hash functions: blake, groestl, sha-2 (incl. sha512/224 and sha512/256), sha-3, skein-256, skein-512, skein-1024,
-whirlpool, kupyna.
+1) Hash functions: blake, groestl, jh, kupyna, md5, sha-1, sha-2 (incl. sha512/224 and sha512/256), sha-3,
+skein-256, skein-512, skein-1024, sm3, streebog, whirlpool.
 
 To get the full list of supported hash algorithms, run 'digest' in hash function performance test mode:
 

@@ -96,16 +96,40 @@
     <ClInclude Include="sha3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="3rdparty\KeccakF-1600-interface.h">
+    <ClInclude Include="alignedarray.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jh-impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sha1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="streebog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\gost3411-2012-sse2.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakF-1600-interface.h">
+      <Filter>3rdparty</Filter>
     </ClInclude>
     <ClInclude Include="3rdparty\KeccakF-1600-int-set.h">
-      <Filter>Header Files</Filter>
+      <Filter>3rdparty</Filter>
     </ClInclude>
     <ClInclude Include="3rdparty\KeccakF-1600-opt64-settings.h">
-      <Filter>Header Files</Filter>
+      <Filter>3rdparty</Filter>
     </ClInclude>
     <ClInclude Include="3rdparty\KeccakSponge.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="sm3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="md5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -200,13 +224,37 @@
     <ClCompile Include="sha3.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="3rdparty\KeccakF-1600-opt64.c">
+    <ClCompile Include="jh.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sha1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="streebog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\gost3411-2012-sse2.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\gost3411-2012-sse41.c">
+      <Filter>3rdparty</Filter>
     </ClCompile>
     <ClCompile Include="3rdparty\KeccakSponge.c">
-      <Filter>Source Files</Filter>
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\KeccakF-1600-opt64.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\jh-impl-sse.cpp">
+      <Filter>3rdparty</Filter>
     </ClCompile>
     <ClCompile Include="3rdparty\sha3_impl_ssse3.cpp">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="sm3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="md5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -241,14 +289,24 @@
     <YASM Include="3rdparty\whirlpool-nayuki.asm">
       <Filter>3rdparty</Filter>
     </YASM>
+    <YASM Include="3rdparty\sha1_ssse3.asm">
+      <Filter>3rdparty</Filter>
+    </YASM>
+    <YASM Include="3rdparty\sha1-nayuki.asm">
+      <Filter>3rdparty</Filter>
+    </YASM>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="3rdparty\KeccakF-1600-simd128.macros">
+      <Filter>3rdparty</Filter>
+    </None>
+    <None Include="3rdparty\KeccakF-1600-unrolling.macros">
+      <Filter>3rdparty</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <MASM Include="3rdparty\sha256-cryptopp-x64.asm">
-      <Filter>Source Files</Filter>
+      <Filter>3rdparty</Filter>
     </MASM>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="3rdparty\KeccakF-1600-simd128.macros" />
-    <None Include="3rdparty\KeccakF-1600-unrolling.macros" />
   </ItemGroup>
 </Project>

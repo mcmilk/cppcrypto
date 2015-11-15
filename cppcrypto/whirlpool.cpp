@@ -1,7 +1,7 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
-
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include "cpuinfo.h"
 #include "whirlpool.h"
@@ -9,12 +9,10 @@ This code is released under Simplified BSD License (see license.txt).
 #include <memory.h>
 
 #ifndef _MSC_VER
-#define _aligned_malloc(a, b) aligned_alloc(b, a)
-#define _aligned_free free
 #define _byteswap_uint64 __builtin_bswap64
 #endif
 
-//#define DEBUG
+//#define CPPCRYPTO_DEBUG
 
 extern "C"
 {
@@ -597,7 +595,7 @@ namespace cppcrypto
 
 	void whirlpool::final(uint8_t* hash)
 	{
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		dump_state("pre-final", h);
 #endif
 		uint64_t mlen = _byteswap_uint64(total);
@@ -613,7 +611,7 @@ namespace cppcrypto
 		transfunc(m, 1);
 		memcpy(hash, h, hashsize() / 8);
 
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		dump_state("post-final", h);
 #endif
 	}
@@ -624,9 +622,7 @@ namespace cppcrypto
 		total = 0;
 		memset(h, 0, sizeof(uint64_t) * 8);
 
-		//if (impl_)
-		//	impl_->INIT(h);
-#ifdef DEBUG
+#ifdef CPPCRYPTO_DEBUG
 		dump_state("init", h);
 #endif
 	};
@@ -636,9 +632,6 @@ namespace cppcrypto
 	{
 		for (uint64_t b = 0; b < num_blks; b++)
 		{
-			// This optimized Whirlpool compression function is taken from the Whirlpool File Checker by vampire77.
-			// Source files can be used without any restriction and are provided without any warranty.
-
 			union { unsigned char ch[64]; unsigned long long ll[8]; } K, state;
 			unsigned long long L[8];
 			int r, i;
@@ -674,20 +667,18 @@ namespace cppcrypto
 
 	whirlpool::whirlpool() 
 	{
-		h = (uint64_t*)_aligned_malloc(sizeof(uint64_t) * 8, 16);
-		m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 64, 16);
-
+#ifndef NO_OPTIMIZED_VERSIONS
 #ifndef _M_X64
 		if (cpu_info::sse2())
-			transfunc = [this](void* mp, uint64_t num_blks) { for (uint64_t b = 0; b < num_blks; b++) whirlpool_compress_asm((uint8_t*)h, ((const uint8_t*)mp)+b*64); };
+			transfunc = [this](void* mp, uint64_t num_blks) { for (uint64_t b = 0; b < num_blks; b++) whirlpool_compress_asm((uint8_t*)h.get(), ((const uint8_t*)mp)+b*64); };
 		else
+#endif
 #endif
 			transfunc = std::bind(&whirlpool::transform, this, std::placeholders::_1, std::placeholders::_2);
 	}
+
 	whirlpool::~whirlpool()
 	{
-		_aligned_free(h);
-		_aligned_free(m);
 	}
 
 }

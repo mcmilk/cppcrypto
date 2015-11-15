@@ -1,6 +1,8 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
+
 #include "rijndael-impl.h"
 #include <xmmintrin.h>
 #include <wmmintrin.h>

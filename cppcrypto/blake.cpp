@@ -1,12 +1,13 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include "cpuinfo.h"
 #include "blake.h"
 #include <memory.h>
 
-//#define DEBUG
+//#define CPPCRYPTO_DEBUG
 //#define NO_OPTIMIZED_VERSIONS
 
 #ifndef _MSC_VER
@@ -114,7 +115,7 @@ namespace cppcrypto
 		G(r, 6, v[2], v[7], v[8], v[13], M);
 		G(r, 7, v[3], v[4], v[9], v[14], M);
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("round %d v0 - v15: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
 			r, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15]);
 #endif
@@ -126,9 +127,9 @@ namespace cppcrypto
 		uint32_t M[16];
 		for (uint32_t i = 0; i < 64 / 4; i++)
 		{
-			M[i] = _byteswap_ulong((reinterpret_cast<const uint32_t*>(m)[i]));
+			M[i] = _byteswap_ulong((reinterpret_cast<const uint32_t*>(m.get())[i]));
 		}
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("M1 - M8: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
 			M[0], M[1], M[2], M[3], M[4], M[5], M[6], M[7], M[8], M[9], M[10], M[11], M[12], M[13], M[14], M[15]);
 #endif
@@ -139,7 +140,7 @@ namespace cppcrypto
 			t0 = t1 = 0;
 
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("t0: %08X (%d), t1: %08X\n", t0, t0, t1);
 #endif
 
@@ -154,7 +155,7 @@ namespace cppcrypto
 		v[14] = t1 ^ c[6];
 		v[15] = t1 ^ c[7];
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("v0 - v15: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
 			v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15]);
 #endif
@@ -184,7 +185,7 @@ namespace cppcrypto
 		H[3] = H[3] ^ s[3] ^ v[3] ^ v[3 + 8];
 		H[3 + 4] = H[3 + 4] ^ s[3] ^ v[3 + 4] ^ v[3 + 8 + 4];
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("H[0] - H[7]: %08X %08X %08X %08X %08X %08X %08X %08X\n",
 			H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
 #endif
@@ -279,7 +280,7 @@ namespace cppcrypto
 		G512(r, 6, v[2], v[7], v[8], v[13], M);
 		G512(r, 7, v[3], v[4], v[9], v[14], M);
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("round %d v0 - v15: %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx\n",
 			r, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15]);
 #endif
@@ -291,9 +292,9 @@ namespace cppcrypto
 		uint64_t M[16];
 		for (uint32_t i = 0; i < 128 / 8; i++)
 		{
-			M[i] = _byteswap_uint64((reinterpret_cast<const uint64_t*>(m)[i]));
+			M[i] = _byteswap_uint64((reinterpret_cast<const uint64_t*>(m.get())[i]));
 		}
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("M1 - M8: %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx\n",
 			M[0], M[1], M[2], M[3], M[4], M[5], M[6], M[7], M[8], M[9], M[10], M[11], M[12], M[13], M[14], M[15]);
 #endif
@@ -303,7 +304,7 @@ namespace cppcrypto
 		if (padding)
 			t0 = t1 = 0;
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("t0: %016llx (%d), t1: %016llx\n", t0, t0, t1);
 #endif
 
@@ -318,7 +319,7 @@ namespace cppcrypto
 		v[14] = t1 ^ c512[6];
 		v[15] = t1 ^ c512[7];
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("v0 - v15: %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx\n",
 			v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15]);
 #endif
@@ -350,7 +351,7 @@ namespace cppcrypto
 		H[3] = H[3] ^ s[3] ^ v[3] ^ v[3 + 8];
 		H[3 + 4] = H[3 + 4] ^ s[3] ^ v[3 + 4] ^ v[3 + 8 + 4];
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 		printf("H[0] - H[7]: %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx\n",
 			H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
 #endif
@@ -416,9 +417,6 @@ namespace cppcrypto
 
 	blake256::blake256()
 	{
-		H = (uint32_t*)_aligned_malloc(sizeof(uint32_t) * 8, 64);
-		m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 64, 64);
-
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::avx() && false)
@@ -446,16 +444,11 @@ namespace cppcrypto
 
 	blake256::~blake256()
 	{
-		_aligned_free(H);
-		_aligned_free(m);
 	}
 
 
 	blake512::blake512()
 	{
-		H = (uint64_t*)_aligned_malloc(sizeof(uint64_t) * 8, 64);
-		m = (uint8_t*)_aligned_malloc(sizeof(uint8_t) * 128, 64);
-
 #ifndef NO_OPTIMIZED_VERSIONS
 			if (cpu_info::sse41())
 				transfunc = [this](bool padding) { blake512_compress_sse41(H, total, padding, m); };
@@ -468,8 +461,6 @@ namespace cppcrypto
 
 	blake512::~blake512()
 	{
-		_aligned_free(H);
-		_aligned_free(m);
 	}
 
 }

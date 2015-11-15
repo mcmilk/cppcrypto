@@ -4,6 +4,7 @@ This code is released under Simplified BSD License (see license.txt).
 ******************************************************************************/
 
 #include "../sha3.h"
+#include <algorithm>
 extern "C"
 {
 #include "KeccakSponge.h"
@@ -38,6 +39,17 @@ namespace cppcrypto
 		void sha3_impl_ssse3::final(uint8_t* hash, unsigned long long hashbitlen)
 		{
 			Squeeze(static_cast<spongeState*>(state), hash, hashbitlen);
+		}
+
+		sha3_impl_ssse3::sha3_impl_ssse3(sha3_impl_ssse3&& other)
+		{
+			state = other.state;
+			other.state = nullptr;
+		}
+		sha3_impl_ssse3& sha3_impl_ssse3::operator=(sha3_impl_ssse3&& other)
+		{
+			std::swap(state, other.state);
+			return *this;
 		}
 
 	}

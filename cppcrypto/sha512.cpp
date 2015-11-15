@@ -1,17 +1,16 @@
-/******************************************************************************
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include <malloc.h>
 #include "cpuinfo.h"
 #include "sha512.h"
 #include <memory.h>
 
-//#define DEBUG
+//#define CPPCRYPTO_DEBUG
 
 #ifndef _MSC_VER
-#define _aligned_malloc(a, b) aligned_alloc(b, a)
-#define _aligned_free free
 #define _byteswap_uint64 __builtin_bswap64
 #define _byteswap_ulong __builtin_bswap32
 #endif
@@ -33,11 +32,9 @@ namespace cppcrypto
 
 	sha512::~sha512()
 	{
-		_aligned_free(H);
 	}
 	sha512::sha512()
 	{
-		H = (uint64_t*)_aligned_malloc(sizeof(uint64_t) * 8, 32);
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::avx2() && cpu_info::bmi2())
@@ -50,7 +47,7 @@ namespace cppcrypto
 		};
 		else
 			if (cpu_info::sse41())
-				transfunc = bind(&sha512_sse4, std::placeholders::_1, H, std::placeholders::_2);
+				transfunc = bind(&sha512_sse4, std::placeholders::_1, H.get(), std::placeholders::_2);
 		else
 #else
 			if (cpu_info::sse2())
@@ -137,9 +134,8 @@ namespace cppcrypto
 	{
 		if (pos && pos + len >= 128)
 		{
-			memcpy(m + pos, data, 128 - pos);
-			//transform();
-			transfunc(m, 1);
+			memcpy(&m[0] + pos, data, 128 - pos);
+			transfunc(&m[0], 1);
 			len -= 128 - pos;
 			total += (128 - pos) * 8;
 			data += 128 - pos;
@@ -149,13 +145,12 @@ namespace cppcrypto
 		{
 			size_t blocks = len / 128;
 			size_t bytes = blocks * 128;
-			//transform();
 			transfunc((void*)data, blocks);
 			len -= bytes;
 			total += (bytes)* 8;
 			data += bytes;
 		}
-		memcpy(m+pos, data, len);
+		memcpy(&m[0]+pos, data, len);
 		pos += len;
 		total += len * 8;
 	}
@@ -183,7 +178,7 @@ namespace cppcrypto
 			{
 				M[i] = _byteswap_uint64((reinterpret_cast<const uint64_t*>(m)[blk * 16 + i]));
 			}
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 			printf("M1 - M8: %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X\n",
 				M[0], M[1], M[2], M[3], M[4], M[5], M[6], M[7], M[8], M[9], M[10], M[11], M[12], M[13], M[14], M[15]);
 #endif
@@ -203,7 +198,7 @@ namespace cppcrypto
 			uint64_t g = H[6];
 			uint64_t h = H[7];
 
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 			printf("===============================================\n");
 			printf("i = %d: %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X\n",
 				-1, a, b, c, d, e, f, g, h);
@@ -221,7 +216,7 @@ namespace cppcrypto
 				c = b;
 				b = a;
 				a = T1 + T2;
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 				printf("t = %d: %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X (T1=%I64X T2=%I64X)\n",
 					t, a, b, c, d, e, f, g, h, T1, T2);
 #endif
@@ -235,7 +230,7 @@ namespace cppcrypto
 			H[5] += f;
 			H[6] += g;
 			H[7] += h;
-#ifdef	DEBUG
+#ifdef	CPPCRYPTO_DEBUG
 			printf("H[0] - H[7]: %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X\n",
 				H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
 #endif
@@ -247,16 +242,14 @@ namespace cppcrypto
 		m[pos++] = 0x80;
 		if (pos > 112)
 		{
-			memset(m + pos, 0, 128 - pos);
-			//transform();
-			transfunc(m, 1);
+			memset(&m[0] + pos, 0, 128 - pos);
+			transfunc(&m[0], 1);
 			pos = 0;
 		}
-		memset(m + pos, 0, 128 - pos);
+		memset(&m[0] + pos, 0, 128 - pos);
 		uint64_t mlen = _byteswap_uint64(total);
-		memcpy(m + (128 - 8), &mlen, 64 / 8);
-		transfunc(m, 1);
-		//transform();
+		memcpy(&m[0] + (128 - 8), &mlen, 64 / 8);
+		transfunc(&m[0], 1);
 		for (int i = 0; i < 8; i++)
 		{
 			H[i] = _byteswap_uint64(H[i]);

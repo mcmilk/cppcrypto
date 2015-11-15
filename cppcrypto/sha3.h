@@ -1,7 +1,7 @@
-/******************************************************************************
-This file is part of cppcrypto library (http://cppcrypto.sourceforge.net/).
-This code is released under Simplified BSD License (see license.txt).
-******************************************************************************/
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #ifndef CPPCRYPTO_SHA3_512_H
 #define CPPCRYPTO_SHA3_512_H
@@ -21,6 +21,9 @@ namespace cppcrypto
 			void init(unsigned int rate, unsigned int capacity);
 			void update(const uint8_t* data, size_t len);
 			void final(uint8_t* hash, unsigned long long hashsize);
+
+			sha3_impl_ssse3(sha3_impl_ssse3&& other);
+			sha3_impl_ssse3& operator=(sha3_impl_ssse3&& other);
 		private:
 			void* state;
 		};

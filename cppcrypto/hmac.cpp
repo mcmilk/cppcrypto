@@ -1,3 +1,7 @@
+/*
+This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourceforge.net/)
+and released into public domain.
+*/
 
 #include "hmac.h"
 #include <memory.h>
