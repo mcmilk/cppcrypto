@@ -17,11 +17,12 @@ namespace cppcrypto
 	public:
 		enum direction { encryption, decryption };
 
-		virtual ~block_cipher() {}
+		virtual ~block_cipher();
 
 		virtual int blocksize() const = 0;
 		virtual int keysize() const = 0;
 		virtual block_cipher* clone() const = 0;
+		virtual void clear() {}
 
 		virtual bool init(const uint8_t* key, block_cipher::direction direction) = 0;
 		virtual void encrypt_block(const uint8_t* in, uint8_t* out) = 0;

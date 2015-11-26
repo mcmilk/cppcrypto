@@ -264,7 +264,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s) ");
 
 #ifdef DUMP_TEST_ENCRYPTION
-		ofstream ofile(filename + _T(".") + it->first, ios::out | ios::binary);
+		ofstream ofile(filename + _T(".") + it->first + _T(".cbc.encrypted"), ios::out | ios::binary);
 		ofile.write((const char*)ct, next - ct);
 #endif
 
@@ -283,7 +283,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s)");
 
 #ifdef DUMP_TEST_ENCRYPTION
-		ofstream odfile(filename + _T(".") + it->first + _T(".decrypted"), ios::out | ios::binary);
+		ofstream odfile(filename + _T(".") + it->first + _T(".cbc.decrypted"), ios::out | ios::binary);
 		odfile.write((const char*)pt, next2 - pt);
 #endif
 
@@ -303,7 +303,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s) ");
 
 #ifdef DUMP_TEST_ENCRYPTION
-		ofstream octrfile(filename + _T(".") + it->first + _T(".ctr"), ios::out | ios::binary);
+		ofstream octrfile(filename + _T(".") + it->first + _T(".ctr.encrypted"), ios::out | ios::binary);
 		octrfile.write((const char*)ct, fileSize);
 #endif
 
@@ -386,11 +386,46 @@ void test_vector(block_cipher* bc, const wstring& filename)
 				bc->init(key, bc->encryption);
 				bc->encrypt_block(pt, res);
 				if (memcmp(ct, res, second.length() / 2))
+				{
 					cerr << "Error for test " << count << " (encryption)" << endl;
+#define CPPCRYPTO_DEBUG
+#ifdef CPPCRYPTO_DEBUG
+					wprintf(_T("key was: "));
+					for (int i = 0; i < bc->keysize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)key[i]);
+					wprintf(_T("\nPT was: "));
+					for (int i = 0; i < bc->blocksize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)pt[i]);
+					wprintf(_T("\nCT is: "));
+					for (int i = 0; i < bc->blocksize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)res[i]);
+					wprintf(_T("\nexpected is: "));
+					for (int i = 0; i < bc->blocksize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)ct[i]);
+					wprintf(_T("\n"));
+#endif
+				}
 				bc->init(key, bc->decryption);
 				bc->decrypt_block(ct, res);
 				if (memcmp(pt, res, second.length() / 2))
+				{
 					cerr << "Error for test " << count << " (decryption)" << endl;
+#ifdef CPPCRYPTO_DEBUG
+					wprintf(_T("key was: "));
+					for (int i = 0; i < bc->keysize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)key[i]);
+					wprintf(_T("\nCT was: "));
+					for (int i = 0; i < bc->blocksize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)ct[i]);
+					wprintf(_T("\nPT is: "));
+					for (int i = 0; i < bc->blocksize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)res[i]);
+					wprintf(_T("\nexpected is: "));
+					for (int i = 0; i < bc->blocksize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)pt[i]);
+					wprintf(_T("\n"));
+#endif
+				}
 				count++;
 			}
 
@@ -431,6 +466,27 @@ int wmain(int argc, wchar_t* argv[])
 	block_ciphers.emplace(make_pair(_T("twofish128"), unique_ptr<block_cipher>(new twofish128)));
 	block_ciphers.emplace(make_pair(_T("twofish192"), unique_ptr<block_cipher>(new twofish192)));
 	block_ciphers.emplace(make_pair(_T("twofish256"), unique_ptr<block_cipher>(new twofish256)));
+
+	block_ciphers.emplace(make_pair(_T("serpent256"), unique_ptr<block_cipher>(new serpent256)));
+	block_ciphers.emplace(make_pair(_T("serpent128"), unique_ptr<block_cipher>(new serpent128)));
+	block_ciphers.emplace(make_pair(_T("serpent192"), unique_ptr<block_cipher>(new serpent192)));
+
+	block_ciphers.emplace(make_pair(_T("cast6_256"), unique_ptr<block_cipher>(new cast6_256)));
+	block_ciphers.emplace(make_pair(_T("cast6_224"), unique_ptr<block_cipher>(new cast6_224)));
+	block_ciphers.emplace(make_pair(_T("cast6_192"), unique_ptr<block_cipher>(new cast6_192)));
+	block_ciphers.emplace(make_pair(_T("cast6_160"), unique_ptr<block_cipher>(new cast6_160)));
+	block_ciphers.emplace(make_pair(_T("cast6_128"), unique_ptr<block_cipher>(new cast6_128)));
+
+	block_ciphers.emplace(make_pair(_T("rijndael160-128"), unique_ptr<block_cipher>(new rijndael160_128)));
+	block_ciphers.emplace(make_pair(_T("rijndael160-160"), unique_ptr<block_cipher>(new rijndael160_160)));
+	block_ciphers.emplace(make_pair(_T("rijndael160-192"), unique_ptr<block_cipher>(new rijndael160_192)));
+	block_ciphers.emplace(make_pair(_T("rijndael160-224"), unique_ptr<block_cipher>(new rijndael160_224)));
+	block_ciphers.emplace(make_pair(_T("rijndael160-256"), unique_ptr<block_cipher>(new rijndael160_256)));
+	block_ciphers.emplace(make_pair(_T("rijndael224-128"), unique_ptr<block_cipher>(new rijndael224_128)));
+	block_ciphers.emplace(make_pair(_T("rijndael224-160"), unique_ptr<block_cipher>(new rijndael224_160)));
+	block_ciphers.emplace(make_pair(_T("rijndael224-192"), unique_ptr<block_cipher>(new rijndael224_192)));
+	block_ciphers.emplace(make_pair(_T("rijndael224-224"), unique_ptr<block_cipher>(new rijndael224_224)));
+	block_ciphers.emplace(make_pair(_T("rijndael224-256"), unique_ptr<block_cipher>(new rijndael224_256)));
 
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));

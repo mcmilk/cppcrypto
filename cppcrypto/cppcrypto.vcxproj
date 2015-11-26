@@ -154,6 +154,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -232,6 +234,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\gost3411-2012-sse2.h" />
+    <ClInclude Include="cast6.h" />
     <ClInclude Include="jh-impl.h" />
     <ClInclude Include="jh.h" />
     <ClInclude Include="alignedarray.h" />
@@ -254,8 +257,10 @@
     <ClInclude Include="kupyna.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="pbkdf2.h" />
+    <ClInclude Include="rijndael-impl-aesni-common.h" />
     <ClInclude Include="rijndael-impl.h" />
     <ClInclude Include="rijndael.h" />
+    <ClInclude Include="serpent.h" />
     <ClInclude Include="sha1.h" />
     <ClInclude Include="sha256.h" />
     <ClInclude Include="sha3.h" />
@@ -277,6 +282,7 @@
     </ClCompile>
     <ClCompile Include="3rdparty\gost3411-2012-sse41.c" />
     <ClCompile Include="3rdparty\jh-impl-sse.cpp" />
+    <ClCompile Include="cast6.cpp" />
     <ClCompile Include="jh.cpp" />
     <ClCompile Include="3rdparty\KeccakF-1600-opt64.c" />
     <ClCompile Include="3rdparty\KeccakSponge.c" />
@@ -305,6 +311,7 @@
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
     <ClCompile Include="rijndael-impl-aesni.cpp" />
     <ClCompile Include="rijndael.cpp" />
+    <ClCompile Include="serpent.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="sha3.cpp" />
@@ -337,6 +344,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">true</ExcludedFromBuild>
+    </YASM>
+    <YASM Include="3rdparty\serpent-waite.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </YASM>
     <YASM Include="3rdparty\sha1-nayuki.asm">
       <PreProc Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</PreProc>

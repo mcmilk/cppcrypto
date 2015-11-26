@@ -18,9 +18,9 @@ OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1
       blake256-sse2.o blake256-sse41.o blake512-sse2.o blake512-sse41.o groestl-impl-ssse3.o groestl-impl-aesni.o \
       kupyna.o rijndael.o cbc.o hmac.o rijndael-impl-aesni.o rijndael-impl-aesni-avx2.o pbkdf2.o anubis.o ctr.o \
       block_cipher.o twofish.o sha3.o sha3_impl_ssse3.o KeccakF-1600-opt64.o KeccakSponge.o jh.o sha1.o \
-      jh-impl-sse.o streebog.o gost3411-2012-sse41.o sm3.o md5.o
+      jh-impl-sse.o streebog.o gost3411-2012-sse41.o sm3.o md5.o serpent.o cast6.o
 
-OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha256-cryptopp-x86-linux.o sha1-nayuki.o
+OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha256-cryptopp-x86-linux.o sha1-nayuki.o serpent-waite.o
 OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o sha256-cryptopp-x64-linux.o \
          sha1_ssse3.o gost3411-2012-sse2.o
 
@@ -129,3 +129,7 @@ gost3411-2012-sse2.o: 3rdparty/gost3411-2012-sse2.c
 
 gost3411-2012-sse41.o: 3rdparty/gost3411-2012-sse41.c
 	$(CC) -c $(CFLAGS) -msse4.1 3rdparty/gost3411-2012-sse41.c
+
+serpent-waite.o: 3rdparty/serpent-waite.asm
+	yasm -f elf32 -o serpent-waite.o 3rdparty/serpent-waite.asm
+

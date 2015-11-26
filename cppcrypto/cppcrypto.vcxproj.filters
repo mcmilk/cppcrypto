@@ -132,6 +132,15 @@
     <ClInclude Include="md5.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="serpent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cast6.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rijndael-impl-aesni-common.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -257,6 +266,12 @@
     <ClCompile Include="md5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="serpent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cast6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <YASM Include="3rdparty\sha256_avx1.asm">
@@ -293,6 +308,9 @@
       <Filter>3rdparty</Filter>
     </YASM>
     <YASM Include="3rdparty\sha1-nayuki.asm">
+      <Filter>3rdparty</Filter>
+    </YASM>
+    <YASM Include="3rdparty\serpent-waite.asm">
       <Filter>3rdparty</Filter>
     </YASM>
   </ItemGroup>

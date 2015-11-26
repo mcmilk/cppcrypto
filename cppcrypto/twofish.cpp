@@ -538,6 +538,12 @@ namespace cppcrypto
 
 	namespace detail
 	{
+		void twofish::clear()
+		{
+			memset(rk, 0, sizeof(rk));
+			memset(s, 0, sizeof(s));
+		}
+
 		void twofish::encrypt_block(const uint8_t* in, uint8_t* out)
 		{
 			uint32_t x0 = *(((const uint32_t*)in) + 0) ^ rk[0];

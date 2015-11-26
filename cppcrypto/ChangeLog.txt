@@ -1,3 +1,7 @@
+cppcrypto-0.08
+
+New block cipher algorithms: CAST6, Serpent, Rijndael with block sizes 160 and 224.
+
 cppcrypto-0.07
 
 New hash algorithms: JH, MD5, SHA-1, SM3, Streebog

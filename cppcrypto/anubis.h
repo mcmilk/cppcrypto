@@ -18,6 +18,7 @@ namespace cppcrypto
 		int blocksize() const { return 128; }
 		int keysize() const { return 128; }
 		block_cipher* clone() const { return new anubis128; }
+		void clear();
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 		void encrypt_block(const uint8_t* in, uint8_t* out);
@@ -33,6 +34,7 @@ namespace cppcrypto
 		int blocksize() const { return 128; }
 		int keysize() const { return 160; }
 		block_cipher* clone() const { return new anubis160; }
+		void clear();
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 		void encrypt_block(const uint8_t* in, uint8_t* out);
@@ -48,6 +50,7 @@ namespace cppcrypto
 		int blocksize() const { return 128; }
 		int keysize() const { return 192; }
 		block_cipher* clone() const { return new anubis192; }
+		void clear();
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 		void encrypt_block(const uint8_t* in, uint8_t* out);
@@ -63,6 +66,7 @@ namespace cppcrypto
 		int blocksize() const { return 128; }
 		int keysize() const { return 224; }
 		block_cipher* clone() const { return new anubis224; }
+		void clear();
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 		void encrypt_block(const uint8_t* in, uint8_t* out);
@@ -78,6 +82,7 @@ namespace cppcrypto
 		int blocksize() const { return 128; }
 		int keysize() const { return 256; }
 		block_cipher* clone() const { return new anubis256; }
+		void clear();
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 		void encrypt_block(const uint8_t* in, uint8_t* out);
@@ -93,6 +98,7 @@ namespace cppcrypto
 		int blocksize() const { return 128; }
 		int keysize() const { return 288; }
 		block_cipher* clone() const { return new anubis288; }
+		void clear();
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 		void encrypt_block(const uint8_t* in, uint8_t* out);
@@ -108,6 +114,7 @@ namespace cppcrypto
 		int blocksize() const { return 128; }
 		int keysize() const { return 320; }
 		block_cipher* clone() const { return new anubis320; }
+		void clear();
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 		void encrypt_block(const uint8_t* in, uint8_t* out);

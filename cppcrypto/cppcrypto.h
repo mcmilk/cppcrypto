@@ -23,5 +23,7 @@
 #include "streebog.h"
 #include "sm3.h"
 #include "md5.h"
+#include "serpent.h"
+#include "cast6.h"
 
 #endif

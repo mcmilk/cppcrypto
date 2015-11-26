@@ -251,8 +251,13 @@ void cbc::decrypt_final(uint8_t* out, size_t& resultlen)
 	for (int i = 0; i < nb_; i++)
 		block_[i] ^= iv_[i];
 	int padding = block_[pos - 1];
-	resultlen = nb_ - padding;
-	memcpy(out, block_, resultlen);
+	if (padding <= nb_)
+	{
+		resultlen = nb_ - padding;
+		memcpy(out, block_, resultlen);
+	}
+	else
+		resultlen = 0;
 }
 
 void cbc::encrypt_update(const uint8_t* in, size_t len, std::ostream& out)

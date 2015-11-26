@@ -7,6 +7,10 @@ and released into public domain.
 
 namespace cppcrypto
 {
+	block_cipher::~block_cipher()
+	{
+		clear();
+	}
 
 	void block_cipher::encrypt_blocks(const uint8_t* in, uint8_t* out, size_t n)
 	{

@@ -158,6 +158,102 @@ namespace cppcrypto
 			void decrypt_block(const uint8_t* in, uint8_t* out);
 		};
 
+		class rijndael160_128_impl_aesni : public rijndael_impl
+		{
+		protected:
+			__m128i rk[15];
+
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+			void encrypt_block(const uint8_t* in, uint8_t* out);
+			void decrypt_block(const uint8_t* in, uint8_t* out);
+		};
+
+		class rijndael160_160_impl_aesni : public rijndael_impl
+		{
+		protected:
+			__m128i rk[15];
+
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+			void encrypt_block(const uint8_t* in, uint8_t* out);
+			void decrypt_block(const uint8_t* in, uint8_t* out);
+		};
+
+		class rijndael160_192_impl_aesni : public rijndael_impl
+		{
+		protected:
+			__m128i rk[17];
+
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+			void encrypt_block(const uint8_t* in, uint8_t* out);
+			void decrypt_block(const uint8_t* in, uint8_t* out);
+		};
+
+		class rijndael160_224_impl_aesni : public rijndael_impl
+		{
+		protected:
+			__m128i rk[18];
+
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+			void encrypt_block(const uint8_t* in, uint8_t* out);
+			void decrypt_block(const uint8_t* in, uint8_t* out);
+		};
+
+		class rijndael160_256_impl_aesni : public rijndael_impl
+		{
+		protected:
+			__m128i rk[19];
+
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+			void encrypt_block(const uint8_t* in, uint8_t* out);
+			void decrypt_block(const uint8_t* in, uint8_t* out);
+		};
+
+		class rijndael224_128_impl_aesni : public rijndael_impl
+		{
+		protected:
+			__m128i rk[25];
+
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+			void encrypt_block(const uint8_t* in, uint8_t* out);
+			void decrypt_block(const uint8_t* in, uint8_t* out);
+		};
+
+		class rijndael224_160_impl_aesni : public rijndael224_128_impl_aesni
+		{
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+		};
+
+		class rijndael224_192_impl_aesni : public rijndael224_128_impl_aesni
+		{
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+		};
+
+		class rijndael224_224_impl_aesni : public rijndael224_128_impl_aesni
+		{
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+		};
+
+		class rijndael224_256_impl_aesni : public rijndael_impl
+		{
+		protected:
+			__m128i rk[27];
+
+		public:
+			bool init(const uint8_t* key, block_cipher::direction direction);
+			void encrypt_block(const uint8_t* in, uint8_t* out);
+			void decrypt_block(const uint8_t* in, uint8_t* out);
+		};
+
+
 	}
 }
 #endif

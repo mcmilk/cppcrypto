@@ -595,6 +595,11 @@ namespace cppcrypto
 		*(((uint32_t*)out) + 3) = _byteswap_ulong(t3);
 	}
 
+	void anubis128::clear()
+	{
+		memset(W_, 0, sizeof(W_));
+	}
+
 	bool anubis128::init(const uint8_t* key, block_cipher::direction direction)
 	{
 		return anubis_init<128>(key, direction, W_);
@@ -608,6 +613,11 @@ namespace cppcrypto
 	void anubis128::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		return anubis_encrypt_block<128>(in, out, W_);
+	}
+
+	void anubis160::clear()
+	{
+		memset(W_, 0, sizeof(W_));
 	}
 
 	bool anubis160::init(const uint8_t* key, block_cipher::direction direction)
@@ -625,6 +635,11 @@ namespace cppcrypto
 		return anubis_encrypt_block<160>(in, out, W_);
 	}
 
+	void anubis192::clear()
+	{
+		memset(W_, 0, sizeof(W_));
+	}
+
 	bool anubis192::init(const uint8_t* key, block_cipher::direction direction)
 	{
 		return anubis_init<192>(key, direction, W_);
@@ -638,6 +653,11 @@ namespace cppcrypto
 	void anubis192::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		return anubis_encrypt_block<192>(in, out, W_);
+	}
+
+	void anubis224::clear()
+	{
+		memset(W_, 0, sizeof(W_));
 	}
 
 	bool anubis224::init(const uint8_t* key, block_cipher::direction direction)
@@ -655,6 +675,11 @@ namespace cppcrypto
 		return anubis_encrypt_block<224>(in, out, W_);
 	}
 
+	void anubis256::clear()
+	{
+		memset(W_, 0, sizeof(W_));
+	}
+
 	bool anubis256::init(const uint8_t* key, block_cipher::direction direction)
 	{
 		return anubis_init<256>(key, direction, W_);
@@ -670,6 +695,11 @@ namespace cppcrypto
 		return anubis_encrypt_block<256>(in, out, W_);
 	}
 
+	void anubis288::clear()
+	{
+		memset(W_, 0, sizeof(W_));
+	}
+
 	bool anubis288::init(const uint8_t* key, block_cipher::direction direction)
 	{
 		return anubis_init<288>(key, direction, W_);
@@ -683,6 +713,11 @@ namespace cppcrypto
 	void anubis288::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		return anubis_encrypt_block<288>(in, out, W_);
+	}
+
+	void anubis320::clear()
+	{
+		memset(W_, 0, sizeof(W_));
 	}
 
 	bool anubis320::init(const uint8_t* key, block_cipher::direction direction)

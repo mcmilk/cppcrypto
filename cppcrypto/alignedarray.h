@@ -21,6 +21,7 @@ namespace cppcrypto
 		operator T*() { return t; }
 		T* get() { return t; }
 		void reset();
+		size_t size() const { return N; }
 
 		aligned_pod_array(aligned_pod_array&& other);
 		aligned_pod_array& operator=(aligned_pod_array&& other);

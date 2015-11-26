@@ -92,6 +92,7 @@ td.descr {
         virtual int hashsize() const = 0;
         virtual int blocksize() const = 0;
 
+        // Convenience functions
         void hash_string(const uint8_t* data, size_t len, uint8_t* hash);
         void hash_string(const char* data, size_t len, uint8_t* hash);
         void hash_string(const std::string& data, uint8_t* hash);
@@ -119,7 +120,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 </tr>
 <tr>
 <td><code>kupyna256</code><br><code>kupyna512</code></td>
-<td class="descr"><b>Kupyna</b> hash function (Ukrainian national standard DSTU 7564:2014) with output sizes 256/512 bits.<br>224/384-bit functions are not provided because they are identical to the truncated 256/512-bit output.</td>
+<td class="descr"><b>Kupyna</b> hash function (Ukrainian national standard DSTU 7564:2014) with output sizes 256/512 bits.<br>224/384-bit functions are not provided because their output is identical to the truncated 256/512-bit output.</td>
 <!--<td class="descr"><b>Kupyna</b> hash function (Ukrainian national standard DSTU 7564:2014) with output sizes 256/512 bits.<br>Functions with output size 224/384 bits are not provided because their output is identical<br>to the output from 256/512 functions truncated to the corresponding number of bytes.</td>-->
 </tr>
 <tr>
@@ -292,11 +293,8 @@ In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and
     public:
         enum direction { encryption, decryption };
 
-        virtual ~block_cipher() {}
-
         virtual int blocksize() const = 0;
         virtual int keysize() const = 0;
-        virtual block_cipher* clone() const = 0;
 
         virtual bool init(const uint8_t* key, block_cipher::direction direction) = 0;
         virtual void encrypt_block(const uint8_t* in, uint8_t* out) = 0;
@@ -311,19 +309,35 @@ In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and
 <tr><th>Class Name</th><th>Description</th></tr>
 <tr>
 <td><code>anubis128</code><br><code>anubis160</code><br><code>anubis192</code><br><code>anubis224</code><br><code>anubis256</code><br><code>anubis288</code><br><code>anubis320</code></td>
-<td class="descr"><b>Anubis</b> with block size 128 bits and key sizes 128/160/192/224/256/288/320 bits.</td>
+<td class="descr"><b>Anubis</b> cipher with block size 128 bits and key sizes 128/160/192/224/256/288/320 bits.</td>
+</tr>
+<tr>
+<td><code>cast6_128</code><br><code>cast6_160</code><br><code>cast6_192</code><br><code>cast6_224</code><br><code>cast6_256</code></td>
+<td class="descr"><b>CAST6</b> (aka <b>CAST-256</b>) cipher with block size 128 bits and key sizes 128/160/192/224/256 bits.</td>
 </tr>
 <tr>
 <td><code>rijndael128_128</code><br><code>rijndael128_160</code><br><code>rijndael128_192</code><br><code>rijndael128_224</code><br><code>rijndael128_256</code></td>
-<td class="descr"><b>Rijndael</b> with block size 128 bits and key sizes 128/160/192/224/256 bits.<br>Rijndael with block size 128 bits and key size 128, 192, 256 bits is also known as <b>AES-128, AES-192, AES-256</b>.</td>
+<td class="descr"><b>Rijndael</b> cipher with block size 128 bits and key sizes 128/160/192/224/256 bits.<br>Rijndael with block size 128 bits and key size 128, 192, 256 bits is also known as <b>AES-128, AES-192, AES-256</b>.</td>
+</tr>
+<tr>
+<td><code>rijndael160_128</code><br><code>rijndael160_160</code><br><code>rijndael160_192</code><br><code>rijndael160_224</code><br><code>rijndael160_256</code></td>
+<td class="descr"><b>Rijndael</b> cipher with block size 160 bits and key sizes 128/160/192/224/256 bits.</td>
 </tr>
 <tr>
 <td><code>rijndael192_128</code><br><code>rijndael192_160</code><br><code>rijndael192_192</code><br><code>rijndael192_224</code><br><code>rijndael192_256</code></td>
-<td class="descr"><b>Rijndael</b> with block size 192 bits and key sizes 128/160/192/224/256 bits.</td>
+<td class="descr"><b>Rijndael</b> cipher with block size 192 bits and key sizes 128/160/192/224/256 bits.</td>
+</tr>
+<tr>
+<td><code>rijndael224_128</code><br><code>rijndael224_160</code><br><code>rijndael224_192</code><br><code>rijndael224_224</code><br><code>rijndael224_256</code></td>
+<td class="descr"><b>Rijndael</b> cipher with block size 224 bits and key sizes 128/160/192/224/256 bits.</td>
 </tr>
 <tr>
 <td><code>rijndael256_128</code><br><code>rijndael256_160</code><br><code>rijndael256_192</code><br><code>rijndael256_224</code><br><code>rijndael256_256</code></td>
-<td class="descr"><b>Rijndael</b> with block size 256 bits and key sizes 128/160/192/224/256 bits.</td>
+<td class="descr"><b>Rijndael</b> cipher with block size 256 bits and key sizes 128/160/192/224/256 bits.</td>
+</tr>
+<tr>
+<td><code>serpent128</code><br><code>serpent192</code><br><code>serpent256</code></td>
+<td class="descr"><b>Serpent</b> cipher with block size 128 bits and key sizes 128/192/256 bits.</td>
 </tr>
 <tr>
 <td><code>twofish128</code><br><code>twofish192</code><br><code>twofish256</code></td>
@@ -394,24 +408,42 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
 <tr><td class="algorithm">Anubis-256</td><td>172</td><td class="right">103</td>
 <tr><td class="algorithm">Anubis-288</td><td>161</td><td class="right">97</td>
 <tr><td class="algorithm">Anubis-320</td><td>155</td><td class="right">92</td>
+<tr><td class="algorithm top">CAST6-128</td><td class="top">107</td><td class="right top">96</td>
+<tr><td class="algorithm">CAST6-160</td><td>107</td><td class="right">96</td>
+<tr><td class="algorithm">CAST6-192</td><td>107</td><td class="right">96</td>
+<tr><td class="algorithm">CAST6-224</td><td>107</td><td class="right">96</td>
+<tr><td class="algorithm bottom">CAST6-256</td><td class="bottom">107</td><td class="right bottom">96</td>
 <tr><td class="algorithm top">Rijndael-128/128</td><td class="top">643</td><td class="right top">639</td>
 <tr><td class="algorithm">Rijndael-128/160</td><td>590</td><td class="right">588</td>
 <tr><td class="algorithm">Rijndael-128/192</td><td>551</td><td class="right">550</td>
 <tr><td class="algorithm">Rijndael-128/224</td><td>516</td><td class="right">513</td>
 <tr><td class="algorithm">Rijndael-128/256</td><td>480</td><td class="right">477</td>
+<tr><td class="algorithm top">Rijndael-160/128</td><td class="top">281</td><td class="right top">210</td>
+<tr><td class="algorithm">Rijndael-160/160</td><td>281</td><td class="right">209</td>
+<tr><td class="algorithm">Rijndael-160/192</td><td>267</td><td class="right">199</td>
+<tr><td class="algorithm">Rijndael-160/224</td><td>256</td><td class="right">186</td>
+<tr><td class="algorithm">Rijndael-160/256</td><td>229</td><td class="right">178</td>
 <tr><td class="algorithm top">Rijndael-192/128</td><td class="top">330</td><td class="right top">295</td>
 <tr><td class="algorithm">Rijndael-192/160</td><td>330</td><td class="right">295</td>
 <tr><td class="algorithm">Rijndael-192/192</td><td>330</td><td class="right">295</td>
 <tr><td class="algorithm">Rijndael-192/224</td><td>317</td><td class="right">280</td>
 <tr><td class="algorithm">Rijndael-192/256</td><td>302</td><td class="right">271</td>
+<tr><td class="algorithm top">Rijndael-224/128</td><td class="top">307</td><td class="right top">238</td>
+<tr><td class="algorithm">Rijndael-224/160</td><td>307</td><td class="right">238</td>
+<tr><td class="algorithm">Rijndael-224/192</td><td>306</td><td class="right">238</td>
+<tr><td class="algorithm">Rijndael-224/224</td><td>307</td><td class="right">238</td>
+<tr><td class="algorithm">Rijndael-224/256</td><td>295</td><td class="right">225</td>
 <tr><td class="algorithm top">Rijndael-256/128</td><td class="top">512</td><td class="right top">502</td>
 <tr><td class="algorithm">Rijndael-256/160</td><td>512</td><td class="right">502</td>
 <tr><td class="algorithm">Rijndael-256/192</td><td>512</td><td class="right">502</td>
 <tr><td class="algorithm">Rijndael-256/224</td><td>512</td><td class="right">502</td>
 <tr><td class="algorithm">Rijndael-256/256</td><td>512</td><td class="right">502</td>
-<tr><td class="algorithm top">Twofish-128</td><td class="top">166</td><td class="right top">146</td>
-<tr><td class="algorithm">Twofish-192</td><td>166</td><td class="right">146</td>
-<tr><td class="algorithm bottom">Twofish-256</td><td class="bottom">166</td><td class="right bottom">146</td>
+<tr><td class="algorithm top">Serpent-128</td><td class="top">82</td><td class="right top">95</td>
+<tr><td class="algorithm">Serpent-192</td><td>82</td><td class="right">95</td>
+<tr><td class="algorithm bottom">Serpent-256</td><td class="bottom">82</td><td class="right bottom">95</td>
+<tr><td class="algorithm top">Twofish-128</td><td class="top">167</td><td class="right top">146</td>
+<tr><td class="algorithm">Twofish-192</td><td>167</td><td class="right">146</td>
+<tr><td class="algorithm bottom">Twofish-256</td><td class="bottom">167</td><td class="right bottom">146</td>
 </table>
 <p>You can run the encryption performance test on your own PC using the following command:</p>
 <pre>    digest bctest &lt;number_of_iterations&gt; &lt;filename_to_encrypt&gt;</pre>

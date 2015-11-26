@@ -20,6 +20,7 @@ namespace cppcrypto
 			int blocksize() const { return 128; }
 			void encrypt_block(const uint8_t* in, uint8_t* out);
 			void decrypt_block(const uint8_t* in, uint8_t* out);
+			void clear();
 
 		protected:
 			uint32_t rk[40];
