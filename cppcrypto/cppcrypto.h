@@ -25,5 +25,7 @@
 #include "md5.h"
 #include "serpent.h"
 #include "cast6.h"
+#include "camellia.h"
+#include "kalyna.h"
 
 #endif

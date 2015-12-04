@@ -234,6 +234,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3rdparty\gost3411-2012-sse2.h" />
+    <ClInclude Include="camellia.h" />
     <ClInclude Include="cast6.h" />
     <ClInclude Include="jh-impl.h" />
     <ClInclude Include="jh.h" />
@@ -254,6 +255,7 @@
     <ClInclude Include="groestl-impl.h" />
     <ClInclude Include="groestl.h" />
     <ClInclude Include="hmac.h" />
+    <ClInclude Include="kalyna.h" />
     <ClInclude Include="kupyna.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="pbkdf2.h" />
@@ -282,6 +284,7 @@
     </ClCompile>
     <ClCompile Include="3rdparty\gost3411-2012-sse41.c" />
     <ClCompile Include="3rdparty\jh-impl-sse.cpp" />
+    <ClCompile Include="camellia.cpp" />
     <ClCompile Include="cast6.cpp" />
     <ClCompile Include="jh.cpp" />
     <ClCompile Include="3rdparty\KeccakF-1600-opt64.c" />
@@ -305,6 +308,7 @@
     <ClCompile Include="ctr.cpp" />
     <ClCompile Include="groestl.cpp" />
     <ClCompile Include="hmac.cpp" />
+    <ClCompile Include="kalyna.cpp" />
     <ClCompile Include="kupyna.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="pbkdf2.cpp" />

@@ -59,6 +59,24 @@ namespace cppcrypto
 
 	}
 
+	static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_t* out, size_t n)
+	{
+		if (cpu_info::sse2())
+		{
+			__m128i b = _mm_loadu_si128((const __m128i*) in);
+			__m128i p = _mm_loadu_si128((const __m128i*) prev);
+
+			_mm_storeu_si128((__m128i*) out, _mm_xor_si128(b, p));
+			for (size_t i = 16; i < n; i++)
+				out[i] = in[i] ^ prev[i];
+		}
+		else {
+			for (size_t i = 0; i < n; i++)
+				out[i] = in[i] ^ prev[i];
+		}
+
+	}
+
 	ctr::ctr(const block_cipher& cipher)
 		: block_(0), iv_(0), pos(0), nb_(cipher.blocksize() / 8), cipher_(cipher.clone())
 	{
@@ -118,6 +136,11 @@ namespace cppcrypto
 				else if (nb == 256 / 8)
 				{
 					xor_block_256(in + i, block_, out + i);
+					i += nb;
+				}
+				else if (nb > 128 / 8 && nb < 256/8)
+				{
+					xor_block_128n(in + i, block_, out + i, nb);
 					i += nb;
 				}
 				else

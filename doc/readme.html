@@ -89,8 +89,8 @@ td.descr {
         virtual void update(const uint8_t* data, size_t len) = 0;
         virtual void final(uint8_t* hash) = 0;
 
-        virtual int hashsize() const = 0;
-        virtual int blocksize() const = 0;
+        virtual size_t hashsize() const = 0;
+        virtual size_t blocksize() const = 0;
 
         // Convenience functions
         void hash_string(const uint8_t* data, size_t len, uint8_t* hash);
@@ -309,39 +309,36 @@ In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and
 <tr><th>Class Name</th><th>Description</th></tr>
 <tr>
 <td><code>anubis128</code><br><code>anubis160</code><br><code>anubis192</code><br><code>anubis224</code><br><code>anubis256</code><br><code>anubis288</code><br><code>anubis320</code></td>
-<td class="descr"><b>Anubis</b> cipher with block size 128 bits and key sizes 128/160/192/224/256/288/320 bits.</td>
+<td class="descr"><b>Anubis</b> cipher<br>with block size 128 bits and key sizes 128/160/192/224/256/288/320 bits.</td>
 </tr>
 <tr>
 <td><code>cast6_128</code><br><code>cast6_160</code><br><code>cast6_192</code><br><code>cast6_224</code><br><code>cast6_256</code></td>
-<td class="descr"><b>CAST6</b> (aka <b>CAST-256</b>) cipher with block size 128 bits and key sizes 128/160/192/224/256 bits.</td>
+<td class="descr"><b>CAST6</b> (aka <b>CAST-256</b>) cipher<br>with block size 128 bits and key sizes 128/160/192/224/256 bits.</td>
 </tr>
 <tr>
-<td><code>rijndael128_128</code><br><code>rijndael128_160</code><br><code>rijndael128_192</code><br><code>rijndael128_224</code><br><code>rijndael128_256</code></td>
-<td class="descr"><b>Rijndael</b> cipher with block size 128 bits and key sizes 128/160/192/224/256 bits.<br>Rijndael with block size 128 bits and key size 128, 192, 256 bits is also known as <b>AES-128, AES-192, AES-256</b>.</td>
+<td><code>camellia128</code><br><code>camellia192</code><br><code>camellia256</code></td>
+<td class="descr"><b>Camellia</b> cipher (recommended by NESSIE and CRYPTREC)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
 </tr>
 <tr>
-<td><code>rijndael160_128</code><br><code>rijndael160_160</code><br><code>rijndael160_192</code><br><code>rijndael160_224</code><br><code>rijndael160_256</code></td>
-<td class="descr"><b>Rijndael</b> cipher with block size 160 bits and key sizes 128/160/192/224/256 bits.</td>
+<td><code>kalyna128_128</code><br><code>kalyna128_256</code><br><code>kalyna256_256</code><br><code>kalyna256_512</code><br><code>kalyna512_512</code></td>
+<td class="descr"><b>Kalyna</b> cipher (Ukrainian national standard DSTU 7624:2014)<br>with block sizes 128/256/512 bits and key sizes 128/256/512 bits.</td>
 </tr>
 <tr>
-<td><code>rijndael192_128</code><br><code>rijndael192_160</code><br><code>rijndael192_192</code><br><code>rijndael192_224</code><br><code>rijndael192_256</code></td>
-<td class="descr"><b>Rijndael</b> cipher with block size 192 bits and key sizes 128/160/192/224/256 bits.</td>
-</tr>
-<tr>
-<td><code>rijndael224_128</code><br><code>rijndael224_160</code><br><code>rijndael224_192</code><br><code>rijndael224_224</code><br><code>rijndael224_256</code></td>
-<td class="descr"><b>Rijndael</b> cipher with block size 224 bits and key sizes 128/160/192/224/256 bits.</td>
-</tr>
-<tr>
-<td><code>rijndael256_128</code><br><code>rijndael256_160</code><br><code>rijndael256_192</code><br><code>rijndael256_224</code><br><code>rijndael256_256</code></td>
-<td class="descr"><b>Rijndael</b> cipher with block size 256 bits and key sizes 128/160/192/224/256 bits.</td>
+<td><code>rijndael128_128</code><br><code>rijndael128_160</code><br><code>rijndael128_192</code><br><code>rijndael128_224</code><br><code>rijndael128_256</code>
+<br><code>rijndael160_128</code><br><code>rijndael160_160</code><br><code>rijndael160_192</code><br><code>rijndael160_224</code><br><code>rijndael160_256</code>
+<br><code>rijndael192_128</code><br><code>rijndael192_160</code><br><code>rijndael192_192</code><br><code>rijndael192_224</code><br><code>rijndael192_256</code>
+<br><code>rijndael224_128</code><br><code>rijndael224_160</code><br><code>rijndael224_192</code><br><code>rijndael224_224</code><br><code>rijndael224_256</code>
+<br><code>rijndael256_128</code><br><code>rijndael256_160</code><br><code>rijndael256_192</code><br><code>rijndael256_224</code><br><code>rijndael256_256</code>
+</td>
+<td class="descr"><b>Rijndael</b> cipher (AES winner)<br>with block sizes 128/160/192/224/256 bits<br>and key sizes 128/160/192/224/256 bits.<br><br>Rijndael with block size 128 bits and key size 128, 192, 256 bits<br>is also known as<br> <b>AES-128, AES-192, AES-256</b>.<br><br>All 25 Rijndael variants are accelerated using AES-NI instructions,<br>if they are supported by CPU.</td>
 </tr>
 <tr>
 <td><code>serpent128</code><br><code>serpent192</code><br><code>serpent256</code></td>
-<td class="descr"><b>Serpent</b> cipher with block size 128 bits and key sizes 128/192/256 bits.</td>
+<td class="descr"><b>Serpent</b> cipher (one of AES finalists)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
 </tr>
 <tr>
 <td><code>twofish128</code><br><code>twofish192</code><br><code>twofish256</code></td>
-<td class="descr"><b>Twofish</b> with block size 128 bits and key sizes 128/192/256 bits.</td>
+<td class="descr"><b>Twofish</b> cipher (one of AES finalists)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
 </tr>
 </table>
 <h2>5. Encryption modes</h2>
@@ -401,49 +398,57 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
 <tr>
 <th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
-<tr><td class="algorithm">Anubis-128</td><td class="top">219</td><td class="right top">134</td>
-<tr><td class="algorithm">Anubis-160</td><td>205</td><td class="right">124</td>
-<tr><td class="algorithm">Anubis-192</td><td>191</td><td class="right">117</td>
-<tr><td class="algorithm">Anubis-224</td><td>180</td><td class="right">109</td>
-<tr><td class="algorithm">Anubis-256</td><td>172</td><td class="right">103</td>
-<tr><td class="algorithm">Anubis-288</td><td>161</td><td class="right">97</td>
-<tr><td class="algorithm">Anubis-320</td><td>155</td><td class="right">92</td>
-<tr><td class="algorithm top">CAST6-128</td><td class="top">107</td><td class="right top">96</td>
-<tr><td class="algorithm">CAST6-160</td><td>107</td><td class="right">96</td>
-<tr><td class="algorithm">CAST6-192</td><td>107</td><td class="right">96</td>
-<tr><td class="algorithm">CAST6-224</td><td>107</td><td class="right">96</td>
-<tr><td class="algorithm bottom">CAST6-256</td><td class="bottom">107</td><td class="right bottom">96</td>
-<tr><td class="algorithm top">Rijndael-128/128</td><td class="top">643</td><td class="right top">639</td>
-<tr><td class="algorithm">Rijndael-128/160</td><td>590</td><td class="right">588</td>
-<tr><td class="algorithm">Rijndael-128/192</td><td>551</td><td class="right">550</td>
-<tr><td class="algorithm">Rijndael-128/224</td><td>516</td><td class="right">513</td>
-<tr><td class="algorithm">Rijndael-128/256</td><td>480</td><td class="right">477</td>
-<tr><td class="algorithm top">Rijndael-160/128</td><td class="top">281</td><td class="right top">210</td>
-<tr><td class="algorithm">Rijndael-160/160</td><td>281</td><td class="right">209</td>
-<tr><td class="algorithm">Rijndael-160/192</td><td>267</td><td class="right">199</td>
-<tr><td class="algorithm">Rijndael-160/224</td><td>256</td><td class="right">186</td>
-<tr><td class="algorithm">Rijndael-160/256</td><td>229</td><td class="right">178</td>
-<tr><td class="algorithm top">Rijndael-192/128</td><td class="top">330</td><td class="right top">295</td>
-<tr><td class="algorithm">Rijndael-192/160</td><td>330</td><td class="right">295</td>
-<tr><td class="algorithm">Rijndael-192/192</td><td>330</td><td class="right">295</td>
-<tr><td class="algorithm">Rijndael-192/224</td><td>317</td><td class="right">280</td>
-<tr><td class="algorithm">Rijndael-192/256</td><td>302</td><td class="right">271</td>
-<tr><td class="algorithm top">Rijndael-224/128</td><td class="top">307</td><td class="right top">238</td>
-<tr><td class="algorithm">Rijndael-224/160</td><td>307</td><td class="right">238</td>
-<tr><td class="algorithm">Rijndael-224/192</td><td>306</td><td class="right">238</td>
-<tr><td class="algorithm">Rijndael-224/224</td><td>307</td><td class="right">238</td>
-<tr><td class="algorithm">Rijndael-224/256</td><td>295</td><td class="right">225</td>
-<tr><td class="algorithm top">Rijndael-256/128</td><td class="top">512</td><td class="right top">502</td>
-<tr><td class="algorithm">Rijndael-256/160</td><td>512</td><td class="right">502</td>
-<tr><td class="algorithm">Rijndael-256/192</td><td>512</td><td class="right">502</td>
-<tr><td class="algorithm">Rijndael-256/224</td><td>512</td><td class="right">502</td>
-<tr><td class="algorithm">Rijndael-256/256</td><td>512</td><td class="right">502</td>
-<tr><td class="algorithm top">Serpent-128</td><td class="top">82</td><td class="right top">95</td>
-<tr><td class="algorithm">Serpent-192</td><td>82</td><td class="right">95</td>
-<tr><td class="algorithm bottom">Serpent-256</td><td class="bottom">82</td><td class="right bottom">95</td>
-<tr><td class="algorithm top">Twofish-128</td><td class="top">167</td><td class="right top">146</td>
-<tr><td class="algorithm">Twofish-192</td><td>167</td><td class="right">146</td>
-<tr><td class="algorithm bottom">Twofish-256</td><td class="bottom">167</td><td class="right bottom">146</td>
+<tr><td class="algorithm">Anubis-128</td><td class="top">225</td><td class="right top">138</td>
+<tr><td class="algorithm">Anubis-160</td><td>206</td><td class="right">128</td>
+<tr><td class="algorithm">Anubis-192</td><td>198</td><td class="right">119</td>
+<tr><td class="algorithm">Anubis-224</td><td>186</td><td class="right">112</td>
+<tr><td class="algorithm">Anubis-256</td><td>176</td><td class="right">105</td>
+<tr><td class="algorithm">Anubis-288</td><td>163</td><td class="right">100</td>
+<tr><td class="algorithm">Anubis-320</td><td>157</td><td class="right">94</td>
+<tr><td class="algorithm top">Camellia-128</td><td class="top">148</td><td class="right top">94</td>
+<tr><td class="algorithm">Camellia-192</td><td>113</td><td class="right">71</td>
+<tr><td class="algorithm">Camellia-256</td><td>113</td><td class="right">71</td>
+<tr><td class="algorithm top">CAST6-128</td><td class="top">109</td><td class="right top">99</td>
+<tr><td class="algorithm">CAST6-160</td><td>109</td><td class="right">99</td>
+<tr><td class="algorithm">CAST6-192</td><td>109</td><td class="right">99</td>
+<tr><td class="algorithm">CAST6-224</td><td>109</td><td class="right">99</td>
+<tr><td class="algorithm bottom">CAST6-256</td><td class="bottom">109</td><td class="right bottom">99</td>
+<tr><td class="algorithm top">Kalyna-128/128</td><td class="top">179</td><td class="right top">112</td>
+<tr><td class="algorithm">Kalyna-128/256</td><td>132</td><td class="right">82</td>
+<tr><td class="algorithm">Kalyna-256/256</td><td>177</td><td class="right">85</td>
+<tr><td class="algorithm">Kalyna-256/512</td><td>140</td><td class="right">67</td>
+<tr><td class="algorithm">Kalyna-512/512</td><td>155</td><td class="right">66</td>
+<tr><td class="algorithm top">Rijndael-128/128</td><td class="top">657</td><td class="right top">656</td>
+<tr><td class="algorithm">Rijndael-128/160</td><td>607</td><td class="right">607</td>
+<tr><td class="algorithm">Rijndael-128/192</td><td>564</td><td class="right">566</td>
+<tr><td class="algorithm">Rijndael-128/224</td><td>525</td><td class="right">527</td>
+<tr><td class="algorithm">Rijndael-128/256</td><td>493</td><td class="right">490</td>
+<tr><td class="algorithm top">Rijndael-160/128</td><td class="top">339</td><td class="right top">253</td>
+<tr><td class="algorithm">Rijndael-160/160</td><td>339</td><td class="right">254</td>
+<tr><td class="algorithm">Rijndael-160/192</td><td>318</td><td class="right">238</td>
+<tr><td class="algorithm">Rijndael-160/224</td><td>299</td><td class="right">223</td>
+<tr><td class="algorithm">Rijndael-160/256</td><td>282</td><td class="right">211</td>
+<tr><td class="algorithm top">Rijndael-192/128</td><td class="top">425</td><td class="right top">373</td>
+<tr><td class="algorithm">Rijndael-192/160</td><td>425</td><td class="right">373</td>
+<tr><td class="algorithm">Rijndael-192/192</td><td>425</td><td class="right">373</td>
+<tr><td class="algorithm">Rijndael-192/224</td><td>399</td><td class="right">352</td>
+<tr><td class="algorithm">Rijndael-192/256</td><td>378</td><td class="right">334</td>
+<tr><td class="algorithm top">Rijndael-224/128</td><td class="top">370</td><td class="right top">287</td>
+<tr><td class="algorithm">Rijndael-224/160</td><td>370</td><td class="right">287</td>
+<tr><td class="algorithm">Rijndael-224/192</td><td>370</td><td class="right">287</td>
+<tr><td class="algorithm">Rijndael-224/224</td><td>370</td><td class="right">287</td>
+<tr><td class="algorithm">Rijndael-224/256</td><td>349</td><td class="right">268</td>
+<tr><td class="algorithm top">Rijndael-256/128</td><td class="top">528</td><td class="right top">527</td>
+<tr><td class="algorithm">Rijndael-256/160</td><td>528</td><td class="right">527</td>
+<tr><td class="algorithm">Rijndael-256/192</td><td>528</td><td class="right">527</td>
+<tr><td class="algorithm">Rijndael-256/224</td><td>528</td><td class="right">527</td>
+<tr><td class="algorithm">Rijndael-256/256</td><td>528</td><td class="right">527</td>
+<tr><td class="algorithm top">Serpent-128</td><td class="top">84</td><td class="right top">96</td>
+<tr><td class="algorithm">Serpent-192</td><td>84</td><td class="right">96</td>
+<tr><td class="algorithm bottom">Serpent-256</td><td class="bottom">84</td><td class="right bottom">96</td>
+<tr><td class="algorithm top">Twofish-128</td><td class="top">171</td><td class="right top">151</td>
+<tr><td class="algorithm">Twofish-192</td><td>171</td><td class="right">151</td>
+<tr><td class="algorithm bottom">Twofish-256</td><td class="bottom">171</td><td class="right bottom">151</td>
 </table>
 <p>You can run the encryption performance test on your own PC using the following command:</p>
 <pre>    digest bctest &lt;number_of_iterations&gt; &lt;filename_to_encrypt&gt;</pre>

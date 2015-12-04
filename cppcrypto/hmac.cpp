@@ -22,13 +22,13 @@ namespace cppcrypto
 
 	void hmac::construct(const uint8_t* key, size_t keylen)
 	{
-		int nb = blocksize() / 8;
+		size_t nb = blocksize() / 8;
 		ipad_ = new uint8_t[nb];
 		opad_ = new uint8_t[nb];
 		memset(ipad_, 0, nb);
 		memset(opad_, 0, nb);
 
-		if (keylen > static_cast<size_t>(nb))
+		if (keylen > nb)
 		{
 			hash_->hash_string(key, keylen, ipad_);
 			memcpy(opad_, ipad_, hashsize()/8);
@@ -39,7 +39,7 @@ namespace cppcrypto
 			memcpy(opad_, key, keylen);
 		}
 
-		for (int i = 0; i < nb; i++)
+		for (size_t i = 0; i < nb; i++)
 		{
 			opad_[i] ^= 0x5c;
 			ipad_[i] ^= 0x36;
@@ -77,7 +77,7 @@ namespace cppcrypto
 	crypto_hash* hmac::clone() const
 	{
 		hmac* clone = new hmac(*hash_, ipad_, 0);
-		int nb = blocksize() / 8;
+		size_t nb = blocksize() / 8;
 		memcpy(clone->ipad_, ipad_, nb);
 		memcpy(clone->opad_, opad_, nb);
 		return clone;

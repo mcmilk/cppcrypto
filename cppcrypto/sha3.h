@@ -39,8 +39,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashsize() const { return 512; }
-		int blocksize() const { return 576; }
+		size_t hashsize() const { return 512; }
+		size_t blocksize() const { return 576; }
 		crypto_hash* clone() const { return new sha3_512; }
 
 	private:
@@ -62,8 +62,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashsize() const { return 256; }
-		int blocksize() const { return 1088; }
+		size_t hashsize() const { return 256; }
+		size_t blocksize() const { return 1088; }
 		crypto_hash* clone() const { return new sha3_256; }
 
 	private:
@@ -85,8 +85,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashsize() const { return 224; }
-		int blocksize() const { return 1152; }
+		size_t hashsize() const { return 224; }
+		size_t blocksize() const { return 1152; }
 		crypto_hash* clone() const { return new sha3_224; }
 
 	private:
@@ -108,8 +108,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashsize() const { return 384; }
-		int blocksize() const { return 832; }
+		size_t hashsize() const { return 384; }
+		size_t blocksize() const { return 832; }
 		crypto_hash* clone() const { return new sha3_384; }
 
 	private:

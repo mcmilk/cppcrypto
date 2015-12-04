@@ -281,7 +281,7 @@ namespace cppcrypto
 
 
 		/*before hashing a message, initialize the hash state as H0 */
-		void jh_impl_sse2::init(int hashbitlen)
+		void jh_impl_sse2::init(size_t hashbitlen)
 		{
 			/*initialize the initial hash value of JH*/
 			/*load the intital hash value into state*/
@@ -334,7 +334,7 @@ namespace cppcrypto
 			}
 		}
 
-		void jh_impl_sse2::output(uint8_t *hashval, int bitlen)
+		void jh_impl_sse2::output(uint8_t *hashval, size_t bitlen)
 		{
 			DATA_ALIGN16(unsigned char t[64]);
 

@@ -24,8 +24,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashsize() const { return 256; }
-		int blocksize() const { return 512; }
+		size_t hashsize() const { return 256; }
+		size_t blocksize() const { return 512; }
 		crypto_hash* clone() const { return new blake256; }
 
 	protected:
@@ -49,8 +49,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashsize() const { return 512; }
-		int blocksize() const { return 1024; }
+		size_t hashsize() const { return 512; }
+		size_t blocksize() const { return 1024; }
 		crypto_hash* clone() const { return new blake512; }
 
 	protected:
@@ -68,7 +68,7 @@ namespace cppcrypto
 	{
 	public:
 		void init();
-		int hashsize() const { return 384; }
+		size_t hashsize() const { return 384; }
 		crypto_hash* clone() const { return new blake384; }
 	};
 
@@ -76,7 +76,7 @@ namespace cppcrypto
 	{
 	public:
 		void init();
-		int hashsize() const { return 224; }
+		size_t hashsize() const { return 224; }
 		crypto_hash* clone() const { return new blake224; }
 	};
 

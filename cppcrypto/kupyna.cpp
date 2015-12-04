@@ -26,7 +26,7 @@ namespace cppcrypto
 	}
 #endif
 
-	static const uint64_t T[8][256] = {
+	extern const uint64_t KUPYNA_T[8][256] = {
 		{
 			0xa832a829d77f9aa8, 0x4352432297d41143, 0x5f3e5fc2df80615f, 0x061e063014121806,
 			0x6bda6b7f670cb16b, 0x75bc758f2356c975, 0x6cc16c477519ad6c, 0x592059f2cb927959,
@@ -559,22 +559,22 @@ namespace cppcrypto
 
 	static inline void G(uint64_t* x, uint64_t* y)
 	{
-		y[0] = T[0][(uint8_t)x[0]] ^ T[1][(uint8_t)(x[7] >> 8)] ^ T[2][(uint8_t)(x[6] >> 16)] ^	T[3][(uint8_t)(x[5] >> 24)] ^
-			T[4][(uint8_t)(x[4] >> 32)] ^ T[5][(uint8_t)(x[3] >> 40)] ^ T[6][(uint8_t)(x[2] >> 48)] ^ T[7][(uint8_t)(x[1] >> 56)];
-		y[1] = T[0][(uint8_t)x[1]] ^ T[1][(uint8_t)(x[0] >> 8)] ^ T[2][(uint8_t)(x[7] >> 16)] ^ T[3][(uint8_t)(x[6] >> 24)] ^
-			T[4][(uint8_t)(x[5] >> 32)] ^ T[5][(uint8_t)(x[4] >> 40)] ^ T[6][(uint8_t)(x[3] >> 48)] ^ T[7][(uint8_t)(x[2] >> 56)];
-		y[2] = T[0][(uint8_t)x[2]] ^ T[1][(uint8_t)(x[1] >> 8)] ^ T[2][(uint8_t)(x[0] >> 16)] ^ T[3][(uint8_t)(x[7] >> 24)] ^
-			T[4][(uint8_t)(x[6] >> 32)] ^ T[5][(uint8_t)(x[5] >> 40)] ^ T[6][(uint8_t)(x[4] >> 48)] ^ T[7][(uint8_t)(x[3] >> 56)];
-		y[3] = T[0][(uint8_t)x[3]] ^ T[1][(uint8_t)(x[2] >> 8)] ^ T[2][(uint8_t)(x[1] >> 16)] ^ T[3][(uint8_t)(x[0] >> 24)] ^
-			T[4][(uint8_t)(x[7] >> 32)] ^ T[5][(uint8_t)(x[6] >> 40)] ^ T[6][(uint8_t)(x[5] >> 48)] ^ T[7][(uint8_t)(x[4] >> 56)];
-		y[4] = T[0][(uint8_t)x[4]] ^ T[1][(uint8_t)(x[3] >> 8)] ^ T[2][(uint8_t)(x[2] >> 16)] ^ T[3][(uint8_t)(x[1] >> 24)] ^
-			T[4][(uint8_t)(x[0] >> 32)] ^ T[5][(uint8_t)(x[7] >> 40)] ^ T[6][(uint8_t)(x[6] >> 48)] ^ T[7][(uint8_t)(x[5] >> 56)];
-		y[5] = T[0][(uint8_t)x[5]] ^ T[1][(uint8_t)(x[4] >> 8)] ^ T[2][(uint8_t)(x[3] >> 16)] ^ T[3][(uint8_t)(x[2] >> 24)] ^
-			T[4][(uint8_t)(x[1] >> 32)] ^ T[5][(uint8_t)(x[0] >> 40)] ^ T[6][(uint8_t)(x[7] >> 48)] ^ T[7][(uint8_t)(x[6] >> 56)];
-		y[6] = T[0][(uint8_t)x[6]] ^ T[1][(uint8_t)(x[5] >> 8)] ^ T[2][(uint8_t)(x[4] >> 16)] ^ T[3][(uint8_t)(x[3] >> 24)] ^
-			T[4][(uint8_t)(x[2] >> 32)] ^ T[5][(uint8_t)(x[1] >> 40)] ^ T[6][(uint8_t)(x[0] >> 48)] ^ T[7][(uint8_t)(x[7] >> 56)];
-		y[7] = T[0][(uint8_t)x[7]] ^ T[1][(uint8_t)(x[6] >> 8)] ^ T[2][(uint8_t)(x[5] >> 16)] ^ T[3][(uint8_t)(x[4] >> 24)] ^
-			T[4][(uint8_t)(x[3] >> 32)] ^ T[5][(uint8_t)(x[2] >> 40)] ^ T[6][(uint8_t)(x[1] >> 48)] ^ T[7][(uint8_t)(x[0] >> 56)];
+		y[0] = KUPYNA_T[0][(uint8_t)x[0]] ^ KUPYNA_T[1][(uint8_t)(x[7] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[6] >> 16)] ^	KUPYNA_T[3][(uint8_t)(x[5] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[4] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[3] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[2] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[1] >> 56)];
+		y[1] = KUPYNA_T[0][(uint8_t)x[1]] ^ KUPYNA_T[1][(uint8_t)(x[0] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[7] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[6] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[5] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[4] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[3] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[2] >> 56)];
+		y[2] = KUPYNA_T[0][(uint8_t)x[2]] ^ KUPYNA_T[1][(uint8_t)(x[1] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[0] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[7] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[6] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[5] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[4] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[3] >> 56)];
+		y[3] = KUPYNA_T[0][(uint8_t)x[3]] ^ KUPYNA_T[1][(uint8_t)(x[2] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[1] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[0] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[7] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[6] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[5] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[4] >> 56)];
+		y[4] = KUPYNA_T[0][(uint8_t)x[4]] ^ KUPYNA_T[1][(uint8_t)(x[3] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[2] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[1] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[0] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[7] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[6] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[5] >> 56)];
+		y[5] = KUPYNA_T[0][(uint8_t)x[5]] ^ KUPYNA_T[1][(uint8_t)(x[4] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[3] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[2] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[1] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[0] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[7] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[6] >> 56)];
+		y[6] = KUPYNA_T[0][(uint8_t)x[6]] ^ KUPYNA_T[1][(uint8_t)(x[5] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[4] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[3] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[2] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[1] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[0] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[7] >> 56)];
+		y[7] = KUPYNA_T[0][(uint8_t)x[7]] ^ KUPYNA_T[1][(uint8_t)(x[6] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[5] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[4] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[3] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[2] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[1] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[0] >> 56)];
 	}
 
 	static inline void roundP(uint64_t* x, uint64_t* y, uint64_t i)
@@ -745,38 +745,38 @@ namespace cppcrypto
 
 	static inline void G_512(uint64_t* x, uint64_t* y)
 	{
-		y[0] = T[0][(uint8_t)x[0]] ^ T[1][(uint8_t)(x[15] >> 8)] ^ T[2][(uint8_t)(x[14] >> 16)] ^ T[3][(uint8_t)(x[13] >> 24)] ^
-			T[4][(uint8_t)(x[12] >> 32)] ^ T[5][(uint8_t)(x[11] >> 40)] ^ T[6][(uint8_t)(x[10] >> 48)] ^ T[7][(uint8_t)(x[5] >> 56)];
-		y[1] = T[0][(uint8_t)x[1]] ^ T[1][(uint8_t)(x[0] >> 8)] ^ T[2][(uint8_t)(x[15] >> 16)] ^ T[3][(uint8_t)(x[14] >> 24)] ^
-			T[4][(uint8_t)(x[13] >> 32)] ^ T[5][(uint8_t)(x[12] >> 40)] ^ T[6][(uint8_t)(x[11] >> 48)] ^ T[7][(uint8_t)(x[6] >> 56)];
-		y[2] = T[0][(uint8_t)x[2]] ^ T[1][(uint8_t)(x[1] >> 8)] ^ T[2][(uint8_t)(x[0] >> 16)] ^ T[3][(uint8_t)(x[15] >> 24)] ^
-			T[4][(uint8_t)(x[14] >> 32)] ^ T[5][(uint8_t)(x[13] >> 40)] ^ T[6][(uint8_t)(x[12] >> 48)] ^ T[7][(uint8_t)(x[7] >> 56)];
-		y[3] = T[0][(uint8_t)x[3]] ^ T[1][(uint8_t)(x[2] >> 8)] ^ T[2][(uint8_t)(x[1] >> 16)] ^ T[3][(uint8_t)(x[0] >> 24)] ^
-			T[4][(uint8_t)(x[15] >> 32)] ^ T[5][(uint8_t)(x[14] >> 40)] ^ T[6][(uint8_t)(x[13] >> 48)] ^ T[7][(uint8_t)(x[8] >> 56)];
-		y[4] = T[0][(uint8_t)x[4]] ^ T[1][(uint8_t)(x[3] >> 8)] ^ T[2][(uint8_t)(x[2] >> 16)] ^ T[3][(uint8_t)(x[1] >> 24)] ^
-			T[4][(uint8_t)(x[0] >> 32)] ^ T[5][(uint8_t)(x[15] >> 40)] ^ T[6][(uint8_t)(x[14] >> 48)] ^ T[7][(uint8_t)(x[9] >> 56)];
-		y[5] = T[0][(uint8_t)x[5]] ^ T[1][(uint8_t)(x[4] >> 8)] ^ T[2][(uint8_t)(x[3] >> 16)] ^ T[3][(uint8_t)(x[2] >> 24)] ^
-			T[4][(uint8_t)(x[1] >> 32)] ^ T[5][(uint8_t)(x[0] >> 40)] ^ T[6][(uint8_t)(x[15] >> 48)] ^ T[7][(uint8_t)(x[10] >> 56)];
-		y[6] = T[0][(uint8_t)x[6]] ^ T[1][(uint8_t)(x[5] >> 8)] ^ T[2][(uint8_t)(x[4] >> 16)] ^ T[3][(uint8_t)(x[3] >> 24)] ^
-			T[4][(uint8_t)(x[2] >> 32)] ^ T[5][(uint8_t)(x[1] >> 40)] ^ T[6][(uint8_t)(x[0] >> 48)] ^ T[7][(uint8_t)(x[11] >> 56)];
-		y[7] = T[0][(uint8_t)x[7]] ^ T[1][(uint8_t)(x[6] >> 8)] ^ T[2][(uint8_t)(x[5] >> 16)] ^ T[3][(uint8_t)(x[4] >> 24)] ^
-			T[4][(uint8_t)(x[3] >> 32)] ^ T[5][(uint8_t)(x[2] >> 40)] ^ T[6][(uint8_t)(x[1] >> 48)] ^ T[7][(uint8_t)(x[12] >> 56)];
-		y[8] = T[0][(uint8_t)x[8]] ^ T[1][(uint8_t)(x[7] >> 8)] ^ T[2][(uint8_t)(x[6] >> 16)] ^ T[3][(uint8_t)(x[5] >> 24)] ^
-			T[4][(uint8_t)(x[4] >> 32)] ^ T[5][(uint8_t)(x[3] >> 40)] ^ T[6][(uint8_t)(x[2] >> 48)] ^ T[7][(uint8_t)(x[13] >> 56)];
-		y[9] = T[0][(uint8_t)x[9]] ^ T[1][(uint8_t)(x[8] >> 8)] ^ T[2][(uint8_t)(x[7] >> 16)] ^ T[3][(uint8_t)(x[6] >> 24)] ^
-			T[4][(uint8_t)(x[5] >> 32)] ^ T[5][(uint8_t)(x[4] >> 40)] ^ T[6][(uint8_t)(x[3] >> 48)] ^ T[7][(uint8_t)(x[14] >> 56)];
-		y[10] = T[0][(uint8_t)x[10]] ^ T[1][(uint8_t)(x[9] >> 8)] ^ T[2][(uint8_t)(x[8] >> 16)] ^ T[3][(uint8_t)(x[7] >> 24)] ^
-			T[4][(uint8_t)(x[6] >> 32)] ^ T[5][(uint8_t)(x[5] >> 40)] ^ T[6][(uint8_t)(x[4] >> 48)] ^ T[7][(uint8_t)(x[15] >> 56)];
-		y[11] = T[0][(uint8_t)x[11]] ^ T[1][(uint8_t)(x[10] >> 8)] ^ T[2][(uint8_t)(x[9] >> 16)] ^ T[3][(uint8_t)(x[8] >> 24)] ^
-			T[4][(uint8_t)(x[7] >> 32)] ^ T[5][(uint8_t)(x[6] >> 40)] ^ T[6][(uint8_t)(x[5] >> 48)] ^ T[7][(uint8_t)(x[0] >> 56)];
-		y[12] = T[0][(uint8_t)x[12]] ^ T[1][(uint8_t)(x[11] >> 8)] ^ T[2][(uint8_t)(x[10] >> 16)] ^ T[3][(uint8_t)(x[9] >> 24)] ^
-			T[4][(uint8_t)(x[8] >> 32)] ^ T[5][(uint8_t)(x[7] >> 40)] ^ T[6][(uint8_t)(x[6] >> 48)] ^ T[7][(uint8_t)(x[1] >> 56)];
-		y[13] = T[0][(uint8_t)x[13]] ^ T[1][(uint8_t)(x[12] >> 8)] ^ T[2][(uint8_t)(x[11] >> 16)] ^ T[3][(uint8_t)(x[10] >> 24)] ^
-			T[4][(uint8_t)(x[9] >> 32)] ^ T[5][(uint8_t)(x[8] >> 40)] ^ T[6][(uint8_t)(x[7] >> 48)] ^ T[7][(uint8_t)(x[2] >> 56)];
-		y[14] = T[0][(uint8_t)x[14]] ^ T[1][(uint8_t)(x[13] >> 8)] ^ T[2][(uint8_t)(x[12] >> 16)] ^ T[3][(uint8_t)(x[11] >> 24)] ^
-			T[4][(uint8_t)(x[10] >> 32)] ^ T[5][(uint8_t)(x[9] >> 40)] ^ T[6][(uint8_t)(x[8] >> 48)] ^ T[7][(uint8_t)(x[3] >> 56)];
-		y[15] = T[0][(uint8_t)x[15]] ^ T[1][(uint8_t)(x[14] >> 8)] ^ T[2][(uint8_t)(x[13] >> 16)] ^ T[3][(uint8_t)(x[12] >> 24)] ^
-			T[4][(uint8_t)(x[11] >> 32)] ^ T[5][(uint8_t)(x[10] >> 40)] ^ T[6][(uint8_t)(x[9] >> 48)] ^ T[7][(uint8_t)(x[4] >> 56)];
+		y[0] = KUPYNA_T[0][(uint8_t)x[0]] ^ KUPYNA_T[1][(uint8_t)(x[15] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[14] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[13] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[12] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[11] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[10] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[5] >> 56)];
+		y[1] = KUPYNA_T[0][(uint8_t)x[1]] ^ KUPYNA_T[1][(uint8_t)(x[0] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[15] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[14] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[13] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[12] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[11] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[6] >> 56)];
+		y[2] = KUPYNA_T[0][(uint8_t)x[2]] ^ KUPYNA_T[1][(uint8_t)(x[1] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[0] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[15] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[14] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[13] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[12] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[7] >> 56)];
+		y[3] = KUPYNA_T[0][(uint8_t)x[3]] ^ KUPYNA_T[1][(uint8_t)(x[2] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[1] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[0] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[15] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[14] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[13] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[8] >> 56)];
+		y[4] = KUPYNA_T[0][(uint8_t)x[4]] ^ KUPYNA_T[1][(uint8_t)(x[3] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[2] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[1] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[0] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[15] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[14] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[9] >> 56)];
+		y[5] = KUPYNA_T[0][(uint8_t)x[5]] ^ KUPYNA_T[1][(uint8_t)(x[4] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[3] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[2] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[1] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[0] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[15] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[10] >> 56)];
+		y[6] = KUPYNA_T[0][(uint8_t)x[6]] ^ KUPYNA_T[1][(uint8_t)(x[5] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[4] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[3] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[2] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[1] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[0] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[11] >> 56)];
+		y[7] = KUPYNA_T[0][(uint8_t)x[7]] ^ KUPYNA_T[1][(uint8_t)(x[6] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[5] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[4] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[3] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[2] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[1] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[12] >> 56)];
+		y[8] = KUPYNA_T[0][(uint8_t)x[8]] ^ KUPYNA_T[1][(uint8_t)(x[7] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[6] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[5] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[4] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[3] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[2] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[13] >> 56)];
+		y[9] = KUPYNA_T[0][(uint8_t)x[9]] ^ KUPYNA_T[1][(uint8_t)(x[8] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[7] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[6] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[5] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[4] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[3] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[14] >> 56)];
+		y[10] = KUPYNA_T[0][(uint8_t)x[10]] ^ KUPYNA_T[1][(uint8_t)(x[9] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[8] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[7] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[6] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[5] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[4] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[15] >> 56)];
+		y[11] = KUPYNA_T[0][(uint8_t)x[11]] ^ KUPYNA_T[1][(uint8_t)(x[10] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[9] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[8] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[7] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[6] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[5] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[0] >> 56)];
+		y[12] = KUPYNA_T[0][(uint8_t)x[12]] ^ KUPYNA_T[1][(uint8_t)(x[11] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[10] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[9] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[8] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[7] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[6] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[1] >> 56)];
+		y[13] = KUPYNA_T[0][(uint8_t)x[13]] ^ KUPYNA_T[1][(uint8_t)(x[12] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[11] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[10] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[9] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[8] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[7] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[2] >> 56)];
+		y[14] = KUPYNA_T[0][(uint8_t)x[14]] ^ KUPYNA_T[1][(uint8_t)(x[13] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[12] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[11] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[10] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[9] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[8] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[3] >> 56)];
+		y[15] = KUPYNA_T[0][(uint8_t)x[15]] ^ KUPYNA_T[1][(uint8_t)(x[14] >> 8)] ^ KUPYNA_T[2][(uint8_t)(x[13] >> 16)] ^ KUPYNA_T[3][(uint8_t)(x[12] >> 24)] ^
+			KUPYNA_T[4][(uint8_t)(x[11] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[10] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[9] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[4] >> 56)];
 	}
 
 	static inline void roundP_512(uint64_t* x, uint64_t* y, uint64_t i)

@@ -24,8 +24,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashsize() const { return 256; }
-		int blocksize() const { return 512; }
+		size_t hashsize() const { return 256; }
+		size_t blocksize() const { return 512; }
 		crypto_hash* clone() const { return new sha256; }
 
 	protected:
@@ -44,7 +44,7 @@ namespace cppcrypto
 	public:
 		void init();
 
-		int hashsize() const { return 224; }
+		size_t hashsize() const { return 224; }
 		crypto_hash* clone() const { return new sha224; }
 	};
 

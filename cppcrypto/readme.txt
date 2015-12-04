@@ -10,8 +10,8 @@ To get the full list of supported hash algorithms, run 'digest' in hash function
 
   digest test <number_of_iterations> <filename>
 
-2) Block ciphers: Anubis, CAST6, Rijndael (all 25 variants are accelerated using AES-NI instructions, if available),
-Serpent, Twofish.
+2) Block ciphers: Anubis, Camellia, CAST6, Kalyna, Rijndael (all 25 variants are accelerated using AES-NI
+instructions, if available), Serpent, Twofish.
 
 To get the full list of supported block ciphers, run 'digest' in block cipher performance test mode:
 

@@ -81,6 +81,25 @@ static inline void xor_block_128(const uint8_t* in, const uint8_t* prev, uint8_t
 
 }
 
+static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_t* out, int n)
+{
+	if (cpu_info::sse2())
+	{
+		__m128i b = _mm_loadu_si128((const __m128i*) in);
+		__m128i p = _mm_loadu_si128((const __m128i*) prev);
+
+		_mm_storeu_si128((__m128i*) out, _mm_xor_si128(b, p));
+		for (int i = 16; i < n; i++)
+			out[i] = in[i] ^ prev[i];
+	}
+	else {
+		for (int i = 0; i < n; i++)
+			out[i] = in[i] ^ prev[i];
+	}
+
+}
+
+
 void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen)
 {
 	resultlen = 0;
@@ -132,6 +151,24 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 				out += 32;
 			}
 			memcpy(iv_, out-32, 32);
+			resultlen += bytes;
+			len -= bytes;
+		}
+		else if (nb > 16 && nb < 32)
+		{
+			size_t blocks = len / nb;
+			size_t bytes = blocks * nb;
+			const uint8_t* prev = iv_;
+
+			for (size_t i = 0; i < blocks; i++)
+			{
+				xor_block_128n(in, prev, block_, nb);
+				cipher_->encrypt_block(block_, out);
+				prev = out;
+				in += nb;
+				out += nb;
+			}
+			memcpy(iv_, out - nb, nb);
 			resultlen += bytes;
 			len -= bytes;
 		}
@@ -219,6 +256,25 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 				out += 32;
 			}
 			memcpy(iv_, in - 32, 32);
+			resultlen += bytes;
+			len -= bytes;
+		}
+		else if (nb > 16 && nb < 32) // optimization for the most common block sizes
+		{
+			size_t blocks = (len - 1) / nb;
+			size_t bytes = blocks * nb;
+			const uint8_t* prev = iv_;
+
+			for (size_t i = 0; i < blocks; i++)
+			{
+				cipher_->decrypt_block(in, block_);
+				xor_block_128n(block_, prev, out, nb);
+
+				prev = in;
+				in += nb;
+				out += nb;
+			}
+			memcpy(iv_, in - nb, nb);
 			resultlen += bytes;
 			len -= bytes;
 		}

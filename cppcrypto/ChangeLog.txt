@@ -1,38 +1,42 @@
-cppcrypto-0.08
+2015-12-04 cppcrypto-0.09
+
+New block cipher algorithms: Camellia, Kalyna.
+
+2015-11-26 cppcrypto-0.08
 
 New block cipher algorithms: CAST6, Serpent, Rijndael with block sizes 160 and 224.
 
-cppcrypto-0.07
+2015-11-15 cppcrypto-0.07
 
-New hash algorithms: JH, MD5, SHA-1, SM3, Streebog
+New hash algorithms: JH, MD5, SHA-1, SM3, Streebog.
 
-cppcrypto-0.06
+2015-11-11 cppcrypto-0.06
 
 New block cipher algorithm: Twofish
 New hash algorithm: SHA-3
 
-cppcrypto-0.05
+2015-11-02 cppcrypto-0.05
 
 New block cipher algorithm: Anubis with key sizes 128, 160, 192, 224, 256, 288, 320.
 New block cipher algorithm: Rijndael with block size 192 and key sizes 128, 160, 192, 224, 256.
 Key derivation functions: PBKDF2.
 Encryption modes: CTR.
 
-cppcrypto-0.04
+2015-10-10 cppcrypto-0.04
 
 New block cipher algorithm: Rijndael with block sizes 128, 256 and key sizes 128, 160, 192, 224, 256.
 Encryption modes: CBC.
 MAC functions: HMAC.
 
-cppcrypto-0.03
+2015-09-24 cppcrypto-0.03
 
 New hash algorithm: Kupyna
 
-cppcrypto-0.02
+2015-09-12 cppcrypto-0.02
 
 New supported platforms: Linux x86_64 and i586 (using gcc 5.1.1)
 
-cppcrypto-0.01
+2015-09-10 cppcrypto-0.01
 
 Initial version.
 Supported hash algorithms: BLAKE, Groestl, SHA-2 (incl. SHA512/224 and SHA512/256),

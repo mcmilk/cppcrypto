@@ -25,8 +25,8 @@ namespace cppcrypto
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
 
-		int hashsize() const { return hash_->hashsize(); }
-		int blocksize() const { return hash_->blocksize(); }
+		size_t hashsize() const { return hash_->hashsize(); }
+		size_t blocksize() const { return hash_->blocksize(); }
 		crypto_hash* clone() const;
 
 	private:

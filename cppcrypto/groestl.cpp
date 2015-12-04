@@ -669,7 +669,7 @@ void groestl256::final(uint8_t* hash)
 	outputTransform();
 
 	uint8_t* s = (uint8_t*)h.get();
-	for (int i = 64 - hashsize() / 8, j = 0; i < 64; i++, j++) {
+	for (size_t i = 64 - hashsize() / 8, j = 0; i < 64; i++, j++) {
 		hash[j] = s[i];
 	}
 #ifdef CPPCRYPTO_DEBUG
@@ -744,7 +744,7 @@ void groestl512::final(uint8_t* hash)
 	outputTransform();
 
 	uint8_t* s = (uint8_t*)h.get();
-	for (int i = 128 - hashsize()/8, j = 0; i < 128; i++, j++) {
+	for (size_t i = 128 - hashsize()/8, j = 0; i < 128; i++, j++) {
 		hash[j] = s[i];
 	}
 #ifdef CPPCRYPTO_DEBUG

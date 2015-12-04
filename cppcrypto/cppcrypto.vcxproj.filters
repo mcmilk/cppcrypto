@@ -141,6 +141,12 @@
     <ClInclude Include="rijndael-impl-aesni-common.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="camellia.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kalyna.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -270,6 +276,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cast6.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="camellia.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kalyna.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

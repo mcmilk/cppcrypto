@@ -63,7 +63,7 @@ bool is_directory(const wchar_t* path)
 }
 
 
-bool hash_file(const wchar_t* filename, vector<char>* hashsum, int hashsize, crypto_hash* hash)
+bool hash_file(const wchar_t* filename, vector<char>* hashsum, size_t hashsize, crypto_hash* hash)
 {
 	ifstream file;
 	char buffer[10240];
@@ -178,7 +178,7 @@ void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, ws
 		double seconds = timer.elapsed();
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) 
 			<< (static_cast<double>(fileSize) / 1024.0 / 1024.0 * static_cast<double>(iterations) / seconds) << _T(" MB/s) ");
-		for (int i = 0; i < (it->second->hashsize() + 7) / 8; i++)
+		for (size_t i = 0; i < (it->second->hashsize() + 7) / 8; i++)
 			wcout << setfill(_T('0')) << setw(2) << hex << (unsigned int)hash[i];
 		wcout << endl;
 	}
@@ -343,7 +343,7 @@ void checksumfile(const wchar_t* filename, crypto_hash* hash)
 			vector<char> res;
 			bool ret = hash_file(fn.c_str(), &res, hash->hashsize(), hash);
 			if (ret) {
-				for (int i = 0; i < (hash->hashsize() + 7) / 8; i++)
+				for (size_t i = 0; i < (hash->hashsize() + 7) / 8; i++)
 					wsprintf(buf + i * 2, _T("%02x"), (unsigned char)res[i]);
 			}
 			else
@@ -362,12 +362,12 @@ void hex2array(const string& hex, uint8_t* array)
 	}
 }
 
-void test_vector(block_cipher* bc, const wstring& filename)
+void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
 	uint8_t key[128], pt[128], ct[128], res[128];
-	uint32_t count = 0;
+	uint32_t count = 0, failed = 0, success = 0;
 	regex eq(R"((\w+)\s*=\s*(\w+))");
 	while (getline(file, line))
 	{
@@ -382,6 +382,7 @@ void test_vector(block_cipher* bc, const wstring& filename)
 				hex2array(second, key);
 			if (sm.str(1) == "CT")
 			{
+				bool error = false;
 				hex2array(second, ct);
 				bc->init(key, bc->encryption);
 				bc->encrypt_block(pt, res);
@@ -403,6 +404,7 @@ void test_vector(block_cipher* bc, const wstring& filename)
 					for (int i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)ct[i]);
 					wprintf(_T("\n"));
+					error = true;
 #endif
 				}
 				bc->init(key, bc->decryption);
@@ -424,14 +426,92 @@ void test_vector(block_cipher* bc, const wstring& filename)
 					for (int i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)pt[i]);
 					wprintf(_T("\n"));
+					error = true;
 #endif
 				}
+				count++;
+				if (error)
+					failed++;
+				else
+					success++;
+			}
+
+		}
+	}
+	wcout << name << _T(": ");
+	if (success)
+		wcout << (success) << _T("/") << count << _T(" OK");
+	if (failed && success)
+		wcout << _T(", ");
+	if (failed)
+		wcout << failed << _T("/") << count << _T(" FAILED");
+	if (!success && !failed)
+		wcout << _T("No tests found");
+	wcout << endl;
+}
+
+void test_vector(const wstring& name, crypto_hash* ch, const wstring& filename)
+{
+	ifstream file(filename, ios::in | ios::binary);
+	string line;
+	uint8_t md[129], res[129];
+	vector<uint8_t> msg;
+	uint32_t count = 0, failed = 0, success = 0;
+	regex eq(R"((\w+)\s*=\s*(\w*))");
+	while (getline(file, line))
+	{
+		line.erase(line.find_last_not_of("\r\n \t") + 1);
+		smatch sm;
+		if (regex_match(line, sm, eq))
+		{
+			string second = sm.str(2);
+			if (sm.str(1) == "Msg")
+			{
+				msg.resize(second.size());
+				if (!msg.empty())
+					hex2array(second, &msg[0]);
+			}
+			if (sm.str(1) == "MD")
+			{
+				hex2array(second, md);
+				if (msg.empty())
+					ch->hash_string("", res);
+				else
+					ch->hash_string(&msg[0], msg.size()/2, res);
+				if (memcmp(md, res, second.length() / 2))
+				{
+					cerr << "Error for test " << count << endl;
+#define CPPCRYPTO_DEBUG
+#ifdef CPPCRYPTO_DEBUG
+					wprintf(_T("Message was: "));
+					for (size_t i = 0; i < msg.size()/2; i++)
+						wprintf(_T("%02x"), (unsigned char)msg[i]);
+					wprintf(_T("\nHash was: "));
+					for (size_t i = 0; i < ch->hashsize() / 8; i++)
+						wprintf(_T("%02x"), (unsigned char)res[i]);
+					wprintf(_T("\nexpected is: "));
+					for (size_t i = 0; i < second.length() / 2; i++)
+						wprintf(_T("%02x"), (unsigned char)md[i]);
+					wprintf(_T("\n"));
+					failed++;
+#endif
+				}
+				else success++;
 				count++;
 			}
 
 		}
 	}
-	cout << count << " tests completed." << endl;
+	wcout << name << _T(": ");
+	if (success)
+		wcout << (success) << _T("/") << count << _T(" OK");
+	if (failed && success)
+		wcout << _T(", ");
+	if (failed)
+		wcout << failed << _T("/") << count << _T(" FAILED");
+	if (!success && !failed)
+		wcout << _T("No tests found");
+	wcout << endl;
 }
 
 int wmain(int argc, wchar_t* argv[])
@@ -487,6 +567,15 @@ int wmain(int argc, wchar_t* argv[])
 	block_ciphers.emplace(make_pair(_T("rijndael224-192"), unique_ptr<block_cipher>(new rijndael224_192)));
 	block_ciphers.emplace(make_pair(_T("rijndael224-224"), unique_ptr<block_cipher>(new rijndael224_224)));
 	block_ciphers.emplace(make_pair(_T("rijndael224-256"), unique_ptr<block_cipher>(new rijndael224_256)));
+
+	block_ciphers.emplace(make_pair(_T("camellia128"), unique_ptr<block_cipher>(new camellia128)));
+	block_ciphers.emplace(make_pair(_T("camellia256"), unique_ptr<block_cipher>(new camellia256)));
+	block_ciphers.emplace(make_pair(_T("camellia192"), unique_ptr<block_cipher>(new camellia192)));
+	block_ciphers.emplace(make_pair(_T("kalyna512-512"), unique_ptr<block_cipher>(new kalyna512_512)));
+	block_ciphers.emplace(make_pair(_T("kalyna256-512"), unique_ptr<block_cipher>(new kalyna256_512)));
+	block_ciphers.emplace(make_pair(_T("kalyna256-256"), unique_ptr<block_cipher>(new kalyna256_256)));
+	block_ciphers.emplace(make_pair(_T("kalyna128-256"), unique_ptr<block_cipher>(new kalyna128_256)));
+	block_ciphers.emplace(make_pair(_T("kalyna128-128"), unique_ptr<block_cipher>(new kalyna128_128)));
 
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));
@@ -565,11 +654,18 @@ int wmain(int argc, wchar_t* argv[])
 		auto hashit = block_ciphers.find(hash);
 		if (hashit == block_ciphers.end())
 		{
-			wcerr << _T("Unknown block cipher algorithm: ") << hash << endl;
-			return 2;
+			// maybe it's hash
+			auto hashit2 = hashes.find(hash);
+			if (hashit2 == hashes.end())
+			{
+				wcerr << _T("Unknown algorithm: ") << hash << endl;
+				return 2;
+			}
+			test_vector(hash, hashit2->second.get(), argv[3]);
+			return 0;
 		}
 
-		test_vector(hashit->second.get(), argv[3]);
+		test_vector(hash, hashit->second.get(), argv[3]);
 		return 0;
 	}
 
@@ -632,7 +728,7 @@ int wmain(int argc, wchar_t* argv[])
 		vector<char> res;
 		if (hash_file(argv[i], &res, hashit->second->hashsize(), hashit->second.get()))
 		{
-			for (int b = 0; b < (hashit->second->hashsize() + 7) / 8; b++)
+			for (size_t b = 0; b < (hashit->second->hashsize() + 7) / 8; b++)
 				printf("%02x", (unsigned char)res[b]);
 			wprintf(_T("  %s\n"), argv[i]);
 		}
