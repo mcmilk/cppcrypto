@@ -1,8 +1,8 @@
 #ifndef GROESTLIMPL_H
 #define GROESTLIMPL_H
 
-#include <tmmintrin.h>
 #include <stdint.h>
+#include <emmintrin.h>
 
 namespace cppcrypto
 {
@@ -30,14 +30,12 @@ namespace cppcrypto
 			__m128i ALL_15;
 			__m128i SSSE3_ALL_1B;
 			__m128i ALL_63;
-			__m128i SSSE3_ALL_FF;
 			__m128i VPERM_IPT[2];
 			__m128i VPERM_OPT[2];
 			__m128i VPERM_INV[2];
 			__m128i VPERM_SB1[2];
 			__m128i VPERM_SB2[2];
 			__m128i VPERM_SB4[2];
-			__m128i VPERM_SBO[2];
 
 		public:
 			groestl_impl_ssse3_256();
@@ -50,7 +48,6 @@ namespace cppcrypto
 		class groestl_impl_ssse3_512 : public groestl_impl
 		{
 		private:
-			__m128i SSSE3_ROUND_CONST_Lx;
 			__m128i SSSE3_ROUND_CONST_P[14];
 			__m128i SSSE3_ROUND_CONST_Q[14];
 			__m128i SSSE3_TRANSP_MASK;
@@ -66,7 +63,6 @@ namespace cppcrypto
 			__m128i VPERM_SB1[2];
 			__m128i VPERM_SB2[2];
 			__m128i VPERM_SB4[2];
-			__m128i VPERM_SBO[2];
 
 		public:
 			groestl_impl_ssse3_512();
@@ -85,7 +81,6 @@ namespace cppcrypto
 			__m128i TRANSP_MASK;
 			__m128i SUBSH_MASK[8];
 			__m128i ALL_1B;
-			__m128i ALL_FF;
 
 		public:
 			groestl_impl_aesni_256();
@@ -98,7 +93,6 @@ namespace cppcrypto
 		class groestl_impl_aesni_512 : public groestl_impl
 		{
 		private:
-			__m128i ROUND_CONST_Lx;
 			__m128i ROUND_CONST_P[14];
 			__m128i ROUND_CONST_Q[14];
 			__m128i TRANSP_MASK;

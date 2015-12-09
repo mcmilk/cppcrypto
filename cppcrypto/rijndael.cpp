@@ -4,6 +4,7 @@ and released into public domain.
 */
 
 #include "rijndael.h"
+#include "portability.h"
 #include <memory.h>
 #include <xmmintrin.h>
 #include <stdlib.h>
@@ -13,13 +14,6 @@ and released into public domain.
 
 //#define CPPCRYPTO_DEBUG
 //#define NO_OPTIMIZED_VERSIONS
-
-#ifndef _MSC_VER
-#define _aligned_malloc(a, b) aligned_alloc(b, a)
-#define _aligned_free free
-#define _byteswap_uint64 __builtin_bswap64
-#define _byteswap_ulong __builtin_bswap32
-#endif
 
 namespace cppcrypto
 {
@@ -364,10 +358,10 @@ namespace cppcrypto
 	s1 = W_[r*4 + 1] ^ uint32_t(S[t1 >> 24]) << 24 ^ uint32_t(S[(t2 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t3 >> 8) & 0xff]) << 8 ^ uint32_t(S[t0 & 0xff]); \
 	s2 = W_[r*4 + 2] ^ uint32_t(S[t2 >> 24]) << 24 ^ uint32_t(S[(t3 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(S[t1 & 0xff]); \
 	s3 = W_[r*4 + 3] ^ uint32_t(S[t3 >> 24]) << 24 ^ uint32_t(S[(t0 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(S[t2 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3);
 
 #define IROUND(r) \
 	t0 = W_[r*4 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s3 >> 16)] ^ IT[2][uint8_t(s2 >> 8)] ^ IT[3][uint8_t(s1)]; \
@@ -384,10 +378,10 @@ namespace cppcrypto
 	s1 = W_[r*4 + 1] ^ uint32_t(IS[t1 >> 24]) << 24 ^ uint32_t(IS[(t0 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t3 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t2 & 0xff]); \
 	s2 = W_[r*4 + 2] ^ uint32_t(IS[t2 >> 24]) << 24 ^ uint32_t(IS[(t1 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t3 & 0xff]); \
 	s3 = W_[r*4 + 3] ^ uint32_t(IS[t3 >> 24]) << 24 ^ uint32_t(IS[(t2 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t0 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3);
 
 #define KEYSWAP(Nr) \
 	for (int i = 0; i < 4 * Nr / 2; i += 4) \
@@ -399,10 +393,10 @@ namespace cppcrypto
 	}
 
 #define FROUND() \
-	uint32_t s0 = _byteswap_ulong(*(uint32_t*)in); \
-	uint32_t s1 = _byteswap_ulong(*(uint32_t*)(in + 4)); \
-	uint32_t s2 = _byteswap_ulong(*(uint32_t*)(in + 8)); \
-	uint32_t s3 = _byteswap_ulong(*(uint32_t*)(in + 12)); \
+	uint32_t s0 = swap_uint32(*(uint32_t*)in); \
+	uint32_t s1 = swap_uint32(*(uint32_t*)(in + 4)); \
+	uint32_t s2 = swap_uint32(*(uint32_t*)(in + 8)); \
+	uint32_t s3 = swap_uint32(*(uint32_t*)(in + 12)); \
 	s0 ^= W_[0]; \
 	s1 ^= W_[1]; \
 	s2 ^= W_[2]; \
@@ -416,7 +410,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 4 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 10; i++) {
@@ -466,7 +460,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael128_128_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael128_128_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael128_128_impl_aesni;
 		}
 #endif
@@ -478,7 +472,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -493,7 +487,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 6 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
@@ -551,7 +545,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael128_192_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael128_192_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael128_192_impl_aesni;
 		}
 #endif
@@ -562,7 +556,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -577,7 +571,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 8 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
@@ -635,7 +629,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael128_256_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael128_256_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael128_256_impl_aesni;
 		}
 #endif
@@ -646,7 +640,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -661,7 +655,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 7 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 7; i++) {
@@ -715,7 +709,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael128_224_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael128_224_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael128_224_impl_aesni;
 		}
 #endif
@@ -726,7 +720,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -741,7 +735,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 5 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
@@ -797,7 +791,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael128_160_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael128_160_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael128_160_impl_aesni;
 		}
 #endif
@@ -808,7 +802,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -854,14 +848,14 @@ namespace cppcrypto
 	s5 = W_[r*8 + 5] ^ uint32_t(S[t5 >> 24]) << 24 ^ uint32_t(S[(t6 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(S[t1 & 0xff]); \
 	s6 = W_[r*8 + 6] ^ uint32_t(S[t6 >> 24]) << 24 ^ uint32_t(S[(t7 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(S[t2 & 0xff]); \
 	s7 = W_[r*8 + 7] ^ uint32_t(S[t7 >> 24]) << 24 ^ uint32_t(S[(t0 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t2 >> 8) & 0xff]) << 8 ^ uint32_t(S[t3 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3);\
-	*(uint32_t*)(out + 16) = _byteswap_ulong(s4);\
-	*(uint32_t*)(out + 20) = _byteswap_ulong(s5);\
-	*(uint32_t*)(out + 24) = _byteswap_ulong(s6);\
-	*(uint32_t*)(out + 28) = _byteswap_ulong(s7);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3);\
+	*(uint32_t*)(out + 16) = swap_uint32(s4);\
+	*(uint32_t*)(out + 20) = swap_uint32(s5);\
+	*(uint32_t*)(out + 24) = swap_uint32(s6);\
+	*(uint32_t*)(out + 28) = swap_uint32(s7);
 
 #define IROUND256(r) \
 	t0 = W_[r*8 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s7 >> 16)] ^ IT[2][uint8_t(s5 >> 8)] ^ IT[3][uint8_t(s4)]; \
@@ -890,24 +884,24 @@ namespace cppcrypto
 	s5 = W_[r*8 + 5] ^ uint32_t(IS[t5 >> 24]) << 24 ^ uint32_t(IS[(t4 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t2 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t1 & 0xff]); \
 	s6 = W_[r*8 + 6] ^ uint32_t(IS[t6 >> 24]) << 24 ^ uint32_t(IS[(t5 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t3 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t2 & 0xff]); \
 	s7 = W_[r*8 + 7] ^ uint32_t(IS[t7 >> 24]) << 24 ^ uint32_t(IS[(t6 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t4 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t3 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3); \
-	*(uint32_t*)(out + 16) = _byteswap_ulong(s4); \
-	*(uint32_t*)(out + 20) = _byteswap_ulong(s5); \
-	*(uint32_t*)(out + 24) = _byteswap_ulong(s6); \
-	*(uint32_t*)(out + 28) = _byteswap_ulong(s7);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3); \
+	*(uint32_t*)(out + 16) = swap_uint32(s4); \
+	*(uint32_t*)(out + 20) = swap_uint32(s5); \
+	*(uint32_t*)(out + 24) = swap_uint32(s6); \
+	*(uint32_t*)(out + 28) = swap_uint32(s7);
 
 #define FROUND256() \
-	uint32_t s0 = _byteswap_ulong(*(uint32_t*)in); \
-	uint32_t s1 = _byteswap_ulong(*(uint32_t*)(in + 4)); \
-	uint32_t s2 = _byteswap_ulong(*(uint32_t*)(in + 8)); \
-	uint32_t s3 = _byteswap_ulong(*(uint32_t*)(in + 12)); \
-	uint32_t s4 = _byteswap_ulong(*(uint32_t*)(in + 16)); \
-	uint32_t s5 = _byteswap_ulong(*(uint32_t*)(in + 20)); \
-	uint32_t s6 = _byteswap_ulong(*(uint32_t*)(in + 24)); \
-	uint32_t s7 = _byteswap_ulong(*(uint32_t*)(in + 28)); \
+	uint32_t s0 = swap_uint32(*(uint32_t*)in); \
+	uint32_t s1 = swap_uint32(*(uint32_t*)(in + 4)); \
+	uint32_t s2 = swap_uint32(*(uint32_t*)(in + 8)); \
+	uint32_t s3 = swap_uint32(*(uint32_t*)(in + 12)); \
+	uint32_t s4 = swap_uint32(*(uint32_t*)(in + 16)); \
+	uint32_t s5 = swap_uint32(*(uint32_t*)(in + 20)); \
+	uint32_t s6 = swap_uint32(*(uint32_t*)(in + 24)); \
+	uint32_t s7 = swap_uint32(*(uint32_t*)(in + 28)); \
 	s0 ^= W_[0]; \
 	s1 ^= W_[1]; \
 	s2 ^= W_[2]; \
@@ -937,7 +931,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 8 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 14; i++) {
@@ -997,7 +991,7 @@ namespace cppcrypto
 			if (impl_)
 			{
 				impl_->~rijndael_impl();
-				_aligned_free(impl_);
+				aligned_deallocate(impl_);
 			}
 		}
 
@@ -1013,7 +1007,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael256_256_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael256_256_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael256_256_impl_aesni;
 		}
 #endif
@@ -1025,7 +1019,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 4 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 29; i++) {
@@ -1059,7 +1053,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael256_128_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael256_128_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael256_128_impl_aesni;
 		}
 #endif
@@ -1071,7 +1065,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 7 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
@@ -1113,7 +1107,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael256_224_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael256_224_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael256_224_impl_aesni;
 		}
 #endif
@@ -1125,7 +1119,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 5 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 23; i++) {
@@ -1160,7 +1154,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael256_160_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael256_160_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael256_160_impl_aesni;
 		}
 #endif
@@ -1172,7 +1166,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 6 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 19; i++) {
@@ -1208,7 +1202,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael256_192_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael256_192_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael256_192_impl_aesni;
 		}
 #endif
@@ -1243,12 +1237,12 @@ namespace cppcrypto
 	s3 = W_[r*6 + 3] ^ uint32_t(S[t3 >> 24]) << 24 ^ uint32_t(S[(t4 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t5 >> 8) & 0xff]) << 8 ^ uint32_t(S[t0 & 0xff]); \
 	s4 = W_[r*6 + 4] ^ uint32_t(S[t4 >> 24]) << 24 ^ uint32_t(S[(t5 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(S[t1 & 0xff]); \
 	s5 = W_[r*6 + 5] ^ uint32_t(S[t5 >> 24]) << 24 ^ uint32_t(S[(t0 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(S[t2 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3);\
-	*(uint32_t*)(out + 16) = _byteswap_ulong(s4);\
-	*(uint32_t*)(out + 20) = _byteswap_ulong(s5);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3);\
+	*(uint32_t*)(out + 16) = swap_uint32(s4);\
+	*(uint32_t*)(out + 20) = swap_uint32(s5);
 
 #define IROUND192(r) \
 	t0 = W_[r*6 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s5 >> 16)] ^ IT[2][uint8_t(s4 >> 8)] ^ IT[3][uint8_t(s3)]; \
@@ -1271,20 +1265,20 @@ namespace cppcrypto
 	s3 = W_[r*6 + 3] ^ uint32_t(IS[t3 >> 24]) << 24 ^ uint32_t(IS[(t2 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t0 & 0xff]); \
 	s4 = W_[r*6 + 4] ^ uint32_t(IS[t4 >> 24]) << 24 ^ uint32_t(IS[(t3 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t2 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t1 & 0xff]); \
 	s5 = W_[r*6 + 5] ^ uint32_t(IS[t5 >> 24]) << 24 ^ uint32_t(IS[(t4 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t3 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t2 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3); \
-	*(uint32_t*)(out + 16) = _byteswap_ulong(s4); \
-	*(uint32_t*)(out + 20) = _byteswap_ulong(s5);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3); \
+	*(uint32_t*)(out + 16) = swap_uint32(s4); \
+	*(uint32_t*)(out + 20) = swap_uint32(s5);
 
 #define FROUND192() \
-	uint32_t s0 = _byteswap_ulong(*(uint32_t*)in); \
-	uint32_t s1 = _byteswap_ulong(*(uint32_t*)(in + 4)); \
-	uint32_t s2 = _byteswap_ulong(*(uint32_t*)(in + 8)); \
-	uint32_t s3 = _byteswap_ulong(*(uint32_t*)(in + 12)); \
-	uint32_t s4 = _byteswap_ulong(*(uint32_t*)(in + 16)); \
-	uint32_t s5 = _byteswap_ulong(*(uint32_t*)(in + 20)); \
+	uint32_t s0 = swap_uint32(*(uint32_t*)in); \
+	uint32_t s1 = swap_uint32(*(uint32_t*)(in + 4)); \
+	uint32_t s2 = swap_uint32(*(uint32_t*)(in + 8)); \
+	uint32_t s3 = swap_uint32(*(uint32_t*)(in + 12)); \
+	uint32_t s4 = swap_uint32(*(uint32_t*)(in + 16)); \
+	uint32_t s5 = swap_uint32(*(uint32_t*)(in + 20)); \
 	s0 ^= W_[0]; \
 	s1 ^= W_[1]; \
 	s2 ^= W_[2]; \
@@ -1310,7 +1304,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 4 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 19; i++) {
@@ -1364,7 +1358,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael192_128_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael192_128_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael192_128_impl_aesni;
 		}
 #endif
@@ -1376,7 +1370,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -1392,7 +1386,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 5 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
@@ -1447,7 +1441,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael192_160_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael192_160_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael192_160_impl_aesni;
 		}
 #endif
@@ -1459,7 +1453,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -1476,7 +1470,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 6 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 12; i++) {
@@ -1528,7 +1522,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael192_192_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael192_192_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael192_192_impl_aesni;
 		}
 #endif
@@ -1540,7 +1534,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -1556,7 +1550,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 7 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 11; i++) {
@@ -1610,7 +1604,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael192_224_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael192_224_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael192_224_impl_aesni;
 		}
 #endif
@@ -1622,7 +1616,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -1637,7 +1631,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 8 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
@@ -1696,7 +1690,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael192_256_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael192_256_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael192_256_impl_aesni;
 		}
 #endif
@@ -1708,7 +1702,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -1742,11 +1736,11 @@ namespace cppcrypto
 	s2 = W_[r*5 + 2] ^ uint32_t(S[t2 >> 24]) << 24 ^ uint32_t(S[(t3 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t4 >> 8) & 0xff]) << 8 ^ uint32_t(S[t0 & 0xff]); \
 	s3 = W_[r*5 + 3] ^ uint32_t(S[t3 >> 24]) << 24 ^ uint32_t(S[(t4 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(S[t1 & 0xff]); \
 	s4 = W_[r*5 + 4] ^ uint32_t(S[t4 >> 24]) << 24 ^ uint32_t(S[(t0 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(S[t2 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3);\
-	*(uint32_t*)(out + 16) = _byteswap_ulong(s4);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3);\
+	*(uint32_t*)(out + 16) = swap_uint32(s4);
 
 #define IROUND160(r) \
 	t0 = W_[r*5 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s4 >> 16)] ^ IT[2][uint8_t(s3 >> 8)] ^ IT[3][uint8_t(s2)]; \
@@ -1766,18 +1760,18 @@ namespace cppcrypto
 	s2 = W_[r*5 + 2] ^ uint32_t(IS[t2 >> 24]) << 24 ^ uint32_t(IS[(t1 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t4 & 0xff]); \
 	s3 = W_[r*5 + 3] ^ uint32_t(IS[t3 >> 24]) << 24 ^ uint32_t(IS[(t2 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t0 & 0xff]); \
 	s4 = W_[r*5 + 4] ^ uint32_t(IS[t4 >> 24]) << 24 ^ uint32_t(IS[(t3 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t2 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t1 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3); \
-	*(uint32_t*)(out + 16) = _byteswap_ulong(s4);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3); \
+	*(uint32_t*)(out + 16) = swap_uint32(s4);
 
 #define FROUND160() \
-	uint32_t s0 = _byteswap_ulong(*(uint32_t*)in); \
-	uint32_t s1 = _byteswap_ulong(*(uint32_t*)(in + 4)); \
-	uint32_t s2 = _byteswap_ulong(*(uint32_t*)(in + 8)); \
-	uint32_t s3 = _byteswap_ulong(*(uint32_t*)(in + 12)); \
-	uint32_t s4 = _byteswap_ulong(*(uint32_t*)(in + 16)); \
+	uint32_t s0 = swap_uint32(*(uint32_t*)in); \
+	uint32_t s1 = swap_uint32(*(uint32_t*)(in + 4)); \
+	uint32_t s2 = swap_uint32(*(uint32_t*)(in + 8)); \
+	uint32_t s3 = swap_uint32(*(uint32_t*)(in + 12)); \
+	uint32_t s4 = swap_uint32(*(uint32_t*)(in + 16)); \
 	s0 ^= W_[0]; \
 	s1 ^= W_[1]; \
 	s2 ^= W_[2]; \
@@ -1801,7 +1795,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 4 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 14; i++) {
@@ -1851,7 +1845,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael160_128_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael160_128_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael160_128_impl_aesni;
 		}
 #endif
@@ -1863,7 +1857,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -1878,7 +1872,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 5 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 11; i++) {
@@ -1929,7 +1923,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael160_160_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael160_160_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael160_160_impl_aesni;
 		}
 #endif
@@ -1941,7 +1935,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -1956,7 +1950,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 6 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
@@ -2010,7 +2004,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael160_192_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael160_192_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael160_192_impl_aesni;
 		}
 #endif
@@ -2022,7 +2016,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -2037,7 +2031,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 7 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 9; i++) {
@@ -2091,7 +2085,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael160_224_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael160_224_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael160_224_impl_aesni;
 		}
 #endif
@@ -2103,7 +2097,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -2118,7 +2112,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 8 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
@@ -2177,7 +2171,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael160_256_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael160_256_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael160_256_impl_aesni;
 		}
 #endif
@@ -2189,7 +2183,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 
@@ -2231,13 +2225,13 @@ namespace cppcrypto
 	s4 = W_[r*7 + 4] ^ uint32_t(S[t4 >> 24]) << 24 ^ uint32_t(S[(t5 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t6 >> 8) & 0xff]) << 8 ^ uint32_t(S[t1 & 0xff]); \
 	s5 = W_[r*7 + 5] ^ uint32_t(S[t5 >> 24]) << 24 ^ uint32_t(S[(t6 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t0 >> 8) & 0xff]) << 8 ^ uint32_t(S[t2 & 0xff]); \
 	s6 = W_[r*7 + 6] ^ uint32_t(S[t6 >> 24]) << 24 ^ uint32_t(S[(t0 >> 16) & 0xff]) << 16 ^ uint32_t(S[(t1 >> 8) & 0xff]) << 8 ^ uint32_t(S[t3 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3);\
-	*(uint32_t*)(out + 16) = _byteswap_ulong(s4);\
-	*(uint32_t*)(out + 20) = _byteswap_ulong(s5);\
-	*(uint32_t*)(out + 24) = _byteswap_ulong(s6);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3);\
+	*(uint32_t*)(out + 16) = swap_uint32(s4);\
+	*(uint32_t*)(out + 20) = swap_uint32(s5);\
+	*(uint32_t*)(out + 24) = swap_uint32(s6);
 
 #define IROUND224(r) \
 	t0 = W_[r*7 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s6 >> 16)] ^ IT[2][uint8_t(s5 >> 8)] ^ IT[3][uint8_t(s3)]; \
@@ -2263,22 +2257,22 @@ namespace cppcrypto
 	s4 = W_[r*7 + 4] ^ uint32_t(IS[t4 >> 24]) << 24 ^ uint32_t(IS[(t3 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t2 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t0 & 0xff]); \
 	s5 = W_[r*7 + 5] ^ uint32_t(IS[t5 >> 24]) << 24 ^ uint32_t(IS[(t4 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t3 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t1 & 0xff]); \
 	s6 = W_[r*7 + 6] ^ uint32_t(IS[t6 >> 24]) << 24 ^ uint32_t(IS[(t5 >> 16) & 0xff]) << 16 ^ uint32_t(IS[(t4 >> 8) & 0xff]) << 8 ^ uint32_t(IS[t2 & 0xff]); \
-	*(uint32_t*)out = _byteswap_ulong(s0); \
-	*(uint32_t*)(out + 4) = _byteswap_ulong(s1); \
-	*(uint32_t*)(out + 8) = _byteswap_ulong(s2); \
-	*(uint32_t*)(out + 12) = _byteswap_ulong(s3); \
-	*(uint32_t*)(out + 16) = _byteswap_ulong(s4); \
-	*(uint32_t*)(out + 20) = _byteswap_ulong(s5); \
-	*(uint32_t*)(out + 24) = _byteswap_ulong(s6);
+	*(uint32_t*)out = swap_uint32(s0); \
+	*(uint32_t*)(out + 4) = swap_uint32(s1); \
+	*(uint32_t*)(out + 8) = swap_uint32(s2); \
+	*(uint32_t*)(out + 12) = swap_uint32(s3); \
+	*(uint32_t*)(out + 16) = swap_uint32(s4); \
+	*(uint32_t*)(out + 20) = swap_uint32(s5); \
+	*(uint32_t*)(out + 24) = swap_uint32(s6);
 
 #define FROUND224() \
-	uint32_t s0 = _byteswap_ulong(*(uint32_t*)in); \
-	uint32_t s1 = _byteswap_ulong(*(uint32_t*)(in + 4)); \
-	uint32_t s2 = _byteswap_ulong(*(uint32_t*)(in + 8)); \
-	uint32_t s3 = _byteswap_ulong(*(uint32_t*)(in + 12)); \
-	uint32_t s4 = _byteswap_ulong(*(uint32_t*)(in + 16)); \
-	uint32_t s5 = _byteswap_ulong(*(uint32_t*)(in + 20)); \
-	uint32_t s6 = _byteswap_ulong(*(uint32_t*)(in + 24)); \
+	uint32_t s0 = swap_uint32(*(uint32_t*)in); \
+	uint32_t s1 = swap_uint32(*(uint32_t*)(in + 4)); \
+	uint32_t s2 = swap_uint32(*(uint32_t*)(in + 8)); \
+	uint32_t s3 = swap_uint32(*(uint32_t*)(in + 12)); \
+	uint32_t s4 = swap_uint32(*(uint32_t*)(in + 16)); \
+	uint32_t s5 = swap_uint32(*(uint32_t*)(in + 20)); \
+	uint32_t s6 = swap_uint32(*(uint32_t*)(in + 24)); \
 	s0 ^= W_[0]; \
 	s1 ^= W_[1]; \
 	s2 ^= W_[2]; \
@@ -2306,7 +2300,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 4 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
@@ -2342,7 +2336,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 5 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
@@ -2381,7 +2375,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 6 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
@@ -2421,7 +2415,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 7 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 13; i++) {
@@ -2482,7 +2476,7 @@ namespace cppcrypto
 			if (impl_)
 			{
 				impl_->~rijndael_impl();
-				_aligned_free(impl_);
+				aligned_deallocate(impl_);
 			}
 		}
 
@@ -2497,7 +2491,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael224_128_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael224_128_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael224_128_impl_aesni;
 		}
 #endif
@@ -2508,7 +2502,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael224_160_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael224_160_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael224_160_impl_aesni;
 		}
 #endif
@@ -2519,7 +2513,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael224_224_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael224_224_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael224_224_impl_aesni;
 		}
 #endif
@@ -2530,7 +2524,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael224_192_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael224_192_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael224_192_impl_aesni;
 		}
 #endif
@@ -2542,7 +2536,7 @@ namespace cppcrypto
 			return impl_->init(key, direction);
 
 		for (int i = 0; i < 8 /* Nk */; i++)
-			W_[i] = _byteswap_ulong(*(uint32_t*)(key + 4 * i));
+			W_[i] = swap_uint32(*(uint32_t*)(key + 4 * i));
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
@@ -2585,7 +2579,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::aesni() && cpu_info::sse41() && cpu_info::avx2())
 		{
-			void* p = _aligned_malloc(sizeof(detail::rijndael224_256_impl_aesni), 32);
+			void* p = aligned_allocate(sizeof(detail::rijndael224_256_impl_aesni), 32);
 			impl_ = new (p)detail::rijndael224_256_impl_aesni;
 		}
 #endif
@@ -2612,7 +2606,7 @@ namespace cppcrypto
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
-			_aligned_free(impl_);
+			aligned_deallocate(impl_);
 		}
 	}
 

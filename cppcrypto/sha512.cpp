@@ -3,17 +3,13 @@ This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourcef
 and released into public domain.
 */
 
-#include <malloc.h>
 #include "cpuinfo.h"
 #include "sha512.h"
+#include "portability.h"
 #include <memory.h>
+#include <functional>
 
 //#define CPPCRYPTO_DEBUG
-
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-#define _byteswap_ulong __builtin_bswap32
-#endif
 
 extern "C"
 {
@@ -47,7 +43,7 @@ namespace cppcrypto
 		};
 		else
 			if (cpu_info::sse41())
-				transfunc = bind(&sha512_sse4, std::placeholders::_1, H.get(), std::placeholders::_2);
+				transfunc = std::bind(&sha512_sse4, std::placeholders::_1, H.get(), std::placeholders::_2);
 		else
 #else
 			if (cpu_info::sse2())
@@ -59,7 +55,7 @@ namespace cppcrypto
 		else
 #endif
 #endif
-			transfunc = bind(&sha512::transform, this, std::placeholders::_1, std::placeholders::_2);
+			transfunc = std::bind(&sha512::transform, this, std::placeholders::_1, std::placeholders::_2);
 	}
 
 	static const uint64_t K[80] = {
@@ -93,11 +89,6 @@ namespace cppcrypto
 	static inline uint64_t shr(uint64_t x, int n)
 	{
 		return x >> n;
-	}
-
-	static inline uint64_t rotl(uint64_t x, int n)
-	{
-		return (x << n) | (x >> (64 - n));
 	}
 
 	static inline uint64_t Ch(uint64_t x, uint64_t y, uint64_t z)
@@ -176,7 +167,7 @@ namespace cppcrypto
 			uint64_t M[16];
 			for (uint64_t i = 0; i < 128 / 8; i++)
 			{
-				M[i] = _byteswap_uint64((reinterpret_cast<const uint64_t*>(m)[blk * 16 + i]));
+				M[i] = swap_uint64((reinterpret_cast<const uint64_t*>(m)[blk * 16 + i]));
 			}
 #ifdef	CPPCRYPTO_DEBUG
 			printf("M1 - M8: %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X\n",
@@ -247,12 +238,12 @@ namespace cppcrypto
 			pos = 0;
 		}
 		memset(&m[0] + pos, 0, 128 - pos);
-		uint64_t mlen = _byteswap_uint64(total);
+		uint64_t mlen = swap_uint64(total);
 		memcpy(&m[0] + (128 - 8), &mlen, 64 / 8);
 		transfunc(&m[0], 1);
 		for (int i = 0; i < 8; i++)
 		{
-			H[i] = _byteswap_uint64(H[i]);
+			H[i] = swap_uint64(H[i]);
 		}
 		memcpy(hash, H, hashsize()/8);
 	}

@@ -4,6 +4,7 @@ and released into public domain.
 */
 
 #include "cast6.h"
+#include "portability.h"
 #include <memory.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,10 +12,6 @@ and released into public domain.
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-
-#ifndef _MSC_VER
-#define _byteswap_ulong __builtin_bswap32
-#endif
 
 //#define CPPCRYPTO_DEBUG
 
@@ -216,19 +213,19 @@ namespace cppcrypto
 
 	static inline uint32_t f1(uint32_t D, uint8_t kr, uint32_t km)
 	{
-		uint32_t I = _rotl(km + D, kr);
+		uint32_t I = rotatel32(km + D, kr);
 		return ((S[0][(I >> 24) & 0xff] ^ S[1][(I >> 16) & 0xff]) - S[2][(I >> 8) & 0xff]) + S[3][I & 0xff];
 	}
 
 	static inline uint32_t f2(uint32_t D, uint8_t kr, uint32_t km)
 	{
-		uint32_t I = _rotl(km ^ D, kr);
+		uint32_t I = rotatel32(km ^ D, kr);
 		return ((S[0][(I >> 24) & 0xff] - S[1][(I >> 16) & 0xff]) + S[2][(I >> 8) & 0xff]) ^ S[3][I & 0xff];
 	}
 
 	static inline uint32_t f3(uint32_t D, uint8_t kr, uint32_t km)
 	{
-		uint32_t I = _rotl(km - D, kr);
+		uint32_t I = rotatel32(km - D, kr);
 		return ((S[0][(I >> 24) & 0xff] + S[1][(I >> 16) & 0xff]) ^ S[2][(I >> 8) & 0xff]) - S[3][I & 0xff];
 	}
 
@@ -289,14 +286,14 @@ namespace cppcrypto
 
 	bool cast6_256::init(const uint8_t* key, block_cipher::direction direction)
 	{
-		uint32_t a = _byteswap_ulong(*(((const uint32_t*)key) + 0));
-		uint32_t b = _byteswap_ulong(*(((const uint32_t*)key) + 1));
-		uint32_t c = _byteswap_ulong(*(((const uint32_t*)key) + 2));
-		uint32_t d = _byteswap_ulong(*(((const uint32_t*)key) + 3));
-		uint32_t e = _byteswap_ulong(*(((const uint32_t*)key) + 4));
-		uint32_t f = _byteswap_ulong(*(((const uint32_t*)key) + 5));
-		uint32_t g = _byteswap_ulong(*(((const uint32_t*)key) + 6));
-		uint32_t h = _byteswap_ulong(*(((const uint32_t*)key) + 7));
+		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
+		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
+		uint32_t c = swap_uint32(*(((const uint32_t*)key) + 2));
+		uint32_t d = swap_uint32(*(((const uint32_t*)key) + 3));
+		uint32_t e = swap_uint32(*(((const uint32_t*)key) + 4));
+		uint32_t f = swap_uint32(*(((const uint32_t*)key) + 5));
+		uint32_t g = swap_uint32(*(((const uint32_t*)key) + 6));
+		uint32_t h = swap_uint32(*(((const uint32_t*)key) + 7));
 		do_init(a, b, c, d, e, f, g, h, km, kr);
 
 		return true;
@@ -304,10 +301,10 @@ namespace cppcrypto
 
 	void cast6_256::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		uint32_t a = _byteswap_ulong(*(((const uint32_t*)in) + 0));
-		uint32_t b = _byteswap_ulong(*(((const uint32_t*)in) + 1));
-		uint32_t c = _byteswap_ulong(*(((const uint32_t*)in) + 2));
-		uint32_t d = _byteswap_ulong(*(((const uint32_t*)in) + 3));
+		uint32_t a = swap_uint32(*(((const uint32_t*)in) + 0));
+		uint32_t b = swap_uint32(*(((const uint32_t*)in) + 1));
+		uint32_t c = swap_uint32(*(((const uint32_t*)in) + 2));
+		uint32_t d = swap_uint32(*(((const uint32_t*)in) + 3));
 
 		c ^= f1(d, kr[0], km[0]);
 		b ^= f2(c, kr[1], km[1]);
@@ -429,18 +426,18 @@ namespace cppcrypto
 		printf("kr: %02x %02x %02x %02x\n", kr[44], kr[45], kr[46], kr[47]);
 #endif
 
-		*(((uint32_t*)out) + 0) = _byteswap_ulong(a);
-		*(((uint32_t*)out) + 1) = _byteswap_ulong(b);
-		*(((uint32_t*)out) + 2) = _byteswap_ulong(c);
-		*(((uint32_t*)out) + 3) = _byteswap_ulong(d);
+		*(((uint32_t*)out) + 0) = swap_uint32(a);
+		*(((uint32_t*)out) + 1) = swap_uint32(b);
+		*(((uint32_t*)out) + 2) = swap_uint32(c);
+		*(((uint32_t*)out) + 3) = swap_uint32(d);
 	}
 
 	void cast6_256::decrypt_block(const uint8_t* in, uint8_t* out)
 	{
-		uint32_t a = _byteswap_ulong(*(((const uint32_t*)in) + 0));
-		uint32_t b = _byteswap_ulong(*(((const uint32_t*)in) + 1));
-		uint32_t c = _byteswap_ulong(*(((const uint32_t*)in) + 2));
-		uint32_t d = _byteswap_ulong(*(((const uint32_t*)in) + 3));
+		uint32_t a = swap_uint32(*(((const uint32_t*)in) + 0));
+		uint32_t b = swap_uint32(*(((const uint32_t*)in) + 1));
+		uint32_t c = swap_uint32(*(((const uint32_t*)in) + 2));
+		uint32_t d = swap_uint32(*(((const uint32_t*)in) + 3));
 
 		c ^= f1(d, kr[44], km[44]);
 		b ^= f2(c, kr[45], km[45]);
@@ -502,10 +499,10 @@ namespace cppcrypto
 		b ^= f2(c, kr[1], km[1]);
 		c ^= f1(d, kr[0], km[0]);
 
-		*(((uint32_t*)out) + 0) = _byteswap_ulong(a);
-		*(((uint32_t*)out) + 1) = _byteswap_ulong(b);
-		*(((uint32_t*)out) + 2) = _byteswap_ulong(c);
-		*(((uint32_t*)out) + 3) = _byteswap_ulong(d);
+		*(((uint32_t*)out) + 0) = swap_uint32(a);
+		*(((uint32_t*)out) + 1) = swap_uint32(b);
+		*(((uint32_t*)out) + 2) = swap_uint32(c);
+		*(((uint32_t*)out) + 3) = swap_uint32(d);
 	}
 
 #if 0
@@ -553,13 +550,13 @@ namespace cppcrypto
 
 	bool cast6_224::init(const uint8_t* key, block_cipher::direction direction)
 	{
-		uint32_t a = _byteswap_ulong(*(((const uint32_t*)key) + 0));
-		uint32_t b = _byteswap_ulong(*(((const uint32_t*)key) + 1));
-		uint32_t c = _byteswap_ulong(*(((const uint32_t*)key) + 2));
-		uint32_t d = _byteswap_ulong(*(((const uint32_t*)key) + 3));
-		uint32_t e = _byteswap_ulong(*(((const uint32_t*)key) + 4));
-		uint32_t f = _byteswap_ulong(*(((const uint32_t*)key) + 5));
-		uint32_t g = _byteswap_ulong(*(((const uint32_t*)key) + 6));
+		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
+		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
+		uint32_t c = swap_uint32(*(((const uint32_t*)key) + 2));
+		uint32_t d = swap_uint32(*(((const uint32_t*)key) + 3));
+		uint32_t e = swap_uint32(*(((const uint32_t*)key) + 4));
+		uint32_t f = swap_uint32(*(((const uint32_t*)key) + 5));
+		uint32_t g = swap_uint32(*(((const uint32_t*)key) + 6));
 		uint32_t h = 0;
 		do_init(a, b, c, d, e, f, g, h, km, kr);
 
@@ -568,12 +565,12 @@ namespace cppcrypto
 
 	bool cast6_192::init(const uint8_t* key, block_cipher::direction direction)
 	{
-		uint32_t a = _byteswap_ulong(*(((const uint32_t*)key) + 0));
-		uint32_t b = _byteswap_ulong(*(((const uint32_t*)key) + 1));
-		uint32_t c = _byteswap_ulong(*(((const uint32_t*)key) + 2));
-		uint32_t d = _byteswap_ulong(*(((const uint32_t*)key) + 3));
-		uint32_t e = _byteswap_ulong(*(((const uint32_t*)key) + 4));
-		uint32_t f = _byteswap_ulong(*(((const uint32_t*)key) + 5));
+		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
+		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
+		uint32_t c = swap_uint32(*(((const uint32_t*)key) + 2));
+		uint32_t d = swap_uint32(*(((const uint32_t*)key) + 3));
+		uint32_t e = swap_uint32(*(((const uint32_t*)key) + 4));
+		uint32_t f = swap_uint32(*(((const uint32_t*)key) + 5));
 		uint32_t g = 0;
 		uint32_t h = 0;
 		do_init(a, b, c, d, e, f, g, h, km, kr);
@@ -583,11 +580,11 @@ namespace cppcrypto
 
 	bool cast6_160::init(const uint8_t* key, block_cipher::direction direction)
 	{
-		uint32_t a = _byteswap_ulong(*(((const uint32_t*)key) + 0));
-		uint32_t b = _byteswap_ulong(*(((const uint32_t*)key) + 1));
-		uint32_t c = _byteswap_ulong(*(((const uint32_t*)key) + 2));
-		uint32_t d = _byteswap_ulong(*(((const uint32_t*)key) + 3));
-		uint32_t e = _byteswap_ulong(*(((const uint32_t*)key) + 4));
+		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
+		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
+		uint32_t c = swap_uint32(*(((const uint32_t*)key) + 2));
+		uint32_t d = swap_uint32(*(((const uint32_t*)key) + 3));
+		uint32_t e = swap_uint32(*(((const uint32_t*)key) + 4));
 		uint32_t f = 0;
 		uint32_t g = 0;
 		uint32_t h = 0;
@@ -598,10 +595,10 @@ namespace cppcrypto
 
 	bool cast6_128::init(const uint8_t* key, block_cipher::direction direction)
 	{
-		uint32_t a = _byteswap_ulong(*(((const uint32_t*)key) + 0));
-		uint32_t b = _byteswap_ulong(*(((const uint32_t*)key) + 1));
-		uint32_t c = _byteswap_ulong(*(((const uint32_t*)key) + 2));
-		uint32_t d = _byteswap_ulong(*(((const uint32_t*)key) + 3));
+		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
+		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
+		uint32_t c = swap_uint32(*(((const uint32_t*)key) + 2));
+		uint32_t d = swap_uint32(*(((const uint32_t*)key) + 3));
 		uint32_t e = 0;
 		uint32_t f = 0;
 		uint32_t g = 0;

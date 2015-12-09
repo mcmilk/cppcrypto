@@ -4,12 +4,9 @@ and released into public domain.
 */
 
 #include "pbkdf2.h"
+#include "portability.h"
 #include <algorithm>
 #include <memory.h>
-
-#ifndef _MSC_VER
-#define _byteswap_ulong __builtin_bswap32
-#endif
 
 namespace cppcrypto
 {
@@ -24,7 +21,7 @@ namespace cppcrypto
 		{
 			hmac.init();
 			hmac.update(salt, salt_len);
-			uint32_t ir = _byteswap_ulong(i+1);
+			uint32_t ir = swap_uint32(i + 1);
 			hmac.update((const uint8_t*)&ir, sizeof(ir));
 			hmac.final(temp1);
 			size_t sz = std::min(hlen, remaining);

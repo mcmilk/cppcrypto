@@ -5,13 +5,10 @@ and released into public domain.
 
 #include "cpuinfo.h"
 #include "kupyna.h"
+#include "portability.h"
 #include <memory.h>
 
 //#define CPPCRYPTO_DEBUG
-
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-#endif
 
 namespace cppcrypto
 {

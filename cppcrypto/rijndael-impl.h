@@ -6,8 +6,8 @@ and released into public domain.
 #ifndef CPPCRYPTO_RIJNDAELIMPL_H
 #define CPPCRYPTO_RIJNDAELIMPL_H
 
-#include <tmmintrin.h>
 #include <stdint.h>
+#include <emmintrin.h>
 #include "block_cipher.h"
 
 namespace cppcrypto

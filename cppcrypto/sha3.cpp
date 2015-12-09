@@ -3,17 +3,13 @@ This code is written by kerukuro for cppcrypto library (http://cppcrypto.sourcef
 and released into public domain.
 */
 
-#include <malloc.h>
 #include "cpuinfo.h"
 #include "sha3.h"
+#include "portability.h"
 #include <memory.h>
+#include <functional>
 
-#ifndef _MSC_VER
-static inline uint64_t _rotl64(uint64_t x, unsigned n)
-{
-        return (x << n) | (x >> (64 - n));
-}
-#else
+#ifdef _MSC_VER
 #define inline __forceinline
 #endif
 
@@ -71,41 +67,41 @@ namespace cppcrypto
 			C[3] = A[0 * 5 + 3] ^ A[1 * 5 + 3] ^ A[2 * 5 + 3] ^ A[3 * 5 + 3] ^ A[4 * 5 + 3];
 			C[4] = A[0 * 5 + 4] ^ A[1 * 5 + 4] ^ A[2 * 5 + 4] ^ A[3 * 5 + 4] ^ A[4 * 5 + 4];
 
-			D[0] = C[4] ^ _rotl64(C[1], 1);
-			D[1] = C[0] ^ _rotl64(C[2], 1);
-			D[2] = C[1] ^ _rotl64(C[3], 1);
-			D[3] = C[2] ^ _rotl64(C[4], 1);
-			D[4] = C[3] ^ _rotl64(C[0], 1);
+			D[0] = C[4] ^ rotatel64(C[1], 1);
+			D[1] = C[0] ^ rotatel64(C[2], 1);
+			D[2] = C[1] ^ rotatel64(C[3], 1);
+			D[3] = C[2] ^ rotatel64(C[4], 1);
+			D[4] = C[3] ^ rotatel64(C[0], 1);
 
 			uint64_t B0 = A[0 * 5 + 0] ^ D[0];
-			uint64_t B10 = _rotl64(A[0 * 5 + 1] ^ D[1], 1);
-			uint64_t B20 = _rotl64(A[0 * 5 + 2] ^ D[2], 62);
-			uint64_t B5 = _rotl64(A[0 * 5 + 3] ^ D[3], 28);
-			uint64_t B15 = _rotl64(A[0 * 5 + 4] ^ D[4], 27);
+			uint64_t B10 = rotatel64(A[0 * 5 + 1] ^ D[1], 1);
+			uint64_t B20 = rotatel64(A[0 * 5 + 2] ^ D[2], 62);
+			uint64_t B5 = rotatel64(A[0 * 5 + 3] ^ D[3], 28);
+			uint64_t B15 = rotatel64(A[0 * 5 + 4] ^ D[4], 27);
 
-			uint64_t B16 = _rotl64(A[1 * 5 + 0] ^ D[0], 36);
-			uint64_t B1 = _rotl64(A[1 * 5 + 1] ^ D[1], 44);
-			uint64_t B11 = _rotl64(A[1 * 5 + 2] ^ D[2], 6);
-			uint64_t B21 = _rotl64(A[1 * 5 + 3] ^ D[3], 55);
-			uint64_t B6 = _rotl64(A[1 * 5 + 4] ^ D[4], 20);
+			uint64_t B16 = rotatel64(A[1 * 5 + 0] ^ D[0], 36);
+			uint64_t B1 = rotatel64(A[1 * 5 + 1] ^ D[1], 44);
+			uint64_t B11 = rotatel64(A[1 * 5 + 2] ^ D[2], 6);
+			uint64_t B21 = rotatel64(A[1 * 5 + 3] ^ D[3], 55);
+			uint64_t B6 = rotatel64(A[1 * 5 + 4] ^ D[4], 20);
 
-			uint64_t B7 = _rotl64(A[2 * 5 + 0] ^ D[0], 3);
-			uint64_t B17 = _rotl64(A[2 * 5 + 1] ^ D[1], 10);
-			uint64_t B2 = _rotl64(A[2 * 5 + 2] ^ D[2], 43);
-			uint64_t B12 = _rotl64(A[2 * 5 + 3] ^ D[3], 25);
-			uint64_t B22 = _rotl64(A[2 * 5 + 4] ^ D[4], 39);
+			uint64_t B7 = rotatel64(A[2 * 5 + 0] ^ D[0], 3);
+			uint64_t B17 = rotatel64(A[2 * 5 + 1] ^ D[1], 10);
+			uint64_t B2 = rotatel64(A[2 * 5 + 2] ^ D[2], 43);
+			uint64_t B12 = rotatel64(A[2 * 5 + 3] ^ D[3], 25);
+			uint64_t B22 = rotatel64(A[2 * 5 + 4] ^ D[4], 39);
 
-			uint64_t B23 = _rotl64(A[3 * 5 + 0] ^ D[0], 41);
-			uint64_t B8 = _rotl64(A[3 * 5 + 1] ^ D[1], 45);
-			uint64_t B18 = _rotl64(A[3 * 5 + 2] ^ D[2], 15);
-			uint64_t B3 = _rotl64(A[3 * 5 + 3] ^ D[3], 21);
-			uint64_t B13 = _rotl64(A[3 * 5 + 4] ^ D[4], 8);
+			uint64_t B23 = rotatel64(A[3 * 5 + 0] ^ D[0], 41);
+			uint64_t B8 = rotatel64(A[3 * 5 + 1] ^ D[1], 45);
+			uint64_t B18 = rotatel64(A[3 * 5 + 2] ^ D[2], 15);
+			uint64_t B3 = rotatel64(A[3 * 5 + 3] ^ D[3], 21);
+			uint64_t B13 = rotatel64(A[3 * 5 + 4] ^ D[4], 8);
 
-			uint64_t B14 = _rotl64(A[4 * 5 + 0] ^ D[0], 18);
-			uint64_t B24 = _rotl64(A[4 * 5 + 1] ^ D[1], 2);
-			uint64_t B9 = _rotl64(A[4 * 5 + 2] ^ D[2], 61);
-			uint64_t B19 = _rotl64(A[4 * 5 + 3] ^ D[3], 56);
-			uint64_t B4 = _rotl64(A[4 * 5 + 4] ^ D[4], 14);
+			uint64_t B14 = rotatel64(A[4 * 5 + 0] ^ D[0], 18);
+			uint64_t B24 = rotatel64(A[4 * 5 + 1] ^ D[1], 2);
+			uint64_t B9 = rotatel64(A[4 * 5 + 2] ^ D[2], 61);
+			uint64_t B19 = rotatel64(A[4 * 5 + 3] ^ D[3], 56);
+			uint64_t B4 = rotatel64(A[4 * 5 + 4] ^ D[4], 14);
 
 			A[0 * 5 + 0] = B0 ^ ((~B1) & B2);
 			A[0 * 5 + 1] = B1 ^ ((~B2) & B3);

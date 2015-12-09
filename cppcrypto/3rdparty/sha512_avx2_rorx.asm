@@ -595,7 +595,9 @@ rotate_Ys
 ;   message blocks.
 ; L is the message length in SHA512 blocks
 global sha512_rorx:function
+global _sha512_rorx:function
 sha512_rorx:
+_sha512_rorx:
 
 	; Allocate Stack Space
 	mov	rax, rsp

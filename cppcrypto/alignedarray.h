@@ -9,6 +9,7 @@ and released into public domain.
 #include <stdlib.h>
 #include <memory.h>
 #include <algorithm>
+#include "portability.h"
 
 namespace cppcrypto
 {
@@ -34,11 +35,7 @@ namespace cppcrypto
 	template<typename T, size_t N, size_t A>
 	aligned_pod_array<T, N, A>::aligned_pod_array() : t(0)
 	{
-#ifdef _MSC_VER
-		t = static_cast<T*>(_aligned_malloc(sizeof(T) * N, A));
-#else
-		t = static_cast<T*>(aligned_alloc(A, sizeof(T) * N));
-#endif
+		t = static_cast<T*>(aligned_allocate(sizeof(T) * N, A));
 	}
 
 	template<typename T, size_t N, size_t A>
@@ -52,11 +49,7 @@ namespace cppcrypto
 	{
 		if (t)
 		{
-#ifdef _MSC_VER
-			_aligned_free(t);
-#else
-			free(t);
-#endif
+			aligned_deallocate(t);
 			t = nullptr;
 		}
 }
@@ -79,11 +72,7 @@ namespace cppcrypto
 	aligned_pod_array<T, N, A>::aligned_pod_array(const aligned_pod_array<T, N, A>& other)
 		: t(nullptr)
 	{
-#ifdef _MSC_VER
-		t = static_cast<T*>(_aligned_malloc(sizeof(T) * N, A));
-#else
-		t = static_cast<T*>(aligned_alloc(A, sizeof(T) * N));
-#endif
+		t = static_cast<T*>(aligned_allocate(sizeof(T) * N, A));
 		*this = other;
 	}
 
@@ -127,11 +116,7 @@ namespace cppcrypto
 	template<typename RT>
 	void aligned_impl_ptr<T, A>::create()
 	{
-#ifdef _MSC_VER
-		void* p = _aligned_malloc(sizeof(RT), A);
-#else
-		void* p = aligned_alloc(A, sizeof(RT));
-#endif
+		void* p = aligned_allocate(sizeof(RT), A);
 		t = new (p)RT;
 	}
 
@@ -141,11 +126,7 @@ namespace cppcrypto
 		if (t)
 		{
 			t->~T();
-#ifdef _MSC_VER
-			_aligned_free(t);
-#else
-			free(t);
-#endif
+			aligned_deallocate(t);
 			t = nullptr;
 		}
 	}

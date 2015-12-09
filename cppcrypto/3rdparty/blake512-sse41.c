@@ -48,12 +48,6 @@ __inline __m128i _mm_set1_epi64x(int64_t a)
 #endif
 #endif
 
-#define U8TO32(p) _byteswap_uint32(*(u32 *) (p))
-#define U32TO8(p, v) *(u32 *) (p) = _byteswap_uint32(v);
-#define U8TO64(p)  _byteswap_uint64(*(u64 *) (p))
-#define U64TO8(p, v) *(u64 *) (p) = _byteswap_uint64(v);
-
-
 
 int blake512_compress_sse41(u64* h, u64 total, int padding, const u8 * datablock)
 {

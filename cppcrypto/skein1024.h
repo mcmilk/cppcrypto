@@ -29,7 +29,8 @@ namespace cppcrypto
 
 	protected:
 		void transform(void* m, uint64_t num_blks, size_t reallen);
-#if defined(_MSC_VER) && defined(_M_X64)
+//#if defined(_MSC_VER) && defined(_M_X64)
+#if defined(_M_X64)
 		void transform_rorx(void* m, uint64_t num_blks, size_t reallen);
 #endif
 		std::function<void(void*, uint64_t, size_t)> transfunc;

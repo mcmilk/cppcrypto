@@ -5,12 +5,9 @@ and released into public domain.
 
 #include "cpuinfo.h"
 #include "whirlpool.h"
+#include "portability.h"
 #include <functional>
 #include <memory.h>
-
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-#endif
 
 //#define CPPCRYPTO_DEBUG
 
@@ -598,7 +595,7 @@ namespace cppcrypto
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("pre-final", h);
 #endif
-		uint64_t mlen = _byteswap_uint64(total);
+		uint64_t mlen = swap_uint64(total);
 		m[pos++] = 0x80;
 		if (pos > 32)
 		{

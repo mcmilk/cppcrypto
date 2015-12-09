@@ -5,6 +5,7 @@ and released into public domain.
 
 #include "cpuinfo.h"
 #include "md5.h"
+#include "portability.h"
 #include <memory.h>
 //#define CPPCRYPTO_DEBUG
 
@@ -71,22 +72,22 @@ namespace cppcrypto
 
 	static inline void roundf(int round, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, const uint32_t* M)
 	{
-		a = b + _rotl(a + (d ^ (b & (c ^ d))) + K[round] + M[round], S[round]);
+		a = b + rotatel32(a + (d ^ (b & (c ^ d))) + K[round] + M[round], S[round]);
 	}
 
 	static inline void roundg(int round, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, const uint32_t* M)
 	{
-		a = b + _rotl(a + (c ^ (d & (b ^ c))) + K[round] + M[(5*round+1)%16], S[round]);
+		a = b + rotatel32(a + (c ^ (d & (b ^ c))) + K[round] + M[(5 * round + 1) % 16], S[round]);
 	}
 
 	static inline void roundh(int round, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, const uint32_t* M)
 	{
-		a = b + _rotl(a + (b ^ c ^ d) + K[round] + M[(3 * round + 5) % 16], S[round]);
+		a = b + rotatel32(a + (b ^ c ^ d) + K[round] + M[(3 * round + 5) % 16], S[round]);
 	}
 
 	static inline void roundi(int round, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, const uint32_t* M)
 	{
-		a = b + _rotl(a + (c ^ (b | ~d)) + K[round] + M[(7 * round) % 16], S[round]);
+		a = b + rotatel32(a + (c ^ (b | ~d)) + K[round] + M[(7 * round) % 16], S[round]);
 	}
 
 	void md5::transform(const uint8_t* m, uint64_t num_blks)

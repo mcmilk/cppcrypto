@@ -5,14 +5,11 @@ and released into public domain.
 
 #include "cpuinfo.h"
 #include "sha1.h"
+#include "portability.h"
 #include <memory.h>
-//#define CPPCRYPTO_DEBUG
+#include <functional>
 
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-#define _byteswap_ulong __builtin_bswap32
-#define __fastcall 
-#endif
+//#define CPPCRYPTO_DEBUG
 
 extern "C"
 {
@@ -34,7 +31,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::ssse3())
-			transfunc = bind(&sha1_update_intel, H.get(), std::placeholders::_1, std::placeholders::_2);
+			transfunc = std::bind(&sha1_update_intel, H.get(), std::placeholders::_1, std::placeholders::_2);
 #else
 		if (cpu_info::sse2())
 			transfunc = [this](void* m, uint64_t num_blks)
@@ -45,7 +42,7 @@ namespace cppcrypto
 #endif
 		else
 #endif
-			transfunc = bind(&sha1::transform, this, std::placeholders::_1, std::placeholders::_2);
+			transfunc = std::bind(&sha1::transform, this, std::placeholders::_1, std::placeholders::_2);
 	}
 
 	static const uint32_t SHA1_K[] = {
@@ -110,14 +107,14 @@ namespace cppcrypto
 			uint32_t M[16];
 			for (uint32_t i = 0; i < 64 / 4; i++)
 			{
-				M[i] = _byteswap_ulong((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
+				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
 			}
 
 			uint32_t W[80];
 			for (int t = 0; t <= 15; t++)
 				W[t] = M[t];
 			for (int t = 16; t <= 79; t++)
-				W[t] = _rotl(W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16], 1);
+				W[t] = rotatel32(W[t - 3] ^ W[t - 8] ^ W[t - 14] ^ W[t - 16], 1);
 
 			uint32_t a = H[0];
 			uint32_t b = H[1];
@@ -129,10 +126,10 @@ namespace cppcrypto
 			auto f = Ch;
 			for (int t = 0; t <= 79; t++)
 			{
-				uint32_t T = _rotl(a, 5) + f(b, c, d) + e + K + W[t];
+				uint32_t T = rotatel32(a, 5) + f(b, c, d) + e + K + W[t];
 				e = d;
 				d = c;
-				c = _rotl(b, 30);
+				c = rotatel32(b, 30);
 				b = a;
 				a = T;
 
@@ -171,12 +168,12 @@ namespace cppcrypto
 			pos = 0;
 		}
 		memset(&m[0] + pos, 0, 56 - pos);
-		uint64_t mlen = _byteswap_uint64(total);
+		uint64_t mlen = swap_uint64(total);
 		memcpy(&m[0] + (64 - 8), &mlen, 64 / 8);
 		transfunc(&m[0], 1);
 		for (int i = 0; i < 5; i++)
 		{
-			H[i] = _byteswap_ulong(H[i]);
+			H[i] = swap_uint32(H[i]);
 		}
 		memcpy(hash, H, 160/8);
 	}

@@ -585,19 +585,6 @@ namespace cppcrypto
 		y[7] = x[7] - k[7];
 	}
 
-	static inline void xorkey(const uint64_t* x, uint64_t* y, const uint64_t* k)
-	{
-		y[0] = x[0] ^ k[0];
-		y[1] = x[1] ^ k[1];
-		y[2] = x[2] ^ k[2];
-		y[3] = x[3] ^ k[3];
-		y[4] = x[4] ^ k[4];
-		y[5] = x[5] ^ k[5];
-		y[6] = x[6] ^ k[6];
-		y[7] = x[7] ^ k[7];
-	}
-
-
 	void kalyna512_512::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
 		uint64_t t1[8], t2[8];
@@ -846,14 +833,6 @@ namespace cppcrypto
 		y[1] = x[1] - k[1];
 		y[2] = x[2] - k[2];
 		y[3] = x[3] - k[3];
-	}
-
-	static inline void xorkey256(const uint64_t* x, uint64_t* y, const uint64_t* k)
-	{
-		y[0] = x[0] ^ k[0];
-		y[1] = x[1] ^ k[1];
-		y[2] = x[2] ^ k[2];
-		y[3] = x[3] ^ k[3];
 	}
 
 	static inline void G0256(const uint64_t* x, uint64_t* y)
@@ -1346,12 +1325,6 @@ namespace cppcrypto
 	{
 		y[0] = x[0] - k[0];
 		y[1] = x[1] - k[1];
-	}
-
-	static inline void xorkey128(const uint64_t* x, uint64_t* y, const uint64_t* k)
-	{
-		y[0] = x[0] ^ k[0];
-		y[1] = x[1] ^ k[1];
 	}
 
 	static inline void G0128(const uint64_t* x, uint64_t* y)

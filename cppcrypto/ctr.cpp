@@ -104,7 +104,7 @@ namespace cppcrypto
 	{
 		cipher->encrypt_block(ctr, block);
 		bool carry = true;
-		for (size_t i = nb - 1; i >= 0 && carry; i--)
+		for (size_t i = nb - 1; i < nb && carry; i--)
 			carry = !++ctr[i];
 	}
 

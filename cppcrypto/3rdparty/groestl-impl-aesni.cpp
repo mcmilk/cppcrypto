@@ -9,8 +9,9 @@
 
 // Modified for use in cppcrypto.
 
-#include <smmintrin.h>
+//#include <smmintrin.h>
 #include <wmmintrin.h>
+#include <tmmintrin.h>
 #include "../groestl-impl.h"
 
 namespace cppcrypto {
@@ -171,7 +172,8 @@ K. Matusiewicz, 2011/05/29 */
     ROUND_CONST_L7[i] = _mm_set_epi32(0x8f9fafbf ^ (i * 0x01010101), 0xcfdfefff ^ (i * 0x01010101), 0x00000000, 0x00000000);\
     }\
   ROUND_CONST_Lx = _mm_set_epi32(0xffffffff, 0xffffffff, 0x00000000, 0x00000000);\
-}while(0);
+}while(0)\
+;
 
 /* one round
 * i = round number
@@ -512,7 +514,8 @@ void groestl_impl_aesni_256::OF(uint64_t* h)
     ROUND_CONST_P[i] = _mm_set_epi32(0xf0e0d0c0 ^ (i * 0x01010101), 0xb0a09080 ^ (i * 0x01010101), 0x70605040 ^ (i * 0x01010101), 0x30201000 ^ (i * 0x01010101));\
     ROUND_CONST_Q[i] = _mm_set_epi32(0x0f1f2f3f ^ (i * 0x01010101), 0x4f5f6f7f ^ (i * 0x01010101), 0x8f9fafbf ^ (i * 0x01010101), 0xcfdfefff ^ (i * 0x01010101));\
     }\
-}while(0);
+}while(0)\
+;
 
 /* one round
 * a0-a7 = input rows

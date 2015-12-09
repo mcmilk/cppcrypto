@@ -4,6 +4,7 @@ and released into public domain.
 */
 
 #include "serpent.h"
+#include "portability.h"
 #include <memory.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -50,7 +51,7 @@ namespace cppcrypto
 
 	static inline void sbox0(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r1;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r1;
 		r3 ^= r0;
 		r1 &= r3;
 		r4 ^= r2;
@@ -76,7 +77,7 @@ namespace cppcrypto
 
 	static inline void sbox1(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4;
 		r0 = ~r0;
 		r2 = ~r2;
 		r4 = r0;
@@ -103,7 +104,7 @@ namespace cppcrypto
 
 	static inline void sbox2(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r0;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r0;
 		r0 &= r2;
 		r0 ^= r3;
 		r2 ^= r1;
@@ -127,7 +128,7 @@ namespace cppcrypto
 
 	static inline void sbox3(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r0;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r0;
 		r0 |= r3;
 		r3 ^= r1;
 		r1 &= r4;
@@ -154,7 +155,7 @@ namespace cppcrypto
 
 	static inline void sbox4(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4;
 		r1 ^= r3;
 		r3 = ~r3;
 		r2 ^= r3;
@@ -183,7 +184,7 @@ namespace cppcrypto
 
 	static inline void sbox5(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4;
 		r0 ^= r1;
 		r1 ^= r3;
 		r3 = ~r3;
@@ -211,7 +212,7 @@ namespace cppcrypto
 
 	static inline void sbox6(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r3;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r3;
 		r2 = ~r2;
 		r3 &= r0;
 		r0 ^= r4;
@@ -237,7 +238,7 @@ namespace cppcrypto
 
 	static inline void sbox7(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r1;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r1;
 		r1 |= r2;
 		r1 ^= r3;
 		r4 ^= r2;
@@ -265,7 +266,7 @@ namespace cppcrypto
 
 	static inline void isbox0(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r1;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r1;
 
 		r2 = ~r2;
 		r1 |= r0;
@@ -293,7 +294,7 @@ namespace cppcrypto
 
 	static inline void isbox1(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r1;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r1;
 
 		r1 ^= r3;
 		r3 &= r1;
@@ -321,7 +322,7 @@ namespace cppcrypto
 
 	static inline void isbox2(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4;
 
 		r2 ^= r3;
 		r3 ^= r0;
@@ -350,7 +351,7 @@ namespace cppcrypto
 
 	static inline void isbox3(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r2;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r2;
 
 		r2 ^= r1;
 		r0 ^= r2;
@@ -377,7 +378,7 @@ namespace cppcrypto
 
 	static inline void isbox4(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r2;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r2;
 		r2 &= r3;
 		r2 ^= r1;
 		r1 |= r3;
@@ -405,7 +406,7 @@ namespace cppcrypto
 
 	static inline void isbox5(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r3;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r3;
 		r1 = ~r1;
 		r2 ^= r1;
 		r3 |= r0;
@@ -432,7 +433,7 @@ namespace cppcrypto
 
 	static inline void isbox6(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r2;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r2;
 		r0 ^= r2;
 		r2 &= r0;
 		r4 ^= r3;
@@ -457,7 +458,7 @@ namespace cppcrypto
 
 	static inline void isbox7(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		register uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r2;
+		uint32_t r0 = w0, r1 = w1, r2 = w2, r3 = w3, r4 = r2;
 		r2 ^= r0;
 		r0 &= r3;
 		r4 |= r3;
@@ -484,43 +485,43 @@ namespace cppcrypto
 
 	static inline void lt(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		w0 = _rotl(w0, 13);
-		w2 = _rotl(w2, 3);
+		w0 = rotatel32(w0, 13);
+		w2 = rotatel32(w2, 3);
 		w1 = w1 ^ w0 ^ w2;
 		w3 = w3 ^ w2 ^ (w0 << 3);
-		w1 = _rotl(w1, 1);
-		w3 = _rotl(w3, 7);
+		w1 = rotatel32(w1, 1);
+		w3 = rotatel32(w3, 7);
 		w0 = w0 ^ w1 ^ w3;
 		w2 = w2 ^ w3 ^ (w1 << 7);
-		w0 = _rotl(w0, 5);
-		w2 = _rotl(w2, 22);
+		w0 = rotatel32(w0, 5);
+		w2 = rotatel32(w2, 22);
 	}
 
 	static inline void ilt(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)
 	{
-		w2 = _rotr(w2, 22);
-		w0 = _rotr(w0, 5);
+		w2 = rotater32(w2, 22);
+		w0 = rotater32(w0, 5);
 		w2 = w2 ^ w3 ^ (w1 << 7);
 		w0 = w0 ^ w1 ^ w3;
-		w3 = _rotr(w3, 7);
-		w1 = _rotr(w1, 1);
+		w3 = rotater32(w3, 7);
+		w1 = rotater32(w1, 1);
 		w3 = w3 ^ w2 ^ (w0 << 3);
 		w1 = w1 ^ w0 ^ w2;
-		w2 = _rotr(w2, 3);
-		w0 = _rotr(w0, 13);
+		w2 = rotater32(w2, 3);
+		w0 = rotater32(w0, 13);
 	}
 
 	bool serpent256::init(const uint8_t* key, block_cipher::direction direction)
 	{
 #ifdef SERPENT_AS_TNEPRES
-		W[7] = _byteswap_ulong(*(((const uint32_t*)key) + 0));
-		W[6] = _byteswap_ulong(*(((const uint32_t*)key) + 1));
-		W[5] = _byteswap_ulong(*(((const uint32_t*)key) + 2));
-		W[4] = _byteswap_ulong(*(((const uint32_t*)key) + 3));
-		W[3] = _byteswap_ulong(*(((const uint32_t*)key) + 4));
-		W[2] = _byteswap_ulong(*(((const uint32_t*)key) + 5));
-		W[1] = _byteswap_ulong(*(((const uint32_t*)key) + 6));
-		W[0] = _byteswap_ulong(*(((const uint32_t*)key) + 7));
+		W[7] = swap_uint32(*(((const uint32_t*)key) + 0));
+		W[6] = swap_uint32(*(((const uint32_t*)key) + 1));
+		W[5] = swap_uint32(*(((const uint32_t*)key) + 2));
+		W[4] = swap_uint32(*(((const uint32_t*)key) + 3));
+		W[3] = swap_uint32(*(((const uint32_t*)key) + 4));
+		W[2] = swap_uint32(*(((const uint32_t*)key) + 5));
+		W[1] = swap_uint32(*(((const uint32_t*)key) + 6));
+		W[0] = swap_uint32(*(((const uint32_t*)key) + 7));
 #else
 		W[0] = *(((const uint32_t*)key) + 0);
 		W[1] = *(((const uint32_t*)key) + 1);
@@ -543,7 +544,7 @@ namespace cppcrypto
 #endif
 
 		for (uint32_t i = 8; i < 140; i++)
-			W[i] = _rotl(W[i - 8] ^ W[i - 5] ^ W[i - 3] ^ W[i - 1] ^ 0x9e3779b9 ^ (i - 8), 11);
+			W[i] = rotatel32(W[i - 8] ^ W[i - 5] ^ W[i - 3] ^ W[i - 1] ^ 0x9e3779b9 ^ (i - 8), 11);
 
 		sbox3(W[8], W[9], W[10], W[11]);
 		sbox2(W[12], W[13], W[14], W[15]);
@@ -610,15 +611,15 @@ namespace cppcrypto
 #ifndef _M_X64
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef SERPENT_AS_TNEPRES
-		x[0] = _byteswap_ulong(*(((const uint32_t*)in) + 0));
-		x[1] = _byteswap_ulong(*(((const uint32_t*)in) + 1));
-		x[2] = _byteswap_ulong(*(((const uint32_t*)in) + 2));
-		x[3] = _byteswap_ulong(*(((const uint32_t*)in) + 3));
+		x[0] = swap_uint32(*(((const uint32_t*)in) + 0));
+		x[1] = swap_uint32(*(((const uint32_t*)in) + 1));
+		x[2] = swap_uint32(*(((const uint32_t*)in) + 2));
+		x[3] = swap_uint32(*(((const uint32_t*)in) + 3));
 		serpentEncrypt(x, &W[8]);
-		*(((uint32_t*)out) + 0) = _byteswap_ulong(x[0]);
-		*(((uint32_t*)out) + 1) = _byteswap_ulong(x[1]);
-		*(((uint32_t*)out) + 2) = _byteswap_ulong(x[2]);
-		*(((uint32_t*)out) + 3) = _byteswap_ulong(x[3]);
+		*(((uint32_t*)out) + 0) = swap_uint32(x[0]);
+		*(((uint32_t*)out) + 1) = swap_uint32(x[1]);
+		*(((uint32_t*)out) + 2) = swap_uint32(x[2]);
+		*(((uint32_t*)out) + 3) = swap_uint32(x[3]);
 #else
 		x[3] = (*(((const uint32_t*)in) + 0));
 		x[2] = (*(((const uint32_t*)in) + 1));
@@ -634,10 +635,10 @@ namespace cppcrypto
 #endif
 #endif
 #ifdef SERPENT_AS_TNEPRES
-		x[3] = _byteswap_ulong(*(((const uint32_t*)in) + 0));
-		x[2] = _byteswap_ulong(*(((const uint32_t*)in) + 1));
-		x[1] = _byteswap_ulong(*(((const uint32_t*)in) + 2));
-		x[0] = _byteswap_ulong(*(((const uint32_t*)in) + 3));
+		x[3] = swap_uint32(*(((const uint32_t*)in) + 0));
+		x[2] = swap_uint32(*(((const uint32_t*)in) + 1));
+		x[1] = swap_uint32(*(((const uint32_t*)in) + 2));
+		x[0] = swap_uint32(*(((const uint32_t*)in) + 3));
 #else
 		x[0] = *(((const uint32_t*)in) + 0);
 		x[1] = *(((const uint32_t*)in) + 1);
@@ -671,10 +672,10 @@ namespace cppcrypto
 #endif
 
 #ifdef SERPENT_AS_TNEPRES
-		*(((uint32_t*)out) + 0) = _byteswap_ulong(x[3]);
-		*(((uint32_t*)out) + 1) = _byteswap_ulong(x[2]);
-		*(((uint32_t*)out) + 2) = _byteswap_ulong(x[1]);
-		*(((uint32_t*)out) + 3) = _byteswap_ulong(x[0]);
+		*(((uint32_t*)out) + 0) = swap_uint32(x[3]);
+		*(((uint32_t*)out) + 1) = swap_uint32(x[2]);
+		*(((uint32_t*)out) + 2) = swap_uint32(x[1]);
+		*(((uint32_t*)out) + 3) = swap_uint32(x[0]);
 #else
 		*(((uint32_t*)out) + 0) = x[0];
 		*(((uint32_t*)out) + 1) = x[1];
@@ -695,15 +696,15 @@ namespace cppcrypto
 #ifndef _M_X64
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef SERPENT_AS_TNEPRES
-		x[0] = _byteswap_ulong(*(((const uint32_t*)in) + 0));
-		x[1] = _byteswap_ulong(*(((const uint32_t*)in) + 1));
-		x[2] = _byteswap_ulong(*(((const uint32_t*)in) + 2));
-		x[3] = _byteswap_ulong(*(((const uint32_t*)in) + 3));
+		x[0] = swap_uint32(*(((const uint32_t*)in) + 0));
+		x[1] = swap_uint32(*(((const uint32_t*)in) + 1));
+		x[2] = swap_uint32(*(((const uint32_t*)in) + 2));
+		x[3] = swap_uint32(*(((const uint32_t*)in) + 3));
 		serpentDecrypt(x, &W[8]);
-		*(((uint32_t*)out) + 0) = _byteswap_ulong(x[0]);
-		*(((uint32_t*)out) + 1) = _byteswap_ulong(x[1]);
-		*(((uint32_t*)out) + 2) = _byteswap_ulong(x[2]);
-		*(((uint32_t*)out) + 3) = _byteswap_ulong(x[3]);
+		*(((uint32_t*)out) + 0) = swap_uint32(x[0]);
+		*(((uint32_t*)out) + 1) = swap_uint32(x[1]);
+		*(((uint32_t*)out) + 2) = swap_uint32(x[2]);
+		*(((uint32_t*)out) + 3) = swap_uint32(x[3]);
 #else
 		x[3] = *(((const uint32_t*)in) + 0);
 		x[2] = *(((const uint32_t*)in) + 1);
@@ -720,10 +721,10 @@ namespace cppcrypto
 #endif
 
 #ifdef SERPENT_AS_TNEPRES
-		x[3] = _byteswap_ulong(*(((const uint32_t*)in) + 0));
-		x[2] = _byteswap_ulong(*(((const uint32_t*)in) + 1));
-		x[1] = _byteswap_ulong(*(((const uint32_t*)in) + 2));
-		x[0] = _byteswap_ulong(*(((const uint32_t*)in) + 3));
+		x[3] = swap_uint32(*(((const uint32_t*)in) + 0));
+		x[2] = swap_uint32(*(((const uint32_t*)in) + 1));
+		x[1] = swap_uint32(*(((const uint32_t*)in) + 2));
+		x[0] = swap_uint32(*(((const uint32_t*)in) + 3));
 #else
 		x[0] = *(((const uint32_t*)in) + 0);
 		x[1] = *(((const uint32_t*)in) + 1);
@@ -757,10 +758,10 @@ namespace cppcrypto
 		IR(6, isbox6); IR(5, isbox5); IR(4, isbox4); IR(3, isbox3); IR(2, isbox2); IR(1, isbox1); IR(0, isbox0);
 
 #ifdef SERPENT_AS_TNEPRES
-		*(((uint32_t*)out) + 0) = _byteswap_ulong(x[3]);
-		*(((uint32_t*)out) + 1) = _byteswap_ulong(x[2]);
-		*(((uint32_t*)out) + 2) = _byteswap_ulong(x[1]);
-		*(((uint32_t*)out) + 3) = _byteswap_ulong(x[0]);
+		*(((uint32_t*)out) + 0) = swap_uint32(x[3]);
+		*(((uint32_t*)out) + 1) = swap_uint32(x[2]);
+		*(((uint32_t*)out) + 2) = swap_uint32(x[1]);
+		*(((uint32_t*)out) + 3) = swap_uint32(x[0]);
 #else
 		*(((uint32_t*)out) + 0) = x[0];
 		*(((uint32_t*)out) + 1) = x[1];
@@ -772,10 +773,10 @@ namespace cppcrypto
 	bool serpent128::init(const uint8_t* key, block_cipher::direction direction)
 	{
 #ifdef SERPENT_AS_TNEPRES
-		W[3] = _byteswap_ulong(*(((const uint32_t*)key) + 0));
-		W[2] = _byteswap_ulong(*(((const uint32_t*)key) + 1));
-		W[1] = _byteswap_ulong(*(((const uint32_t*)key) + 2));
-		W[0] = _byteswap_ulong(*(((const uint32_t*)key) + 3));
+		W[3] = swap_uint32(*(((const uint32_t*)key) + 0));
+		W[2] = swap_uint32(*(((const uint32_t*)key) + 1));
+		W[1] = swap_uint32(*(((const uint32_t*)key) + 2));
+		W[0] = swap_uint32(*(((const uint32_t*)key) + 3));
 #else
 		W[0] = *(((const uint32_t*)key) + 0);
 		W[1] = *(((const uint32_t*)key) + 1);
@@ -793,12 +794,12 @@ namespace cppcrypto
 	bool serpent192::init(const uint8_t* key, block_cipher::direction direction)
 	{
 #ifdef SERPENT_AS_TNEPRES
-		W[5] = _byteswap_ulong(*(((const uint32_t*)key) + 0));
-		W[4] = _byteswap_ulong(*(((const uint32_t*)key) + 1));
-		W[3] = _byteswap_ulong(*(((const uint32_t*)key) + 2));
-		W[2] = _byteswap_ulong(*(((const uint32_t*)key) + 3));
-		W[1] = _byteswap_ulong(*(((const uint32_t*)key) + 4));
-		W[0] = _byteswap_ulong(*(((const uint32_t*)key) + 5));
+		W[5] = swap_uint32(*(((const uint32_t*)key) + 0));
+		W[4] = swap_uint32(*(((const uint32_t*)key) + 1));
+		W[3] = swap_uint32(*(((const uint32_t*)key) + 2));
+		W[2] = swap_uint32(*(((const uint32_t*)key) + 3));
+		W[1] = swap_uint32(*(((const uint32_t*)key) + 4));
+		W[0] = swap_uint32(*(((const uint32_t*)key) + 5));
 #else
 		W[0] = *(((const uint32_t*)key) + 0);
 		W[1] = *(((const uint32_t*)key) + 1);

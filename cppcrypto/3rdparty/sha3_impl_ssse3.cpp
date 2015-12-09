@@ -5,15 +5,11 @@ This code is released under Simplified BSD License (see license.txt).
 
 #include "../sha3.h"
 #include <algorithm>
+#include "../portability.h"
 extern "C"
 {
 #include "KeccakSponge.h"
 }
-
-#ifndef _MSC_VER
-#define _aligned_malloc(a, b) aligned_alloc(b, a)
-#define _aligned_free free
-#endif
 
 namespace cppcrypto
 {
@@ -21,11 +17,11 @@ namespace cppcrypto
 	{
 		sha3_impl_ssse3::sha3_impl_ssse3()
 		{
-			state = _aligned_malloc(sizeof(spongeState), 64);
+			state = aligned_allocate(sizeof(spongeState), 64);
 		}
 		sha3_impl_ssse3::~sha3_impl_ssse3()
 		{
-			_aligned_free(state);
+			aligned_deallocate(state);
 		}
 		
 		void sha3_impl_ssse3::init(unsigned int rate, unsigned int capacity)

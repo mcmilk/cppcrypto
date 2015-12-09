@@ -5,6 +5,7 @@ This code is released under Simplified BSD License (see license.txt).
 #include "stdafx.h"
 #include "perftimer.h"
 #include <sys/stat.h>
+#include <algorithm>
 //#define DUMP_TEST_ENCRYPTION
 
 using namespace std;
@@ -576,6 +577,10 @@ int wmain(int argc, wchar_t* argv[])
 	block_ciphers.emplace(make_pair(_T("kalyna256-256"), unique_ptr<block_cipher>(new kalyna256_256)));
 	block_ciphers.emplace(make_pair(_T("kalyna128-256"), unique_ptr<block_cipher>(new kalyna128_256)));
 	block_ciphers.emplace(make_pair(_T("kalyna128-128"), unique_ptr<block_cipher>(new kalyna128_128)));
+
+	block_ciphers.emplace(make_pair(_T("aria128"), unique_ptr<block_cipher>(new aria128)));
+	block_ciphers.emplace(make_pair(_T("aria256"), unique_ptr<block_cipher>(new aria256)));
+	block_ciphers.emplace(make_pair(_T("aria192"), unique_ptr<block_cipher>(new aria192)));
 
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));

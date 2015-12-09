@@ -4,23 +4,15 @@ and released into public domain.
 */
 
 #include "cpuinfo.h"
+#include "portability.h"
 #include "blake.h"
 #include <memory.h>
+#include <functional>
 
 //#define CPPCRYPTO_DEBUG
 //#define NO_OPTIMIZED_VERSIONS
 
-#ifndef _MSC_VER
-#define _aligned_malloc(a, b) aligned_alloc(b, a)
-#define _aligned_free free
-#define _byteswap_uint64 __builtin_bswap64
-#define _byteswap_ulong __builtin_bswap32
-
-static inline uint64_t _rotr64(uint64_t x, unsigned n)
-{
-        return (x >> n) | (x << (64 - n));
-}
-#else
+#ifdef _MSC_VER
 #define inline __forceinline
 #endif
 
@@ -127,7 +119,7 @@ namespace cppcrypto
 		uint32_t M[16];
 		for (uint32_t i = 0; i < 64 / 4; i++)
 		{
-			M[i] = _byteswap_ulong((reinterpret_cast<const uint32_t*>(m.get())[i]));
+			M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(m.get())[i]));
 		}
 #ifdef	CPPCRYPTO_DEBUG
 		printf("M1 - M8: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
@@ -207,12 +199,12 @@ namespace cppcrypto
 			memset(m + pos, 0, 55 - pos);
 			m[55] = hashsize() == 256 ? 0x01 : 0x00;
 		}
-		uint64_t mlen = _byteswap_uint64(total);
+		uint64_t mlen = swap_uint64(total);
 		memcpy(m + (64 - 8), &mlen, 64 / 8);
 		transfunc(padding);
 		for (int i = 0; i < 8; i++)
 		{
-			H[i] = _byteswap_ulong(H[i]);
+			H[i] = swap_uint32(H[i]);
 		}
 		memcpy(hash, H, hashsize()/8);
 	}
@@ -260,13 +252,13 @@ namespace cppcrypto
 	static inline void G512(int r, int i, uint64_t& a, uint64_t& b, uint64_t& c, uint64_t& d, uint64_t* M) 
 	{
 		a = a + b + (M[S[r % 10][2 * i]] ^ (c512)[S[r % 10][2 * i + 1]]);
-		d = _rotr64(d ^ a, 32);
+		d = rotater64(d ^ a, 32);
 		c = c + d;
-		b = _rotr64(b ^ c, 25);
+		b = rotater64(b ^ c, 25);
 		a = a + b + (M[S[r % 10][2 * i + 1]] ^ (c512)[S[r % 10][2 * i]]);
-		d = _rotr64(d ^ a, 16);
+		d = rotater64(d ^ a, 16);
 		c = c + d;
-		b = _rotr64(b ^ c, 11);
+		b = rotater64(b ^ c, 11);
 	}
 
 	static inline void round512(int r, uint64_t* M, uint64_t* v) 
@@ -292,7 +284,7 @@ namespace cppcrypto
 		uint64_t M[16];
 		for (uint32_t i = 0; i < 128 / 8; i++)
 		{
-			M[i] = _byteswap_uint64((reinterpret_cast<const uint64_t*>(m.get())[i]));
+			M[i] = swap_uint64((reinterpret_cast<const uint64_t*>(m.get())[i]));
 		}
 #ifdef	CPPCRYPTO_DEBUG
 		printf("M1 - M8: %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx\n",
@@ -373,13 +365,13 @@ namespace cppcrypto
 			memset(m + pos, 0, 111 - pos);
 			m[111] = hashsize() == 512 ? 0x01 : 0x00;
 		}
-		uint64_t mlen = _byteswap_uint64(total);
+		uint64_t mlen = swap_uint64(total);
 		memset(m + (128 - 16), 0, sizeof(uint64_t));
 		memcpy(m + (128 - 8), &mlen, sizeof(uint64_t));
 		transfunc(padding);
 		for (int i = 0; i < 8; i++)
 		{
-			H[i] = _byteswap_uint64(H[i]);
+			H[i] = swap_uint64(H[i]);
 		}
 		memcpy(hash, H, hashsize()/8);
 	}
@@ -439,7 +431,7 @@ namespace cppcrypto
 			transfunc = [this](bool padding) { blake256_compress_sse2(H, padding, total, m); };
 		else
 #endif
-			transfunc = bind(&blake256::transform, this, std::placeholders::_1);
+			transfunc = std::bind(&blake256::transform, this, std::placeholders::_1);
 	}
 
 	blake256::~blake256()
@@ -456,7 +448,7 @@ namespace cppcrypto
 				transfunc = [this](bool padding) { blake512_compress_sse2(H, total, padding, m); };
 			else
 #endif
-				transfunc = bind(&blake512::transform, this, std::placeholders::_1);
+				transfunc = std::bind(&blake512::transform, this, std::placeholders::_1);
 	}
 
 	blake512::~blake512()

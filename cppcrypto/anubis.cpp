@@ -4,13 +4,10 @@ and released into public domain.
 */
 
 #include "anubis.h"
+#include "portability.h"
 #include <memory.h>
 #include <stdlib.h>
 #include <stdio.h>
-
-#ifndef _MSC_VER
-#define _byteswap_ulong __builtin_bswap32
-#endif
 
 namespace cppcrypto
 {
@@ -512,7 +509,7 @@ namespace cppcrypto
 		uint32_t t[N];
 
 		for (int i = 0; i < N; i++)
-			k[i] = _byteswap_ulong(*(((const uint32_t*)key) + i));
+			k[i] = swap_uint32(*(((const uint32_t*)key) + i));
 
 		for (int r = 0; r <= R; r++)
 		{
@@ -563,10 +560,10 @@ namespace cppcrypto
 		uint32_t s0, s1, s2, s3;
 		uint32_t t0, t1, t2, t3;
 
-		s0 = _byteswap_ulong(*(((const uint32_t*)in) + 0)) ^ W_[0][0];
-		s1 = _byteswap_ulong(*(((const uint32_t*)in) + 1)) ^ W_[0][1];
-		s2 = _byteswap_ulong(*(((const uint32_t*)in) + 2)) ^ W_[0][2];
-		s3 = _byteswap_ulong(*(((const uint32_t*)in) + 3)) ^ W_[0][3];
+		s0 = swap_uint32(*(((const uint32_t*)in) + 0)) ^ W_[0][0];
+		s1 = swap_uint32(*(((const uint32_t*)in) + 1)) ^ W_[0][1];
+		s2 = swap_uint32(*(((const uint32_t*)in) + 2)) ^ W_[0][2];
+		s3 = swap_uint32(*(((const uint32_t*)in) + 3)) ^ W_[0][3];
 
 		for (int r = 1; r < R; r++) {
 			t0 = T[0][(s0 >> 24)] ^ T[1][(s1 >> 24)] ^ T[2][(s2 >> 24)] ^ T[3][(s3 >> 24)] ^ W_[r][0];
@@ -589,10 +586,10 @@ namespace cppcrypto
 		t3 = (T[0][(s0 >> (24 - 3 * 8)) & 0xff] & 0xff000000U) ^ (T[1][(s1 >> (24 - 3 * 8)) & 0xff] & 0x00ff0000U) ^
 			(T[2][(s2 >> (24 - 3 * 8)) & 0xff] & 0x0000ff00U) ^ (T[3][(s3 >> (24 - 3 * 8)) & 0xff] & 0x000000ffU) ^ W_[R][3];
 
-		*(((uint32_t*)out) + 0) = _byteswap_ulong(t0);
-		*(((uint32_t*)out) + 1) = _byteswap_ulong(t1);
-		*(((uint32_t*)out) + 2) = _byteswap_ulong(t2);
-		*(((uint32_t*)out) + 3) = _byteswap_ulong(t3);
+		*(((uint32_t*)out) + 0) = swap_uint32(t0);
+		*(((uint32_t*)out) + 1) = swap_uint32(t1);
+		*(((uint32_t*)out) + 2) = swap_uint32(t2);
+		*(((uint32_t*)out) + 3) = swap_uint32(t3);
 	}
 
 	void anubis128::clear()

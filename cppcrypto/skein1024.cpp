@@ -5,16 +5,11 @@ and released into public domain.
 
 #include "cpuinfo.h"
 #include "skein1024.h"
+#include "portability.h"
 #include <memory.h>
+#include <functional>
 
 //#define CPPCRYPTO_DEBUG
-
-#ifndef _MSC_VER
-static inline uint64_t _rotl64(uint64_t x, unsigned n)
-{
-        return (x << n) | (x >> (64 - n));
-}
-#endif
 
 namespace cppcrypto
 {
@@ -72,21 +67,21 @@ namespace cppcrypto
 
 #define G(G0, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15, C1, C2, C3, C4, C5, C6, C7, C8) \
 	G0 += G1; \
-	G1 = _rotl64(G1, C1) ^ G0; \
+	G1 = rotatel64(G1, C1) ^ G0; \
 	G2 += G3; \
-	G3 = _rotl64(G3, C2) ^ G2; \
+	G3 = rotatel64(G3, C2) ^ G2; \
 	G4 += G5; \
-	G5 = _rotl64(G5, C3) ^ G4; \
+	G5 = rotatel64(G5, C3) ^ G4; \
 	G6 += G7; \
-	G7 = _rotl64(G7, C4) ^ G6; \
+	G7 = rotatel64(G7, C4) ^ G6; \
 	G8 += G9; \
-	G9 = _rotl64(G9, C5) ^ G8; \
+	G9 = rotatel64(G9, C5) ^ G8; \
 	G10 += G11; \
-	G11 = _rotl64(G11, C6) ^ G10; \
+	G11 = rotatel64(G11, C6) ^ G10; \
 	G12 += G13; \
-	G13 = _rotl64(G13, C7) ^ G12; \
+	G13 = rotatel64(G13, C7) ^ G12; \
 	G14 += G15; \
-	G15 = _rotl64(G15, C8) ^ G14;
+	G15 = rotatel64(G15, C8) ^ G14;
 
 #define KS(r) \
 	G0 += keys[(r + 1) % 17]; \
@@ -348,11 +343,11 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 #if defined(_MSC_VER) && defined(_M_X64)
 		if (cpu_info::bmi2())
-			transfunc = bind(&skein1024_1024::transform_rorx, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+			transfunc = std::bind(&skein1024_1024::transform_rorx, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 		else
 #endif
 #endif
-			transfunc = bind(&skein1024_1024::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+			transfunc = std::bind(&skein1024_1024::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	}
 

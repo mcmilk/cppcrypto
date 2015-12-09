@@ -3,14 +3,14 @@ It has no external dependencies.
 
 At the moment it supports the following primitives.
 
-1) Hash functions: blake, groestl, jh, kupyna, md5, sha-1, sha-2 (incl. sha512/224 and sha512/256), sha-3,
-skein-256, skein-512, skein-1024, sm3, streebog, whirlpool.
+1) Hash functions: BLAKE, Groestl, JH, Kupyna, MD5, SHA-1, SHA-2 (incl. SHA-512/224 and SHA-512/256), SHA-3,
+Skein-256, Skein-512, Skein-1024, SM3, Streebog, Whirlpool.
 
 To get the full list of supported hash algorithms, run 'digest' in hash function performance test mode:
 
   digest test <number_of_iterations> <filename>
 
-2) Block ciphers: Anubis, Camellia, CAST6, Kalyna, Rijndael (all 25 variants are accelerated using AES-NI
+2) Block ciphers: Anubis, Aria, Camellia, CAST6, Kalyna, Rijndael (all 25 variants are accelerated using AES-NI
 instructions, if available), Serpent, Twofish.
 
 To get the full list of supported block ciphers, run 'digest' in block cipher performance test mode:
@@ -22,8 +22,10 @@ To get the full list of supported block ciphers, run 'digest' in block cipher pe
 
 The library detects CPU type at runtime and uses optimized implementations where possible.
 
-Supported compilers: Visual C++ 2013, Visual C++ 2015 on Windows; gcc 5.1.1 on Linux (not tested with older versions).
 Supported architectures: x86_64 and x86.
+Supported compilers:
+  - Visual C++ 2013, Visual C++ 2015 on Windows;
+  - gcc 5.1.1 or later, clang 3.4.1 or later on Linux, OS X, FreeBSD (not tested with older versions).
 
 Sample usage:
 

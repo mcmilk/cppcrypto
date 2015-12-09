@@ -372,8 +372,10 @@ rotate_Xs
 ;; arg 3 : Num blocks
 section .text
 global sha256_sse4
+global _sha256_sse4
 align 32
 sha256_sse4:
+_sha256_sse4:
 	push	rbx
 %ifndef LINUX
 	push	rsi

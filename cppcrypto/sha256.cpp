@@ -5,14 +5,11 @@ and released into public domain.
 
 #include "cpuinfo.h"
 #include "sha256.h"
+#include "portability.h"
 #include <memory.h>
-//#define CPPCRYPTO_DEBUG
+#include <functional>
 
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-#define _byteswap_ulong __builtin_bswap32
-#define __fastcall 
-#endif
+//#define CPPCRYPTO_DEBUG
 
 #ifdef _M_X64
 extern "C"
@@ -22,13 +19,17 @@ extern "C"
 #ifndef _MSC_VER
 }
 #endif
-	void __fastcall X86_SHA256_HashBlocks(uint32_t *state, const uint32_t *data, size_t len);
+#if defined(_MSC_VER) || defined(INLINE_AS)
+	void FASTCALL X86_SHA256_HashBlocks(uint32_t *state, const uint32_t *data, size_t len);
+#endif
 #ifdef _MSC_VER
 }
 #endif
 #else
 //	void sha256_sse4_intr(void *input_data, uint32_t digest[8], uint64_t num_blks);
-	void __fastcall X86_SHA256_HashBlocks(uint32_t *state, const uint32_t *data, size_t len);
+#if defined(_MSC_VER) || defined(INLINE_AS)
+	void FASTCALL X86_SHA256_HashBlocks(uint32_t *state, const uint32_t *data, size_t len);
+#endif
 #endif
 
 namespace cppcrypto
@@ -51,16 +52,17 @@ namespace cppcrypto
 		};
 		else 
 		if (cpu_info::sse41())
-			transfunc = bind(&sha256_sse4, std::placeholders::_1, H.get(), std::placeholders::_2);
+			transfunc = std::bind(&sha256_sse4, std::placeholders::_1, H.get(), std::placeholders::_2);
 		else
 #else
 #if 0
 
 		if (InstructionSet::sse41())
-			transfunc = bind(&sha256_sse4_intr, std::placeholders::_1, H.get(), std::placeholders::_2);
+			transfunc = std::bind(&sha256_sse4_intr, std::placeholders::_1, H.get(), std::placeholders::_2);
 		else
 #endif
 #endif
+#if defined(_MSC_VER) || defined(INLINE_AS)
 			if (cpu_info::sse2())
 				transfunc = [this](void* m, uint64_t num_blks)
 			{
@@ -68,7 +70,8 @@ namespace cppcrypto
 			};
 			else
 #endif
-		transfunc = bind(&sha256::transform, this, std::placeholders::_1, std::placeholders::_2);
+#endif
+		transfunc = std::bind(&sha256::transform, this, std::placeholders::_1, std::placeholders::_2);
 	}
 
 	extern const
@@ -96,11 +99,6 @@ __attribute__ ((aligned (16)))
 	static inline uint32_t shr(uint32_t x, int n)
 	{
 		return x >> n;
-	}
-
-	static inline uint32_t rotl(uint32_t x, int n)
-	{
-		return (x << n) | (x >> (32 - n));
 	}
 
 	static inline uint32_t Ch(uint32_t x, uint32_t y, uint32_t z)
@@ -179,7 +177,7 @@ __attribute__ ((aligned (16)))
 			uint32_t M[16];
 			for (uint32_t i = 0; i < 64 / 4; i++)
 			{
-				M[i] = _byteswap_ulong((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
+				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
 			}
 #ifdef	CPPCRYPTO_DEBUG
 			printf("M1 - M8: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
@@ -250,12 +248,12 @@ __attribute__ ((aligned (16)))
 			pos = 0;
 		}
 		memset(&m[0] + pos, 0, 56 - pos);
-		uint64_t mlen = _byteswap_uint64(total);
+		uint64_t mlen = swap_uint64(total);
 		memcpy(&m[0] + (64 - 8), &mlen, 64 / 8);
 		transfunc(&m[0], 1);
 		for (int i = 0; i < 8; i++)
 		{
-			H[i] = _byteswap_ulong(H[i]);
+			H[i] = swap_uint32(H[i]);
 		}
 		memcpy(hash, H, 32);
 	}

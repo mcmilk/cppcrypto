@@ -5,16 +5,12 @@ and released into public domain.
 
 #include "cpuinfo.h"
 #include "skein512.h"
+#include "portability.h"
 #include <memory.h>
+#include <functional>
 
 //#define CPPCRYPTO_DEBUG
 
-#ifndef _MSC_VER
-static inline uint64_t _rotl64(uint64_t x, unsigned n)
-{
-        return (x << n) | (x >> (64 - n));
-}
-#endif
 
 #ifndef _M_X64
 void Skein_512_Process_Block_mmx(uint64_t* T, uint64_t* X, const uint8_t *blkPtr, size_t blkCnt, size_t byteCntAdd);
@@ -68,13 +64,13 @@ namespace cppcrypto
 
 #define G(G0, G1, G2, G3, G4, G5, G6, G7, C0, C1, C2, C3) \
 	G0 += G1; \
-	G1 = _rotl64(G1, C0) ^ G0; \
+	G1 = rotatel64(G1, C0) ^ G0; \
 	G2 += G3; \
-	G3 = _rotl64(G3, C1) ^ G2; \
+	G3 = rotatel64(G3, C1) ^ G2; \
 	G4 += G5; \
-	G5 = _rotl64(G5, C2) ^ G4; \
+	G5 = rotatel64(G5, C2) ^ G4; \
 	G6 += G7; \
-	G7 = _rotl64(G7, C3) ^ G6;
+	G7 = rotatel64(G7, C3) ^ G6;
 
 #define KS(r) \
 	G0 += keys[(r + 1) % 9]; \
@@ -268,12 +264,14 @@ namespace cppcrypto
 	{
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifndef _M_X64
+#ifndef __clang__ // MMX code is very slow on clang compiles for some reason
 		if (cpu_info::mmx())
 			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { Skein_512_Process_Block_mmx(tweak, H, (uint8_t*)m, static_cast<size_t>(num_blks), reallen); };
 		else
 #endif
 #endif
-			transfunc = bind(&skein512_512::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+#endif
+			transfunc = std::bind(&skein512_512::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
 
 	}
 

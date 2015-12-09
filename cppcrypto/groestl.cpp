@@ -4,14 +4,11 @@ and released into public domain.
 */
 
 #include "cpuinfo.h"
+#include "portability.h"
 #include "groestl.h"
 #include <memory.h>
 
 //#define CPPCRYPTO_DEBUG
-
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-#endif
 
 namespace cppcrypto
 {
@@ -21,7 +18,7 @@ namespace cppcrypto
 	{
 		printf("%s: ", name);
 		for (int i = 0; i < elements; i++)
-			printf("%016llx\n", _byteswap_uint64(y[i]));
+			printf("%016llx\n", swap_uint64(y[i]));
 		printf("\n");
 	}
 #endif
@@ -663,7 +660,7 @@ void groestl256::final(uint8_t* hash)
 	}
 	memset(m + pos, 0, 56 - pos);
 	total += 512 - pos * 8;
-	uint64_t mlen = _byteswap_uint64(total / 512);
+	uint64_t mlen = swap_uint64(total / 512);
 	memcpy(m + (64 - 8), &mlen, 64 / 8);
 	transform();
 	outputTransform();
@@ -682,7 +679,7 @@ void groestl256::init()
 	pos = 0;
 	total = 0;
 	memset(h, 0, sizeof(uint64_t)*8);
-	h[7] = _byteswap_uint64(hashsize());
+	h[7] = swap_uint64(hashsize());
 
 	if (impl_)
 		impl_->INIT(h);
@@ -697,7 +694,7 @@ void groestl512::init()
 	pos = 0;
 	total = 0;
 	memset(h, 0, sizeof(uint64_t)*16);
-	h[15] = _byteswap_uint64(hashsize());
+	h[15] = swap_uint64(hashsize());
 
 	if (impl_)
 		impl_->INIT(h);
@@ -738,7 +735,7 @@ void groestl512::final(uint8_t* hash)
 	}
 	memset(m + pos, 0, 120 - pos);
 	total += 1024 - pos * 8;
-	uint64_t mlen = _byteswap_uint64(total / 1024);
+	uint64_t mlen = swap_uint64(total / 1024);
 	memcpy(m + (128 - 8), &mlen, 64 / 8);
 	transform();
 	outputTransform();

@@ -4,6 +4,7 @@ and released into public domain.
 */
 
 #include "twofish.h"
+#include "portability.h"
 #include <memory.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -11,10 +12,6 @@ and released into public domain.
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
-
-#ifndef _MSC_VER
-#define _byteswap_ulong __builtin_bswap32
-#endif
 
 //#define CPPCRYPTO_DEBUG
 
@@ -495,11 +492,11 @@ namespace cppcrypto
 		{
 			uint32_t a = MDSQ[0][Q[0][Q[0][i] ^ key[8]] ^ key[0]] ^ MDSQ[1][Q[0][Q[1][i] ^ key[9]] ^ key[1]] 
 				^ MDSQ[2][Q[1][Q[0][i] ^ key[10]] ^ key[2]] ^ MDSQ[3][Q[1][Q[1][i] ^ key[11]] ^ key[3]];
-			uint32_t b = _rotl(MDSQ[0][Q[0][Q[0][i + 1] ^ key[12]] ^ key[4]] ^ MDSQ[1][Q[0][Q[1][i + 1] ^ key[13]] ^ key[5]]
+			uint32_t b = rotatel32(MDSQ[0][Q[0][Q[0][i + 1] ^ key[12]] ^ key[4]] ^ MDSQ[1][Q[0][Q[1][i + 1] ^ key[13]] ^ key[5]]
 				^ MDSQ[2][Q[1][Q[0][i + 1] ^ key[14]] ^ key[6]] ^ MDSQ[3][Q[1][Q[1][i + 1] ^ key[15]] ^ key[7]], 8);
 			a += b;
 			rk[i] = a;
-			rk[i + 1] = _rotl(a + b, 9);
+			rk[i + 1] = rotatel32(a + b, 9);
 
 #ifdef CPPCRYPTO_DEBUG
 			printf("rk[%d]: %08X\n", i, rk[i]);
@@ -518,23 +515,23 @@ namespace cppcrypto
 
 #define ROUNDA(r) \
 	ROUNDT(x0, x1, r) \
-	x2 = _rotr(x2 ^ f0, 1); \
-	x3 = _rotl(x3, 1) ^ f1;
+	x2 = rotater32(x2 ^ f0, 1); \
+	x3 = rotatel32(x3, 1) ^ f1;
 	
 #define ROUNDB(r) \
 	ROUNDT(x2, x3, r) \
-	x0 = _rotr(x0 ^ f0, 1); \
-	x1 = _rotl(x1, 1) ^ f1;
+	x0 = rotater32(x0 ^ f0, 1); \
+	x1 = rotatel32(x1, 1) ^ f1;
 
 #define RROUNDA(r) \
 	ROUNDT(x0, x1, r) \
-	x2 = _rotl(x2, 1) ^ f0; \
-	x3 = _rotr(x3 ^ f1, 1);
+	x2 = rotatel32(x2, 1) ^ f0; \
+	x3 = rotater32(x3 ^ f1, 1);
 
 #define RROUNDB(r) \
 	ROUNDT(x2, x3, r) \
-	x0 = _rotl(x0, 1) ^ f0; \
-	x1 = _rotr(x1 ^ f1, 1);
+	x0 = rotatel32(x0, 1) ^ f0; \
+	x1 = rotater32(x1 ^ f1, 1);
 
 	namespace detail
 	{
@@ -622,11 +619,11 @@ namespace cppcrypto
 		{
 			uint32_t a = MDSQ[0][Q[0][Q[0][Q[1][i] ^ key[16]] ^ key[8]] ^ key[0]] ^ MDSQ[1][Q[0][Q[1][Q[1][i] ^ key[17]] ^ key[9]] ^ key[1]] 
 				^ MDSQ[2][Q[1][Q[0][Q[0][i] ^ key[18]] ^ key[10]] ^ key[2]] ^ MDSQ[3][Q[1][Q[1][Q[0][i] ^ key[19]] ^ key[11]] ^ key[3]];
-			uint32_t b = _rotl(MDSQ[0][Q[0][Q[0][Q[1][i + 1] ^ key[20]] ^ key[12]] ^ key[4]] ^ MDSQ[1][Q[0][Q[1][Q[1][i + 1] ^ key[21]] ^ key[13]] ^ key[5]]
+			uint32_t b = rotatel32(MDSQ[0][Q[0][Q[0][Q[1][i + 1] ^ key[20]] ^ key[12]] ^ key[4]] ^ MDSQ[1][Q[0][Q[1][Q[1][i + 1] ^ key[21]] ^ key[13]] ^ key[5]]
 				^ MDSQ[2][Q[1][Q[0][Q[0][i + 1] ^ key[22]] ^ key[14]] ^ key[6]] ^ MDSQ[3][Q[1][Q[1][Q[0][i + 1] ^ key[23]] ^ key[15]] ^ key[7]], 8);
 			a += b;
 			rk[i] = a;
-			rk[i + 1] = _rotl(a + b, 9);
+			rk[i + 1] = rotatel32(a + b, 9);
 
 #ifdef CPPCRYPTO_DEBUG
 			printf("rk[%d]: %08X\n", i, rk[i]);
@@ -660,11 +657,11 @@ namespace cppcrypto
 		{
 			uint32_t a = MDSQ[0][Q[0][Q[0][Q[1][Q[1][i] ^ key[24]] ^ key[16]] ^ key[8]] ^ key[0]] ^ MDSQ[1][Q[0][Q[1][Q[1][Q[0][i] ^ key[25]] ^ key[17]] ^ key[9]] ^ key[1]] 
 				^ MDSQ[2][Q[1][Q[0][Q[0][Q[0][i] ^ key[26]] ^ key[18]] ^ key[10]] ^ key[2]] ^ MDSQ[3][Q[1][Q[1][Q[0][Q[1][i] ^ key[27]] ^ key[19]] ^ key[11]] ^ key[3]];
-			uint32_t b = _rotl(MDSQ[0][Q[0][Q[0][Q[1][Q[1][i + 1] ^ key[28]] ^ key[20]] ^ key[12]] ^ key[4]] ^ MDSQ[1][Q[0][Q[1][Q[1][Q[0][i + 1] ^ key[29]] ^ key[21]] ^ key[13]] ^ key[5]]
+			uint32_t b = rotatel32(MDSQ[0][Q[0][Q[0][Q[1][Q[1][i + 1] ^ key[28]] ^ key[20]] ^ key[12]] ^ key[4]] ^ MDSQ[1][Q[0][Q[1][Q[1][Q[0][i + 1] ^ key[29]] ^ key[21]] ^ key[13]] ^ key[5]]
 				^ MDSQ[2][Q[1][Q[0][Q[0][Q[0][i + 1] ^ key[30]] ^ key[22]] ^ key[14]] ^ key[6]] ^ MDSQ[3][Q[1][Q[1][Q[0][Q[1][i + 1] ^ key[31]] ^ key[23]] ^ key[15]] ^ key[7]], 8);
 			a += b;
 			rk[i] = a;
-			rk[i + 1] = _rotl(a + b, 9);
+			rk[i + 1] = rotatel32(a + b, 9);
 
 #ifdef CPPCRYPTO_DEBUG
 			printf("rk[%d]: %08X\n", i, rk[i]);

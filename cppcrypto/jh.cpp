@@ -4,13 +4,12 @@ and released into public domain.
 */
 
 #include "cpuinfo.h"
+#include "portability.h"
 #include "jh.h"
 #include <memory.h>
 //#define CPPCRYPTO_DEBUG
 
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-#else
+#ifdef _MSC_VER
 #define inline __forceinline
 #endif
 
@@ -113,7 +112,7 @@ namespace cppcrypto
 			pos = 0;
 		}
 		memset(&m[0] + pos, 0, 56 - pos);
-		uint64_t mlen = _byteswap_uint64(total);
+		uint64_t mlen = swap_uint64(total);
 		memcpy(&m[0] + (64 - 8), &mlen, 64 / 8);
 		transform(&m[0], 1);
 

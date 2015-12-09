@@ -4,14 +4,12 @@ and released into public domain.
 */
 
 #include "cpuinfo.h"
+#include "portability.h"
 #include "sm3.h"
 #include <memory.h>
 //#define CPPCRYPTO_DEBUG
 
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-#define _byteswap_ulong __builtin_bswap32
-#else
+#ifdef _MSC_VER
 #define inline __forceinline
 #endif
 
@@ -42,12 +40,12 @@ namespace cppcrypto
 
 	static inline uint32_t p0(uint32_t x)
 	{
-		return x ^ _rotl(x, 9) ^ _rotl(x, 17);
+		return x ^ rotatel32(x, 9) ^ rotatel32(x, 17);
 	}
 
 	static inline uint32_t p1(uint32_t x)
 	{
-		return x ^ _rotl(x, 15) ^ _rotl(x, 23);
+		return x ^ rotatel32(x, 15) ^ rotatel32(x, 23);
 	}
 
 
@@ -97,7 +95,7 @@ namespace cppcrypto
 			uint32_t M[16];
 			for (uint32_t i = 0; i < 64 / 4; i++)
 			{
-				M[i] = _byteswap_ulong((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
+				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
 			}
 #ifdef	CPPCRYPTO_DEBUG
 			printf("M1 - M8: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
@@ -109,7 +107,7 @@ namespace cppcrypto
 			for (int t = 0; t <= 15; t++)
 				W[t] = M[t];
 			for (int t = 16; t <= 67; t++)
-				W[t] = p1(W[t - 16] ^ W[t - 9] ^ _rotl(W[t - 3], 15)) ^ _rotl(W[t - 13], 7) ^ W[t - 6];
+				W[t] = p1(W[t - 16] ^ W[t - 9] ^ rotatel32(W[t - 3], 15)) ^ rotatel32(W[t - 13], 7) ^ W[t - 6];
 			for (int t = 0; t <= 63; t++)
 				W2[t] = W[t] ^ W[t + 4];
 
@@ -135,16 +133,16 @@ namespace cppcrypto
 
 			for (int t = 0; t <= 15; t++)
 			{
-				uint32_t ss1 = _rotl((_rotl(a, 12) + e + _rotl(0x79cc4519, t)), 7);
-				uint32_t ss2 = ss1 ^ _rotl(a, 12);
+				uint32_t ss1 = rotatel32((rotatel32(a, 12) + e + rotatel32(0x79cc4519, t)), 7);
+				uint32_t ss2 = ss1 ^ rotatel32(a, 12);
 				uint32_t tt1 = xorf(a, b, c) + d + ss2 + W2[t];
 				uint32_t tt2 = xorf(e, f, g) + h + ss1 + W[t];
 				d = c;
-				c = _rotl(b, 9);
+				c = rotatel32(b, 9);
 				b = a;
 				a = tt1;
 				h = g;
-				g = _rotl(f, 19);
+				g = rotatel32(f, 19);
 				f = e;
 				e = p0(tt2);
 #ifdef	CPPCRYPTO_DEBUG
@@ -155,16 +153,16 @@ namespace cppcrypto
 			}
 			for (int t = 16; t <= 63; t++)
 			{
-				uint32_t ss1 = _rotl((_rotl(a, 12) + e + _rotl(0x7a879d8a, t)), 7);
-				uint32_t ss2 = ss1 ^ _rotl(a, 12);
+				uint32_t ss1 = rotatel32((rotatel32(a, 12) + e + rotatel32(0x7a879d8a, t)), 7);
+				uint32_t ss2 = ss1 ^ rotatel32(a, 12);
 				uint32_t tt1 = ff1(a, b, c) + d + ss2 + W2[t];
 				uint32_t tt2 = gg1(e, f, g) + h + ss1 + W[t];
 				d = c;
-				c = _rotl(b, 9);
+				c = rotatel32(b, 9);
 				b = a;
 				a = tt1;
 				h = g;
-				g = _rotl(f, 19);
+				g = rotatel32(f, 19);
 				f = e;
 				e = p0(tt2);
 #ifdef	CPPCRYPTO_DEBUG
@@ -199,12 +197,12 @@ namespace cppcrypto
 			pos = 0;
 		}
 		memset(&m[0] + pos, 0, 56 - pos);
-		uint64_t mlen = _byteswap_uint64(total);
+		uint64_t mlen = swap_uint64(total);
 		memcpy(&m[0] + (64 - 8), &mlen, 64 / 8);
 		transform(&m[0], 1);
 		for (int i = 0; i < 8; i++)
 		{
-			H[i] = _byteswap_ulong(H[i]);
+			H[i] = swap_uint32(H[i]);
 		}
 		memcpy(hash, H, 32);
 	}

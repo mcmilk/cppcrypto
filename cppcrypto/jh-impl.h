@@ -1,7 +1,7 @@
 #ifndef CPPCRYPTO_JHIMPL_H
 #define CPPCRYPTO_JHIMPL_H
 
-#include <tmmintrin.h>
+#include <emmintrin.h>
 #include <stdint.h>
 
 namespace cppcrypto

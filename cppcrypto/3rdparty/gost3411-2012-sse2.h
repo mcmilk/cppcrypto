@@ -9,7 +9,6 @@
 
 #include <mmintrin.h>
 #include <emmintrin.h>
-#include <smmintrin.h>
 #include <stdint.h>
 
 #define LO(v) ((unsigned char) (v))

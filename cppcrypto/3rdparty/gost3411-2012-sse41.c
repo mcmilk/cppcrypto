@@ -10,6 +10,7 @@
 // Modified for use in cppcrypto.
 
 
+#include <smmintrin.h>
 #include "gost3411-2012-sse2.h"
 #include <stdint.h>
 #ifdef _MSC_VER

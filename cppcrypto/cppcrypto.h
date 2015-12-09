@@ -27,5 +27,6 @@
 #include "cast6.h"
 #include "camellia.h"
 #include "kalyna.h"
+#include "aria.h"
 
 #endif

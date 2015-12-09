@@ -4,17 +4,11 @@ and released into public domain.
 */
 
 #include "camellia.h"
+#include "portability.h"
 #include <memory.h>
+#include <algorithm>
 
 //#define CPPCRYPTO_DEBUG
-
-#ifndef _MSC_VER
-#define _byteswap_uint64 __builtin_bswap64
-static inline uint64_t _rotl(uint32_t x, unsigned n)
-{
-        return (x << n) | (x >> (32 - n));
-}
-#endif
 
 namespace cppcrypto
 {
@@ -313,7 +307,7 @@ namespace cppcrypto
 		uint32_t kl = uint32_t(k >> 32);
 		uint32_t kr = uint32_t(k);
 
-		uint32_t yr = _rotl(xl & kl, 1) ^ xr;
+		uint32_t yr = rotatel32(xl & kl, 1) ^ xr;
 		uint32_t yl = (yr | kr) ^ xl;
 		return (uint64_t(yl) << 32) | yr;
 	}
@@ -326,7 +320,7 @@ namespace cppcrypto
 		uint32_t kr = uint32_t(k);
 
 		uint32_t xl = (yr | kr) ^ yl;
-		uint32_t xr = _rotl(xl & kl, 1) ^ yr;
+		uint32_t xr = rotatel32(xl & kl, 1) ^ yr;
 		return (uint64_t(xl) << 32) | xr;
 	}
 
@@ -342,8 +336,8 @@ namespace cppcrypto
 
 bool camellia128::init(const uint8_t* key, block_cipher::direction direction)
 {
-	uint64_t kll = _byteswap_uint64(*((uint64_t*)key));
-	uint64_t klr = _byteswap_uint64(*((uint64_t*)(key+8)));
+	uint64_t kll = swap_uint64(*((uint64_t*)key));
+	uint64_t klr = swap_uint64(*((uint64_t*)(key + 8)));
 
 	uint64_t lp = kll;
 	uint64_t kal = klr ^ F(kll, KS[0]);
@@ -397,8 +391,8 @@ bool camellia128::init(const uint8_t* key, block_cipher::direction direction)
 
 void camellia128::encrypt_block(const uint8_t* in, uint8_t* out)
 {
-	uint64_t l = _byteswap_uint64(*((uint64_t*)in)) ^ ks[0];
-	uint64_t r = _byteswap_uint64(*((uint64_t*)(in + 8))) ^ ks[1];
+	uint64_t l = swap_uint64(*((uint64_t*)in)) ^ ks[0];
+	uint64_t r = swap_uint64(*((uint64_t*)(in + 8))) ^ ks[1];
 
 #ifdef CPPCRYPTO_DEBUG
 	printf("r0: %016I64x %016I64x\n", l, r);
@@ -501,14 +495,14 @@ void camellia128::encrypt_block(const uint8_t* in, uint8_t* out)
 	r ^= ks[24];
 	l ^= ks[25];
 
-	*(uint64_t*)out = _byteswap_uint64(r);
-	*(uint64_t*)(out+8) = _byteswap_uint64(l);
+	*(uint64_t*)out = swap_uint64(r);
+	*(uint64_t*)(out + 8) = swap_uint64(l);
 }
 
 void camellia128::decrypt_block(const uint8_t* in, uint8_t* out)
 {
-	uint64_t r = _byteswap_uint64(*((uint64_t*)in)) ^ ks[24];
-	uint64_t l = _byteswap_uint64(*((uint64_t*)(in + 8))) ^ ks[25];
+	uint64_t r = swap_uint64(*((uint64_t*)in)) ^ ks[24];
+	uint64_t l = swap_uint64(*((uint64_t*)(in + 8))) ^ ks[25];
 
 #ifdef CPPCRYPTO_DEBUG
 	printf("DECRYPT: %016I64x %016I64x\n", l, r);
@@ -619,8 +613,8 @@ void camellia128::decrypt_block(const uint8_t* in, uint8_t* out)
 	l ^= ks[0];
 	r ^= ks[1];
 
-	*(uint64_t*)out = _byteswap_uint64(l);
-	*(uint64_t*)(out + 8) = _byteswap_uint64(r);
+	*(uint64_t*)out = swap_uint64(l);
+	*(uint64_t*)(out + 8) = swap_uint64(r);
 }
 
 camellia128::camellia128()
@@ -638,10 +632,10 @@ camellia256::camellia256()
 
 bool camellia256::init(const uint8_t* key, block_cipher::direction direction)
 {
-	uint64_t kll = _byteswap_uint64(*((uint64_t*)key));
-	uint64_t klr = _byteswap_uint64(*((uint64_t*)(key + 8)));
-	uint64_t krl = _byteswap_uint64(*((uint64_t*)(key + 16)));
-	uint64_t krr = _byteswap_uint64(*((uint64_t*)(key + 24)));
+	uint64_t kll = swap_uint64(*((uint64_t*)key));
+	uint64_t klr = swap_uint64(*((uint64_t*)(key + 8)));
+	uint64_t krl = swap_uint64(*((uint64_t*)(key + 16)));
+	uint64_t krr = swap_uint64(*((uint64_t*)(key + 24)));
 
 #ifdef CPPCRYPTO_DEBUG
 	printf("kl: %016I64x %016I64x\n", kll, klr);
@@ -723,8 +717,8 @@ bool camellia256::init(const uint8_t* key, block_cipher::direction direction)
 
 void camellia256::encrypt_block(const uint8_t* in, uint8_t* out)
 {
-	uint64_t l = _byteswap_uint64(*((uint64_t*)in)) ^ ks[0];
-	uint64_t r = _byteswap_uint64(*((uint64_t*)(in + 8))) ^ ks[1];
+	uint64_t l = swap_uint64(*((uint64_t*)in)) ^ ks[0];
+	uint64_t r = swap_uint64(*((uint64_t*)(in + 8))) ^ ks[1];
 
 #ifdef CPPCRYPTO_DEBUG
 	printf("r0: %016I64x %016I64x\n", l, r);
@@ -853,15 +847,15 @@ void camellia256::encrypt_block(const uint8_t* in, uint8_t* out)
 	r ^= ks[32];
 	l ^= ks[33];
 
-	*(uint64_t*)out = _byteswap_uint64(r);
-	*(uint64_t*)(out+8) = _byteswap_uint64(l);
+	*(uint64_t*)out = swap_uint64(r);
+	*(uint64_t*)(out + 8) = swap_uint64(l);
 }
 
 
 void camellia256::decrypt_block(const uint8_t* in, uint8_t* out)
 {
-	uint64_t r = _byteswap_uint64(*((uint64_t*)in)) ^ ks[32];
-	uint64_t l = _byteswap_uint64(*((uint64_t*)(in + 8))) ^ ks[33];
+	uint64_t r = swap_uint64(*((uint64_t*)in)) ^ ks[32];
+	uint64_t l = swap_uint64(*((uint64_t*)(in + 8))) ^ ks[33];
 
 #ifdef CPPCRYPTO_DEBUG
 	printf("DECRYPT: %016I64x %016I64x\n", l, r);
@@ -1019,8 +1013,8 @@ void camellia256::decrypt_block(const uint8_t* in, uint8_t* out)
 	l ^= ks[0];
 	r ^= ks[1];
 
-	*(uint64_t*)out = _byteswap_uint64(l);
-	*(uint64_t*)(out + 8) = _byteswap_uint64(r);
+	*(uint64_t*)out = swap_uint64(l);
+	*(uint64_t*)(out + 8) = swap_uint64(r);
 }
 
 bool camellia192::init(const uint8_t* key, block_cipher::direction direction)

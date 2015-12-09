@@ -5,6 +5,9 @@ digest -tv anubis224 ./block_cipher/anubis224.txt
 digest -tv anubis256 ./block_cipher/anubis256.txt
 digest -tv anubis288 ./block_cipher/anubis288.txt
 digest -tv anubis320 ./block_cipher/anubis320.txt
+digest -tv aria128 ./block_cipher/aria128.txt
+digest -tv aria192 ./block_cipher/aria192.txt
+digest -tv aria256 ./block_cipher/aria256.txt
 digest -tv camellia128 ./block_cipher/camellia128.txt
 digest -tv camellia192 ./block_cipher/camellia192.txt
 digest -tv camellia256 ./block_cipher/camellia256.txt
