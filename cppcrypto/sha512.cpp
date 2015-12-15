@@ -43,7 +43,11 @@ namespace cppcrypto
 		};
 		else
 			if (cpu_info::sse41())
+#ifdef NO_BIND_TO_FUNCTION
+				transfunc = [this](void* m, uint64_t num_blks) { sha512_sse4(m, H.get(), num_blks); };
+#else
 				transfunc = std::bind(&sha512_sse4, std::placeholders::_1, H.get(), std::placeholders::_2);
+#endif
 		else
 #else
 			if (cpu_info::sse2())
@@ -55,7 +59,11 @@ namespace cppcrypto
 		else
 #endif
 #endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_blks) { transform(m, num_blks); };
+#else
 			transfunc = std::bind(&sha512::transform, this, std::placeholders::_1, std::placeholders::_2);
+#endif
 	}
 
 	static const uint64_t K[80] = {
@@ -160,14 +168,14 @@ namespace cppcrypto
 		total = 0;
 	};
 
-	void sha512::transform(void* m, uint64_t num_blks)
+	void sha512::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			uint64_t M[16];
 			for (uint64_t i = 0; i < 128 / 8; i++)
 			{
-				M[i] = swap_uint64((reinterpret_cast<const uint64_t*>(m)[blk * 16 + i]));
+				M[i] = swap_uint64((reinterpret_cast<const uint64_t*>(mp)[blk * 16 + i]));
 			}
 #ifdef	CPPCRYPTO_DEBUG
 			printf("M1 - M8: %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X %I64X\n",
@@ -291,6 +299,12 @@ namespace cppcrypto
 		pos = 0;
 		total = 0;
 	};
+
+	void sha512::clear()
+	{
+		memset(H.get(), 0, H.size());
+		memset(m.data(), 0, m.size());
+	}
 
 }
 

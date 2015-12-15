@@ -19,8 +19,8 @@ namespace cppcrypto
 
 		virtual ~block_cipher();
 
-		virtual int blocksize() const = 0;
-		virtual int keysize() const = 0;
+		virtual size_t blocksize() const = 0;
+		virtual size_t keysize() const = 0;
 		virtual block_cipher* clone() const = 0;
 		virtual void clear() {}
 

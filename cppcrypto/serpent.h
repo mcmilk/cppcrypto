@@ -18,8 +18,8 @@ namespace cppcrypto
 		serpent256();
 		~serpent256();
 
-		int blocksize() const { return 128; }
-		int keysize() const { return 256; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new serpent256; }
 		void clear();
 
@@ -38,8 +38,8 @@ namespace cppcrypto
 	public:
 		serpent128();
 
-		int blocksize() const { return 128; }
-		int keysize() const { return 128; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 128; }
 		block_cipher* clone() const { return new serpent128; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
@@ -50,8 +50,8 @@ namespace cppcrypto
 	public:
 		serpent192();
 
-		int blocksize() const { return 128; }
-		int keysize() const { return 192; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 192; }
 		block_cipher* clone() const { return new serpent192; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);

@@ -15,8 +15,8 @@ namespace cppcrypto
 	class cast6_256 : public block_cipher
 	{
 	public:
-		int blocksize() const { return 128; }
-		int keysize() const { return 256; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new cast6_256; }
 		void clear();
 
@@ -32,7 +32,7 @@ namespace cppcrypto
 	class cast6_224 : public cast6_256
 	{
 	public:
-		int keysize() const { return 224; }
+		size_t keysize() const { return 224; }
 		block_cipher* clone() const { return new cast6_224; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
@@ -41,7 +41,7 @@ namespace cppcrypto
 	class cast6_192 : public cast6_256
 	{
 	public:
-		int keysize() const { return 192; }
+		size_t keysize() const { return 192; }
 		block_cipher* clone() const { return new cast6_192; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
@@ -50,7 +50,7 @@ namespace cppcrypto
 	class cast6_160 : public cast6_256
 	{
 	public:
-		int keysize() const { return 160; }
+		size_t keysize() const { return 160; }
 		block_cipher* clone() const { return new cast6_160; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
@@ -59,7 +59,7 @@ namespace cppcrypto
 	class cast6_128 : public cast6_256
 	{
 	public:
-		int keysize() const { return 128; }
+		size_t keysize() const { return 128; }
 		block_cipher* clone() const { return new cast6_128; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);

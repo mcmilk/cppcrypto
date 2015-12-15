@@ -28,5 +28,9 @@
 #include "camellia.h"
 #include "kalyna.h"
 #include "aria.h"
+#include "kuznyechik.h"
+#include "sm4.h"
+#include "mars.h"
+#include "blake2.h"
 
 #endif

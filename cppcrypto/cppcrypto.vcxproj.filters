@@ -147,6 +147,42 @@
     <ClInclude Include="kalyna.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="portability.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="aria.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="kuznyechik.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sm4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mars.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="blake2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\blake2b-load-sse2.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\blake2b-load-sse41.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\blake2b-round.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\blake2s-load-sse2.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\blake2s-load-sse41.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\blake2s-round.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -283,6 +319,27 @@
     </ClCompile>
     <ClCompile Include="kalyna.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="aria.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="kuznyechik.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sm4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mars.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="blake2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\blake2b.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\blake2s.c">
+      <Filter>3rdparty</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

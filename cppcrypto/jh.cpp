@@ -185,16 +185,16 @@ namespace cppcrypto
 		H[13] ^= H[3];
 	}
 
-	void jh512::transform(void* m, uint64_t num_blks)
+	void jh512::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			if (impl_)
 			{
-				impl_->F8(((const uint8_t*)m) + blk * 64);
+				impl_->F8(((const uint8_t*)mp) + blk * 64);
 				continue;
 			}
-			const uint64_t* M = (const uint64_t*)(((const uint8_t*)m) + blk * 64);
+			const uint64_t* M = (const uint64_t*)(((const uint8_t*)mp) + blk * 64);
 			H[0] ^= M[0];
 			H[1] ^= M[1];
 			H[2] ^= M[2];
@@ -360,4 +360,11 @@ namespace cppcrypto
 		H[14] = 0xea12247067d3e47b;
 		H[15] = 0x69d71cd313abe389;
 	}
+
+	void jh512::clear()
+	{
+		memset(H.get(), 0, H.size());
+		memset(m.data(), 0, m.size());
+	}
+
 }

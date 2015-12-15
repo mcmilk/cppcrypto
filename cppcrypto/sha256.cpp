@@ -52,7 +52,11 @@ namespace cppcrypto
 		};
 		else 
 		if (cpu_info::sse41())
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_bkls) { sha256_sse4(m, H.get(), num_bkls); };
+#else
 			transfunc = std::bind(&sha256_sse4, std::placeholders::_1, H.get(), std::placeholders::_2);
+#endif
 		else
 #else
 #if 0
@@ -71,7 +75,11 @@ namespace cppcrypto
 			else
 #endif
 #endif
+#ifdef NO_BIND_TO_FUNCTION
+		transfunc = [this](void* m, uint64_t num_blks) { transform(m, num_blks); };
+#else
 		transfunc = std::bind(&sha256::transform, this, std::placeholders::_1, std::placeholders::_2);
+#endif
 	}
 
 	extern const
@@ -170,14 +178,14 @@ __attribute__ ((aligned (16)))
 		total = 0;
 	};
 
-	void sha256::transform(void* m, uint64_t num_blks)
+	void sha256::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			uint32_t M[16];
 			for (uint32_t i = 0; i < 64 / 4; i++)
 			{
-				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
+				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(mp)[blk * 16 + i]));
 			}
 #ifdef	CPPCRYPTO_DEBUG
 			printf("M1 - M8: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
@@ -272,6 +280,12 @@ __attribute__ ((aligned (16)))
 		pos = 0;
 		total = 0;
 	};
+
+	void sha256::clear()
+	{
+		memset(H.get(), 0, H.size());
+		memset(m.data(), 0, m.size());
+	}
 
 }
 

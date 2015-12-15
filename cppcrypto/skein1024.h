@@ -26,16 +26,17 @@ namespace cppcrypto
 		size_t hashsize() const { return 1024; }
 		size_t blocksize() const { return 1024; }
 		crypto_hash* clone() const { return new skein1024_1024; }
+		void clear();
 
 	protected:
 		void transform(void* m, uint64_t num_blks, size_t reallen);
-//#if defined(_MSC_VER) && defined(_M_X64)
-#if defined(_M_X64)
+#if defined(_MSC_VER) && defined(_M_X64)
 		void transform_rorx(void* m, uint64_t num_blks, size_t reallen);
 #endif
 		std::function<void(void*, uint64_t, size_t)> transfunc;
 
-		aligned_pod_array<uint64_t, 16, 32> H;
+		aligned_pod_array<uint64_t, 16, 32> h;
+		uint64_t* H;
 		uint8_t m[128];
 		size_t pos;
 		uint64_t total;

@@ -774,6 +774,13 @@ namespace cppcrypto
 #endif
 	};
 
+	void streebog512::clear()
+	{
+		memset(h.get(), 0, h.size());
+		memset(m.get(), 0, m.size());
+		memset(S.get(), 0, S.size());
+	}
+
 #if 0
 	void generate_tables()
 	{

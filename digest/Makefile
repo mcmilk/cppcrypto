@@ -10,6 +10,7 @@ PREFIX       ?= /usr/local
 LIBDIR       ?= $(PREFIX)/lib
 OBJ32FORMAT  := macho32
 OBJ64FORMAT  := macho64
+LDFLAGS=-lcppcrypto -lc++
 CC=clang
 CXX=clang++
 endif
@@ -24,6 +25,7 @@ LIBDIR       ?= $(PREFIX)/lib
 endif
 OBJ32FORMAT  := elf32
 OBJ64FORMAT  := elf64
+LDFLAGS=-lcppcrypto -lstdc++
 CC=gcc
 CXX=g++
 endif
@@ -34,9 +36,22 @@ PREFIX       ?= /usr
 LIBDIR       ?= $(PREFIX)/lib
 OBJ32FORMAT  := elf32
 OBJ64FORMAT  := elf64
-LDFLAGS=-lc++
+LDFLAGS=-lcppcrypto -lc++
 CC=clang
 CXX=clang++
+endif
+
+ifeq ($(UNAME),SunOS)
+# Solaris
+PREFIX       ?= /usr
+LIBDIR       ?= $(PREFIX)/lib
+OBJ32FORMAT  := elf32
+OBJ64FORMAT  := elf64
+LDFLAGS=-L/usr/lib -lcppcrypto -std=c++11 -R '$$ORIGIN/../lib:/lib:/usr/lib'
+CC=CC
+CXX=CC
+MAKE_DIR = ginstall -d
+INSTALL_DATA = ginstall
 endif
 
 ifndef OBJ64FORMAT
@@ -48,9 +63,25 @@ MAKE_DIR     ?= install -d
 INSTALL_DATA ?= install
 
 CXXFLAGS=-O2 -Wall -g -fstack-protector -fpermissive -std=gnu++11 -DNDEBUG -msse2
-LDFLAGS=-lcppcrypto -lstdc++
 
 ifeq ($(shell getconf LONG_BIT), 64)
+PLATFORM64BIT=1
+else
+PLATFORM64BIT=0
+endif
+
+ifeq ($(UNAME),SunOS)
+CFLAGS=-O5 -xipo=2 -g -DNDEBUG -xarch=sse2 
+CXXFLAGS=-O5 -xipo=2 -g -std=c++11 -DNDEBUG -xarch=sse2
+ifeq ($(shell isainfo -v 2>&1 | grep -q "64-bit" && echo 64bit || echo 32bit), 64bit)
+PLATFORM64BIT=1
+CFLAGS += -m64
+CXXFLAGS += -m64
+LDFLAGS += -m64
+endif
+endif
+
+ifeq ($(PLATFORM64BIT), 1)
    CFLAGS += -fPIC -D_M_X64
    CXXFLAGS += -fPIC -D_M_X64
 else

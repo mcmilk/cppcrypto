@@ -46,7 +46,7 @@ namespace cppcrypto
 		uint8_t* block_;
 		uint8_t* iv_;
 		size_t pos;
-		int nb_;
+		size_t nb_;
 		std::unique_ptr<block_cipher> cipher_;
 	};
 }

@@ -27,6 +27,7 @@ namespace cppcrypto
 		size_t hashsize() const { return 256; }
 		size_t blocksize() const { return 512; }
 		crypto_hash* clone() const { return new kupyna256; }
+		void clear();
 
 	private:
 		void transform();
@@ -51,6 +52,7 @@ namespace cppcrypto
 		size_t hashsize() const { return 512; }
 		size_t blocksize() const { return 1024; }
 		crypto_hash* clone() const { return new kupyna512; }
+		void clear();
 
 	private:
 		void transform();

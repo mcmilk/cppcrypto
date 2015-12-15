@@ -42,6 +42,7 @@ namespace cppcrypto
 		size_t hashsize() const { return 512; }
 		size_t blocksize() const { return 576; }
 		crypto_hash* clone() const { return new sha3_512; }
+		void clear();
 
 	private:
 		void transform(void* m, uint64_t num_blks);
@@ -61,6 +62,7 @@ namespace cppcrypto
 		void init();
 		void update(const uint8_t* data, size_t len);
 		void final(uint8_t* hash);
+		void clear();
 
 		size_t hashsize() const { return 256; }
 		size_t blocksize() const { return 1088; }
@@ -88,6 +90,7 @@ namespace cppcrypto
 		size_t hashsize() const { return 224; }
 		size_t blocksize() const { return 1152; }
 		crypto_hash* clone() const { return new sha3_224; }
+		void clear();
 
 	private:
 		void transform(void* m, uint64_t num_blks);
@@ -111,6 +114,7 @@ namespace cppcrypto
 		size_t hashsize() const { return 384; }
 		size_t blocksize() const { return 832; }
 		crypto_hash* clone() const { return new sha3_384; }
+		void clear();
 
 	private:
 		void transform(void* m, uint64_t num_blks);

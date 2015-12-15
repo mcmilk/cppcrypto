@@ -88,14 +88,14 @@ namespace cppcrypto
 		total = 0;
 	};
 
-	void sm3::transform(const uint8_t* m, uint64_t num_blks)
+	void sm3::transform(const uint8_t* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			uint32_t M[16];
 			for (uint32_t i = 0; i < 64 / 4; i++)
 			{
-				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
+				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(mp)[blk * 16 + i]));
 			}
 #ifdef	CPPCRYPTO_DEBUG
 			printf("M1 - M8: %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X %08X\n",
@@ -205,6 +205,12 @@ namespace cppcrypto
 			H[i] = swap_uint32(H[i]);
 		}
 		memcpy(hash, H, 32);
+	}
+
+	void sm3::clear()
+	{
+		memset(H.get(), 0, H.size());
+		memset(m.data(), 0, m.size());
 	}
 
 }

@@ -137,12 +137,12 @@ namespace cppcrypto
 		}
 	}
 
-	void sha3_512::transform(void* m, uint64_t num_blks)
+	void sha3_512::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			for (int i = 0; i < 9; i++)
-				A[i] ^= reinterpret_cast<const uint64_t*>((char*)m+blk*72)[i];
+				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp+blk*72)[i];
 
 			dotransform(A);
 		}
@@ -191,12 +191,12 @@ namespace cppcrypto
 		pos += len;
 	}
 
-	void sha3_256::transform(void* m, uint64_t num_blks)
+	void sha3_256::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			for (int i = 0; i < 17; i++)
-				A[i] ^= reinterpret_cast<const uint64_t*>((char*)m + blk * 136)[i];
+				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp + blk * 136)[i];
 
 			dotransform(A);
 		}
@@ -245,12 +245,12 @@ namespace cppcrypto
 		pos += len;
 	}
 
-	void sha3_384::transform(void* m, uint64_t num_blks)
+	void sha3_384::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			for (int i = 0; i < 13; i++)
-				A[i] ^= reinterpret_cast<const uint64_t*>((char*)m + blk * 104)[i];
+				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp + blk * 104)[i];
 
 			dotransform(A);
 		}
@@ -299,12 +299,12 @@ namespace cppcrypto
 		pos += len;
 	}
 
-	void sha3_224::transform(void* m, uint64_t num_blks)
+	void sha3_224::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			for (int i = 0; i < 18; i++)
-				A[i] ^= reinterpret_cast<const uint64_t*>((char*)m + blk * 144)[i];
+				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp + blk * 144)[i];
 
 			dotransform(A);
 		}
@@ -368,6 +368,30 @@ namespace cppcrypto
 	sha3_224::~sha3_224()
 	{
 		delete impl_;
+	}
+
+	void sha3_224::clear()
+	{
+		memset(A, 0, sizeof(A));
+		memset(m, 0, sizeof(A));
+	}
+
+	void sha3_256::clear()
+	{
+		memset(A, 0, sizeof(A));
+		memset(m, 0, sizeof(A));
+	}
+
+	void sha3_384::clear()
+	{
+		memset(A, 0, sizeof(A));
+		memset(m, 0, sizeof(A));
+	}
+
+	void sha3_512::clear()
+	{
+		memset(A, 0, sizeof(A));
+		memset(m, 0, sizeof(A));
 	}
 
 }

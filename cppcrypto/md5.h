@@ -27,6 +27,7 @@ namespace cppcrypto
 		size_t hashsize() const { return 128; }
 		size_t blocksize() const { return 512; }
 		crypto_hash* clone() const { return new md5; }
+		void clear();
 
 	protected:
 		void transform(const uint8_t* m, uint64_t num_blks);

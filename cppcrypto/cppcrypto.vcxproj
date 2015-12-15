@@ -233,7 +233,15 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdparty\blake2b-load-sse2.h" />
+    <ClInclude Include="3rdparty\blake2b-load-sse41.h" />
+    <ClInclude Include="3rdparty\blake2b-round.h" />
+    <ClInclude Include="3rdparty\blake2s-load-sse2.h" />
+    <ClInclude Include="3rdparty\blake2s-load-sse41.h" />
+    <ClInclude Include="3rdparty\blake2s-round.h" />
     <ClInclude Include="3rdparty\gost3411-2012-sse2.h" />
+    <ClInclude Include="aria.h" />
+    <ClInclude Include="blake2.h" />
     <ClInclude Include="camellia.h" />
     <ClInclude Include="cast6.h" />
     <ClInclude Include="jh-impl.h" />
@@ -257,8 +265,11 @@
     <ClInclude Include="hmac.h" />
     <ClInclude Include="kalyna.h" />
     <ClInclude Include="kupyna.h" />
+    <ClInclude Include="kuznyechik.h" />
+    <ClInclude Include="mars.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="pbkdf2.h" />
+    <ClInclude Include="portability.h" />
     <ClInclude Include="rijndael-impl-aesni-common.h" />
     <ClInclude Include="rijndael-impl.h" />
     <ClInclude Include="rijndael.h" />
@@ -271,6 +282,7 @@
     <ClInclude Include="skein256.h" />
     <ClInclude Include="skein512.h" />
     <ClInclude Include="sm3.h" />
+    <ClInclude Include="sm4.h" />
     <ClInclude Include="streebog.h" />
     <ClInclude Include="twofish.h" />
     <ClInclude Include="whirlpool.h" />
@@ -279,11 +291,15 @@
   <ItemGroup>
     <ClCompile Include="3rdparty\blake256-sse2.c" />
     <ClCompile Include="3rdparty\blake256-sse41.c" />
+    <ClCompile Include="3rdparty\blake2b.c" />
+    <ClCompile Include="3rdparty\blake2s.c" />
     <ClCompile Include="3rdparty\gost3411-2012-sse2.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="3rdparty\gost3411-2012-sse41.c" />
     <ClCompile Include="3rdparty\jh-impl-sse.cpp" />
+    <ClCompile Include="aria.cpp" />
+    <ClCompile Include="blake2.cpp" />
     <ClCompile Include="camellia.cpp" />
     <ClCompile Include="cast6.cpp" />
     <ClCompile Include="jh.cpp" />
@@ -310,6 +326,8 @@
     <ClCompile Include="hmac.cpp" />
     <ClCompile Include="kalyna.cpp" />
     <ClCompile Include="kupyna.cpp" />
+    <ClCompile Include="kuznyechik.cpp" />
+    <ClCompile Include="mars.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="pbkdf2.cpp" />
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
@@ -329,6 +347,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="sm3.cpp" />
+    <ClCompile Include="sm4.cpp" />
     <ClCompile Include="streebog.cpp" />
     <ClCompile Include="twofish.cpp" />
     <ClCompile Include="whirlpool.cpp" />

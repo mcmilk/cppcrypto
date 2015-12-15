@@ -45,7 +45,7 @@ th.direction {
    font-weight: normal;
 }
 td.best {
-   background-color: #D8FBD8;
+/*   background-color: #D8FBD8; */
 }
 td.algorithm {
    border-left-width: 2px;
@@ -74,7 +74,7 @@ td.descr {
 <h2>1. Introduction</h2>
 <p>cppcrypto is a small cross-platform BSD-licensed C++ library providing some cryptographic primitives. It has no external dependencies.</p>
 <p>The library thrives to be as fast as possible. CPU type is detected at runtime and the fastest implementation is selected dynamically.</p>
-<p><b>Supported compilers:</b> Visual C++ 2013, Visual C++ 2015 on Windows; gcc 5.1.1 or later, clang 3.4.1 or later on Linux, OS X, FreeBSD (not tested with older versions).
+<p><b>Supported compilers:</b> Visual C++ 2013, Visual C++ 2015 on Windows; gcc 5.1.1 or later, clang 3.4.1 or later on Linux, OS X, FreeBSD; Solaris Studio on Solaris.
 <br><b>Supported architectures:</b> x86_64 and x86.</p>
 <p><a href="https://sourceforge.net/projects/cppcrypto/files">Download cppcrypto from sourceforge</a></p>
 <p>Full list of supported cryptographic primitives is described below.
@@ -109,6 +109,14 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <tr>
 <td><code>blake224</code><br><code>blake256</code><br><code>blake384</code><br><code>blake512</code></td>
 <td class="descr"><b>BLAKE</b> hash function (one of SHA-3 finalists) with output sizes 224/256/384/512 bits.<br>This is one of the fastest hash functions and we recommend it you are free to choose.</td>
+</tr>
+<tr>
+<td><code>blake2b_128</code><br><code>blake2b_160</code><br><code>blake2b_224</code><br><code>blake2b_256</code><br><code>blake2b_384</code><br><code>blake2b_512</code></td>
+<td class="descr"><b>BLAKE2b</b> hash function with output sizes 128/160/224/256/384/512 bits.<br>This is a version of BLAKE-512 with reduced number of rounds and other simplifications.</td>
+</tr>
+<tr>
+<td><code>blake2s_128</code><br><code>blake2s_160</code><br><code>blake2s_224</code><br><code>blake2s_256</code></td>
+<td class="descr"><b>BLAKE2s</b> hash function with output sizes 128/160/224/256 bits.<br>This is a version of BLAKE-256 with reduced number of rounds and other simplifications.</td>
 </tr>
 <tr>
 <td><code>groestl224</code><br><code>groestl256</code><br><code>groestl384</code><br><code>groestl512</code></td>
@@ -186,85 +194,99 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 </pre>
 <h3>2.4. Hashing performance</h3>
 <p>Performance of various hash algorithms on three different test systems is provided in the table below (in megabytes per second).
-In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and 512 bits is highlighted in green.
-<br>Note how 64-bit builds outperform 32-bit builds. For some algorithms 64-bit build is 3 times faster than 32-bit build on the same PC.</p>
+<br>Note how 64-bit builds outperform 32-bit builds. For some algorithms 64-bit build is up to 5 times faster than 32-bit build on the same PC.
+<br>It's also an interesting comparison between gcc 5.2.1 and clang 3.7.0 optimizers. Some algorithms are faster when compiled by clang, while others are faster when compiled by gcc.
+</p>
 <table>
-<tr><th colspan="7" class="thh left top right bottom">Performance in megabytes per second (MB/s), higher number means faster<br><i>(measured by calculating a hash of a 130Kb file 100,000 times)</i></th></tr>
+<tr><th colspan="11" class="thh left top right bottom">Performance in megabytes per second (MB/s), higher number means faster<br><i>(measured by calculating a hash of a 130Kb file 100,000 times)</i></th></tr>
 <tr>
-<th class="left right">Algorithm</th><th colspan="2" class="right">PC: Intel Xeon E5-1650 v3<br>(Haswell-EP)<br>OS: Win7 x64<br>Compiler: VC++2015</th><th colspan="2" class="right">PC: Intel Core i7 930<br>(Nehalem)<br>OS: Win7 x64<br>Compiler: VC++2015</th><th colspan="2" class="right">PC: Intel Core i3-3217U<br>(Ivy Bridge w/o AESNI)<br>OS: Win7 x64<br>Compiler: VC++2015</th>
+<th class="left right" rowspan="2">Algorithm</th><th colspan="6" class="right">PC: Intel Xeon E5-1650 v3<br>(Haswell-EP)</th><th colspan="2" class="right">PC: Intel Core i7 930<br>(Nehalem)</th><th colspan="2" class="right">PC: Intel Core i3-3217U<br>(Ivy Bridge w/o AESNI)</th>
+</tr>
+<tr>
+<th colspan="2" class="right">OS: Win7 x64<br>Compiler: VC++2015</th><th colspan="2" class="right">OS: openSUSE (in VM)<br>Compiler: gcc 5.2.1</th><th colspan="2" class="right">OS: openSUSE (in VM)<br>Compiler: clang 3.7.0</th><th colspan="2" class="right">OS: Win7 x64<br>Compiler: VC++2015</th><th colspan="2" class="right">OS: Win7 x64<br>Compiler: VC++2015</th>
 </tr>
 <tr>
 </tr>
 <tr><th class="thsa">128-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
-<tr><td class="algorithm">MD5</td><td>528</td><td class="right">509</td><td>382</td><td class="right">352</td><td>262</td><td class="right">252</td></tr>
-<tr><td class="algorithm">Skein-256/128</td><td>383</td><td class="right">210</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-512/128</td><td>517</td><td class="right">234</td><td>340</td><td class="right">181</td><td>231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">BLAKE2b/128</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
+<tr><td class="algorithm">BLAKE2s/128</td><td>554</td><td class="right">539</td><td>549</td><td class="right">542</td><td>554</td><td class="right">547</td><td>360</td><td class="right">205</td><td>274</td><td class="right">271</td></tr>
+<tr><td class="algorithm">MD5</td><td>528</td><td class="right">509</td><td>634</td><td class="right">627</td><td>472</td><td class="right">472</td><td>382</td><td class="right">352</td><td>262</td><td class="right">252</td></tr>
+<tr><td class="algorithm">Skein-256/128</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-512/128</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td>340</td><td class="right">181</td><td>231</td><td class="right">112</td></tr>
 <tr><th class="thsa">160-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
-<tr><td class="algorithm">Skein-256/160</td><td>383</td><td class="right">210</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-512/160</td><td>517</td><td class="right">234</td><td>340</td><td class="right">181</td><td>231</td><td class="right">112</td></tr>
-<tr><td class="algorithm">SHA-1</td><td>789</td><td class="right">522</td><td>480</td><td class="right">392</td><td>361</td><td class="right">247</td></tr>
+<tr><td class="algorithm">BLAKE2b/160</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
+<tr><td class="algorithm">BLAKE2s/160</td><td>554</td><td class="right">539</td><td>549</td><td class="right">542</td><td>554</td><td class="right">547</td><td>360</td><td class="right">205</td><td>274</td><td class="right">271</td></tr>
+<tr><td class="algorithm">Skein-256/160</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-512/160</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td>340</td><td class="right">181</td><td>231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">SHA-1</td><td>789</td><td class="right">522</td><td>784</td><td class="right">512</td><td>784</td><td class="right">508</td><td>480</td><td class="right">392</td><td>361</td><td class="right">247</td></tr>
 <tr><th class="thsa">224-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
-<tr><td class="algorithm">BLAKE-224</td><td>423</td><td class="best right">417</td><td>271</td><td class="right">151</td><td>208</td><td class="best right">204</td></tr>
-<tr><td class="algorithm">Groestl-224</td><td>326</td><td class="right">270</td><td>112</td><td class="right">99</td><td>73</td><td class="right">71</td></tr>
-<tr><td class="algorithm">JH-224</td><td>206</td><td class="right">146</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
-<tr><td class="algorithm">SHA-224</td><td>398</td><td class="right">293</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
-<tr><td class="algorithm">SHA-512/224</td><td class="best">552</td><td class="right">211</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-224</td><td>270</td><td class="right">243</td><td>174</td><td class="right">143</td><td>122</td><td class="right">109</td></tr>
-<tr><td class="algorithm">Skein-256/224</td><td>383</td><td class="right">210</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-512/224</td><td>517</td><td class="right">234</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">BLAKE-224</td><td>423</td><td class="best right">417</td><td>421</td><td class="right">392</td><td>427</td><td class="right">404</td><td>271</td><td class="right">151</td><td>208</td><td class="best right">204</td></tr>
+<tr><td class="algorithm">BLAKE2b/224</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
+<tr><td class="algorithm">BLAKE2s/224</td><td>554</td><td class="right">539</td><td>549</td><td class="right">542</td><td>554</td><td class="right">547</td><td>360</td><td class="right">205</td><td>274</td><td class="right">271</td></tr>
+<tr><td class="algorithm">Groestl-224</td><td>326</td><td class="right">270</td><td>279</td><td class="right">227</td><td>322</td><td class="right">229</td><td>112</td><td class="right">99</td><td>73</td><td class="right">71</td></tr>
+<tr><td class="algorithm">JH-224</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
+<tr><td class="algorithm">SHA-224</td><td>398</td><td class="right">293</td><td>382</td><td class="right">282</td><td>382</td><td class="right">282</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
+<tr><td class="algorithm">SHA-512/224</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
+<tr><td class="algorithm">SHA3-224</td><td>270</td><td class="right">243</td><td>258</td><td class="right">221</td><td>260</td><td class="right">242</td><td>174</td><td class="right">143</td><td>122</td><td class="right">109</td></tr>
+<tr><td class="algorithm">Skein-256/224</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-512/224</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
 
 <tr><th class="thsa">256-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
-<tr><td class="algorithm">BLAKE-256</td><td>423</td><td class="best right">417</td><td>271</td><td class="right">151</td><td>208</td><td class="best right">204</td></tr>
-<tr><td class="algorithm">Groestl-256</td><td>326</td><td class="right">270</td><td>112</td><td class="right">99</td><td>73</td><td class="right">71</td></tr>
-<tr><td class="algorithm">JH-256</td><td>206</td><td class="right">146</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
-<tr><td class="algorithm">Kupyna-256</td><td>127</td><td class="right">54</td><td>77</td><td class="right">28</td><td>53</td><td class="right">25</td></tr>
-<tr><td class="algorithm">SHA-256</td><td>398</td><td class="right">293</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
-<tr><td class="algorithm">SHA-512/256</td><td class="best">552</td><td class="right">211</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-256</td><td>256</td><td class="right">227</td><td>164</td><td class="right">133</td><td>114</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-256/256</td><td>383</td><td class="right">210</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-512/256</td><td>517</td><td class="right">234</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
-<tr><td class="algorithm">Skein-1024/256</td><td>406</td><td class="right">106</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
-<tr><td class="algorithm">SM3</td><td>186</td><td class="right">140</td><td>117</td><td class="right">101</td><td>81</td><td class="right">70</td></tr>
-<tr><td class="algorithm">Streebog-256</td><td>112</td><td class="right">64</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
+<tr><td class="algorithm">BLAKE-256</td><td>423</td><td class="best right">417</td><td>421</td><td class="right">392</td><td>427</td><td class="right">404</td><td>271</td><td class="right">151</td><td>208</td><td class="best right">204</td></tr>
+<tr><td class="algorithm">BLAKE2b/256</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
+<tr><td class="algorithm">BLAKE2s/256</td><td>554</td><td class="right">539</td><td>549</td><td class="right">542</td><td>554</td><td class="right">547</td><td>360</td><td class="right">205</td><td>274</td><td class="right">271</td></tr>
+<tr><td class="algorithm">Groestl-256</td><td>326</td><td class="right">270</td><td>279</td><td class="right">227</td><td>322</td><td class="right">229</td><td>112</td><td class="right">99</td><td>73</td><td class="right">71</td></tr>
+<tr><td class="algorithm">JH-256</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
+<tr><td class="algorithm">Kupyna-256</td><td>127</td><td class="right">54</td><td>111</td><td class="right">54</td><td>113</td><td class="right">79</td><td>77</td><td class="right">28</td><td>53</td><td class="right">25</td></tr>
+<tr><td class="algorithm">SHA-256</td><td>398</td><td class="right">293</td><td>382</td><td class="right">282</td><td>382</td><td class="right">282</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
+<tr><td class="algorithm">SHA-512/256</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
+<tr><td class="algorithm">SHA3-256</td><td>256</td><td class="right">227</td><td>246</td><td class="right">206</td><td>245</td><td class="right">228</td><td>164</td><td class="right">133</td><td>114</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-256/256</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
+<tr><td class="algorithm">Skein-512/256</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">Skein-1024/256</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
+<tr><td class="algorithm">SM3</td><td>186</td><td class="right">140</td><td>166</td><td class="right">143</td><td>170</td><td class="right">148</td><td>117</td><td class="right">101</td><td>81</td><td class="right">70</td></tr>
+<tr><td class="algorithm">Streebog-256</td><td>112</td><td class="right">64</td><td>116</td><td class="right">64</td><td>113</td><td class="right">68</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
 
 <tr><th class="thsa">384-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
 
-<tr><td class="algorithm">BLAKE-384</td><td>471</td><td class="best right">411</td><td class="best">340</td><td class="best right">217</td><td>227</td><td class="best right">202</td></tr>
-<tr><td class="algorithm">Groestl-384</td><td>246</td><td class="right">197</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
-<tr><td class="algorithm">JH-384</td><td>206</td><td class="right">146</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
-<tr><td class="algorithm">SHA-384</td><td class="best">552</td><td class="right">211</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-384</td><td>194</td><td class="right">175</td><td>126</td><td class="right">103</td><td>89</td><td class="right">79</td></tr>
-<tr><td class="algorithm">Skein-512/384</td><td>517</td><td class="right">234</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
-<tr><td class="algorithm">Skein-1024/384</td><td>406</td><td class="right">106</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
+<tr><td class="algorithm">BLAKE-384</td><td>471</td><td class="best right">411</td><td>477</td><td class="right">421</td><td>540</td><td class="right">437</td><td class="best">340</td><td class="best right">217</td><td>227</td><td class="best right">202</td></tr>
+<tr><td class="algorithm">BLAKE2b/384</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
+<tr><td class="algorithm">Groestl-384</td><td>246</td><td class="right">197</td><td>220</td><td class="right">181</td><td>234</td><td class="right">182</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
+<tr><td class="algorithm">JH-384</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
+<tr><td class="algorithm">SHA-384</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
+<tr><td class="algorithm">SHA3-384</td><td>194</td><td class="right">175</td><td>187</td><td class="right">152</td><td>189</td><td class="right">175</td><td>126</td><td class="right">103</td><td>89</td><td class="right">79</td></tr>
+<tr><td class="algorithm">Skein-512/384</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">Skein-1024/384</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
 
 <tr><th class="thsa">512-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
-<tr><td class="algorithm">BLAKE-512</td><td>471</td><td class="best right">411</td><td class="best">340</td><td class="best right">217</td><td>227</td><td class="best right">202</td></tr>
-<tr><td class="algorithm">Groestl-512</td><td>246</td><td class="right">197</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
-<tr><td class="algorithm">JH-512</td><td>206</td><td class="right">146</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
-<tr><td class="algorithm">Kupyna-512</td><td>81</td><td class="right">43</td><td>49</td><td class="right">22</td><td>23</td><td class="right">20</td></tr>
-<tr><td class="algorithm">SHA-512</td><td class="best">552</td><td class="right">211</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-512</td><td>136</td><td class="right">122</td><td>81</td><td class="right">72</td><td>61</td><td class="right">49</td></tr>
-<tr><td class="algorithm">Skein-512/512</td><td>517</td><td class="right">234</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
-<tr><td class="algorithm">Skein-1024/512</td><td>406</td><td class="right">106</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
-<tr><td class="algorithm">Streebog-512</td><td>112</td><td class="right">64</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
-<tr><td class="algorithm">Whirlpool</td><td>150</td><td class="right">125</td><td>80</td><td class="right">89</td><td>61</td><td class="right">58</td></tr>
+<tr><td class="algorithm">BLAKE-512</td><td>471</td><td class="best right">411</td><td>477</td><td class="right">421</td><td>540</td><td class="right">437</td><td class="best">340</td><td class="best right">217</td><td>227</td><td class="best right">202</td></tr>
+<tr><td class="algorithm">BLAKE2b/512</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
+<tr><td class="algorithm">Groestl-512</td><td>246</td><td class="right">197</td><td>220</td><td class="right">181</td><td>234</td><td class="right">182</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
+<tr><td class="algorithm">JH-512</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
+<tr><td class="algorithm">Kupyna-512</td><td>81</td><td class="right">43</td><td>84</td><td class="right">41</td><td>88</td><td class="right">59</td><td>49</td><td class="right">22</td><td>23</td><td class="right">20</td></tr>
+<tr><td class="algorithm">SHA-512</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
+<tr><td class="algorithm">SHA3-512</td><td>136</td><td class="right">122</td><td>130</td><td class="right">103</td><td>133</td><td class="right">123</td><td>81</td><td class="right">72</td><td>61</td><td class="right">49</td></tr>
+<tr><td class="algorithm">Skein-512/512</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
+<tr><td class="algorithm">Skein-1024/512</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
+<tr><td class="algorithm">Streebog-512</td><td>112</td><td class="right">64</td><td>116</td><td class="right">64</td><td>113</td><td class="right">68</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
+<tr><td class="algorithm">Whirlpool</td><td>150</td><td class="right">125</td><td>147</td><td class="right">122</td><td>162</td><td class="right">122</td><td>80</td><td class="right">89</td><td>61</td><td class="right">58</td></tr>
 
 <tr><th class="thsa">1024-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
-<tr><td class="algorithm bottom">Skein-1024/1024</td><td class="bottom">406</td><td class="bottom right">106</td><td class="bottom">217</td><td class="bottom right">63</td><td class="bottom">144</td><td class="bottom right">38</td></tr>
+<tr><td class="algorithm bottom">Skein-1024/1024</td><td class="bottom">406</td><td class="bottom right">106</td><td class="bottom">481</td><td class="right bottom">93</td><td class="bottom">479</td><td class="right bottom">108</td><td class="bottom">217</td><td class="bottom right">63</td><td class="bottom">144</td><td class="bottom right">38</td></tr>
 
 </table>
 <p>You can run the hashing performance test on your own PC using the following command:</p>
@@ -293,15 +315,16 @@ In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and
     public:
         enum direction { encryption, decryption };
 
-        virtual int blocksize() const = 0;
-        virtual int keysize() const = 0;
+        virtual size_t blocksize() const = 0;
+        virtual size_t keysize() const = 0;
 
         virtual bool init(const uint8_t* key, block_cipher::direction direction) = 0;
         virtual void encrypt_block(const uint8_t* in, uint8_t* out) = 0;
         virtual void decrypt_block(const uint8_t* in, uint8_t* out) = 0;
     };
 </pre>
-<p>This class provide a low-level interface to the block cipher. To start encryption or decryption, call <code>init()</code> (<code>key</code> should point to a key of <code>keysize()/8</code> bytes), then call <code>encrypt_block()</code> or <code>decrypt_block()</code> to encrypt or decrypt a block of <code>blocksize()/8</code> bytes.<br>In practice in most cases you probably want a higher-level interface such as <code>cbc</code> class described below.</p>
+<p>A low-level interface to the block cipher. To start encryption or decryption, call <code>init()</code> (<code>key</code> should point to a key of <code>keysize()/8</code> bytes), then call <code>encrypt_block()</code> or <code>decrypt_block()</code> to encrypt or decrypt a single block of <code>blocksize()/8</code> bytes.<br>
+In practice in most cases you probably want to use block ciphers in an encryption mode via <code>cbc</code> or <code>ctr</code> class described below.</p>
 </html>
 <h3>2.2. Supported algorithms</h3>
 <p>Classes derived from <code>block_cipher</code>:</p>
@@ -328,6 +351,14 @@ In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and
 <td class="descr"><b>Kalyna</b> cipher (Ukrainian national standard DSTU 7624:2014)<br>with block sizes 128/256/512 bits and key sizes 128/256/512 bits.</td>
 </tr>
 <tr>
+<td><code>kuznyechik</code></td>
+<td class="descr"><b>Kuznyechik</b> cipher (Russian national standard GOST R 34.12-2015)<br>with block size 128 bits and key size 256 bits.</td>
+</tr>
+<tr>
+<td><code>mars128</code><br><code>mars160</code><br><code>mars192</code><br><code>mars224</code><br><code>mars256</code><br><code>mars288</code><br><code>mars320</code><br><code>mars352</code><br><code>mars384</code><br><code>mars416</code><br><code>mars448</code></td>
+<td class="descr"><b>MARS</b> cipher (one of AES finalists)<br>with block size 128 bits<br>and key sizes 128/160/192/224/256/288/320/352/384/416/448 bits.</td>
+</tr>
+<tr>
 <td><code>rijndael128_128</code><br><code>rijndael128_160</code><br><code>rijndael128_192</code><br><code>rijndael128_224</code><br><code>rijndael128_256</code>
 <br><code>rijndael160_128</code><br><code>rijndael160_160</code><br><code>rijndael160_192</code><br><code>rijndael160_224</code><br><code>rijndael160_256</code>
 <br><code>rijndael192_128</code><br><code>rijndael192_160</code><br><code>rijndael192_192</code><br><code>rijndael192_224</code><br><code>rijndael192_256</code>
@@ -339,6 +370,10 @@ In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and
 <tr>
 <td><code>serpent128</code><br><code>serpent192</code><br><code>serpent256</code></td>
 <td class="descr"><b>Serpent</b> cipher (one of AES finalists)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
+</tr>
+<tr>
+<td><code>sm4</code></td>
+<td class="descr"><b>SM4</b> cipher (Chinese national standard for Wireless LAN)<br>with block size 128 bits and key size 128 bits.</td>
 </tr>
 <tr>
 <td><code>twofish128</code><br><code>twofish192</code><br><code>twofish256</code></td>
@@ -353,32 +388,30 @@ In each test, the fastest hash algorithm for output lengths of 224, 256, 384 and
 
     void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, block_cipher::direction direction);
 
+    <i>// Functions writing output to preallocated raw buffer (the fastest)</i>
     void encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
     void encrypt_final(uint8_t* out, size_t& resultlen);
-
     void decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
     void decrypt_final(uint8_t* out, size_t& resultlen);
-</pre>
-<p>The functions are similar to the ones from the <code>crypto_hash</code> class. To start encryption, pass one of the block ciphers to the constructor and initialize encryption using <code>init()</code> function. The length of the key in bytes should be equal to <code>keysize()/8</code> of the block cipher, and the length of the initialization vector (<code>iv</code>) in bytes should be equal to <code>blocksize()/8</code> of the block cipher. Then call <code>encrypt_update()</code> any number of times to add the next chunk of data of variable length. The <code>out</code> argument should point to the next location where the encrypted output should be written; <code>resultlen</code> is the number of bytes written to <code>out</code> as the result of the function call.</p>
-<p>When all input is consumed by <code>encrypt_update()</code> function, call <code>encrypt_final()</code> to finish the encryption. At this stage the final block will be written to <code>out</code>. Because the class implements PKCS#7 padding, the overall size of the output buffer should be equal to the size of the input rounded up to the block size of the cipher algorithm, plus one additional full block if the input size is the exact multiple of the block size. It is responsibility of the caller to make sure the buffer is large enough.</p>
-<p>Decryption is done in a similar way.</p>
-<p>A simpler but slower interface accepts a reference to <code>std::vector&lt;uint8_t&gt;</code> and appends encryption or decryption result to this vector, which is dynamically resized as needed, so that you do not need to calculate and allocate a buffer of proper size in advance:</p>
-<pre>
+
+    <i>// Functions writing output to std::vector (slower)</i>
     void encrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
     void encrypt_final(std::vector<uint8_t>& out);
-
     void decrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
     void decrypt_final(std::vector<uint8_t>& out);
-</pre>
-<p>An even simpler but more slower interface writes the output to <code>std::ostream</code>:</p>
-<pre>
+
+    <i>// Functions writing output to std::ostream (slowest)</i>
     void encrypt_update(const uint8_t* in, size_t len, std::ostream& out);
     void encrypt_final(std::ostream& out);
-
     void decrypt_update(const uint8_t* in, size_t len, std::ostream& out);
     void decrypt_final(std::ostream& out);
 </pre>
-<p>Note that even if you use the interface which writes to ostream or vector, you still need to call <code>init()</code> to set up the key and initialization vector.</p>
+<p>The functions are similar to the ones from the <code>crypto_hash</code> class.</p><p>To start encryption, pass one of the block ciphers to the constructor and initialize encryption using <code>init()</code> function. The length of the key in bytes should be equal to <code>keysize()/8</code> of the block cipher, and the length of the initialization vector (<code>iv</code>) in bytes should be equal to <code>blocksize()/8</code> of the block cipher. Then call <code>encrypt_update()</code> any number of times to add the next chunk of data of variable length. When all input is consumed by <code>encrypt_update()</code> function, call <code>encrypt_final()</code> to finish the encryption (at this stage the final block will be written to <code>out</code>).
+<p>Decryption is done in a similar way.</p>
+<p>If you use the low-level functions that write the output to a preallocated buffer, the <code>out</code> argument should point to the next location where the encrypted output should be written; <code>resultlen</code> is the number of bytes written to <code>out</code> as the result of the function call. Because the class implements PKCS#7 padding, the overall size of the output buffer should be equal to the size of the input rounded up to the block size of the cipher algorithm, plus one additional full block if the input size is the exact multiple of the block size. It is responsibility of the caller to make sure the buffer is large enough.</p>
+<p>A simpler but slower interface accepts a reference to <code>std::vector&lt;uint8_t&gt;</code> and appends encryption or decryption result to this vector, which is dynamically resized as needed, so that you do not need to calculate and allocate a buffer of proper size in advance:</p>
+<p>An even simpler but slower interface writes the output to <code>std::ostream</code>:</p>
+<p>Note that regardless of which interface you use, you still need to call <code>init()</code> function to set up the key and initialization vector.</p>
 <h3>5.2. CTR mode</h3>
 <p>Class <code>ctr</code> implements the following interface:</p>
 <pre>
@@ -393,69 +426,89 @@ The length of the key in bytes should be equal to <code>keysize()/8</code> of th
 Since all output is produced immediately, no finalization function is needed in this mode.</p>
 <h3>5.3. Encryption performance</h3>
 <table>
-<tr><th colspan="3" class="thh left top right">
+<tr><th colspan="7" class="thh left top right">
 Performance in megabytes per second (MB/s), higher number means faster<br><i>(measured by encrypting a 130Kb file in CBC mode 100,000 times)</i>
 </th></tr>
 <tr>
-<th rowspan="2" class="left right top bottom">Algorithm</th><th colspan="2" class="left right top">PC: Intel Xeon E5-1650 v3<br>(Haswell-EP)<br>OS: Win7 x64<br>Compiler: VC++2015</th>
+<th rowspan="3" class="left right top bottom">Algorithm</th><th colspan="6" class="left right top">PC: Intel Xeon E5-1650 v3</th>
+</tr>
+<tr>
+<th colspan="2" class="left right">OS: Win7 x64<br>Compiler: VC++2015</th>
+<th colspan="2" class="left right">OS: openSUSE (in VM)<br>Compiler: gcc 5.2.1</th>
+<th colspan="2" class="left right">OS: openSUSE (in VM)<br>Compiler: clang 3.7.0</th>
 </tr>
 <tr>
 <th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
+<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
 </tr>
-<tr><td class="algorithm">Anubis-128</td><td class="top">225</td><td class="right top">138</td>
-<tr><td class="algorithm">Anubis-160</td><td>206</td><td class="right">128</td>
-<tr><td class="algorithm">Anubis-192</td><td>198</td><td class="right">119</td>
-<tr><td class="algorithm">Anubis-224</td><td>186</td><td class="right">112</td>
-<tr><td class="algorithm">Anubis-256</td><td>176</td><td class="right">105</td>
-<tr><td class="algorithm">Anubis-288</td><td>163</td><td class="right">100</td>
-<tr><td class="algorithm">Anubis-320</td><td>157</td><td class="right">94</td>
-<tr><td class="algorithm top">Aria-128</td><td class="top">135</td><td class="right top">113</td>
-<tr><td class="algorithm">Aria-192</td><td>116</td><td class="right">98</td>
-<tr><td class="algorithm">Aria-256</td><td>102</td><td class="right">86</td>
-<tr><td class="algorithm top">Camellia-128</td><td class="top">148</td><td class="right top">94</td>
-<tr><td class="algorithm">Camellia-192</td><td>113</td><td class="right">71</td>
-<tr><td class="algorithm">Camellia-256</td><td>113</td><td class="right">71</td>
-<tr><td class="algorithm top">CAST6-128</td><td class="top">109</td><td class="right top">99</td>
-<tr><td class="algorithm">CAST6-160</td><td>109</td><td class="right">99</td>
-<tr><td class="algorithm">CAST6-192</td><td>109</td><td class="right">99</td>
-<tr><td class="algorithm">CAST6-224</td><td>109</td><td class="right">99</td>
-<tr><td class="algorithm bottom">CAST6-256</td><td class="bottom">109</td><td class="right bottom">99</td>
-<tr><td class="algorithm top">Kalyna-128/128</td><td class="top">179</td><td class="right top">112</td>
-<tr><td class="algorithm">Kalyna-128/256</td><td>132</td><td class="right">82</td>
-<tr><td class="algorithm">Kalyna-256/256</td><td>177</td><td class="right">85</td>
-<tr><td class="algorithm">Kalyna-256/512</td><td>140</td><td class="right">67</td>
-<tr><td class="algorithm">Kalyna-512/512</td><td>155</td><td class="right">66</td>
-<tr><td class="algorithm top">Rijndael-128/128</td><td class="top">657</td><td class="right top">656</td>
-<tr><td class="algorithm">Rijndael-128/160</td><td>607</td><td class="right">607</td>
-<tr><td class="algorithm">Rijndael-128/192</td><td>564</td><td class="right">566</td>
-<tr><td class="algorithm">Rijndael-128/224</td><td>525</td><td class="right">527</td>
-<tr><td class="algorithm">Rijndael-128/256</td><td>493</td><td class="right">490</td>
-<tr><td class="algorithm top">Rijndael-160/128</td><td class="top">339</td><td class="right top">253</td>
-<tr><td class="algorithm">Rijndael-160/160</td><td>339</td><td class="right">254</td>
-<tr><td class="algorithm">Rijndael-160/192</td><td>318</td><td class="right">238</td>
-<tr><td class="algorithm">Rijndael-160/224</td><td>299</td><td class="right">223</td>
-<tr><td class="algorithm">Rijndael-160/256</td><td>282</td><td class="right">211</td>
-<tr><td class="algorithm top">Rijndael-192/128</td><td class="top">425</td><td class="right top">373</td>
-<tr><td class="algorithm">Rijndael-192/160</td><td>425</td><td class="right">373</td>
-<tr><td class="algorithm">Rijndael-192/192</td><td>425</td><td class="right">373</td>
-<tr><td class="algorithm">Rijndael-192/224</td><td>399</td><td class="right">352</td>
-<tr><td class="algorithm">Rijndael-192/256</td><td>378</td><td class="right">334</td>
-<tr><td class="algorithm top">Rijndael-224/128</td><td class="top">370</td><td class="right top">287</td>
-<tr><td class="algorithm">Rijndael-224/160</td><td>370</td><td class="right">287</td>
-<tr><td class="algorithm">Rijndael-224/192</td><td>370</td><td class="right">287</td>
-<tr><td class="algorithm">Rijndael-224/224</td><td>370</td><td class="right">287</td>
-<tr><td class="algorithm">Rijndael-224/256</td><td>349</td><td class="right">268</td>
-<tr><td class="algorithm top">Rijndael-256/128</td><td class="top">528</td><td class="right top">527</td>
-<tr><td class="algorithm">Rijndael-256/160</td><td>528</td><td class="right">527</td>
-<tr><td class="algorithm">Rijndael-256/192</td><td>528</td><td class="right">527</td>
-<tr><td class="algorithm">Rijndael-256/224</td><td>528</td><td class="right">527</td>
-<tr><td class="algorithm">Rijndael-256/256</td><td>528</td><td class="right">527</td>
-<tr><td class="algorithm top">Serpent-128</td><td class="top">84</td><td class="right top">96</td>
-<tr><td class="algorithm">Serpent-192</td><td>84</td><td class="right">96</td>
-<tr><td class="algorithm bottom">Serpent-256</td><td class="bottom">84</td><td class="right bottom">96</td>
-<tr><td class="algorithm top">Twofish-128</td><td class="top">171</td><td class="right top">151</td>
-<tr><td class="algorithm">Twofish-192</td><td>171</td><td class="right">151</td>
-<tr><td class="algorithm bottom">Twofish-256</td><td class="bottom">171</td><td class="right bottom">151</td>
+<tr><td class="algorithm">Anubis-128</td><td class="top">225</td><td class="right top">138</td><td class="top">208</td><td class="right top">178</td><td class="top">198</td><td class="right top">169</td>
+<tr><td class="algorithm">Anubis-160</td><td>206</td><td class="right">128</td><td>195</td><td class="right">167</td><td>186</td><td class="right">156</td>
+<tr><td class="algorithm">Anubis-192</td><td>198</td><td class="right">119</td><td>196</td><td class="right">157</td><td>172</td><td class="right">145</td>
+<tr><td class="algorithm">Anubis-224</td><td>186</td><td class="right">112</td><td>186</td><td class="right">147</td><td>162</td><td class="right">137</td>
+<tr><td class="algorithm">Anubis-256</td><td>176</td><td class="right">105</td><td>175</td><td class="right">138</td><td>152</td><td class="right">128</td>
+<tr><td class="algorithm">Anubis-288</td><td>163</td><td class="right">100</td><td>166</td><td class="right">130</td><td>146</td><td class="right">121</td>
+<tr><td class="algorithm">Anubis-320</td><td>157</td><td class="right">94</td><td>158</td><td class="right">124</td><td>136</td><td class="right">115</td>
+<tr><td class="algorithm top">Aria-128</td><td class="top">135</td><td class="right top">113</td><td class="top">155</td><td class="right top">154</td><td class="top">150</td><td class="right top">153</td>
+<tr><td class="algorithm">Aria-192</td><td>116</td><td class="right">98</td><td>134</td><td class="right">133</td><td>129</td><td class="right">133</td>
+<tr><td class="algorithm">Aria-256</td><td>102</td><td class="right">86</td><td>119</td><td class="right">118</td><td>114</td><td class="right">117</td>
+<tr><td class="algorithm top">Camellia-128</td><td class="top">148</td><td class="right top">94</td><td class="top">153</td><td class="right top">130</td><td class="top">143</td><td class="right top">149</td>
+<tr><td class="algorithm">Camellia-192</td><td>113</td><td class="right">71</td><td>118</td><td class="right">99</td><td>108</td><td class="right">114</td>
+<tr><td class="algorithm">Camellia-256</td><td>113</td><td class="right">71</td><td>117</td><td class="right">99</td><td>108</td><td class="right">114</td>
+<tr><td class="algorithm top">CAST6-128</td><td class="top">109</td><td class="right top">99</td><td class="top">104</td><td class="right top">101</td><td class="top">102</td><td class="right top">94</td>
+<tr><td class="algorithm">CAST6-160</td><td>109</td><td class="right">99</td><td>104</td><td class="right">101</td><td>102</td><td class="right">94</td>
+<tr><td class="algorithm">CAST6-192</td><td>109</td><td class="right">99</td><td>104</td><td class="right">101</td><td>102</td><td class="right">94</td>
+<tr><td class="algorithm">CAST6-224</td><td>109</td><td class="right">99</td><td>104</td><td class="right">101</td><td>102</td><td class="right">94</td>
+<tr><td class="algorithm bottom">CAST6-256</td><td class="bottom">109</td><td class="right bottom">99</td><td>104</td><td class="right">101</td><td>102</td><td class="right">94</td>
+<tr><td class="algorithm top">Kalyna-128/128</td><td class="top">179</td><td class="right top">112</td><td class="top">236</td><td class="right top">130</td><td class="top">206</td><td class="right top">186</td>
+<tr><td class="algorithm">Kalyna-128/256</td><td>132</td><td class="right">82</td><td>175</td><td class="right">95</td><td>148</td><td class="right">137</td>
+<tr><td class="algorithm">Kalyna-256/256</td><td>177</td><td class="right">85</td><td>206</td><td class="right">88</td><td>167</td><td class="right">113</td>
+<tr><td class="algorithm">Kalyna-256/512</td><td>140</td><td class="right">67</td><td>135</td><td class="right">69</td><td>131</td><td class="right">89</td>
+<tr><td class="algorithm">Kalyna-512/512</td><td>155</td><td class="right">66</td><td>124</td><td class="right">71</td><td>119</td><td class="right">83</td>
+<tr><td class="algorithm top">Kuznyechik</td><td class="top">109</td><td class="right top">60</td><td class="top">113</td><td class="right top">68</td><td class="top">112</td><td class="right top">70</td>
+<tr><td class="algorithm top">Mars-128</td><td class="top">159</td><td class="right top">136</td><td class="top">154</td><td class="right top">154</td><td class="top">138</td><td class="right top">140</td>
+<tr><td class="algorithm">Mars-160</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-192</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-224</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-256</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-288</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-320</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-352</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-384</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-416</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm">Mars-448</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
+<tr><td class="algorithm top">Rijndael-128/128</td><td class="top">657</td><td class="right top">656</td><td class="top">633</td><td class="right top">632</td><td class="top">633</td><td class="right top">629</td>
+<tr><td class="algorithm">Rijndael-128/160</td><td>607</td><td class="right">607</td><td>589</td><td class="right">578</td><td>588</td><td class="right">579</td>
+<tr><td class="algorithm">Rijndael-128/192</td><td>564</td><td class="right">566</td><td>541</td><td class="right">544</td><td>545</td><td class="right">537</td>
+<tr><td class="algorithm">Rijndael-128/224</td><td>525</td><td class="right">527</td><td>505</td><td class="right">506</td><td>505</td><td class="right">502</td>
+<tr><td class="algorithm">Rijndael-128/256</td><td>493</td><td class="right">490</td><td>472</td><td class="right">474</td><td>476</td><td class="right">471</td>
+<tr><td class="algorithm top">Rijndael-160/128</td><td class="top">339</td><td class="right top">253</td><td class="top">315</td><td class="right top">290</td><td class="top">331</td><td class="right top">322</td>
+<tr><td class="algorithm">Rijndael-160/160</td><td>339</td><td class="right">254</td><td>315</td><td class="right">290</td><td>331</td><td class="right">322</td>
+<tr><td class="algorithm">Rijndael-160/192</td><td>318</td><td class="right">238</td><td>293</td><td class="right">272</td><td>310</td><td class="right">302</td>
+<tr><td class="algorithm">Rijndael-160/224</td><td>299</td><td class="right">223</td><td>276</td><td class="right">258</td><td>292</td><td class="right">286</td>
+<tr><td class="algorithm">Rijndael-160/256</td><td>282</td><td class="right">211</td><td>263</td><td class="right">245</td><td>275</td><td class="right">267</td>
+<tr><td class="algorithm top">Rijndael-192/128</td><td class="top">425</td><td class="right top">373</td><td class="top">361</td><td class="right top">327</td><td class="top">459</td><td class="right top">452</td>
+<tr><td class="algorithm">Rijndael-192/160</td><td>425</td><td class="right">373</td><td>355</td><td class="right">330</td><td>456</td><td class="right">457</td>
+<tr><td class="algorithm">Rijndael-192/192</td><td>425</td><td class="right">373</td><td>357</td><td class="right">327</td><td>457</td><td class="right">456</td>
+<tr><td class="algorithm">Rijndael-192/224</td><td>399</td><td class="right">352</td><td>333</td><td class="right">309</td><td>429</td><td class="right">426</td>
+<tr><td class="algorithm">Rijndael-192/256</td><td>378</td><td class="right">334</td><td>320</td><td class="right">295</td><td>402</td><td class="right">398</td>
+<tr><td class="algorithm top">Rijndael-224/128</td><td class="top">370</td><td class="right top">287</td><td class="top">332</td><td class="right top">306</td><td class="top">355</td><td class="right top">346</td>
+<tr><td class="algorithm">Rijndael-224/160</td><td>370</td><td class="right">287</td><td>332</td><td class="right">306</td><td>355</td><td class="right">346</td>
+<tr><td class="algorithm">Rijndael-224/192</td><td>370</td><td class="right">287</td><td>332</td><td class="right">306</td><td>355</td><td class="right">346</td>
+<tr><td class="algorithm">Rijndael-224/224</td><td>370</td><td class="right">287</td><td>334</td><td class="right">306</td><td>355</td><td class="right">346</td>
+<tr><td class="algorithm">Rijndael-224/256</td><td>349</td><td class="right">268</td><td>314</td><td class="right">290</td><td>334</td><td class="right">329</td>
+<tr><td class="algorithm top">Rijndael-256/128</td><td class="top">528</td><td class="right top">527</td><td class="top">501</td><td class="right top">501</td><td class="top">501</td><td class="right top">499</td>
+<tr><td class="algorithm">Rijndael-256/160</td><td>528</td><td class="right">527</td><td>501</td><td class="right">501</td><td>501</td><td class="right">499</td>
+<tr><td class="algorithm">Rijndael-256/192</td><td>528</td><td class="right">527</td><td>501</td><td class="right">501</td><td>501</td><td class="right">499</td>
+<tr><td class="algorithm">Rijndael-256/224</td><td>528</td><td class="right">527</td><td>501</td><td class="right">501</td><td>501</td><td class="right">499</td>
+<tr><td class="algorithm">Rijndael-256/256</td><td>528</td><td class="right">527</td><td>501</td><td class="right">501</td><td>501</td><td class="right">499</td>
+<tr><td class="algorithm top">Serpent-128</td><td class="top">84</td><td class="right top">96</td><td class="top">87</td><td class="right top">93</td><td class="top">88</td><td class="right top">93</td>
+<tr><td class="algorithm">Serpent-192</td><td>84</td><td class="right">96</td><td>87</td><td class="right">93</td><td>88</td><td class="right">93</td>
+<tr><td class="algorithm bottom">Serpent-256</td><td class="bottom">84</td><td class="right bottom">96</td><td>87</td><td class="right">93</td><td>88</td><td class="right">93</td>
+<tr><td class="algorithm top">SM4</td><td class="top">77</td><td class="right top">75</td><td class="top">91</td><td class="right top">95</td><td class="top">75</td><td class="right top">80</td>
+<tr><td class="algorithm top">Twofish-128</td><td class="top">171</td><td class="right top">151</td><td class="top">171</td><td class="right top">164</td><td class="top">162</td><td class="right top">167</td>
+<tr><td class="algorithm">Twofish-192</td><td>171</td><td class="right">151</td><td>171</td><td class="right">164</td><td>162</td><td class="right">167</td>
+<tr><td class="algorithm bottom">Twofish-256</td><td class="bottom">171</td><td class="right bottom">151</td><td class="bottom">171</td><td class="right bottom">164</td><td class="bottom">162</td><td class="right bottom">167</td>
 </table>
 <p>You can run the encryption performance test on your own PC using the following command:</p>
 <pre>    digest bctest &lt;number_of_iterations&gt; &lt;filename_to_encrypt&gt;</pre>
@@ -513,5 +566,10 @@ Tested compilers: gcc 5.1.1, gcc 5.2.1, clang 3.7.0.</p>
 <p>Tested OS versions: FreeBSD 10.2-RELEASE.
 <br>Tested compilers: clang 3.4.1.</p>
 <p>Install yasm (pkg install yasm) and GNU make (pkg install gmake). Then, run gmake and [sudo] gmake install to build and install cppcrypto.</p>
+<h3>8.5. Solaris</h3>
+<p>Tested OS versions: Solaris 11.3.
+<br>Tested compilers: Solaris Studio 12.4.</p>
+<p>Install yasm from OpenCSW. Be sure yasm, gmake, ginstall and Solaris Studio compiler (CC) are in the PATH. Then, run gmake and [sudo] gmake install to build and install cppcrypto.</p>
+<h2>9. Download link</h2>
 <p><a href="https://sourceforge.net/projects/cppcrypto/files">Download cppcrypto from sourceforge</a></p>
 <p></p>

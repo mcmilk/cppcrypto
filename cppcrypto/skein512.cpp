@@ -94,7 +94,7 @@ namespace cppcrypto
 	G(G6, G1, G0, G7, G2, G5, G4, G3, 8, 35, 56, 22); \
 	KS(r + 1)
 
-	void skein512_512::transform(void* m, uint64_t num_blks, size_t reallen)
+	void skein512_512::transform(void* mp, uint64_t num_blks, size_t reallen)
 	{
 		uint64_t keys[9];
 		uint64_t tweaks[3];
@@ -105,7 +105,7 @@ namespace cppcrypto
 			uint64_t G0,G1,G2,G3,G4,G5,G6,G7;
 			for (uint64_t i = 0; i < 64 / 8; i++)
 			{
-				M[i] = (reinterpret_cast<const uint64_t*>(m)[b * 8 + i]);
+				M[i] = (reinterpret_cast<const uint64_t*>(mp)[b * 8 + i]);
 			}
 
 			memcpy(keys, H, sizeof(uint64_t)*8);
@@ -262,6 +262,7 @@ namespace cppcrypto
 
 	skein512_512::skein512_512()
 	{
+		H = h; // tests show that this helps MSVC++ optimizer a lot
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifndef _M_X64
 #ifndef __clang__ // MMX code is very slow on clang compiles for some reason
@@ -271,12 +272,22 @@ namespace cppcrypto
 #endif
 #endif
 #endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { transform(m, num_blks, reallen); };
+#else
 			transfunc = std::bind(&skein512_512::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-
+#endif
 	}
 
 	skein512_512::~skein512_512()
 	{
+	}
+
+	void skein512_512::clear()
+	{
+		memset(h.get(), 0, h.size());
+		memset(m, 0, sizeof(m));
+		transform(tweak, 0, sizeof(tweak));
 	}
 
 }

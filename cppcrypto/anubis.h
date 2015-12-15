@@ -15,8 +15,8 @@ namespace cppcrypto
 	class anubis128 : public block_cipher
 	{
 	public:
-		int blocksize() const { return 128; }
-		int keysize() const { return 128; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 128; }
 		block_cipher* clone() const { return new anubis128; }
 		void clear();
 
@@ -31,8 +31,8 @@ namespace cppcrypto
 	class anubis160 : public block_cipher
 	{
 	public:
-		int blocksize() const { return 128; }
-		int keysize() const { return 160; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 160; }
 		block_cipher* clone() const { return new anubis160; }
 		void clear();
 
@@ -47,8 +47,8 @@ namespace cppcrypto
 	class anubis192 : public block_cipher
 	{
 	public:
-		int blocksize() const { return 128; }
-		int keysize() const { return 192; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 192; }
 		block_cipher* clone() const { return new anubis192; }
 		void clear();
 
@@ -63,8 +63,8 @@ namespace cppcrypto
 	class anubis224 : public block_cipher
 	{
 	public:
-		int blocksize() const { return 128; }
-		int keysize() const { return 224; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 224; }
 		block_cipher* clone() const { return new anubis224; }
 		void clear();
 
@@ -79,8 +79,8 @@ namespace cppcrypto
 	class anubis256 : public block_cipher
 	{
 	public:
-		int blocksize() const { return 128; }
-		int keysize() const { return 256; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new anubis256; }
 		void clear();
 
@@ -95,8 +95,8 @@ namespace cppcrypto
 	class anubis288 : public block_cipher
 	{
 	public:
-		int blocksize() const { return 128; }
-		int keysize() const { return 288; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 288; }
 		block_cipher* clone() const { return new anubis288; }
 		void clear();
 
@@ -111,8 +111,8 @@ namespace cppcrypto
 	class anubis320 : public block_cipher
 	{
 	public:
-		int blocksize() const { return 128; }
-		int keysize() const { return 320; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 320; }
 		block_cipher* clone() const { return new anubis320; }
 		void clear();
 

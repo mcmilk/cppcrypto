@@ -625,7 +625,7 @@ namespace cppcrypto
 	};
 
 
-	void whirlpool::transform(void* m, uint64_t num_blks)
+	void whirlpool::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t b = 0; b < num_blks; b++)
 		{
@@ -633,7 +633,7 @@ namespace cppcrypto
 			unsigned long long L[8];
 			int r, i;
 
-			i = 0; do state.ll[i] = (K.ll[i] = h[i]) ^ ((unsigned long long*)m)[i]; while (++i < 8);
+			i = 0; do state.ll[i] = (K.ll[i] = h[i]) ^ ((unsigned long long*)mp)[i]; while (++i < 8);
 
 			r = 0; do {
 				L[0] = T[0][K.ch[0 * 8 + 0]] ^ T[1][K.ch[7 * 8 + 1]] ^ T[2][K.ch[6 * 8 + 2]] ^ T[3][K.ch[5 * 8 + 3]] ^ T[4][K.ch[4 * 8 + 4]] ^ T[5][K.ch[3 * 8 + 5]] ^ T[6][K.ch[2 * 8 + 6]] ^ T[7][K.ch[1 * 8 + 7]] ^ RC[r];
@@ -657,8 +657,8 @@ namespace cppcrypto
 				memcpy(state.ll, L, sizeof(L));
 			} while (++r < 10);
 
-			i = 0; do h[i] ^= L[i] ^ ((unsigned long long*)m)[i]; while (++i < 8);
-			m = ((unsigned long long*)m)+8;
+			i = 0; do h[i] ^= L[i] ^ ((unsigned long long*)mp)[i]; while (++i < 8);
+			mp = ((unsigned long long*)mp)+8;
 		}
 	}
 
@@ -671,11 +671,21 @@ namespace cppcrypto
 		else
 #endif
 #endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* mp, uint64_t num_blks) { transform(mp, num_blks); };
+#else
 			transfunc = std::bind(&whirlpool::transform, this, std::placeholders::_1, std::placeholders::_2);
+#endif
 	}
 
 	whirlpool::~whirlpool()
 	{
+	}
+
+	void whirlpool::clear()
+	{
+		memset(h.get(), 0, h.size());
+		memset(m.get(), 0, m.size());
 	}
 
 }

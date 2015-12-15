@@ -31,7 +31,11 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::ssse3())
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_blks) { sha1_update_intel(H.get(), m, num_blks); };
+#else
 			transfunc = std::bind(&sha1_update_intel, H.get(), std::placeholders::_1, std::placeholders::_2);
+#endif
 #else
 		if (cpu_info::sse2())
 			transfunc = [this](void* m, uint64_t num_blks)
@@ -42,7 +46,11 @@ namespace cppcrypto
 #endif
 		else
 #endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_blks) { transform(m, num_blks); };
+#else
 			transfunc = std::bind(&sha1::transform, this, std::placeholders::_1, std::placeholders::_2);
+#endif
 	}
 
 	static const uint32_t SHA1_K[] = {
@@ -100,14 +108,14 @@ namespace cppcrypto
 		total = 0;
 	};
 
-	void sha1::transform(void* m, uint64_t num_blks)
+	void sha1::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
 			uint32_t M[16];
 			for (uint32_t i = 0; i < 64 / 4; i++)
 			{
-				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(m)[blk * 16 + i]));
+				M[i] = swap_uint32((reinterpret_cast<const uint32_t*>(mp)[blk * 16 + i]));
 			}
 
 			uint32_t W[80];
@@ -176,6 +184,12 @@ namespace cppcrypto
 			H[i] = swap_uint32(H[i]);
 		}
 		memcpy(hash, H, 160/8);
+	}
+
+	void sha1::clear()
+	{
+		memset(H.get(), 0, H.size());
+		memset(m.data(), 0, m.size());
 	}
 
 }

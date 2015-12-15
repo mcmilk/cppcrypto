@@ -942,5 +942,16 @@ namespace cppcrypto
 	{
 	}
 
+	void kupyna512::clear()
+	{
+		memset(h.get(), 0, h.size());
+		memset(m.get(), 0, m.size());
+	}
+
+	void kupyna256::clear()
+	{
+		memset(h.get(), 0, h.size());
+		memset(m.get(), 0, m.size());
+	}
 
 }

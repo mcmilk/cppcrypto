@@ -3,15 +3,15 @@ It has no external dependencies.
 
 At the moment it supports the following primitives.
 
-1) Hash functions: BLAKE, Groestl, JH, Kupyna, MD5, SHA-1, SHA-2 (incl. SHA-512/224 and SHA-512/256), SHA-3,
-Skein-256, Skein-512, Skein-1024, SM3, Streebog, Whirlpool.
+1) Hash functions: BLAKE, BLAKE2, Groestl, JH, Kupyna, MD5, SHA-1, SHA-2 (incl. SHA-512/224 and SHA-512/256),
+SHA-3, Skein-256, Skein-512, Skein-1024, SM3, Streebog, Whirlpool.
 
 To get the full list of supported hash algorithms, run 'digest' in hash function performance test mode:
 
   digest test <number_of_iterations> <filename>
 
-2) Block ciphers: Anubis, Aria, Camellia, CAST6, Kalyna, Rijndael (all 25 variants are accelerated using AES-NI
-instructions, if available), Serpent, Twofish.
+2) Block ciphers: Anubis, Aria, Camellia, CAST6, Kalyna, Kuznyechik, Mars, Rijndael (all 25 variants are
+accelerated using AES-NI instructions, if available), Serpent, SM4, Twofish.
 
 To get the full list of supported block ciphers, run 'digest' in block cipher performance test mode:
 

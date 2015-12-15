@@ -90,9 +90,9 @@ namespace cppcrypto
 		a = b + rotatel32(a + (c ^ (b | ~d)) + K[round] + M[(7 * round) % 16], S[round]);
 	}
 
-	void md5::transform(const uint8_t* m, uint64_t num_blks)
+	void md5::transform(const uint8_t* mp, uint64_t num_blks)
 	{
-		const uint32_t* M = (const uint32_t*)m;
+		const uint32_t* M = (const uint32_t*)mp;
 		for (uint64_t blk = 0; blk < num_blks; blk++, M += 16)
 		{
 			uint32_t a = H[0];
@@ -188,6 +188,12 @@ namespace cppcrypto
 		memcpy(&m[0] + (64 - 8), &total, 64 / 8);
 		transform(&m[0], 1);
 		memcpy(hash, H, 16);
+	}
+
+	void md5::clear()
+	{
+		memset(H.get(), 0, H.size());
+		memset(m.data(), 0, m.size());
 	}
 
 }

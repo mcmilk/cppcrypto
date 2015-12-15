@@ -27,6 +27,7 @@ namespace cppcrypto
 		size_t hashsize() const { return 160; }
 		size_t blocksize() const { return 512; }
 		crypto_hash* clone() const { return new sha1; }
+		void clear();
 
 	protected:
 		void transform(void* m, uint64_t num_blks);

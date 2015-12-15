@@ -40,7 +40,7 @@ namespace cppcrypto
 		typedef enum { SUCCESS = 0, FAIL = 1, BAD_HASHLEN = 2 } HashReturn;
 
 		/*define data alignment for different C compilers*/
-#if defined(__GNUC__)
+#if defined(__GNUC__) || defined(__SUNPRO_CC)
 #define DATA_ALIGN16(x) x __attribute__ ((aligned(16)))
 #else
 #define DATA_ALIGN16(x) __declspec(align(16)) x

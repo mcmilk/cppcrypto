@@ -368,7 +368,7 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
 	uint8_t key[128], pt[128], ct[128], res[128];
-	uint32_t count = 0, failed = 0, success = 0;
+	uint32_t count = 0, failed = 0, success = 0, repeat = 1;
 	regex eq(R"((\w+)\s*=\s*(\w+))");
 	while (getline(file, line))
 	{
@@ -381,50 +381,56 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 				hex2array(second, pt);
 			if (sm.str(1) == "KEY")
 				hex2array(second, key);
+			if (sm.str(1) == "REPEAT")
+				repeat = stol(second);
 			if (sm.str(1) == "CT")
 			{
 				bool error = false;
 				hex2array(second, ct);
 				bc->init(key, bc->encryption);
 				bc->encrypt_block(pt, res);
+				for (unsigned int i = 1; i < repeat; i++)
+					bc->encrypt_block(res, res);
 				if (memcmp(ct, res, second.length() / 2))
 				{
 					cerr << "Error for test " << count << " (encryption)" << endl;
 #define CPPCRYPTO_DEBUG
 #ifdef CPPCRYPTO_DEBUG
 					wprintf(_T("key was: "));
-					for (int i = 0; i < bc->keysize() / 8; i++)
+					for (size_t i = 0; i < bc->keysize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)key[i]);
 					wprintf(_T("\nPT was: "));
-					for (int i = 0; i < bc->blocksize() / 8; i++)
+					for (size_t i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)pt[i]);
 					wprintf(_T("\nCT is: "));
-					for (int i = 0; i < bc->blocksize() / 8; i++)
+					for (size_t i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)res[i]);
 					wprintf(_T("\nexpected is: "));
-					for (int i = 0; i < bc->blocksize() / 8; i++)
+					for (size_t i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)ct[i]);
 					wprintf(_T("\n"));
 					error = true;
 #endif
 				}
 				bc->init(key, bc->decryption);
+				for (unsigned int i = 1; i < repeat; i++)
+					bc->decrypt_block(ct, ct);
 				bc->decrypt_block(ct, res);
 				if (memcmp(pt, res, second.length() / 2))
 				{
 					cerr << "Error for test " << count << " (decryption)" << endl;
 #ifdef CPPCRYPTO_DEBUG
 					wprintf(_T("key was: "));
-					for (int i = 0; i < bc->keysize() / 8; i++)
+					for (size_t i = 0; i < bc->keysize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)key[i]);
 					wprintf(_T("\nCT was: "));
-					for (int i = 0; i < bc->blocksize() / 8; i++)
+					for (size_t i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)ct[i]);
 					wprintf(_T("\nPT is: "));
-					for (int i = 0; i < bc->blocksize() / 8; i++)
+					for (size_t i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)res[i]);
 					wprintf(_T("\nexpected is: "));
-					for (int i = 0; i < bc->blocksize() / 8; i++)
+					for (size_t i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)pt[i]);
 					wprintf(_T("\n"));
 					error = true;
@@ -582,6 +588,20 @@ int wmain(int argc, wchar_t* argv[])
 	block_ciphers.emplace(make_pair(_T("aria256"), unique_ptr<block_cipher>(new aria256)));
 	block_ciphers.emplace(make_pair(_T("aria192"), unique_ptr<block_cipher>(new aria192)));
 
+	block_ciphers.emplace(make_pair(_T("kuznyechik"), unique_ptr<block_cipher>(new kuznyechik)));
+	block_ciphers.emplace(make_pair(_T("sm4"), unique_ptr<block_cipher>(new sm4)));
+	block_ciphers.emplace(make_pair(_T("mars448"), unique_ptr<block_cipher>(new mars448)));
+	block_ciphers.emplace(make_pair(_T("mars192"), unique_ptr<block_cipher>(new mars192)));
+	block_ciphers.emplace(make_pair(_T("mars256"), unique_ptr<block_cipher>(new mars256)));
+	block_ciphers.emplace(make_pair(_T("mars320"), unique_ptr<block_cipher>(new mars320)));
+	block_ciphers.emplace(make_pair(_T("mars128"), unique_ptr<block_cipher>(new mars128)));
+	block_ciphers.emplace(make_pair(_T("mars160"), unique_ptr<block_cipher>(new mars160)));
+	block_ciphers.emplace(make_pair(_T("mars224"), unique_ptr<block_cipher>(new mars224)));
+	block_ciphers.emplace(make_pair(_T("mars288"), unique_ptr<block_cipher>(new mars288)));
+	block_ciphers.emplace(make_pair(_T("mars352"), unique_ptr<block_cipher>(new mars352)));
+	block_ciphers.emplace(make_pair(_T("mars384"), unique_ptr<block_cipher>(new mars384)));
+	block_ciphers.emplace(make_pair(_T("mars416"), unique_ptr<block_cipher>(new mars416)));
+
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));
 	hashes.emplace(make_pair(_T("groestl256"), unique_ptr<crypto_hash>(new groestl256)));
@@ -633,6 +653,17 @@ int wmain(int argc, wchar_t* argv[])
 	hashes.emplace(make_pair(_T("streebog256"), unique_ptr<crypto_hash>(new streebog256)));
 	hashes.emplace(make_pair(_T("sm3"), unique_ptr<crypto_hash>(new sm3)));
 	hashes.emplace(make_pair(_T("md5"), unique_ptr<crypto_hash>(new md5)));
+
+	hashes.emplace(make_pair(_T("blake2b_512"), unique_ptr<crypto_hash>(new blake2b_512)));
+	hashes.emplace(make_pair(_T("blake2b_256"), unique_ptr<crypto_hash>(new blake2b_256)));
+	hashes.emplace(make_pair(_T("blake2b_384"), unique_ptr<crypto_hash>(new blake2b_384)));
+	hashes.emplace(make_pair(_T("blake2b_224"), unique_ptr<crypto_hash>(new blake2b_224)));
+	hashes.emplace(make_pair(_T("blake2b_160"), unique_ptr<crypto_hash>(new blake2b_160)));
+	hashes.emplace(make_pair(_T("blake2b_128"), unique_ptr<crypto_hash>(new blake2b_128)));
+	hashes.emplace(make_pair(_T("blake2s_256"), unique_ptr<crypto_hash>(new blake2s_256)));
+	hashes.emplace(make_pair(_T("blake2s_224"), unique_ptr<crypto_hash>(new blake2s_224)));
+	hashes.emplace(make_pair(_T("blake2s_160"), unique_ptr<crypto_hash>(new blake2s_160)));
+	hashes.emplace(make_pair(_T("blake2s_128"), unique_ptr<crypto_hash>(new blake2s_128)));
 
 	if (argc < 3)
 	{

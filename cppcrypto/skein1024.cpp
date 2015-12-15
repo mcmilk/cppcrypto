@@ -188,7 +188,7 @@ namespace cppcrypto
 	uint64_t G0, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15; \
 	for (uint64_t i = 0; i < 128 / 8; i++) \
 	{ \
-		M[i] = (reinterpret_cast<const uint64_t*>(m)[b * 16 + i]); \
+		M[i] = (reinterpret_cast<const uint64_t*>(mp)[b * 16 + i]); \
 	} \
 	memcpy(keys, H, sizeof(uint64_t) * 16); \
 	memcpy(tweaks, tweak, sizeof(uint64_t) * 2); \
@@ -198,7 +198,7 @@ namespace cppcrypto
 		^ keys[8] ^ keys[9] ^ keys[10] ^ keys[11] ^ keys[12] ^ keys[13] ^ keys[14] ^ keys[15];
 
 #if defined(_MSC_VER) && defined(_M_X64)
-	void skein1024_1024::transform_rorx(void* m, uint64_t num_blks, size_t reallen)
+	void skein1024_1024::transform_rorx(void* mp, uint64_t num_blks, size_t reallen)
 	{
 		uint64_t keys[17];
 		uint64_t tweaks[3];
@@ -220,7 +220,7 @@ namespace cppcrypto
 	}
 #endif
 	
-	void skein1024_1024::transform(void* m, uint64_t num_blks, size_t reallen)
+	void skein1024_1024::transform(void* mp, uint64_t num_blks, size_t reallen)
 	{
 		uint64_t keys[17];
 		uint64_t tweaks[3];
@@ -340,6 +340,7 @@ namespace cppcrypto
 
 	skein1024_1024::skein1024_1024()
 	{
+		H = h; // tests show that this helps MSVC++ optimizer a lot
 #ifndef NO_OPTIMIZED_VERSIONS
 #if defined(_MSC_VER) && defined(_M_X64)
 		if (cpu_info::bmi2())
@@ -347,12 +348,23 @@ namespace cppcrypto
 		else
 #endif
 #endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { transform(m, num_blks, reallen); };
+#else
 			transfunc = std::bind(&skein1024_1024::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+#endif
 
 	}
 
 	skein1024_1024::~skein1024_1024()
 	{
+	}
+
+	void skein1024_1024::clear()
+	{
+		memset(h.get(), 0, h.size());
+		memset(m, 0, sizeof(m));
+		transform(tweak, 0, sizeof(tweak));
 	}
 
 }

@@ -855,7 +855,18 @@ groestl512::groestl512()
 		impl_.create<detail::groestl_impl_ssse3_512>();
 	}
 #endif
+}
 
+void groestl256::clear()
+{
+	memset(h.get(), 0, h.size());
+	memset(m.get(), 0, m.size());
+}
+
+void groestl512::clear()
+{
+	memset(h.get(), 0, h.size());
+	memset(m.get(), 0, m.size());
 }
 
 }

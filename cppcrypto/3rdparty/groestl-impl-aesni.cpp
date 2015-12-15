@@ -964,13 +964,15 @@ void groestl_impl_aesni_512::OF(uint64_t* h)
 groestl_impl_aesni_256::groestl_impl_aesni_256()
 {
 	uint8_t i = 0;
-	SET_CONSTANTS_256();
+	SET_CONSTANTS_256()
+;
 }
 
 groestl_impl_aesni_512::groestl_impl_aesni_512()
 {
 	uint8_t i = 0;
-	SET_CONSTANTS_512();
+	SET_CONSTANTS_512()
+;
 }
 
 	} // namespace detail

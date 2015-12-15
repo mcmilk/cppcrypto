@@ -28,6 +28,7 @@ namespace cppcrypto
 		size_t hashsize() const { return hash_->hashsize(); }
 		size_t blocksize() const { return hash_->blocksize(); }
 		crypto_hash* clone() const;
+		void clear();
 
 	private:
 		hmac(const hmac&);

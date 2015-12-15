@@ -16,7 +16,7 @@ class crypto_hash
 {
 public:
 	crypto_hash() {}
-	virtual ~crypto_hash() {}
+	virtual ~crypto_hash();
 
 	virtual void init() = 0;
 	virtual void update(const uint8_t* data, size_t len) = 0;
@@ -25,6 +25,7 @@ public:
 	virtual size_t hashsize() const = 0;
 	virtual size_t blocksize() const = 0;
 	virtual crypto_hash* clone() const = 0;
+	virtual void clear() {}
 
 	void hash_string(const uint8_t* data, size_t len, uint8_t* hash);
 	void hash_string(const char* data, size_t len, uint8_t* hash);

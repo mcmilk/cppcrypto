@@ -17,8 +17,8 @@ namespace cppcrypto
 	public:
 		camellia128();
 
-		int blocksize() const { return 128; }
-		int keysize() const { return 128; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 128; }
 		block_cipher* clone() const { return new camellia128; }
 		void clear();
 
@@ -35,8 +35,8 @@ namespace cppcrypto
 	public:
 		camellia256();
 
-		int blocksize() const { return 128; }
-		int keysize() const { return 256; }
+		size_t blocksize() const { return 128; }
+		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new camellia256; }
 		void clear();
 
@@ -51,7 +51,7 @@ namespace cppcrypto
 	class camellia192 : public camellia256
 	{
 	public:
-		int keysize() const { return 192; }
+		size_t keysize() const { return 192; }
 		block_cipher* clone() const { return new camellia192; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
@@ -60,3 +60,4 @@ namespace cppcrypto
 }
 
 #endif
+

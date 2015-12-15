@@ -8,6 +8,7 @@ and released into public domain.
 #include <assert.h>
 #include <memory.h>
 #include <xmmintrin.h>
+#include <emmintrin.h>
 
 namespace cppcrypto
 {
@@ -81,7 +82,7 @@ static inline void xor_block_128(const uint8_t* in, const uint8_t* prev, uint8_t
 
 }
 
-static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_t* out, int n)
+static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_t* out, size_t n)
 {
 	if (cpu_info::sse2())
 	{
@@ -89,11 +90,11 @@ static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_
 		__m128i p = _mm_loadu_si128((const __m128i*) prev);
 
 		_mm_storeu_si128((__m128i*) out, _mm_xor_si128(b, p));
-		for (int i = 16; i < n; i++)
+		for (size_t i = 16; i < n; i++)
 			out[i] = in[i] ^ prev[i];
 	}
 	else {
-		for (int i = 0; i < n; i++)
+		for (size_t i = 0; i < n; i++)
 			out[i] = in[i] ^ prev[i];
 	}
 
@@ -103,7 +104,7 @@ static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_
 void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen)
 {
 	resultlen = 0;
-	unsigned int nb = nb_;
+	size_t nb = nb_;
 	if (pos && pos + len >= nb)
 	{
 		memcpy(block_ + pos, in, nb - pos);
@@ -196,9 +197,9 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 
 void cbc::encrypt_final(uint8_t* out, size_t& resultlen)
 {
-	int padding = nb_ - static_cast<int>(pos);
+	int padding = static_cast<int>(nb_) - static_cast<int>(pos);
 	memset(block_ + pos, padding, padding);
-	for (int i = 0; i < nb_; i++)
+	for (size_t i = 0; i < nb_; i++)
 		block_[i] ^= iv_[i];
 	cipher_->encrypt_block(block_, out);
 	resultlen = nb_;
@@ -207,12 +208,12 @@ void cbc::encrypt_final(uint8_t* out, size_t& resultlen)
 void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen)
 {
 	resultlen = 0;
-	unsigned int nb = nb_;
+	size_t nb = nb_;
 	if (pos && pos + len > nb)
 	{
 		memcpy(block_ + pos, in, nb - pos);
 		cipher_->decrypt_block(block_, out);
-		for (unsigned int i = 0; i < nb; i++)
+		for (size_t i = 0; i < nb; i++)
 			out[i] ^= iv_[i];
 		memcpy(iv_, block_, nb);
 		in += nb - pos;
@@ -304,9 +305,9 @@ void cbc::decrypt_final(uint8_t* out, size_t& resultlen)
 {
 	assert(pos == nb_);
 	cipher_->decrypt_block(block_, block_);
-	for (int i = 0; i < nb_; i++)
+	for (size_t i = 0; i < nb_; i++)
 		block_[i] ^= iv_[i];
-	int padding = block_[pos - 1];
+	uint8_t padding = block_[pos - 1];
 	if (padding <= nb_)
 	{
 		resultlen = nb_ - padding;

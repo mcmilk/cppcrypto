@@ -8,6 +8,7 @@ and released into public domain.
 #include <assert.h>
 #include <memory.h>
 #include <xmmintrin.h>
+#include <emmintrin.h>
 
 namespace cppcrypto
 {

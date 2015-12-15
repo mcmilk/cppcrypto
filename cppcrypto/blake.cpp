@@ -35,7 +35,7 @@ namespace cppcrypto
 		0x452821E6, 0x38D01377, 0xBE5466CF, 0x34E90C6C, 0xC0AC29B7, 0xC97C50DD, 0x3F84D5B5, 0xB5470917
 	};
 
-	static const uint32_t S[20][16] = {
+	static const uint32_t S[10][16] = {
 		{ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },
 		{ 14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 },
 		{ 11, 8, 12, 0, 5, 2, 15, 13, 10, 14, 3, 6, 7, 1, 9, 4 },
@@ -431,13 +431,23 @@ namespace cppcrypto
 			transfunc = [this](bool padding) { blake256_compress_sse2(H, padding, total, m); };
 		else
 #endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](bool padding) { transform(padding); };
+#else
 			transfunc = std::bind(&blake256::transform, this, std::placeholders::_1);
+#endif
 	}
 
 	blake256::~blake256()
 	{
 	}
 
+	void blake256::clear()
+	{
+		memset(H.get(), 0, H.size());
+		memset(s.data(), 0, s.size());
+		memset(m.get(), 0, m.size());
+	}
 
 	blake512::blake512()
 	{
@@ -448,11 +458,22 @@ namespace cppcrypto
 				transfunc = [this](bool padding) { blake512_compress_sse2(H, total, padding, m); };
 			else
 #endif
+#ifdef NO_BIND_TO_FUNCTION
+				transfunc = [this](bool padding) { transform(padding); };
+#else
 				transfunc = std::bind(&blake512::transform, this, std::placeholders::_1);
+#endif
 	}
 
 	blake512::~blake512()
 	{
+	}
+
+	void blake512::clear()
+	{
+		memset(H.get(), 0, H.size());
+		memset(s.data(), 0, s.size());
+		memset(m.get(), 0, m.size());
 	}
 
 }

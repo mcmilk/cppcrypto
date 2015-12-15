@@ -27,6 +27,7 @@ namespace cppcrypto
 		size_t hashsize() const { return 512; }
 		size_t blocksize() const { return 512; }
 		crypto_hash* clone() const { return new streebog512; }
+		void clear();
 
 	protected:
 		void transform(bool adds = true);

@@ -48,6 +48,8 @@ namespace cppcrypto
 
 	hmac::~hmac()
 	{
+		memset(ipad_, 0, hash_->blocksize() / 8);
+		memset(opad_, 0, hash_->blocksize() / 8);
 		delete[] ipad_;
 		delete[] opad_;
 	}
@@ -81,6 +83,11 @@ namespace cppcrypto
 		memcpy(clone->ipad_, ipad_, nb);
 		memcpy(clone->opad_, opad_, nb);
 		return clone;
+	}
+
+	void hmac::clear()
+	{
+		hash_->clear();
 	}
 
 }
