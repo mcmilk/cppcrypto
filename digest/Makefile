@@ -25,7 +25,7 @@ LIBDIR       ?= $(PREFIX)/lib
 endif
 OBJ32FORMAT  := elf32
 OBJ64FORMAT  := elf64
-LDFLAGS=-lcppcrypto -lstdc++
+LDFLAGS=-lcppcrypto -lstdc++ -lpthread
 CC=gcc
 CXX=g++
 endif
@@ -36,7 +36,7 @@ PREFIX       ?= /usr
 LIBDIR       ?= $(PREFIX)/lib
 OBJ32FORMAT  := elf32
 OBJ64FORMAT  := elf64
-LDFLAGS=-lcppcrypto -lc++
+LDFLAGS=-lcppcrypto -lc++ -lpthread
 CC=clang
 CXX=clang++
 endif
@@ -47,7 +47,7 @@ PREFIX       ?= /usr
 LIBDIR       ?= $(PREFIX)/lib
 OBJ32FORMAT  := elf32
 OBJ64FORMAT  := elf64
-LDFLAGS=-L/usr/lib -lcppcrypto -std=c++11 -R '$$ORIGIN/../lib:/lib:/usr/lib'
+LDFLAGS=-L/usr/lib -lcppcrypto -std=c++11 -R '$$ORIGIN/../lib:/lib:/usr/lib' -fopenmp -O5
 CC=CC
 CXX=CC
 MAKE_DIR = ginstall -d

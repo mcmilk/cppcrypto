@@ -1,3 +1,8 @@
+2015-12-21 cppcrypto-0.12
+
+New block cipher algorithm: Threefish.
+New key derivation functions: scrypt, Argon2.
+
 2015-12-15 cppcrypto-0.11
 
 New block cipher algorithm: Kuznyechik, Mars, SM4.
@@ -30,7 +35,7 @@ New hash algorithm: SHA-3.
 
 New block cipher algorithm: Anubis with key sizes 128, 160, 192, 224, 256, 288, 320.
 New block cipher algorithm: Rijndael with block size 192 and key sizes 128, 160, 192, 224, 256.
-Key derivation functions: PBKDF2.
+New key derivation function: PBKDF2.
 Encryption modes: CTR.
 
 2015-10-10 cppcrypto-0.04
@@ -54,3 +59,5 @@ Supported hash algorithms: BLAKE, Groestl, SHA-2 (incl. SHA512/224 and SHA512/25
 Skein-256, Skein-512, Skein-1024, Whirlpool.
 Supported platforms: Windows (32bit and 64bit).
 Supported compilers: Visual C++ 2013, Visual C++ 2015.
+
+

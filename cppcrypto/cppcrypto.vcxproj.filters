@@ -183,6 +183,21 @@
     <ClInclude Include="3rdparty\blake2s-round.h">
       <Filter>3rdparty</Filter>
     </ClInclude>
+    <ClInclude Include="threefish.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scrypt.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\crypto_scrypt_smix_sse2.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="argon2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="thread_pool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -340,6 +355,21 @@
     </ClCompile>
     <ClCompile Include="3rdparty\blake2s.c">
       <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="threefish.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scrypt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\crypto_scrypt_smix_sse2.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="argon2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="thread_pool.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

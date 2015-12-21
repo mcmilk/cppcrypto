@@ -100,6 +100,48 @@ static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_
 
 }
 
+static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+{
+#ifdef USE_AVX
+	if (cpu_info::avx())
+	{
+		__m256i b1 = _mm256_loadu_si256((const __m256i*) in);
+		__m256i p1 = _mm256_loadu_si256((const __m256i*) prev);
+		__m256i b2 = _mm256_loadu_si256((const __m256i*) (in + 32));
+		__m256i p2 = _mm256_loadu_si256((const __m256i*) (prev + 32));
+
+		_mm256_storeu_si256((__m256i*) out, _mm256_xor_si256(b1, p1));
+		_mm256_storeu_si256((__m256i*) (out + 32), _mm256_xor_si256(b2, p2));
+		_mm256_zeroupper();
+	}
+	else
+#endif
+		if (cpu_info::sse2())
+		{
+			__m128i b1 = _mm_loadu_si128((const __m128i*) in);
+			__m128i p1 = _mm_loadu_si128((const __m128i*) prev);
+			__m128i b2 = _mm_loadu_si128((const __m128i*) (in + 16));
+			__m128i p2 = _mm_loadu_si128((const __m128i*) (prev + 16));
+
+			_mm_storeu_si128((__m128i*) out, _mm_xor_si128(b1, p1));
+			_mm_storeu_si128((__m128i*) (out + 16), _mm_xor_si128(b2, p2));
+
+			b1 = _mm_loadu_si128((const __m128i*) (in + 32));
+			p1 = _mm_loadu_si128((const __m128i*) (prev + 32));
+			b2 = _mm_loadu_si128((const __m128i*) (in + 48));
+			p2 = _mm_loadu_si128((const __m128i*) (prev + 48));
+
+			_mm_storeu_si128((__m128i*) (out + 32), _mm_xor_si128(b1, p1));
+			_mm_storeu_si128((__m128i*) (out + 48), _mm_xor_si128(b2, p2));
+
+		}
+		else {
+			for (int i = 0; i < 64; i++)
+				out[i] = in[i] ^ prev[i];
+		}
+
+}
+
 
 void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen)
 {
@@ -152,6 +194,23 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 				out += 32;
 			}
 			memcpy(iv_, out-32, 32);
+			resultlen += bytes;
+			len -= bytes;
+		}
+		else if (nb == 64) // optimization for the most common block sizes
+		{
+			size_t blocks = len / 64;
+			size_t bytes = blocks * 64;
+			const uint8_t* prev = iv_;
+			for (size_t i = 0; i < blocks; i++)
+			{
+				xor_block_512(in, prev, block_);
+				cipher_->encrypt_block(block_, out);
+				prev = out;
+				in += 64;
+				out += 64;
+			}
+			memcpy(iv_, out - 64, 64);
 			resultlen += bytes;
 			len -= bytes;
 		}
@@ -257,6 +316,23 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 				out += 32;
 			}
 			memcpy(iv_, in - 32, 32);
+			resultlen += bytes;
+			len -= bytes;
+		}
+		else if (nb == 64) // optimization for the most common block sizes
+		{
+			size_t blocks = (len - 1) / 64;
+			size_t bytes = blocks * 64;
+			const uint8_t* prev = iv_;
+			for (size_t i = 0; i < blocks; i++)
+			{
+				cipher_->decrypt_block(in, block_);
+				xor_block_512(block_, prev, out);
+				prev = in;
+				in += 64;
+				out += 64;
+			}
+			memcpy(iv_, in - 64, 64);
 			resultlen += bytes;
 			len -= bytes;
 		}

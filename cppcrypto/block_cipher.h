@@ -32,7 +32,6 @@ namespace cppcrypto
 		virtual void decrypt_blocks(const uint8_t* in, uint8_t* out, size_t n);
 	};
 
-
 }
 
 #endif

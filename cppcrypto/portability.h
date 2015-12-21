@@ -29,9 +29,10 @@ and released into public domain.
 #define CPPCRYPTOAPI
 #endif
 #else
-#define CPPCRYPTO_STATIC_ALIGN(x) __attribute__((aligned(32)))
+#define CPPCRYPTO_STATIC_ALIGN(x) __attribute__((aligned(x)))
 #ifdef __SUNPRO_CC
 #define NO_BIND_TO_FUNCTION
+#define NO_CPP11_THREADS
 static inline uint32_t swap_uint32(uint32_t val)
 {
     return (((val & 0xff000000) >> 24) | ((val & 0x00ff0000) >> 8) | ((val & 0x0000ff00) << 8) | ((val & 0x000000ff) << 24));

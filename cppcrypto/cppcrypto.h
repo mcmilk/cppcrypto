@@ -32,5 +32,8 @@
 #include "sm4.h"
 #include "mars.h"
 #include "blake2.h"
+#include "threefish.h"
+#include "scrypt.h"
+#include "argon2.h"
 
 #endif

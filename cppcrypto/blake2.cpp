@@ -24,7 +24,8 @@ extern "C"
 
 namespace cppcrypto
 {
-
+namespace detail
+{
 	static const uint32_t IV256[8] = {
 		0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
 	};
@@ -49,7 +50,7 @@ namespace cppcrypto
 		{ 14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 }
 	};
 
-	void blake2b_512::update(const uint8_t* data, size_t len)
+	void blake2b::update(const uint8_t* data, size_t len)
 	{
 		while (pos + len > 128)
 		{
@@ -65,7 +66,7 @@ namespace cppcrypto
 		total += len;
 	}
 
-	void blake2b_512::init()
+	void blake2b::init()
 	{
 		memcpy(H, IV512, 64);
 		H[0] ^= 0x0000000001010000ULL;
@@ -110,7 +111,7 @@ namespace cppcrypto
 
 	}
 
-	void blake2b_512::transform(bool padding)
+	void blake2b::transform(bool padding)
 	{
 		uint64_t M[16];
 		for (uint32_t i = 0; i < 128 / 8; i++)
@@ -181,7 +182,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void blake2b_512::final(uint8_t* hash)
+	void blake2b::final(uint8_t* hash)
 	{
 		memset(m + pos, 0, 128 - pos);
 		transfunc(true);
@@ -189,7 +190,8 @@ namespace cppcrypto
 	}
 
 
-	blake2b_512::blake2b_512()
+	blake2b::blake2b(size_t hashsize)
+		: hs(hashsize)
 	{
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::sse41())
@@ -210,22 +212,22 @@ namespace cppcrypto
 #ifdef NO_BIND_TO_FUNCTION
 			transfunc = [this](bool padding) { transform(padding); };
 #else
-			transfunc = std::bind(&blake2b_512::transform, this, std::placeholders::_1);
+			transfunc = std::bind(&blake2b::transform, this, std::placeholders::_1);
 #endif
 	}
 
-	blake2b_512::~blake2b_512()
+	blake2b::~blake2b()
 	{
 	}
 
-	void blake2b_512::clear()
+	void blake2b::clear()
 	{
 		memset(H.get(), 0, H.size());
 		memset(m.get(), 0, m.size());
 	}
 
 
-	void blake2s_256::update(const uint8_t* data, size_t len)
+	void blake2s::update(const uint8_t* data, size_t len)
 	{
 		while (pos + len > 64)
 		{
@@ -241,7 +243,7 @@ namespace cppcrypto
 		total += len;
 	}
 
-	void blake2s_256::init()
+	void blake2s::init()
 	{
 		memcpy(H, IV256, 32);
 		H[0] ^= 0x01010000ULL;
@@ -286,7 +288,7 @@ namespace cppcrypto
 
 	}
 
-	void blake2s_256::transform(bool padding)
+	void blake2s::transform(bool padding)
 	{
 		uint32_t M[16];
 		for (uint32_t i = 0; i < 64 / 4; i++)
@@ -355,7 +357,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void blake2s_256::final(uint8_t* hash)
+	void blake2s::final(uint8_t* hash)
 	{
 		memset(m + pos, 0, 64 - pos);
 		transfunc(true);
@@ -363,7 +365,8 @@ namespace cppcrypto
 	}
 
 
-	blake2s_256::blake2s_256()
+	blake2s::blake2s(size_t hashsize)
+		: hs(hashsize)
 	{
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::sse41())
@@ -384,19 +387,20 @@ namespace cppcrypto
 #ifdef NO_BIND_TO_FUNCTION
 		transfunc = [this](bool padding) { transform(padding); };
 #else
-		transfunc = std::bind(&blake2s_256::transform, this, std::placeholders::_1);
+		transfunc = std::bind(&blake2s::transform, this, std::placeholders::_1);
 #endif
 	}
 
-	blake2s_256::~blake2s_256()
+	blake2s::~blake2s()
 	{
 	}
 
-	void blake2s_256::clear()
+	void blake2s::clear()
 	{
 		memset(H.get(), 0, H.size());
 		memset(m.get(), 0, m.size());
 	}
 
+}
 }
 

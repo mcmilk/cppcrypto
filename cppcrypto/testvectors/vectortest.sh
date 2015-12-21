@@ -60,6 +60,9 @@ digest -tv serpent128 ./block_cipher/serpent128.txt
 digest -tv serpent192 ./block_cipher/serpent192.txt
 digest -tv serpent256 ./block_cipher/serpent256.txt
 digest -tv sm4 ./block_cipher/sm4.txt
+digest -tv threefish256_256 ./block_cipher/threefish256_256.txt
+digest -tv threefish512_512 ./block_cipher/threefish512_512.txt
+digest -tv threefish1024_1024 ./block_cipher/threefish1024_1024.txt
 digest -tv twofish128 ./block_cipher/twofish128.txt
 digest -tv twofish192 ./block_cipher/twofish192.txt
 digest -tv twofish256 ./block_cipher/twofish256.txt

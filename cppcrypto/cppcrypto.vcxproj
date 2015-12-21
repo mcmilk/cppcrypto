@@ -62,8 +62,8 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -156,6 +156,7 @@
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -178,6 +179,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <OpenMPSupport>true</OpenMPSupport>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -199,6 +202,8 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <OpenMPSupport>true</OpenMPSupport>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -221,6 +226,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -239,7 +246,9 @@
     <ClInclude Include="3rdparty\blake2s-load-sse2.h" />
     <ClInclude Include="3rdparty\blake2s-load-sse41.h" />
     <ClInclude Include="3rdparty\blake2s-round.h" />
+    <ClInclude Include="3rdparty\crypto_scrypt_smix_sse2.h" />
     <ClInclude Include="3rdparty\gost3411-2012-sse2.h" />
+    <ClInclude Include="argon2.h" />
     <ClInclude Include="aria.h" />
     <ClInclude Include="blake2.h" />
     <ClInclude Include="camellia.h" />
@@ -273,6 +282,7 @@
     <ClInclude Include="rijndael-impl-aesni-common.h" />
     <ClInclude Include="rijndael-impl.h" />
     <ClInclude Include="rijndael.h" />
+    <ClInclude Include="scrypt.h" />
     <ClInclude Include="serpent.h" />
     <ClInclude Include="sha1.h" />
     <ClInclude Include="sha256.h" />
@@ -284,6 +294,8 @@
     <ClInclude Include="sm3.h" />
     <ClInclude Include="sm4.h" />
     <ClInclude Include="streebog.h" />
+    <ClInclude Include="thread_pool.h" />
+    <ClInclude Include="threefish.h" />
     <ClInclude Include="twofish.h" />
     <ClInclude Include="whirlpool.h" />
     <ClInclude Include="ctr.h" />
@@ -293,11 +305,13 @@
     <ClCompile Include="3rdparty\blake256-sse41.c" />
     <ClCompile Include="3rdparty\blake2b.c" />
     <ClCompile Include="3rdparty\blake2s.c" />
+    <ClCompile Include="3rdparty\crypto_scrypt_smix_sse2.c" />
     <ClCompile Include="3rdparty\gost3411-2012-sse2.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="3rdparty\gost3411-2012-sse41.c" />
     <ClCompile Include="3rdparty\jh-impl-sse.cpp" />
+    <ClCompile Include="argon2.cpp" />
     <ClCompile Include="aria.cpp" />
     <ClCompile Include="blake2.cpp" />
     <ClCompile Include="camellia.cpp" />
@@ -333,6 +347,7 @@
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
     <ClCompile Include="rijndael-impl-aesni.cpp" />
     <ClCompile Include="rijndael.cpp" />
+    <ClCompile Include="scrypt.cpp" />
     <ClCompile Include="serpent.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
@@ -349,6 +364,8 @@
     <ClCompile Include="sm3.cpp" />
     <ClCompile Include="sm4.cpp" />
     <ClCompile Include="streebog.cpp" />
+    <ClCompile Include="thread_pool.cpp" />
+    <ClCompile Include="threefish.cpp" />
     <ClCompile Include="twofish.cpp" />
     <ClCompile Include="whirlpool.cpp" />
   </ItemGroup>

@@ -25,7 +25,8 @@ namespace cppcrypto
 		void decrypt(const uint8_t* in, size_t len, uint8_t* out);
 
 	private:
-		ctr(const ctr&);
+		ctr(const ctr&) = delete;
+		void operator=(const ctr&) = delete;
 
 		uint8_t* block_;
 		uint8_t* iv_;

@@ -78,6 +78,48 @@ namespace cppcrypto
 
 	}
 
+	static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	{
+#ifdef USE_AVX
+		if (cpu_info::avx())
+		{
+			__m256i b1 = _mm256_loadu_si256((const __m256i*) in);
+			__m256i p1 = _mm256_loadu_si256((const __m256i*) prev);
+			__m256i b2 = _mm256_loadu_si256((const __m256i*) (in + 32));
+			__m256i p2 = _mm256_loadu_si256((const __m256i*) (prev + 32));
+
+			_mm256_storeu_si256((__m256i*) out, _mm256_xor_si256(b1, p1));
+			_mm256_storeu_si256((__m256i*) (out + 32), _mm256_xor_si256(b2, p2));
+			_mm256_zeroupper();
+		}
+		else
+#endif
+			if (cpu_info::sse2())
+			{
+				__m128i b1 = _mm_loadu_si128((const __m128i*) in);
+				__m128i p1 = _mm_loadu_si128((const __m128i*) prev);
+				__m128i b2 = _mm_loadu_si128((const __m128i*) (in + 16));
+				__m128i p2 = _mm_loadu_si128((const __m128i*) (prev + 16));
+
+				_mm_storeu_si128((__m128i*) out, _mm_xor_si128(b1, p1));
+				_mm_storeu_si128((__m128i*) (out + 16), _mm_xor_si128(b2, p2));
+
+				b1 = _mm_loadu_si128((const __m128i*) (in + 32));
+				p1 = _mm_loadu_si128((const __m128i*) (prev + 32));
+				b2 = _mm_loadu_si128((const __m128i*) (in + 48));
+				p2 = _mm_loadu_si128((const __m128i*) (prev + 48));
+
+				_mm_storeu_si128((__m128i*) (out + 32), _mm_xor_si128(b1, p1));
+				_mm_storeu_si128((__m128i*) (out + 48), _mm_xor_si128(b2, p2));
+
+			}
+			else {
+				for (int i = 0; i < 64; i++)
+					out[i] = in[i] ^ prev[i];
+			}
+
+	}
+
 	ctr::ctr(const block_cipher& cipher)
 		: block_(0), iv_(0), pos(0), nb_(cipher.blocksize() / 8), cipher_(cipher.clone())
 	{
@@ -139,7 +181,12 @@ namespace cppcrypto
 					xor_block_256(in + i, block_, out + i);
 					i += nb;
 				}
-				else if (nb > 128 / 8 && nb < 256/8)
+				else if (nb == 512 / 8)
+				{
+					xor_block_512(in + i, block_, out + i);
+					i += nb;
+				}
+				else if (nb > 128 / 8 && nb < 256 / 8)
 				{
 					xor_block_128n(in + i, block_, out + i, nb);
 					i += nb;

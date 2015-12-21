@@ -367,8 +367,9 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
-	uint8_t key[128], pt[128], ct[128], res[128];
+	uint8_t key[129], pt[129], ct[129], res[129], tweak[129];
 	uint32_t count = 0, failed = 0, success = 0, repeat = 1;
+	bool tweakable = false;
 	regex eq(R"((\w+)\s*=\s*(\w+))");
 	while (getline(file, line))
 	{
@@ -383,11 +384,24 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 				hex2array(second, key);
 			if (sm.str(1) == "REPEAT")
 				repeat = stol(second);
+			if (sm.str(1) == "TWEAK")
+			{
+				hex2array(second, tweak);
+				tweakable = true;
+			}
 			if (sm.str(1) == "CT")
 			{
 				bool error = false;
 				hex2array(second, ct);
 				bc->init(key, bc->encryption);
+
+				if (tweakable)
+				{
+					tweakable_block_cipher* tc = dynamic_cast<tweakable_block_cipher*>(bc);
+					if (tc)
+						tc->set_tweak(tweak);
+				}
+
 				bc->encrypt_block(pt, res);
 				for (unsigned int i = 1; i < repeat; i++)
 					bc->encrypt_block(res, res);
@@ -413,6 +427,14 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 #endif
 				}
 				bc->init(key, bc->decryption);
+
+				if (tweakable)
+				{
+					tweakable_block_cipher* tc = dynamic_cast<tweakable_block_cipher*>(bc);
+					if (tc)
+						tc->set_tweak(tweak);
+					tweakable = false;
+				}
 				for (unsigned int i = 1; i < repeat; i++)
 					bc->decrypt_block(ct, ct);
 				bc->decrypt_block(ct, res);
@@ -601,6 +623,10 @@ int wmain(int argc, wchar_t* argv[])
 	block_ciphers.emplace(make_pair(_T("mars352"), unique_ptr<block_cipher>(new mars352)));
 	block_ciphers.emplace(make_pair(_T("mars384"), unique_ptr<block_cipher>(new mars384)));
 	block_ciphers.emplace(make_pair(_T("mars416"), unique_ptr<block_cipher>(new mars416)));
+
+	block_ciphers.emplace(make_pair(_T("threefish512_512"), unique_ptr<block_cipher>(new threefish512_512)));
+	block_ciphers.emplace(make_pair(_T("threefish1024_1024"), unique_ptr<block_cipher>(new threefish1024_1024)));
+	block_ciphers.emplace(make_pair(_T("threefish256_256"), unique_ptr<block_cipher>(new threefish256_256)));
 
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));

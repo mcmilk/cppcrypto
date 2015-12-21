@@ -373,25 +373,25 @@ namespace cppcrypto
 	void sha3_224::clear()
 	{
 		memset(A, 0, sizeof(A));
-		memset(m, 0, sizeof(A));
+		memset(m, 0, sizeof(m));
 	}
 
 	void sha3_256::clear()
 	{
 		memset(A, 0, sizeof(A));
-		memset(m, 0, sizeof(A));
+		memset(m, 0, sizeof(m));
 	}
 
 	void sha3_384::clear()
 	{
 		memset(A, 0, sizeof(A));
-		memset(m, 0, sizeof(A));
+		memset(m, 0, sizeof(m));
 	}
 
 	void sha3_512::clear()
 	{
 		memset(A, 0, sizeof(A));
-		memset(m, 0, sizeof(A));
+		memset(m, 0, sizeof(m));
 	}
 
 }

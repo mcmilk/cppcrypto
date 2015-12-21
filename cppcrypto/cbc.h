@@ -41,7 +41,8 @@ namespace cppcrypto
 		void decrypt_final(std::ostream& out);
 
 	private:
-		cbc(const cbc&);
+		cbc(const cbc&) = delete;
+		void operator=(const cbc&) = delete;
 
 		uint8_t* block_;
 		uint8_t* iv_;

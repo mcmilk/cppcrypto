@@ -31,7 +31,8 @@ namespace cppcrypto
 		void clear();
 
 	private:
-		hmac(const hmac&);
+		hmac(const hmac&) = delete;
+		void operator=(const hmac&) = delete;
 		void construct(const uint8_t* key, size_t keylen);
 
 		uint8_t* ipad_;
