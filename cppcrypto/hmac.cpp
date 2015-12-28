@@ -5,6 +5,7 @@ and released into public domain.
 
 #include "hmac.h"
 #include <memory.h>
+#include "portability.h"
 
 namespace cppcrypto
 {
@@ -48,8 +49,9 @@ namespace cppcrypto
 
 	hmac::~hmac()
 	{
-		memset(ipad_, 0, hash_->blocksize() / 8);
-		memset(opad_, 0, hash_->blocksize() / 8);
+		clear();
+		zero_memory(ipad_, hash_->blocksize() / 8);
+		zero_memory(opad_, hash_->blocksize() / 8);
 		delete[] ipad_;
 		delete[] opad_;
 	}

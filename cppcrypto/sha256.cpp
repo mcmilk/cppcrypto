@@ -36,6 +36,7 @@ namespace cppcrypto
 {
 	sha256::~sha256()
 	{
+		clear();
 	}
 
 	sha256::sha256()
@@ -283,8 +284,8 @@ __attribute__ ((aligned (16)))
 
 	void sha256::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(m.data(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(m.data(), m.size());
 	}
 
 }

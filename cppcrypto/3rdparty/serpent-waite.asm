@@ -17,6 +17,8 @@
 ;my idea. I borrowed the sboxes from Dag Arne Osvik. I will put his
 ;paper in the documentation in the not too distant future.
 
+; Modified by kerukuro for use in cppcrypto.
+
 %macro      xorKey   4
 
         xor %1, [ebp]

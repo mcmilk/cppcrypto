@@ -198,6 +198,30 @@
     <ClInclude Include="thread_pool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="salsa20.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stream_cipher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="chacha.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\salsa20_u1.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\salsa20_u4.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\chacha_u1.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\chacha_u4.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -370,6 +394,21 @@
     </ClCompile>
     <ClCompile Include="thread_pool.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="salsa20.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="hc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\salsa20-xmm6int.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="chacha.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\chacha-xmm.c">
+      <Filter>3rdparty</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

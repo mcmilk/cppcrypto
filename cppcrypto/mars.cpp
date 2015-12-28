@@ -214,9 +214,14 @@ namespace cppcrypto
 
 	namespace detail
 	{
+		mars::~mars()
+		{
+			clear();
+		}
+
 		void mars::clear()
 		{
-			memset(rk, 0, sizeof(rk));
+			zero_memory(rk, sizeof(rk));
 		}
 
 		void mars::encrypt_block(const uint8_t* in, uint8_t* out)

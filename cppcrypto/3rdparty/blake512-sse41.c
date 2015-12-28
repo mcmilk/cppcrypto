@@ -1,7 +1,7 @@
 // BLAKE-512 sse41 eBASH implementation
 // Authors: Jean-Philippe Aumasson and Samuel Neves.
 
-// Modified for use in cppcrypto.
+// Modified by kerukuro for use in cppcrypto.
 
 #include <stdint.h>
 #include <stdio.h>

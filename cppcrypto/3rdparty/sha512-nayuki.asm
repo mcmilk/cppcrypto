@@ -22,6 +22,8 @@
 #    Software.
 # 
 
+# Modified by kerukuro for use in cppcrypto.
+
 .globl _sha512_compress_nayuki
 .globl sha512_compress_nayuki
 _sha512_compress_nayuki:

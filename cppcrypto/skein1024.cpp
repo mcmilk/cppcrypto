@@ -358,13 +358,14 @@ namespace cppcrypto
 
 	skein1024_1024::~skein1024_1024()
 	{
+		clear();
 	}
 
 	void skein1024_1024::clear()
 	{
-		memset(h.get(), 0, h.size());
-		memset(m, 0, sizeof(m));
-		transform(tweak, 0, sizeof(tweak));
+		zero_memory(h.get(), h.size());
+		zero_memory(m, sizeof(m));
+		zero_memory(tweak, sizeof(tweak));
 	}
 
 }

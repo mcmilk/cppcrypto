@@ -17,6 +17,8 @@ namespace cppcrypto
 		class twofish : public block_cipher
 		{
 		public:
+			~twofish();
+
 			size_t blocksize() const { return 128; }
 			void encrypt_block(const uint8_t* in, uint8_t* out);
 			void decrypt_block(const uint8_t* in, uint8_t* out);

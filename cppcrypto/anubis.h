@@ -15,6 +15,8 @@ namespace cppcrypto
 	class anubis128 : public block_cipher
 	{
 	public:
+		~anubis128();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 128; }
 		block_cipher* clone() const { return new anubis128; }
@@ -31,6 +33,8 @@ namespace cppcrypto
 	class anubis160 : public block_cipher
 	{
 	public:
+		~anubis160();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 160; }
 		block_cipher* clone() const { return new anubis160; }
@@ -47,6 +51,8 @@ namespace cppcrypto
 	class anubis192 : public block_cipher
 	{
 	public:
+		~anubis192();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 192; }
 		block_cipher* clone() const { return new anubis192; }
@@ -63,6 +69,8 @@ namespace cppcrypto
 	class anubis224 : public block_cipher
 	{
 	public:
+		~anubis224();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 224; }
 		block_cipher* clone() const { return new anubis224; }
@@ -79,6 +87,8 @@ namespace cppcrypto
 	class anubis256 : public block_cipher
 	{
 	public:
+		~anubis256();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new anubis256; }
@@ -95,6 +105,8 @@ namespace cppcrypto
 	class anubis288 : public block_cipher
 	{
 	public:
+		~anubis288();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 288; }
 		block_cipher* clone() const { return new anubis288; }
@@ -111,6 +123,8 @@ namespace cppcrypto
 	class anubis320 : public block_cipher
 	{
 	public:
+		~anubis320();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 320; }
 		block_cipher* clone() const { return new anubis320; }

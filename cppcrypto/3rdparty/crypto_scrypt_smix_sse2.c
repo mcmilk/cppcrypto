@@ -26,6 +26,9 @@
  * This file was originally written by Colin Percival as part of the Tarsnap
  * online backup system.
  */
+
+// Modified by kerukuro for use in cppcrypto.
+
 //#include "cpusupport.h"
 #define CPUSUPPORT_X86_SSE2
 #ifdef CPUSUPPORT_X86_SSE2

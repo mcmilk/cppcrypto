@@ -159,10 +159,15 @@ namespace cppcrypto
 		reinterpret_cast<uint64_t*>(out)[7] = G7;
 	}
 
+	threefish512_512::~threefish512_512()
+	{
+		clear();
+	}
+
 	void threefish512_512::clear()
 	{
-		memset(keys, 0, sizeof(keys));
-		memset(tweaks, 0, sizeof(tweaks));
+		zero_memory(keys, sizeof(keys));
+		zero_memory(tweaks, sizeof(tweaks));
 	}
 
 #define IG1024(G0, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15, C1, C2, C3, C4, C5, C6, C7, C8) \
@@ -383,10 +388,15 @@ namespace cppcrypto
 		reinterpret_cast<uint64_t*>(out)[15] = G15;
 	}
 
+	threefish1024_1024::~threefish1024_1024()
+	{
+		clear();
+	}
+
 	void threefish1024_1024::clear()
 	{
-		memset(keys, 0, sizeof(keys));
-		memset(tweaks, 0, sizeof(tweaks));
+		zero_memory(keys, sizeof(keys));
+		zero_memory(tweaks, sizeof(tweaks));
 	}
 
 
@@ -508,10 +518,15 @@ namespace cppcrypto
 		reinterpret_cast<uint64_t*>(out)[3] = G3;
 	}
 
+	threefish256_256::~threefish256_256()
+	{
+		clear();
+	}
+
 	void threefish256_256::clear()
 	{
-		memset(keys, 0, sizeof(keys));
-		memset(tweaks, 0, sizeof(tweaks));
+		zero_memory(keys, sizeof(keys));
+		zero_memory(tweaks, sizeof(tweaks));
 	}
 
 

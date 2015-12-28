@@ -64,6 +64,10 @@ MAKE_DIR=ginstall -d
 INSTALL_DATA=ginstall
 endif
 
+ifeq ($(UNAME),Windows)
+$(error Windows build is supported only via Visual C++ project files)
+endif
+
 ifndef OBJ64FORMAT
 $(error Unsupported platform $(UNAME), please edit the makefile)
 endif
@@ -112,7 +116,7 @@ OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1
       block_cipher.o twofish.o sha3.o sha3_impl_ssse3.o KeccakF-1600-opt64.o KeccakSponge.o jh.o sha1.o \
       jh-impl-sse.o streebog.o gost3411-2012-sse41.o sm3.o md5.o serpent.o cast6.o camellia.o kalyna.o \
 	  aria.o kuznyechik.o sm4.o mars.o blake2.o blake2b.o blake2s.o threefish.o scrypt.o crypto_scrypt_smix_sse2.o \
-	  argon2.o thread_pool.o
+	  argon2.o thread_pool.o salsa20.o salsa20-xmm6int.o hc.o chacha.o chacha-xmm.o
 
 OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha1-nayuki.o serpent-waite.o
 OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o \
@@ -238,5 +242,11 @@ serpent-waite.o: 3rdparty/serpent-waite.asm
 
 crypto_scrypt_smix_sse2.o: 3rdparty/crypto_scrypt_smix_sse2.c
 	$(CC) -c $(CFLAGS) 3rdparty/crypto_scrypt_smix_sse2.c
+
+salsa20-xmm6int.o: 3rdparty/salsa20-xmm6int.c
+	$(CC) -c $(CFLAGS) 3rdparty/salsa20-xmm6int.c
+
+chacha-xmm.o: 3rdparty/chacha-xmm.c
+	$(CC) -c $(CFLAGS) $(ARCHSSSE3) 3rdparty/chacha-xmm.c
 
 

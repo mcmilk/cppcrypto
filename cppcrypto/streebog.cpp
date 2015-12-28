@@ -760,6 +760,7 @@ namespace cppcrypto
 
 	streebog512::~streebog512()
 	{
+		clear();
 	}
 
 	void streebog256::init()
@@ -776,9 +777,9 @@ namespace cppcrypto
 
 	void streebog512::clear()
 	{
-		memset(h.get(), 0, h.size());
-		memset(m.get(), 0, m.size());
-		memset(S.get(), 0, S.size());
+		zero_memory(h.get(), h.size());
+		zero_memory(m.get(), m.size());
+		zero_memory(S.get(), S.size());
 	}
 
 #if 0

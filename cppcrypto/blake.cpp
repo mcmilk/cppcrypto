@@ -440,13 +440,14 @@ namespace cppcrypto
 
 	blake256::~blake256()
 	{
+		clear();
 	}
 
 	void blake256::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(s.data(), 0, s.size());
-		memset(m.get(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(s.data(), s.size());
+		zero_memory(m.get(), m.size());
 	}
 
 	blake512::blake512()
@@ -467,13 +468,14 @@ namespace cppcrypto
 
 	blake512::~blake512()
 	{
+		clear();
 	}
 
 	void blake512::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(s.data(), 0, s.size());
-		memset(m.get(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(s.data(), s.size());
+		zero_memory(m.get(), m.size());
 	}
 
 }

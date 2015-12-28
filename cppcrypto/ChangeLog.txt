@@ -1,3 +1,7 @@
+2015-12-27 cppcrypto-0.13
+
+New stream cipher algorithms: ChaCha, HC-128, HC-256, Salsa20, XChaCha, XSalsa20.
+
 2015-12-21 cppcrypto-0.12
 
 New block cipher algorithm: Threefish.

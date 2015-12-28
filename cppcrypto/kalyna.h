@@ -15,6 +15,8 @@ namespace cppcrypto
 	class kalyna512_512 : public block_cipher
 	{
 	public:
+		~kalyna512_512();
+
 		size_t blocksize() const { return 512; }
 		size_t keysize() const { return 512; }
 		block_cipher* clone() const { return new kalyna512_512; }
@@ -31,6 +33,8 @@ namespace cppcrypto
 	class kalyna256_512 : public block_cipher
 	{
 	public:
+		~kalyna256_512();
+
 		size_t blocksize() const { return 256; }
 		size_t keysize() const { return 512; }
 		block_cipher* clone() const { return new kalyna256_512; }
@@ -47,6 +51,8 @@ namespace cppcrypto
 	class kalyna256_256 : public block_cipher
 	{
 	public:
+		~kalyna256_256();
+
 		size_t blocksize() const { return 256; }
 		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new kalyna256_256; }
@@ -63,6 +69,8 @@ namespace cppcrypto
 	class kalyna128_256 : public block_cipher
 	{
 	public:
+		~kalyna128_256();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new kalyna128_256; }
@@ -79,6 +87,8 @@ namespace cppcrypto
 	class kalyna128_128 : public block_cipher
 	{
 	public:
+		~kalyna128_128();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 128; }
 		block_cipher* clone() const { return new kalyna128_128; }

@@ -291,7 +291,7 @@ namespace cppcrypto
 
 	void camellia128::clear()
 	{
-		memset(ks, 0, sizeof(ks));
+		zero_memory(ks, sizeof(ks));
 	}
 
 	static inline uint64_t F(uint64_t x, uint64_t k)
@@ -621,13 +621,23 @@ camellia128::camellia128()
 {
 }
 
+camellia128::~camellia128()
+{
+	clear();
+}
+
 void camellia256::clear()
 {
-	memset(ks, 0, sizeof(ks));
+	zero_memory(ks, sizeof(ks));
 }
 
 camellia256::camellia256()
 {
+}
+
+camellia256::~camellia256()
+{
+	clear();
 }
 
 bool camellia256::init(const uint8_t* key, block_cipher::direction direction)

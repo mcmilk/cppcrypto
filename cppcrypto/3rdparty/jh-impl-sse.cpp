@@ -21,7 +21,7 @@ e) Using "for" loop to implement 42 rounds (with 7 rounds in each loop), so as t
 Last Modified: January 16, 2011
 */
 
-// Modified for use in cppcrypto
+// Modified by kerukuro for use in cppcrypto.
 
 #include <emmintrin.h>
 #include <string.h>

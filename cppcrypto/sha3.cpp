@@ -331,6 +331,7 @@ namespace cppcrypto
 	}
 	sha3_512::~sha3_512()
 	{
+		clear();
 		delete impl_;
 	}
 	sha3_256::sha3_256()
@@ -343,6 +344,7 @@ namespace cppcrypto
 	}
 	sha3_256::~sha3_256()
 	{
+		clear();
 		delete impl_;
 	}
 	sha3_384::sha3_384()
@@ -355,6 +357,7 @@ namespace cppcrypto
 	}
 	sha3_384::~sha3_384()
 	{
+		clear();
 		delete impl_;
 	}
 	sha3_224::sha3_224()
@@ -367,31 +370,32 @@ namespace cppcrypto
 	}
 	sha3_224::~sha3_224()
 	{
+		clear();
 		delete impl_;
 	}
 
 	void sha3_224::clear()
 	{
-		memset(A, 0, sizeof(A));
-		memset(m, 0, sizeof(m));
+		zero_memory(A, sizeof(A));
+		zero_memory(m, sizeof(m));
 	}
 
 	void sha3_256::clear()
 	{
-		memset(A, 0, sizeof(A));
-		memset(m, 0, sizeof(m));
+		zero_memory(A, sizeof(A));
+		zero_memory(m, sizeof(m));
 	}
 
 	void sha3_384::clear()
 	{
-		memset(A, 0, sizeof(A));
-		memset(m, 0, sizeof(m));
+		zero_memory(A, sizeof(A));
+		zero_memory(m, sizeof(m));
 	}
 
 	void sha3_512::clear()
 	{
-		memset(A, 0, sizeof(A));
-		memset(m, 0, sizeof(m));
+		zero_memory(A, sizeof(A));
+		zero_memory(m, sizeof(m));
 	}
 
 }

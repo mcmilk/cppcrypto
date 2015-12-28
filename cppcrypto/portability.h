@@ -10,6 +10,7 @@ and released into public domain.
 #include <stdlib.h>
 
 #ifdef _MSC_VER
+#include <Windows.h>
 #define swap_uint64 _byteswap_uint64
 #define swap_uint32 _byteswap_ulong
 #define aligned_allocate(a, b) _aligned_malloc(a, b)
@@ -20,6 +21,7 @@ and released into public domain.
 #define rotatel64 _rotl64
 #define FASTCALL __fastcall
 #define CPPCRYPTO_STATIC_ALIGN(x) __declspec(align(x))
+#define zero_memory(a, b) SecureZeroMemory(a, b)
 
 #ifdef CPPCRYPTODLL_EXPORT
 #define CPPCRYPTOAPI __declspec(dllexport) 
@@ -92,6 +94,21 @@ static inline void* aligned_allocate(size_t a, size_t b)
 }
 #define aligned_deallocate free
 #endif
+
+
+#if defined(__APPLE__) && defined(__MACH__)
+#define zero_memory(a, b) memset_s(a, b, 0, b)
+//#elif defined(__linux__)
+//#define zero_memory(a, b) memzero_explicit(a, b)
+#else
+static inline void zero_memory(void *v, size_t n) {
+	volatile unsigned char *p = (volatile unsigned char *)v;
+	while (n--) {
+		*p++ = 0;
+	}
+}
+#endif
+
 
 #endif
 

@@ -2,6 +2,8 @@
 ; Author: Wei Dai.
 ; This code is placed in the public domain.
 
+; Modified by kerukuro for use in cppcrypto.
+
 include ksamd64.inc
 EXTERNDEF ?SHA256_K@cppcrypto@@3QBIB:FAR
 .CODE

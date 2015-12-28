@@ -279,12 +279,13 @@ namespace cppcrypto
 		tp.wait_for_all();
 	}
 
-	static inline void argon2(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen, uint32_t y)
+	static inline void argon2(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen, uint32_t y,
+		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen)
 	{
 		uint8_t h0[64];
 		blake2b_512 ih;
 		ih.init();
-		uint32_t v = 0x10, klen = 0, xlen = 0;
+		uint32_t v = 0x10;
 		ih.update(reinterpret_cast<const uint8_t*>(&p), sizeof(p));
 		ih.update(reinterpret_cast<const uint8_t*>(&dklen), sizeof(dklen));
 		ih.update(reinterpret_cast<const uint8_t*>(&m), sizeof(m));
@@ -295,8 +296,10 @@ namespace cppcrypto
 		ih.update(reinterpret_cast<const uint8_t*>(password), pwd_len);
 		ih.update(reinterpret_cast<const uint8_t*>(&salt_len), sizeof(salt_len));
 		ih.update(salt, salt_len);
-		ih.update(reinterpret_cast<const uint8_t*>(&klen), sizeof(klen));
-		ih.update(reinterpret_cast<const uint8_t*>(&xlen), sizeof(xlen));
+		ih.update(reinterpret_cast<const uint8_t*>(&secretlen), sizeof(secretlen));
+		ih.update(secret, secretlen);
+		ih.update(reinterpret_cast<const uint8_t*>(&datalen), sizeof(datalen));
+		ih.update(data, datalen);
 		ih.final(h0);
 #ifdef CPPCRYPTO_DEBUG
 		printf("initial hash: ");
@@ -338,17 +341,22 @@ namespace cppcrypto
 		printf("\n");
 #endif
 		HP(bm, 1024, dk, dklen);
+		zero_memory(B, msize * 1024);
+		zero_memory(h0, 64);
+		zero_memory(bm, 1024);
 		delete[] B;
 	}
 
-	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen)
+	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
+		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen)
 	{
-		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 0);
+		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 0, data, datalen, secret, secretlen);
 	}
 
-	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen)
+	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
+		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen)
 	{
-		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 1);
+		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 1, data, datalen, secret, secretlen);
 	}
 
 }

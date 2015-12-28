@@ -9,6 +9,7 @@ and released into public domain.
 #include <memory.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>
+#include "portability.h"
 
 namespace cppcrypto
 {
@@ -21,6 +22,8 @@ cbc::cbc(const block_cipher& cipher)
 
 cbc::~cbc()
 {
+	zero_memory(block_, nb_);
+	zero_memory(iv_, nb_);
 	delete[] block_;
 	delete[] iv_;
 }

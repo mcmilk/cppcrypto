@@ -7,7 +7,7 @@
 * This code is placed in the public domain
 */
 
-// Modified for use in cppcrypto.
+// Modified by kerukuro for use in cppcrypto.
 
 //#include <smmintrin.h>
 #include <wmmintrin.h>

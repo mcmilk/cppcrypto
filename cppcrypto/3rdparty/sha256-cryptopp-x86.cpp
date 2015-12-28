@@ -2,7 +2,7 @@
 // Author: Wei Dai.
 // This code is placed in the public domain.
 
-// Modified for use in cppcrypto.
+// Modified by kerukuro for use in cppcrypto.
 
 #include <stdint.h>
 #pragma warning(disable:4731)

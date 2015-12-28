@@ -15,6 +15,8 @@ namespace cppcrypto
 	class aria128 : public block_cipher
 	{
 	public:
+		~aria128();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 128; }
 		block_cipher* clone() const { return new aria128; }
@@ -31,6 +33,8 @@ namespace cppcrypto
 	class aria256 : public block_cipher
 	{
 	public:
+		~aria256();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new aria256; }
@@ -48,6 +52,8 @@ namespace cppcrypto
 	class aria192 : public block_cipher
 	{
 	public:
+		~aria192();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 192; }
 		block_cipher* clone() const { return new aria192; }

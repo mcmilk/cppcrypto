@@ -16,6 +16,7 @@ namespace cppcrypto
 	{
 	public:
 		camellia128();
+		~camellia128();
 
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 128; }
@@ -34,6 +35,7 @@ namespace cppcrypto
 	{
 	public:
 		camellia256();
+		~camellia256();
 
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 256; }

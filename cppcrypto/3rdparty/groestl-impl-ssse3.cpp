@@ -10,7 +10,7 @@
 * This code is placed in the public domain
 */
 
-// Modified for use in cppcrypto.
+// Modified by kerukuro for use in cppcrypto.
 
 #include <tmmintrin.h>
 #include <stdint.h>

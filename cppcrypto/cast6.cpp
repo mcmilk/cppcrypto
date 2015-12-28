@@ -262,10 +262,15 @@ namespace cppcrypto
 #endif
 	}
 
+	cast6_256::~cast6_256()
+	{
+		clear();
+	}
+
 	void cast6_256::clear()
 	{
-		memset(km, 0, sizeof(km));
-		memset(kr, 0, sizeof(kr));
+		zero_memory(km, sizeof(km));
+		zero_memory(kr, sizeof(kr));
 	}
 
 	static inline void do_init(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t& e, uint32_t& f, uint32_t& g, uint32_t& h, uint32_t* km, uint8_t* kr)

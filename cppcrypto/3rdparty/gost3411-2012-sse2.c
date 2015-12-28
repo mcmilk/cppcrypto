@@ -7,7 +7,7 @@
  * $Id: gost3411-2012-core.c 526 2013-05-26 18:24:29Z alexey $
  */
 
-// Modified for use in cppcrypto.
+// Modified by kerukuro for use in cppcrypto.
 
 #include "gost3411-2012-sse2.h"
 #include <stdint.h>

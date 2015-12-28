@@ -9,6 +9,7 @@ and released into public domain.
 #include <memory.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>
+#include "portability.h"
 
 namespace cppcrypto
 {
@@ -129,11 +130,19 @@ namespace cppcrypto
 
 	ctr::~ctr()
 	{
+		clear();
 		delete[] block_;
 		delete[] iv_;
 	}
 
-	void ctr::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, block_cipher::direction direction)
+	void ctr::clear()
+	{
+		zero_memory(block_, nb_);
+		zero_memory(iv_, nb_);
+		cipher_->clear();
+	}
+
+	void ctr::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
 	{
 		assert(keylen == cipher_->keysize() / 8);
 		assert(ivlen <= nb_);

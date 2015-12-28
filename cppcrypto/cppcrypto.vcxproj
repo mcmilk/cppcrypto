@@ -114,7 +114,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -130,7 +130,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
@@ -148,7 +148,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -173,7 +173,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -197,7 +197,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -220,7 +220,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;NOMINMAX;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -246,13 +246,19 @@
     <ClInclude Include="3rdparty\blake2s-load-sse2.h" />
     <ClInclude Include="3rdparty\blake2s-load-sse41.h" />
     <ClInclude Include="3rdparty\blake2s-round.h" />
+    <ClInclude Include="3rdparty\chacha_u1.h" />
+    <ClInclude Include="3rdparty\chacha_u4.h" />
     <ClInclude Include="3rdparty\crypto_scrypt_smix_sse2.h" />
     <ClInclude Include="3rdparty\gost3411-2012-sse2.h" />
+    <ClInclude Include="3rdparty\salsa20_u1.h" />
+    <ClInclude Include="3rdparty\salsa20_u4.h" />
     <ClInclude Include="argon2.h" />
     <ClInclude Include="aria.h" />
     <ClInclude Include="blake2.h" />
     <ClInclude Include="camellia.h" />
     <ClInclude Include="cast6.h" />
+    <ClInclude Include="chacha.h" />
+    <ClInclude Include="hc.h" />
     <ClInclude Include="jh-impl.h" />
     <ClInclude Include="jh.h" />
     <ClInclude Include="alignedarray.h" />
@@ -282,6 +288,7 @@
     <ClInclude Include="rijndael-impl-aesni-common.h" />
     <ClInclude Include="rijndael-impl.h" />
     <ClInclude Include="rijndael.h" />
+    <ClInclude Include="salsa20.h" />
     <ClInclude Include="scrypt.h" />
     <ClInclude Include="serpent.h" />
     <ClInclude Include="sha1.h" />
@@ -293,6 +300,7 @@
     <ClInclude Include="skein512.h" />
     <ClInclude Include="sm3.h" />
     <ClInclude Include="sm4.h" />
+    <ClInclude Include="stream_cipher.h" />
     <ClInclude Include="streebog.h" />
     <ClInclude Include="thread_pool.h" />
     <ClInclude Include="threefish.h" />
@@ -305,17 +313,21 @@
     <ClCompile Include="3rdparty\blake256-sse41.c" />
     <ClCompile Include="3rdparty\blake2b.c" />
     <ClCompile Include="3rdparty\blake2s.c" />
+    <ClCompile Include="3rdparty\chacha-xmm.c" />
     <ClCompile Include="3rdparty\crypto_scrypt_smix_sse2.c" />
     <ClCompile Include="3rdparty\gost3411-2012-sse2.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="3rdparty\gost3411-2012-sse41.c" />
     <ClCompile Include="3rdparty\jh-impl-sse.cpp" />
+    <ClCompile Include="3rdparty\salsa20-xmm6int.c" />
     <ClCompile Include="argon2.cpp" />
     <ClCompile Include="aria.cpp" />
     <ClCompile Include="blake2.cpp" />
     <ClCompile Include="camellia.cpp" />
     <ClCompile Include="cast6.cpp" />
+    <ClCompile Include="chacha.cpp" />
+    <ClCompile Include="hc.cpp" />
     <ClCompile Include="jh.cpp" />
     <ClCompile Include="3rdparty\KeccakF-1600-opt64.c" />
     <ClCompile Include="3rdparty\KeccakSponge.c" />
@@ -347,6 +359,7 @@
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
     <ClCompile Include="rijndael-impl-aesni.cpp" />
     <ClCompile Include="rijndael.cpp" />
+    <ClCompile Include="salsa20.cpp" />
     <ClCompile Include="scrypt.cpp" />
     <ClCompile Include="serpent.cpp" />
     <ClCompile Include="sha1.cpp" />

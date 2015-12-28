@@ -297,7 +297,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		timer.reset();
 		for (long i = 0; i < iterations; i++)
 		{
-			ctr.init(key, it->second->keysize() / 8, iv, it->second->blocksize() / 8, block_cipher::encryption);
+			ctr.init(key, it->second->keysize() / 8, iv, it->second->blocksize() / 8);
 			ctr.encrypt((uint8_t*)message, static_cast<size_t>(fileSize), ct);
 		}
 		seconds = timer.elapsed();
@@ -311,7 +311,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		timer.reset();
 		for (long i = 0; i < iterations; i++)
 		{
-			ctr.init(key, it->second->keysize() / 8, iv, it->second->blocksize() / 8, block_cipher::decryption);
+			ctr.init(key, it->second->keysize() / 8, iv, it->second->blocksize() / 8);
 			ctr.decrypt((uint8_t*)ct, static_cast<size_t>(fileSize), pt);
 		}
 		seconds = timer.elapsed();
@@ -328,6 +328,108 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		wcout << endl;
 	}
 	delete[] ct;
+	delete[] pt;
+}
+
+
+void scperftest(map<wstring, unique_ptr<stream_cipher>>& ciphers, long iterations, wstring filename)
+{
+	perftimer timer;
+
+	if (!file_exists(filename.c_str())) {
+		wcerr << filename << _T(": No such file or directory") << endl;
+		return;
+	}
+	if (is_directory(filename.c_str())) {
+		wcerr << filename << _T(": Is a directory") << endl;
+		return;
+	}
+
+	long long fileSize = file_size(filename.c_str());
+
+	if (fileSize > 20000000)
+	{
+		cerr << "File is too big.\n";
+		return;
+	}
+
+	char* message = new char[static_cast<size_t>(fileSize)];
+
+	ifstream file;
+	file.open(filename, ios::in | ios::binary);
+	if (!file)
+		return;
+
+	if (!file.read(message, fileSize))
+		return;
+
+	file.close();
+	unsigned char* ct = new unsigned char[static_cast<size_t>(fileSize + 1024 * 2)];
+	unsigned char* pt = new unsigned char[static_cast<size_t>(fileSize + 1024 * 2)];
+	unsigned char key[1024];
+	unsigned char iv[1024];
+	memset(key, 0, sizeof(key));
+	memset(iv, 0, sizeof(iv));
+	for (int i = 0; i < 16; i++)
+		iv[i] = i;
+
+	key[0] = 0x2b;
+	key[1] = 0x7e;
+	key[2] = 0x15;
+	key[3] = 0x16;
+	key[4] = 0x28;
+	key[5] = 0xae;
+	key[6] = 0xd2;
+	key[7] = 0xa6;
+	key[8] = 0xab;
+	key[9] = 0xf7;
+	key[10] = 0x15;
+	key[11] = 0x88;
+	key[12] = 0x09;
+	key[13] = 0xcf;
+	key[14] = 0x4f;
+	key[15] = 0x3c;
+	wcout << _T("Cipher\t\tEncrypt\t\tDecrypt") << endl;
+	for (auto it = ciphers.begin(); it != ciphers.end(); ++it)
+	{
+		wcout << it->first << _T(" ");
+		stream_cipher* sc = it->second->clone();
+		timer.reset();
+		for (long i = 0; i < iterations; i++)
+		{
+			sc->init(key, it->second->keysize() / 8, iv, it->second->ivsize() / 8);
+			sc->encrypt((uint8_t*)message, static_cast<size_t>(fileSize), ct);
+		}
+		double seconds = timer.elapsed();
+		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s) ");
+
+#ifdef DUMP_TEST_ENCRYPTION
+		ofstream octrfile(filename + _T(".") + it->first + _T(".encrypted"), ios::out | ios::binary);
+		octrfile.write((const char*)ct, fileSize);
+#endif
+
+		timer.reset();
+		for (long i = 0; i < iterations; i++)
+		{
+			sc->init(key, it->second->keysize() / 8, iv, it->second->ivsize() / 8);
+			sc->decrypt((uint8_t*)ct, static_cast<size_t>(fileSize), pt);
+		}
+		seconds = timer.elapsed();
+		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s)");
+
+#ifdef DUMP_TEST_ENCRYPTION
+		ofstream odctrfile(filename + _T(".") + it->first + _T(".decrypted"), ios::out | ios::binary);
+		odctrfile.write((const char*)pt, fileSize);
+#endif
+
+		if (memcmp(pt, message, static_cast<size_t>(fileSize)))
+			wcout << _T(" ERROR");
+
+		wcout << endl;
+		delete sc;
+	}
+	delete[] ct;
+	delete[] pt;
 }
 
 
@@ -367,7 +469,7 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
-	uint8_t key[129], pt[129], ct[129], res[129], tweak[129];
+	uint8_t key[260], pt[260], ct[260], res[260], tweak[260];
 	uint32_t count = 0, failed = 0, success = 0, repeat = 1;
 	bool tweakable = false;
 	regex eq(R"((\w+)\s*=\s*(\w+))");
@@ -483,7 +585,7 @@ void test_vector(const wstring& name, crypto_hash* ch, const wstring& filename)
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
-	uint8_t md[129], res[129];
+	uint8_t md[260], res[260];
 	vector<uint8_t> msg;
 	uint32_t count = 0, failed = 0, success = 0;
 	regex eq(R"((\w+)\s*=\s*(\w*))");
@@ -628,6 +730,27 @@ int wmain(int argc, wchar_t* argv[])
 	block_ciphers.emplace(make_pair(_T("threefish1024_1024"), unique_ptr<block_cipher>(new threefish1024_1024)));
 	block_ciphers.emplace(make_pair(_T("threefish256_256"), unique_ptr<block_cipher>(new threefish256_256)));
 
+	map<wstring, unique_ptr<stream_cipher>> stream_ciphers;
+
+	stream_ciphers.emplace(make_pair(_T("salsa20_256"), unique_ptr<stream_cipher>(new salsa20_256)));
+	stream_ciphers.emplace(make_pair(_T("salsa20_128"), unique_ptr<stream_cipher>(new salsa20_128)));
+	stream_ciphers.emplace(make_pair(_T("hc256"), unique_ptr<stream_cipher>(new hc256)));
+	stream_ciphers.emplace(make_pair(_T("xsalsa20_256"), unique_ptr<stream_cipher>(new xsalsa20_256)));
+	stream_ciphers.emplace(make_pair(_T("xsalsa20_128"), unique_ptr<stream_cipher>(new xsalsa20_128)));
+	stream_ciphers.emplace(make_pair(_T("hc128"), unique_ptr<stream_cipher>(new hc128)));
+	stream_ciphers.emplace(make_pair(_T("salsa20_12_256"), unique_ptr<stream_cipher>(new salsa20_12_256)));
+	stream_ciphers.emplace(make_pair(_T("salsa20_12_128"), unique_ptr<stream_cipher>(new salsa20_12_128)));
+	stream_ciphers.emplace(make_pair(_T("xsalsa20_12_256"), unique_ptr<stream_cipher>(new xsalsa20_12_256)));
+	stream_ciphers.emplace(make_pair(_T("xsalsa20_12_128"), unique_ptr<stream_cipher>(new xsalsa20_12_128)));
+	stream_ciphers.emplace(make_pair(_T("chacha20_256"), unique_ptr<stream_cipher>(new chacha20_256)));
+	stream_ciphers.emplace(make_pair(_T("chacha20_128"), unique_ptr<stream_cipher>(new chacha20_128)));
+	stream_ciphers.emplace(make_pair(_T("xchacha20_256"), unique_ptr<stream_cipher>(new xchacha20_256)));
+	stream_ciphers.emplace(make_pair(_T("xchacha20_128"), unique_ptr<stream_cipher>(new xchacha20_128)));
+	stream_ciphers.emplace(make_pair(_T("chacha12_256"), unique_ptr<stream_cipher>(new chacha12_256)));
+	stream_ciphers.emplace(make_pair(_T("chacha12_128"), unique_ptr<stream_cipher>(new chacha12_128)));
+	stream_ciphers.emplace(make_pair(_T("xchacha12_256"), unique_ptr<stream_cipher>(new xchacha12_256)));
+	stream_ciphers.emplace(make_pair(_T("xchacha12_128"), unique_ptr<stream_cipher>(new xchacha12_128)));
+
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));
 	hashes.emplace(make_pair(_T("groestl256"), unique_ptr<crypto_hash>(new groestl256)));
@@ -766,6 +889,19 @@ int wmain(int argc, wchar_t* argv[])
 		bcperftest(block_ciphers, iterations, argv[3]);
 		return 0;
 	}
+
+	if (hash == _T("sctest"))
+	{
+		long iterations = 0;
+		if (argc != 4 || (iterations = stol(argv[2])) < 1)
+		{
+			cerr << "Syntax: digest sctest <iterations> <filename>" << endl;
+			return 3;
+		}
+		scperftest(stream_ciphers, iterations, argv[3]);
+		return 0;
+	}
+
 
 	auto hashit = hashes.find(hash);
 	if (hashit == hashes.end())

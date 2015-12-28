@@ -9,6 +9,7 @@ and released into public domain.
 #include <immintrin.h>
 #include <memory.h>
 #include "rijndael-impl-aesni-common.h"
+#include "portability.h"
 
 //#define CPPCRYPTO_DEBUG
 
@@ -146,6 +147,7 @@ namespace cppcrypto
 				rk[10] = _mm_aesimc_si128(rk[10]);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -218,6 +220,7 @@ namespace cppcrypto
 				rk[12] = _mm_aesimc_si128(rk[12]);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -278,6 +281,7 @@ namespace cppcrypto
 					rk[i] = _mm_aesimc_si128(rk[i]);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -341,6 +345,7 @@ namespace cppcrypto
 					rk[i] = _mm_aesimc_si128(rk[i]);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -402,6 +407,7 @@ namespace cppcrypto
 				rk[1] = _mm_blend_epi32(t2, rk[1], 3);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -482,6 +488,7 @@ namespace cppcrypto
 				rk[19] = _mm_blend_epi32(rk[19], t2, 3);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -546,6 +553,7 @@ namespace cppcrypto
 				rk[13] = _mm_blend_epi32(rk[13], t3, 7);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -622,6 +630,7 @@ namespace cppcrypto
 #endif
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -750,6 +759,7 @@ namespace cppcrypto
 				rijndael224_swapimc(rk);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -792,6 +802,7 @@ namespace cppcrypto
 				rijndael224_swapimc(rk);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -833,6 +844,7 @@ namespace cppcrypto
 				rijndael224_swapimc(rk);
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -942,6 +954,7 @@ namespace cppcrypto
 			_mm_store_si128(&((__m128i*)buf)[0], tmp1);
 			_mm_store_si128(&((__m128i*)buf)[1], tmp2);
 			memcpy(out, buf, 160 / 8);
+			zero_memory(buf, sizeof(buf));
 		}
 
 		static inline void rijndael160_decrypt_block(const uint8_t* in, uint8_t* out, int r, __m128i* rk)
@@ -989,6 +1002,7 @@ namespace cppcrypto
 			_mm_store_si128(&((__m128i*)buf)[0], tmp1);
 			_mm_store_si128(&((__m128i*)buf)[1], tmp2);
 			memcpy(out, buf, 160 / 8);
+			zero_memory(buf, sizeof(buf));
 		}
 
 		void rijndael160_128_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)
@@ -1159,6 +1173,7 @@ namespace cppcrypto
 #endif
 			}
 
+			zero_memory(keycopy, sizeof(keycopy));
 			return true;
 		}
 
@@ -1363,6 +1378,7 @@ namespace cppcrypto
 			_mm_store_si128(&((__m128i*)buf)[0], tmp1);
 			_mm_store_si128(&((__m128i*)buf)[1], tmp2);
 			memcpy(out, buf, 224 / 8);
+			zero_memory(buf, sizeof(buf));
 		}
 
 		static inline void rijndael224_decrypt_block(const uint8_t* in, uint8_t* out, int r, __m128i* rk)
@@ -1413,6 +1429,7 @@ namespace cppcrypto
 			_mm_store_si128(&((__m128i*)buf)[0], tmp1);
 			_mm_store_si128(&((__m128i*)buf)[1], tmp2);
 			memcpy(out, buf, 224 / 8);
+			zero_memory(buf, sizeof(buf));
 		}
 
 		void rijndael224_128_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)

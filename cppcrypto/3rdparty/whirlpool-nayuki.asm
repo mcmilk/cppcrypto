@@ -22,6 +22,8 @@
 #   Software.
 #
 
+# Modified by kerukuro for use in cppcrypto.
+
 # 1 "whirlpool.S"
 # 1 "<built-in>"
 # 1 "<command-line>"

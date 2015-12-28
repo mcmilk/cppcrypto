@@ -680,12 +680,13 @@ namespace cppcrypto
 
 	whirlpool::~whirlpool()
 	{
+		clear();
 	}
 
 	void whirlpool::clear()
 	{
-		memset(h.get(), 0, h.size());
-		memset(m.get(), 0, m.size());
+		zero_memory(h.get(), h.size());
+		zero_memory(m.get(), m.size());
 	}
 
 }

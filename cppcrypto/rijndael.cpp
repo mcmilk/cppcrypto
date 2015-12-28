@@ -469,6 +469,7 @@ namespace cppcrypto
 
 	rijndael128_128::~rijndael128_128()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -478,7 +479,7 @@ namespace cppcrypto
 
 	void rijndael128_128::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael128_192::init(const uint8_t* key, block_cipher::direction direction)
@@ -553,6 +554,7 @@ namespace cppcrypto
 
 	rijndael128_192::~rijndael128_192()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -562,7 +564,7 @@ namespace cppcrypto
 
 	void rijndael128_192::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael128_256::init(const uint8_t* key, block_cipher::direction direction)
@@ -637,6 +639,7 @@ namespace cppcrypto
 
 	rijndael128_256::~rijndael128_256()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -646,7 +649,7 @@ namespace cppcrypto
 
 	void rijndael128_256::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael128_224::init(const uint8_t* key, block_cipher::direction direction)
@@ -717,6 +720,7 @@ namespace cppcrypto
 
 	rijndael128_224::~rijndael128_224()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -726,7 +730,7 @@ namespace cppcrypto
 
 	void rijndael128_224::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael128_160::init(const uint8_t* key, block_cipher::direction direction)
@@ -799,6 +803,7 @@ namespace cppcrypto
 
 	rijndael128_160::~rijndael128_160()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -808,7 +813,7 @@ namespace cppcrypto
 
 	void rijndael128_160::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 #define KEYIMC256(i) \
@@ -988,6 +993,7 @@ namespace cppcrypto
 
 		rijndael256::~rijndael256()
 		{
+			clear();
 			if (impl_)
 			{
 				impl_->~rijndael_impl();
@@ -997,7 +1003,7 @@ namespace cppcrypto
 
 		void rijndael256::clear()
 		{
-			memset(W_, 0, W_.size());
+			zero_memory(W_, W_.size());
 		}
 
 	}
@@ -1367,6 +1373,7 @@ namespace cppcrypto
 
 	rijndael192_128::~rijndael192_128()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -1376,7 +1383,7 @@ namespace cppcrypto
 
 	void rijndael192_128::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 
@@ -1450,6 +1457,7 @@ namespace cppcrypto
 
 	rijndael192_160::~rijndael192_160()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -1460,7 +1468,7 @@ namespace cppcrypto
 
 	void rijndael192_160::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 
@@ -1531,6 +1539,7 @@ namespace cppcrypto
 
 	rijndael192_192::~rijndael192_192()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -1541,7 +1550,7 @@ namespace cppcrypto
 
 	void rijndael192_192::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael192_224::init(const uint8_t* key, block_cipher::direction direction)
@@ -1613,6 +1622,7 @@ namespace cppcrypto
 
 	rijndael192_224::~rijndael192_224()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -1622,7 +1632,7 @@ namespace cppcrypto
 
 	void rijndael192_224::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael192_256::init(const uint8_t* key, block_cipher::direction direction)
@@ -1699,6 +1709,7 @@ namespace cppcrypto
 
 	rijndael192_256::~rijndael192_256()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -1708,7 +1719,7 @@ namespace cppcrypto
 
 	void rijndael192_256::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 #define KEYIMC160(i) \
@@ -1854,6 +1865,7 @@ namespace cppcrypto
 
 	rijndael160_128::~rijndael160_128()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -1863,7 +1875,7 @@ namespace cppcrypto
 
 	void rijndael160_128::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael160_160::init(const uint8_t* key, block_cipher::direction direction)
@@ -1932,6 +1944,7 @@ namespace cppcrypto
 
 	rijndael160_160::~rijndael160_160()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -1941,7 +1954,7 @@ namespace cppcrypto
 
 	void rijndael160_160::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael160_192::init(const uint8_t* key, block_cipher::direction direction)
@@ -2013,6 +2026,7 @@ namespace cppcrypto
 
 	rijndael160_192::~rijndael160_192()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -2022,7 +2036,7 @@ namespace cppcrypto
 
 	void rijndael160_192::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael160_224::init(const uint8_t* key, block_cipher::direction direction)
@@ -2094,6 +2108,7 @@ namespace cppcrypto
 
 	rijndael160_224::~rijndael160_224()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -2103,7 +2118,7 @@ namespace cppcrypto
 
 	void rijndael160_224::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 	bool rijndael160_256::init(const uint8_t* key, block_cipher::direction direction)
@@ -2180,6 +2195,7 @@ namespace cppcrypto
 
 	rijndael160_256::~rijndael160_256()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -2189,7 +2205,7 @@ namespace cppcrypto
 
 	void rijndael160_256::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 #define KEYIMC224(i) \
@@ -2473,6 +2489,7 @@ namespace cppcrypto
 
 		rijndael224::~rijndael224()
 		{
+			clear();
 			if (impl_)
 			{
 				impl_->~rijndael_impl();
@@ -2482,7 +2499,7 @@ namespace cppcrypto
 
 		void rijndael224::clear()
 		{
-			memset(W_, 0, W_.size());
+			zero_memory(W_, W_.size());
 		}
 	}
 
@@ -2603,6 +2620,7 @@ namespace cppcrypto
 
 	rijndael224_256::~rijndael224_256()
 	{
+		clear();
 		if (impl_)
 		{
 			impl_->~rijndael_impl();
@@ -2612,7 +2630,7 @@ namespace cppcrypto
 
 	void rijndael224_256::clear()
 	{
-		memset(W_, 0, W_.size());
+		zero_memory(W_, W_.size());
 	}
 
 

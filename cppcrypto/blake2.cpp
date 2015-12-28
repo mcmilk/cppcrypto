@@ -218,12 +218,13 @@ namespace detail
 
 	blake2b::~blake2b()
 	{
+		clear();
 	}
 
 	void blake2b::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(m.get(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(m.get(), m.size());
 	}
 
 
@@ -393,12 +394,13 @@ namespace detail
 
 	blake2s::~blake2s()
 	{
+		clear();
 	}
 
 	void blake2s::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(m.get(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(m.get(), m.size());
 	}
 
 }

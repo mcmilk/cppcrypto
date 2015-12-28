@@ -15,6 +15,8 @@ namespace cppcrypto
 	class cast6_256 : public block_cipher
 	{
 	public:
+		~cast6_256();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new cast6_256; }

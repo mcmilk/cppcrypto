@@ -592,9 +592,14 @@ namespace cppcrypto
 		*(((uint32_t*)out) + 3) = swap_uint32(t3);
 	}
 
+	anubis128::~anubis128()
+	{
+		clear();
+	}
+
 	void anubis128::clear()
 	{
-		memset(W_, 0, sizeof(W_));
+		zero_memory(W_, sizeof(W_));
 	}
 
 	bool anubis128::init(const uint8_t* key, block_cipher::direction direction)
@@ -612,9 +617,14 @@ namespace cppcrypto
 		return anubis_encrypt_block<128>(in, out, W_);
 	}
 
+	anubis160::~anubis160()
+	{
+		clear();
+	}
+
 	void anubis160::clear()
 	{
-		memset(W_, 0, sizeof(W_));
+		zero_memory(W_, sizeof(W_));
 	}
 
 	bool anubis160::init(const uint8_t* key, block_cipher::direction direction)
@@ -632,9 +642,14 @@ namespace cppcrypto
 		return anubis_encrypt_block<160>(in, out, W_);
 	}
 
+	anubis192::~anubis192()
+	{
+		clear();
+	}
+
 	void anubis192::clear()
 	{
-		memset(W_, 0, sizeof(W_));
+		zero_memory(W_, sizeof(W_));
 	}
 
 	bool anubis192::init(const uint8_t* key, block_cipher::direction direction)
@@ -652,9 +667,14 @@ namespace cppcrypto
 		return anubis_encrypt_block<192>(in, out, W_);
 	}
 
+	anubis224::~anubis224()
+	{
+		clear();
+	}
+
 	void anubis224::clear()
 	{
-		memset(W_, 0, sizeof(W_));
+		zero_memory(W_, sizeof(W_));
 	}
 
 	bool anubis224::init(const uint8_t* key, block_cipher::direction direction)
@@ -672,9 +692,14 @@ namespace cppcrypto
 		return anubis_encrypt_block<224>(in, out, W_);
 	}
 
+	anubis256::~anubis256()
+	{
+		clear();
+	}
+
 	void anubis256::clear()
 	{
-		memset(W_, 0, sizeof(W_));
+		zero_memory(W_, sizeof(W_));
 	}
 
 	bool anubis256::init(const uint8_t* key, block_cipher::direction direction)
@@ -692,9 +717,14 @@ namespace cppcrypto
 		return anubis_encrypt_block<256>(in, out, W_);
 	}
 
+	anubis288::~anubis288()
+	{
+		clear();
+	}
+
 	void anubis288::clear()
 	{
-		memset(W_, 0, sizeof(W_));
+		zero_memory(W_, sizeof(W_));
 	}
 
 	bool anubis288::init(const uint8_t* key, block_cipher::direction direction)
@@ -712,9 +742,14 @@ namespace cppcrypto
 		return anubis_encrypt_block<288>(in, out, W_);
 	}
 
+	anubis320::~anubis320()
+	{
+		clear();
+	}
+
 	void anubis320::clear()
 	{
-		memset(W_, 0, sizeof(W_));
+		zero_memory(W_, sizeof(W_));
 	}
 
 	bool anubis320::init(const uint8_t* key, block_cipher::direction direction)

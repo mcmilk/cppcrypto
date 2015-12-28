@@ -10,7 +10,7 @@
 // Level of patent protection: 0
 //
 
-// Modified for use in cppcrypto.
+// Modified by kerukuro for use in cppcrypto.
 
 #include <string.h>
 #include <stdio.h>

@@ -535,10 +535,15 @@ namespace cppcrypto
 
 	namespace detail
 	{
+		twofish::~twofish()
+		{
+			clear();
+		}
+
 		void twofish::clear()
 		{
-			memset(rk, 0, sizeof(rk));
-			memset(s, 0, sizeof(s));
+			zero_memory(rk, sizeof(rk));
+			zero_memory(s, sizeof(s));
 		}
 
 		void twofish::encrypt_block(const uint8_t* in, uint8_t* out)

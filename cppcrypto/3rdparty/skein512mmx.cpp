@@ -1,5 +1,5 @@
 // MMX implementation of Skein by Daniel J. Bernstein
-// Modified for use in cppcrypto.
+// Modified by kerukuro for use in cppcrypto.
 
 #include <stdint.h>
 #include <mmintrin.h>

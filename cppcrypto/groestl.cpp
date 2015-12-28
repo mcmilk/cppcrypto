@@ -823,10 +823,12 @@ void groestl512::transform()
 
 groestl256::~groestl256()
 {
+	clear();
 }
 
 groestl512::~groestl512()
 {
+	clear();
 }
 
 groestl256::groestl256()
@@ -859,14 +861,14 @@ groestl512::groestl512()
 
 void groestl256::clear()
 {
-	memset(h.get(), 0, h.size());
-	memset(m.get(), 0, m.size());
+	zero_memory(h.get(), h.size());
+	zero_memory(m.get(), m.size());
 }
 
 void groestl512::clear()
 {
-	memset(h.get(), 0, h.size());
-	memset(m.get(), 0, m.size());
+	zero_memory(h.get(), h.size());
+	zero_memory(m.get(), m.size());
 }
 
 }

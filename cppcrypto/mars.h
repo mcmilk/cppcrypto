@@ -16,6 +16,8 @@ namespace cppcrypto
 		class mars : public block_cipher
 		{
 		public:
+			~mars();
+
 			size_t blocksize() const { return 128; }
 			void clear();
 

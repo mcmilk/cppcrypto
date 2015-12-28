@@ -15,6 +15,8 @@ namespace cppcrypto
 	class sm4 : public block_cipher
 	{
 	public:
+		~sm4();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 128; }
 		block_cipher* clone() const { return new sm4; }

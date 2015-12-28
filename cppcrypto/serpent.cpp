@@ -42,11 +42,12 @@ namespace cppcrypto
 
 	serpent256::~serpent256()
 	{
+		clear();
 	}
 
 	void serpent256::clear()
 	{
-		memset(W, 0, sizeof(W));
+		zero_memory(W, sizeof(W));
 	}
 
 	static inline void sbox0(uint32_t& w0, uint32_t& w1, uint32_t& w2, uint32_t& w3)

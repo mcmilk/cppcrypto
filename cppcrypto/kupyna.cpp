@@ -738,6 +738,7 @@ namespace cppcrypto
 
 	kupyna256::~kupyna256()
 	{
+		clear();
 	}
 
 	static inline void G_512(uint64_t* x, uint64_t* y)
@@ -940,18 +941,19 @@ namespace cppcrypto
 
 	kupyna512::~kupyna512()
 	{
+		clear();
 	}
 
 	void kupyna512::clear()
 	{
-		memset(h.get(), 0, h.size());
-		memset(m.get(), 0, m.size());
+		zero_memory(h.get(), h.size());
+		zero_memory(m.get(), m.size());
 	}
 
 	void kupyna256::clear()
 	{
-		memset(h.get(), 0, h.size());
-		memset(m.get(), 0, m.size());
+		zero_memory(h.get(), h.size());
+		zero_memory(m.get(), m.size());
 	}
 
 }

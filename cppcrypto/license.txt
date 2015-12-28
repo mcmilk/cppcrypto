@@ -169,4 +169,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 % Hongjun Wu
 % Maxim Locktyukhin
 % Ronen Zohar
+% Romain Dolbeau
 

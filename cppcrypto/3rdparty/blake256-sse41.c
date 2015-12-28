@@ -9,7 +9,7 @@
 // Level of copyright protection: 0
 // Level of patent protection: 0
 
-// Modified for use in cppcrypto.
+// Modified by kerukuro for use in cppcrypto.
 
 
 #include <stdint.h>

@@ -24,6 +24,10 @@ namespace cppcrypto
 	p        A parallelism degree, which defines the number of parallel threads.
 	dklen    Intended output length of the derived key, given in bytes.
 
+	Optional input:
+	data     Associated data which will affect the derived key.
+	secret   Secret value which will affect the derived key.
+
 	Output:
 	dk       Derived key, of length dklen bytes.
 
@@ -33,8 +37,10 @@ namespace cppcrypto
 	    argon2i("password", 8, (const uint8_t*)"salt", 4, 4, 4096, 1000, dk, sizeof(dk));
 
 	*/
-	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen);
-	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen);
+	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
+		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0);
+	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
+		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0);
 }
 
 #endif

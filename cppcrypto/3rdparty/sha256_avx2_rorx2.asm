@@ -50,6 +50,8 @@
 ; This code schedules 2 blocks at a time, with 4 lanes per block
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; Modified by kerukuro for use in cppcrypto.
+
 %define	VMOVDQ vmovdqu ;; assume buffers not aligned 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Define Macros

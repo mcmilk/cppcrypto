@@ -9,7 +9,6 @@ namespace cppcrypto
 {
 	crypto_hash::~crypto_hash()
 	{
-		clear();
 	}
 
 	void crypto_hash::hash_string(const char* data, size_t len, uint8_t* hash)

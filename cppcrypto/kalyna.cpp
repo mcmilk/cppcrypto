@@ -6,6 +6,7 @@ and released into public domain.
 
 #include <memory.h>
 #include "kalyna.h"
+#include "portability.h"
 
 namespace cppcrypto
 {
@@ -436,9 +437,14 @@ namespace cppcrypto
 		}
 	};
 
+	kalyna512_512::~kalyna512_512()
+	{
+		clear();
+	}
+
 	void kalyna512_512::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 	static inline void G0(const uint64_t* x, uint64_t* y)
@@ -1121,9 +1127,14 @@ namespace cppcrypto
 		memcpy(out, t1, 256 / 8);
 	}
 
+	kalyna256_512::~kalyna256_512()
+	{
+		clear();
+	}
+
 	void kalyna256_512::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 	static inline void swap_block256(uint64_t* k)
@@ -1135,9 +1146,14 @@ namespace cppcrypto
 		k[3] = t;
 	}
 
+	kalyna256_256::~kalyna256_256()
+	{
+		clear();
+	}
+
 	void kalyna256_256::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 	bool kalyna256_256::init(const uint8_t* key, block_cipher::direction direction)
@@ -1387,9 +1403,14 @@ namespace cppcrypto
 		memcpy(((uint8_t*)oddkey) + 16 - 7, evenkey, 7);
 	}
 
+	kalyna128_256::~kalyna128_256()
+	{
+		clear();
+	}
+
 	void kalyna128_256::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 	void kalyna128_256::encrypt_block(const uint8_t* in, uint8_t* out)
@@ -1565,10 +1586,14 @@ namespace cppcrypto
 		return true;
 	}
 
+	kalyna128_128::~kalyna128_128()
+	{
+		clear();
+	}
 
 	void kalyna128_128::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 	void kalyna128_128::encrypt_block(const uint8_t* in, uint8_t* out)

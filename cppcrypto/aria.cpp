@@ -239,9 +239,14 @@ namespace cppcrypto
 		}
 	};
 
+	aria128::~aria128()
+	{
+		clear();
+	}
+
 	void aria128::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 	static inline void IMC(uint32_t& x0, uint32_t& x1, uint32_t& x2, uint32_t& x3)
@@ -482,9 +487,13 @@ namespace cppcrypto
 
 	void aria256::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
+	aria256::~aria256()
+	{
+		clear();
+	}
 
 	void aria256::encrypt_block(const uint8_t* in, uint8_t* out)
 	{
@@ -609,10 +618,14 @@ namespace cppcrypto
 		return true;
 	}
 
+	aria192::~aria192()
+	{
+		clear();
+	}
 
 	void aria192::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 

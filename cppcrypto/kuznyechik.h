@@ -15,6 +15,8 @@ namespace cppcrypto
 	class kuznyechik : public block_cipher
 	{
 	public:
+		~kuznyechik();
+
 		size_t blocksize() const { return 128; }
 		size_t keysize() const { return 256; }
 		block_cipher* clone() const { return new kuznyechik; }

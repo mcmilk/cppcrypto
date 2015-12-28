@@ -28,6 +28,7 @@ namespace cppcrypto
 
 	sha512::~sha512()
 	{
+		clear();
 	}
 	sha512::sha512()
 	{
@@ -302,8 +303,8 @@ namespace cppcrypto
 
 	void sha512::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(m.data(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(m.data(), m.size());
 	}
 
 }

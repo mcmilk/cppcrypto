@@ -54,6 +54,10 @@ MAKE_DIR = ginstall -d
 INSTALL_DATA = ginstall
 endif
 
+ifeq ($(UNAME),Windows)
+$(error Windows build is supported only via Visual C++ project files)
+endif
+
 ifndef OBJ64FORMAT
 $(error Unsupported platform, please edit the makefile)
 endif

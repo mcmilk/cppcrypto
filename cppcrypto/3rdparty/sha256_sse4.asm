@@ -50,6 +50,8 @@
 ; This code schedules 1 blocks at a time, with 4 lanes per block
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; Modified by kerukuro for use in cppcrypto.
+
 %define	MOVDQ movdqu ;; assume buffers not aligned 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Define Macros

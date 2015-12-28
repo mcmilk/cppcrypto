@@ -29,6 +29,8 @@
 ;   Authors: Maxim Locktyukhin and Ronen Zohar at Intel.com
 ;
 
+; Modified by kerukuro for use in cppcrypto.
+
 %ifndef INTEL_SHA1_UPDATE_DEFAULT_DISPATCH
  ;; can be replaced with a default SHA-1 update function name
 %define INTEL_SHA1_UPDATE_DEFAULT_DISPATCH  sha1_intel_non_ssse3_cpu_stub_  

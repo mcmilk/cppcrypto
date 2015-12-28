@@ -17,6 +17,7 @@ namespace cppcrypto
 {
 	sm3::~sm3()
 	{
+		clear();
 	}
 
 	sm3::sm3()
@@ -209,8 +210,8 @@ namespace cppcrypto
 
 	void sm3::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(m.data(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(m.data(), m.size());
 	}
 
 }

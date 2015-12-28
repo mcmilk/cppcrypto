@@ -53,9 +53,14 @@ namespace cppcrypto
 		return x0 ^ T(x1 ^ x2 ^ x3 ^ rk);
 	}
 
+	sm4::~sm4()
+	{
+		clear();
+	}
+
 	void sm4::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 	bool sm4::init(const uint8_t* key, block_cipher::direction direction)

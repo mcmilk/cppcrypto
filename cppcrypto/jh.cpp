@@ -51,6 +51,7 @@ namespace cppcrypto
 
 	jh512::~jh512()
 	{
+		clear();
 	}
 
 	void jh512::init()
@@ -363,8 +364,8 @@ namespace cppcrypto
 
 	void jh512::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(m.data(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(m.data(), m.size());
 	}
 
 }

@@ -22,6 +22,8 @@ namespace cppcrypto
 	class threefish512_512 : public tweakable_block_cipher
 	{
 	public:
+		~threefish512_512();
+
 		size_t blocksize() const { return 512; }
 		size_t keysize() const { return 512; }
 		size_t tweaksize() const { return 128; }
@@ -42,6 +44,8 @@ namespace cppcrypto
 	class threefish1024_1024 : public tweakable_block_cipher
 	{
 	public:
+		~threefish1024_1024();
+
 		size_t blocksize() const { return 1024; }
 		size_t keysize() const { return 1024; }
 		size_t tweaksize() const { return 128; }
@@ -62,6 +66,8 @@ namespace cppcrypto
 	class threefish256_256 : public tweakable_block_cipher
 	{
 	public:
+		~threefish256_256();
+
 		size_t blocksize() const { return 256; }
 		size_t keysize() const { return 256; }
 		size_t tweaksize() const { return 128; }

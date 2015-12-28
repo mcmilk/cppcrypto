@@ -24,6 +24,7 @@ namespace cppcrypto
 {
 	sha1::~sha1()
 	{
+		clear();
 	}
 
 	sha1::sha1()
@@ -188,8 +189,8 @@ namespace cppcrypto
 
 	void sha1::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(m.data(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(m.data(), m.size());
 	}
 
 }

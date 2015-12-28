@@ -22,6 +22,7 @@
  *   Software.
  */
 
+# Modified by kerukuro for use in cppcrypto.
 
 # 1 "sha1-fast.S"
 # 1 "<built-in>"

@@ -2177,9 +2177,14 @@ namespace cppcrypto
 		val[7] = IS[val[7]];
 	}
 
+	kuznyechik::~kuznyechik()
+	{
+		clear();
+	}
+
 	void kuznyechik::clear()
 	{
-		memset(rk, 0, sizeof(rk));
+		zero_memory(rk, sizeof(rk));
 	}
 
 	static inline void F(uint64_t k00, uint64_t k01, uint64_t k10, uint64_t k11, int i, uint64_t& o00, uint64_t& o01, uint64_t& o10, uint64_t& o11)

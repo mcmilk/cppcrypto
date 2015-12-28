@@ -38,6 +38,8 @@
 ; Linux:    yasm -f elf64 sha512_sse4.asm
 ;
 
+# Modified by kerukuro for use in cppcrypto.
+
 BITS 64
 section .text
 

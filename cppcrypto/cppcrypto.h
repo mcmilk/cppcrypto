@@ -35,5 +35,8 @@
 #include "threefish.h"
 #include "scrypt.h"
 #include "argon2.h"
+#include "salsa20.h"
+#include "hc.h"
+#include "chacha.h"
 
 #endif

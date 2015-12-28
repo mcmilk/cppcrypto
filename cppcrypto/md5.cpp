@@ -29,6 +29,7 @@ namespace cppcrypto
 
 	md5::~md5()
 	{
+		clear();
 	}
 
 	md5::md5()
@@ -192,8 +193,8 @@ namespace cppcrypto
 
 	void md5::clear()
 	{
-		memset(H.get(), 0, H.size());
-		memset(m.data(), 0, m.size());
+		zero_memory(H.get(), H.size());
+		zero_memory(m.data(), m.size());
 	}
 
 }
