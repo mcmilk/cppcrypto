@@ -199,7 +199,8 @@ namespace cppcrypto
 			}
 			if (len)
 			{
-				chacha_ECRYPT_encrypt_bytes(64, input, in + i, out + i, (uint8_t*)block, r);
+				chacha_ECRYPT_encrypt_bytes(len, input, in + i, out + i, (uint8_t*)block, r);
+				pos = len;
 			}
 			return;
 		}

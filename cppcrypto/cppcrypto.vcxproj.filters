@@ -222,6 +222,18 @@
     <ClInclude Include="3rdparty\chacha_u4.h">
       <Filter>3rdparty</Filter>
     </ClInclude>
+    <ClInclude Include="simon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="poly1305.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="speck.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="poly1305-impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -410,6 +422,18 @@
     <ClCompile Include="3rdparty\chacha-xmm.c">
       <Filter>3rdparty</Filter>
     </ClCompile>
+    <ClCompile Include="simon.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="poly1305.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\poly1305-impl-sse2.cpp">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="speck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <YASM Include="3rdparty\sha256_avx1.asm">
@@ -449,6 +473,12 @@
       <Filter>3rdparty</Filter>
     </YASM>
     <YASM Include="3rdparty\serpent-waite.asm">
+      <Filter>3rdparty</Filter>
+    </YASM>
+    <YASM Include="3rdparty\poly1305-64.asm">
+      <Filter>3rdparty</Filter>
+    </YASM>
+    <YASM Include="3rdparty\poly1305-32.asm">
       <Filter>3rdparty</Filter>
     </YASM>
   </ItemGroup>

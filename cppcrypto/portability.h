@@ -85,6 +85,11 @@ static inline uint64_t rotatel64(uint64_t x, unsigned n)
 #define aligned_allocate(a, b) aligned_alloc(b, a)
 #define aligned_deallocate free
 #else
+#ifdef __MINGW32__
+#define NO_CPP11_THREADS
+#define aligned_allocate(a, b) _aligned_malloc(a, b)
+#define aligned_deallocate _aligned_free
+#else
 static inline void* aligned_allocate(size_t a, size_t b)
 {
 	void* aPtr;
@@ -93,6 +98,7 @@ static inline void* aligned_allocate(size_t a, size_t b)
 	return aPtr;
 }
 #define aligned_deallocate free
+#endif
 #endif
 
 

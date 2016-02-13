@@ -38,5 +38,8 @@
 #include "salsa20.h"
 #include "hc.h"
 #include "chacha.h"
+#include "poly1305.h"
+#include "simon.h"
+#include "speck.h"
 
 #endif

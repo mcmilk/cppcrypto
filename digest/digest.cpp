@@ -6,6 +6,7 @@ This code is released under Simplified BSD License (see license.txt).
 #include "perftimer.h"
 #include <sys/stat.h>
 #include <algorithm>
+#include <numeric>
 //#define DUMP_TEST_ENCRYPTION
 
 using namespace std;
@@ -30,6 +31,12 @@ using namespace cppcrypto;
 #define _T(A) L ## A
 #endif
 
+#ifdef __CYGWIN__
+long stol(const string& s)
+{
+	return strtol(s.c_str(), 0, 10);
+}
+#endif
 
 long long file_size(const wchar_t* pathname)
 {
@@ -525,8 +532,8 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 					for (size_t i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)ct[i]);
 					wprintf(_T("\n"));
-					error = true;
 #endif
+					error = true;
 				}
 				bc->init(key, bc->decryption);
 
@@ -557,8 +564,8 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 					for (size_t i = 0; i < bc->blocksize() / 8; i++)
 						wprintf(_T("%02x"), (unsigned char)pt[i]);
 					wprintf(_T("\n"));
-					error = true;
 #endif
+					error = true;
 				}
 				count++;
 				if (error)
@@ -585,7 +592,7 @@ void test_vector(const wstring& name, crypto_hash* ch, const wstring& filename)
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
-	uint8_t md[260], res[260];
+	uint8_t md[1024], res[4096];
 	vector<uint8_t> msg;
 	uint32_t count = 0, failed = 0, success = 0;
 	regex eq(R"((\w+)\s*=\s*(\w*))");
@@ -598,24 +605,24 @@ void test_vector(const wstring& name, crypto_hash* ch, const wstring& filename)
 			string second = sm.str(2);
 			if (sm.str(1) == "Msg")
 			{
-				msg.resize(second.size());
+				msg.resize(second.size()+2);
 				if (!msg.empty())
 					hex2array(second, &msg[0]);
 			}
 			if (sm.str(1) == "MD")
 			{
 				hex2array(second, md);
-				if (msg.empty())
+				if (msg.size() <= 2)
 					ch->hash_string("", res);
 				else
-					ch->hash_string(&msg[0], msg.size()/2, res);
+					ch->hash_string(&msg[0], msg.size()/2-1, res);
 				if (memcmp(md, res, second.length() / 2))
 				{
 					cerr << "Error for test " << count << endl;
 #define CPPCRYPTO_DEBUG
 #ifdef CPPCRYPTO_DEBUG
 					wprintf(_T("Message was: "));
-					for (size_t i = 0; i < msg.size()/2; i++)
+					for (size_t i = 0; i < msg.size()/2-1; i++)
 						wprintf(_T("%02x"), (unsigned char)msg[i]);
 					wprintf(_T("\nHash was: "));
 					for (size_t i = 0; i < ch->hashsize() / 8; i++)
@@ -624,11 +631,178 @@ void test_vector(const wstring& name, crypto_hash* ch, const wstring& filename)
 					for (size_t i = 0; i < second.length() / 2; i++)
 						wprintf(_T("%02x"), (unsigned char)md[i]);
 					wprintf(_T("\n"));
-					failed++;
 #endif
+					failed++;
 				}
 				else success++;
 				count++;
+			}
+
+		}
+	}
+	wcout << name << _T(": ");
+	if (success)
+		wcout << (success) << _T("/") << count << _T(" OK");
+	if (failed && success)
+		wcout << _T(", ");
+	if (failed)
+		wcout << failed << _T("/") << count << _T(" FAILED");
+	if (!success && !failed)
+		wcout << _T("No tests found");
+	wcout << endl;
+}
+
+void test_vector(const wstring& name, stream_cipher* ch, const wstring& filename)
+{
+	ifstream file(filename, ios::in | ios::binary);
+	string line;
+	uint8_t key[260], iv[260], xord[260];
+	size_t keylen = 0, ivlen = 0, ptlen = 0;
+	vector<uint8_t> pt;
+	vector<uint8_t> res;
+	vector<uint8_t> ct;
+	uint32_t count = 0, failed = 0, success = 0;
+	regex eq(R"((\w+)\s*=\s*(\w*))");
+	while (getline(file, line))
+	{
+		line.erase(line.find_last_not_of("\r\n \t") + 1);
+		smatch sm;
+		if (regex_match(line, sm, eq))
+		{
+			string second = sm.str(2);
+			if (sm.str(1) == "PT")
+			{
+				pt.resize(second.size());
+				res.resize(second.size());
+				if (!pt.empty())
+					hex2array(second, &pt[0]);
+				ptlen = second.size() / 2;
+			}
+			if (sm.str(1) == "PTZERO")
+			{
+				long size = stol(second);
+				pt.resize(size);
+				res.resize(size);
+				memset(&pt[0], 0, size);
+				ptlen = size;
+			}
+			if (sm.str(1) == "KEY")
+			{
+				hex2array(second, key);
+				keylen = second.size()/2;
+			}
+			if (sm.str(1) == "IV")
+			{
+				hex2array(second, iv);
+				ivlen = second.size() / 2;
+			}
+			if (sm.str(1) == "CT" || sm.str(1) == "XOR")
+			{
+				bool isxor = sm.str(1) == "XOR";
+				bool error = false;
+				ct.resize(second.size());
+				if (!ct.empty())
+					hex2array(second, &ct[0]);
+				ch->init(key, keylen, iv, ivlen);
+				if (isxor)
+				{
+					memset(xord, 0, sizeof(xord));
+					for (size_t b = 0; b < ptlen; b+=64)
+					{
+						ch->encrypt(&pt[b], 64, &res[b]);
+						for (int i = 0; i < 64; i++)
+							xord[i] ^= res[b+i];
+					}
+					if (memcmp(&ct[0], &xord[0], 64))
+					{
+						cerr << "Error for test " << count << " (encryption)" << endl;
+#define CPPCRYPTO_DEBUG
+#ifdef CPPCRYPTO_DEBUG
+						wprintf(_T("key was: "));
+						for (size_t i = 0; i < keylen; i++)
+							wprintf(_T("%02x"), (unsigned char)key[i]);
+						wprintf(_T("\nIV was: "));
+						for (size_t i = 0; i < ivlen; i++)
+							wprintf(_T("%02x"), (unsigned char)iv[i]);
+						wprintf(_T("\nPT was: "));
+						for (size_t i = 0; i < ptlen; i++)
+							wprintf(_T("%02x"), (unsigned char)pt[i]);
+						wprintf(_T("\nXOR is: "));
+						for (size_t i = 0; i < 64; i++)
+							wprintf(_T("%02x"), (unsigned char)xord[i]);
+						wprintf(_T("\nexpected is: "));
+						for (size_t i = 0; i < second.size() / 2; i++)
+							wprintf(_T("%02x"), (unsigned char)ct[i]);
+						wprintf(_T("\n"));
+#endif
+						error = true;
+					}
+				}
+				else
+				{
+					ch->encrypt(&pt[0], ptlen, &res[0]);
+					if (memcmp(&ct[0], &res[0], ptlen))
+					{
+						cerr << "Error for test " << count << " (encryption)" << endl;
+#define CPPCRYPTO_DEBUG
+#ifdef CPPCRYPTO_DEBUG
+						wprintf(_T("key was: "));
+						for (size_t i = 0; i < keylen; i++)
+							wprintf(_T("%02x"), (unsigned char)key[i]);
+						wprintf(_T("\nIV was: "));
+						for (size_t i = 0; i < ivlen; i++)
+							wprintf(_T("%02x"), (unsigned char)iv[i]);
+						wprintf(_T("\nPT was: "));
+						for (size_t i = 0; i < ptlen; i++)
+							wprintf(_T("%02x"), (unsigned char)pt[i]);
+						wprintf(_T("\nCT is: "));
+						for (size_t i = 0; i < ptlen; i++)
+							wprintf(_T("%02x"), (unsigned char)res[i]);
+						wprintf(_T("\nexpected is: "));
+						for (size_t i = 0; i < second.size() / 2; i++)
+							wprintf(_T("%02x"), (unsigned char)ct[i]);
+						wprintf(_T("\n"));
+#endif
+						error = true;
+					}
+				}
+				ch->init(key, keylen, iv, ivlen);
+				if (isxor)
+				{
+					vector<uint8_t> res2(res);
+					ch->decrypt(&res2[0], ptlen, &res[0]);
+				}
+				else
+					ch->decrypt(&ct[0], second.size()/2, &res[0]);
+				if (memcmp(&pt[0], &res[0], ptlen))
+				{
+					cerr << "Error for test " << count << " (decryption)" << endl;
+#ifdef CPPCRYPTO_DEBUG
+					wprintf(_T("key was: "));
+					for (size_t i = 0; i < keylen; i++)
+						wprintf(_T("%02x"), (unsigned char)key[i]);
+					wprintf(_T("\nIV was: "));
+					for (size_t i = 0; i < ivlen; i++)
+						wprintf(_T("%02x"), (unsigned char)key[i]);
+					wprintf(_T("\nCT was: "));
+					for (size_t i = 0; i < second.size()/2; i++)
+						wprintf(_T("%02x"), (unsigned char)ct[i]);
+					wprintf(_T("\nPT is: "));
+					for (size_t i = 0; i < ptlen; i++)
+						wprintf(_T("%02x"), (unsigned char)res[i]);
+					wprintf(_T("\nexpected is: "));
+					for (size_t i = 0; i < ptlen; i++)
+						wprintf(_T("%02x"), (unsigned char)pt[i]);
+					wprintf(_T("\n"));
+#endif
+					error = true;
+				}
+
+				count++;
+				if (error)
+					failed++;
+				else
+					success++;
 			}
 
 		}
@@ -729,6 +903,14 @@ int wmain(int argc, wchar_t* argv[])
 	block_ciphers.emplace(make_pair(_T("threefish512_512"), unique_ptr<block_cipher>(new threefish512_512)));
 	block_ciphers.emplace(make_pair(_T("threefish1024_1024"), unique_ptr<block_cipher>(new threefish1024_1024)));
 	block_ciphers.emplace(make_pair(_T("threefish256_256"), unique_ptr<block_cipher>(new threefish256_256)));
+
+	block_ciphers.emplace(make_pair(_T("simon128_128"), unique_ptr<block_cipher>(new simon128_128)));
+	block_ciphers.emplace(make_pair(_T("simon128_192"), unique_ptr<block_cipher>(new simon128_192)));
+	block_ciphers.emplace(make_pair(_T("simon128_256"), unique_ptr<block_cipher>(new simon128_256)));
+
+	block_ciphers.emplace(make_pair(_T("speck128_128"), unique_ptr<block_cipher>(new speck128_128)));
+	block_ciphers.emplace(make_pair(_T("speck128_192"), unique_ptr<block_cipher>(new speck128_192)));
+	block_ciphers.emplace(make_pair(_T("speck128_256"), unique_ptr<block_cipher>(new speck128_256)));
 
 	map<wstring, unique_ptr<stream_cipher>> stream_ciphers;
 
@@ -843,8 +1025,15 @@ int wmain(int argc, wchar_t* argv[])
 			auto hashit2 = hashes.find(hash);
 			if (hashit2 == hashes.end())
 			{
-				wcerr << _T("Unknown algorithm: ") << hash << endl;
-				return 2;
+				// maybe it's a stream cipher
+				auto hashit3 = stream_ciphers.find(hash);
+				if (hashit3 == stream_ciphers.end())
+				{
+					wcerr << _T("Unknown algorithm: ") << hash << endl;
+					return 2;
+				}
+				test_vector(hash, hashit3->second.get(), argv[3]);
+				return 0;
 			}
 			test_vector(hash, hashit2->second.get(), argv[3]);
 			return 0;

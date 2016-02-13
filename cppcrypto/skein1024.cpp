@@ -8,13 +8,16 @@ and released into public domain.
 #include "portability.h"
 #include <memory.h>
 #include <functional>
+#include <assert.h>
+#include <algorithm>
 
 //#define CPPCRYPTO_DEBUG
 
 namespace cppcrypto
 {
-
-	void skein1024_1024::update(const uint8_t* data, size_t len)
+namespace detail
+{
+	void skein1024::update(const uint8_t* data, size_t len)
 	{
 		if (pos && pos + len > 128)
 		{
@@ -38,32 +41,6 @@ namespace cppcrypto
 		pos += len;
 		total += len * 8;
 	}
-
-	void skein1024_1024::init()
-	{
-		tweak[0] = 0ULL;
-		tweak[1] = (1ULL << 62) | (48ULL << 56);
-
-		H[0] = 0xD593DA0741E72355;
-		H[1] = 0x15B5E511AC73E00C;
-		H[2] = 0x5180E5AEBAF2C4F0;
-		H[3] = 0x03BD41D3FCBCAFAF;
-		H[4] = 0x1CAEC6FD1983A898;
-		H[5] = 0x6E510B8BCDD0589F;
-		H[6] = 0x77E2BDFDC6394ADA;
-		H[7] = 0xC11E1DB524DCB0A3;
-		H[8] = 0xD6D14AF9C6329AB5;
-		H[9] = 0x6A9B0BFC6EB67E0D;
-		H[10] = 0x9243C60DCCFF1332;
-		H[11] = 0x1A1F1DDE743F02D4;
-		H[12] = 0x0996753C10ED0BB8;
-		H[13] = 0x6572DD22F2B4969A;
-		H[14] = 0x61FD3062D00A579A;
-		H[15] = 0x1DE0536E8682E539;
-
-		pos = 0;
-		total = 0;
-	};
 
 #define G(G0, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15, C1, C2, C3, C4, C5, C6, C7, C8) \
 	G0 += G1; \
@@ -198,7 +175,7 @@ namespace cppcrypto
 		^ keys[8] ^ keys[9] ^ keys[10] ^ keys[11] ^ keys[12] ^ keys[13] ^ keys[14] ^ keys[15];
 
 #if defined(_MSC_VER) && defined(_M_X64)
-	void skein1024_1024::transform_rorx(void* mp, uint64_t num_blks, size_t reallen)
+	void skein1024::transform_rorx(void* mp, uint64_t num_blks, size_t reallen)
 	{
 		uint64_t keys[17];
 		uint64_t tweaks[3];
@@ -220,7 +197,7 @@ namespace cppcrypto
 	}
 #endif
 	
-	void skein1024_1024::transform(void* mp, uint64_t num_blks, size_t reallen)
+	void skein1024::transform(void* mp, uint64_t num_blks, size_t reallen)
 	{
 		uint64_t keys[17];
 		uint64_t tweaks[3];
@@ -242,7 +219,42 @@ namespace cppcrypto
 
 	}
 
-	void skein1024_1024::final(uint8_t* hash)
+	void skein1024::init()
+	{
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (4ULL << 56) | (1ULL << 63);
+		pos = 0;
+		total = 0;
+
+		memset(H, 0, h.bytes());
+		memset(m, 0, sizeof(m));
+		m[0] = 0x53;
+		m[1] = 0x48;
+		m[2] = 0x41;
+		m[3] = 0x33;
+		m[4] = 0x01;
+		uint64_t size64 = hs;
+		memcpy(m + 8, &size64, 8);
+
+#ifdef	CPPCRYPTO_DEBUG
+		for (int i = 0; i < sizeof(m); i++)
+			printf("%02x", m[i]);
+#endif
+
+		transfunc(m, 1, 32);
+
+#ifdef	CPPCRYPTO_DEBUG
+		printf("H0 - H15: %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X %016I64X\n",
+			H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8], H[9], H[10], H[11], H[12], H[13], H[14], H[15]);
+#endif
+
+		pos = 0;
+		total = 0;
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (48ULL << 56);
+	}
+
+	void skein1024::final(uint8_t* hash)
 	{
 		tweak[1] |= 1ULL << 63; // last block
 		if (pos < 128)
@@ -251,13 +263,94 @@ namespace cppcrypto
 		transfunc(m, 1, pos);
 
 		// generate output
-		tweak[0] = 0;
-		tweak[1] = 255ULL << 56;
 		memset(m, 0, 128);
-		transfunc(m, 1, 8);
-
-		memcpy(hash, H, hashsize() / 8);
+		if (hs <= 1024)
+		{
+			tweak[0] = 0;
+			tweak[1] = 255ULL << 56;
+			transfunc(m, 1, 8);
+			memcpy(hash, H, hashsize() / 8);
+		}
+		else
+		{
+			uint64_t counter = 0;
+			size_t hb = hs;
+			uint64_t hbk[16 * 8];
+			memcpy(hbk, H, sizeof(hbk));
+			for (size_t i = 0; i < hs; i += 1024)
+			{
+				size_t bytes = std::min(static_cast<size_t>(1024), hb)/8;
+				tweak[0] = 0;
+				tweak[1] = 255ULL << 56;
+				memcpy(m, &counter, 8);
+				transfunc(m, 1, 8);
+				memcpy(hash, H, bytes);
+				++counter;
+				hash += bytes;
+				hb -= 1024;
+				memcpy(H, hbk, sizeof(hbk));
+			}
+		}
 	}
+
+
+	skein1024::skein1024(size_t hashsize) : hs(hashsize)
+	{
+		assert(hashsize > 0 && !(hashsize % 8));
+		H = h; // tests show that this helps MSVC++ optimizer a lot
+#ifndef NO_OPTIMIZED_VERSIONS
+#if defined(_MSC_VER) && defined(_M_X64)
+		if (cpu_info::bmi2())
+			transfunc = std::bind(&skein1024_1024::transform_rorx, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+		else
+#endif
+#endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { transform(m, num_blks, reallen); };
+#else
+			transfunc = std::bind(&skein1024_1024::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+#endif
+
+	}
+
+	skein1024::~skein1024()
+	{
+		clear();
+	}
+
+	void skein1024::clear()
+	{
+		zero_memory(h.get(), h.bytes());
+		zero_memory(m, sizeof(m));
+		zero_memory(tweak, sizeof(tweak));
+	}
+} // namespace detail
+
+	void skein1024_1024::init()
+	{
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (48ULL << 56);
+
+		H[0] = 0xD593DA0741E72355;
+		H[1] = 0x15B5E511AC73E00C;
+		H[2] = 0x5180E5AEBAF2C4F0;
+		H[3] = 0x03BD41D3FCBCAFAF;
+		H[4] = 0x1CAEC6FD1983A898;
+		H[5] = 0x6E510B8BCDD0589F;
+		H[6] = 0x77E2BDFDC6394ADA;
+		H[7] = 0xC11E1DB524DCB0A3;
+		H[8] = 0xD6D14AF9C6329AB5;
+		H[9] = 0x6A9B0BFC6EB67E0D;
+		H[10] = 0x9243C60DCCFF1332;
+		H[11] = 0x1A1F1DDE743F02D4;
+		H[12] = 0x0996753C10ED0BB8;
+		H[13] = 0x6572DD22F2B4969A;
+		H[14] = 0x61FD3062D00A579A;
+		H[15] = 0x1DE0536E8682E539;
+
+		pos = 0;
+		total = 0;
+	};
 
 
 	void skein1024_512::init()
@@ -337,35 +430,5 @@ namespace cppcrypto
 		pos = 0;
 		total = 0;
 	};
-
-	skein1024_1024::skein1024_1024()
-	{
-		H = h; // tests show that this helps MSVC++ optimizer a lot
-#ifndef NO_OPTIMIZED_VERSIONS
-#if defined(_MSC_VER) && defined(_M_X64)
-		if (cpu_info::bmi2())
-			transfunc = std::bind(&skein1024_1024::transform_rorx, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-		else
-#endif
-#endif
-#ifdef NO_BIND_TO_FUNCTION
-			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { transform(m, num_blks, reallen); };
-#else
-			transfunc = std::bind(&skein1024_1024::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-#endif
-
-	}
-
-	skein1024_1024::~skein1024_1024()
-	{
-		clear();
-	}
-
-	void skein1024_1024::clear()
-	{
-		zero_memory(h.get(), h.size());
-		zero_memory(m, sizeof(m));
-		zero_memory(tweak, sizeof(tweak));
-	}
 
 }

@@ -40,6 +40,9 @@ namespace cppcrypto
 		void decrypt_update(const uint8_t* in, size_t len, std::ostream& out);
 		void decrypt_final(std::ostream& out);
 
+		size_t keysize() const { return cipher_->keysize(); }
+		size_t ivsize() const { return cipher_->blocksize(); }
+
 	private:
 		cbc(const cbc&) = delete;
 		void operator=(const cbc&) = delete;

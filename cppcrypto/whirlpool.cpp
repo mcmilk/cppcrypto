@@ -685,8 +685,8 @@ namespace cppcrypto
 
 	void whirlpool::clear()
 	{
-		zero_memory(h.get(), h.size());
-		zero_memory(m.get(), m.size());
+		zero_memory(h.get(), h.bytes());
+		zero_memory(m.get(), m.bytes());
 	}
 
 }

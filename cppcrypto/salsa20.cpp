@@ -160,7 +160,8 @@ namespace cppcrypto
 			}
 			if (len)
 			{
-				salsa20_ECRYPT_encrypt_bytes(64, input, in + i, out + i, (uint8_t*)block, r);
+				salsa20_ECRYPT_encrypt_bytes(len, input, in + i, out + i, (uint8_t*)block, r);
+				pos = len;
 			}
 			return;
 		}

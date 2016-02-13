@@ -19,9 +19,9 @@ namespace cppcrypto
 	Input:
 	password Passphrase.
 	salt     Salt.
-	t        A time cost, which defines the amount of computation realized and therefore the execution time, given in number of iterations.
-	m        A memory cost, which defines the memory usage, given in kibibytes.
 	p        A parallelism degree, which defines the number of parallel threads.
+	m        A memory cost, which defines the memory usage, given in kibibytes.
+	t        A time cost, which defines the amount of computation realized and therefore the execution time, given in number of iterations.
 	dklen    Intended output length of the derived key, given in bytes.
 
 	Optional input:

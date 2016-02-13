@@ -1,5 +1,5 @@
 ifeq ($(OS),Windows_NT)
-  UNAME := Windows
+  UNAME ?= Windows
 else
   UNAME := $(shell uname -s)
 endif
@@ -7,6 +7,9 @@ endif
 VERSION=.0
 SOSUFFIX = .so
 SOVERSION=$(SOSUFFIX)$(VERSION)
+LIBPREFIX = lib
+YASM64FLAGS = -DLINUX
+LDEXTRALIBS = -lm -lc
 
 ifeq ($(UNAME),Darwin)
 # OS X
@@ -19,6 +22,7 @@ CC=clang
 CXX=clang++
 SOSUFFIX = .dylib
 SOVERSION=$(VERSION)$(SOSUFFIX)
+SODIR=$(LIBDIR)
 LDFLAGS=-lc++ -dynamiclib -install-name=$(LIBDIR)/libcppcrypto$(SOVERSION)
 endif
 
@@ -37,6 +41,7 @@ endif
 OBJ32FORMAT  := elf32
 OBJ64FORMAT  := elf64
 INLINE_AS := 1
+SODIR=$(LIBDIR)
 LDFLAGS=-Wl,-z,now -Wl,-z,relro -Wl,-soname,libcppcrypto$(SOVERSION)
 CC=gcc
 CXX=g++
@@ -47,6 +52,7 @@ PREFIX       ?= /usr
 LIBDIR       ?= $(PREFIX)/lib
 OBJ32FORMAT  := elf32
 OBJ64FORMAT  := elf64
+SODIR=$(LIBDIR)
 LDFLAGS=-lc++
 CC=clang
 CXX=clang++
@@ -58,6 +64,7 @@ PREFIX       ?= /usr
 LIBDIR       ?= $(PREFIX)/lib
 OBJ32FORMAT  := elf32
 OBJ64FORMAT  := elf64
+SODIR=$(LIBDIR)
 CC=cc
 CXX=CC
 MAKE_DIR=ginstall -d
@@ -65,7 +72,27 @@ INSTALL_DATA=ginstall
 endif
 
 ifeq ($(UNAME),Windows)
-$(error Windows build is supported only via Visual C++ project files)
+define \n
+
+
+endef
+$(error Windows build is supported only via Visual C++ project files,$(\n)or run 'make UNAME=Cygwin' to build for Cygwin)
+endif
+
+ifeq ($(UNAME),Cygwin)
+PREFIX       ?= /usr
+LIBDIR       ?= $(PREFIX)/lib
+SODIR        ?= /bin
+OBJ32FORMAT  := win32
+OBJ64FORMAT  := win64
+LDEXTRALIBS=-lm -lc -lssp
+SOSUFFIX = .dll
+SOVERSION=$(VERSION)$(SOSUFFIX)
+CC=gcc
+CXX=g++
+LIBPREFIX = cyg
+YASM64FLAGS = -DWINABI -DWIN_ABI -DWIN64
+LDFLAGS=-Wl,--out-implib=libcppcrypto.dll.a -Wl,--export-all-symbols -Wl,--enable-auto-import 
 endif
 
 ifndef OBJ64FORMAT
@@ -115,12 +142,13 @@ OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1
       kupyna.o rijndael.o cbc.o hmac.o rijndael-impl-aesni.o rijndael-impl-aesni-avx2.o pbkdf2.o anubis.o ctr.o \
       block_cipher.o twofish.o sha3.o sha3_impl_ssse3.o KeccakF-1600-opt64.o KeccakSponge.o jh.o sha1.o \
       jh-impl-sse.o streebog.o gost3411-2012-sse41.o sm3.o md5.o serpent.o cast6.o camellia.o kalyna.o \
-	  aria.o kuznyechik.o sm4.o mars.o blake2.o blake2b.o blake2s.o threefish.o scrypt.o crypto_scrypt_smix_sse2.o \
-	  argon2.o thread_pool.o salsa20.o salsa20-xmm6int.o hc.o chacha.o chacha-xmm.o
+      aria.o kuznyechik.o sm4.o mars.o blake2.o blake2b.o blake2s.o threefish.o scrypt.o crypto_scrypt_smix_sse2.o \
+      argon2.o thread_pool.o salsa20.o salsa20-xmm6int.o hc.o chacha.o chacha-xmm.o poly1305.o poly1305-impl-sse2.o \
+      simon.o speck.o 
 
-OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha1-nayuki.o serpent-waite.o
+OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha1-nayuki.o serpent-waite.o poly1305-32.o
 OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o \
-         sha1_ssse3.o gost3411-2012-sse2.o
+         sha1_ssse3.o gost3411-2012-sse2.o poly1305-64.o
 
 ifdef INLINE_AS
 OBJS32 += sha256-cryptopp-x86-linux.o 
@@ -136,22 +164,22 @@ else
    OBJS += $(OBJS32)
 endif
 
-all: libcppcrypto$(SOVERSION)
+all: $(LIBPREFIX)cppcrypto$(SOVERSION)
 
-libcppcrypto$(SOVERSION): $(OBJS) 
-	$(CXX) $(LDFLAGS) -shared -o libcppcrypto$(SOVERSION)  $(OBJS) -lm -lc $(LDEXTRALIBS)
+$(LIBPREFIX)cppcrypto$(SOVERSION): $(OBJS) 
+	$(CXX) $(LDFLAGS) -shared -o $(LIBPREFIX)cppcrypto$(SOVERSION)  $(OBJS) $(LDEXTRALIBS)
 	ar rcs libcppcrypto.a  $(OBJS)
 
 
 clean:
-	rm -f *.o 3rdparty/*.o libcppcrypto.*
+	rm -f *.o 3rdparty/*.o libcppcrypto.* $(LIBPREFIX)cppcrypto.*
 
-install: libcppcrypto$(SOVERSION)
+install: $(LIBPREFIX)cppcrypto$(SOVERSION)
 	$(MAKE_DIR) $(DESTDIR) $(DESTDIR)$(PREFIX) $(DESTDIR)$(LIBDIR) $(DESTDIR)$(INCLUDEDIR)
-	$(INSTALL_DATA) -pm 0755 libcppcrypto$(SOVERSION) $(DESTDIR)$(LIBDIR)
-	cd $(DESTDIR)$(LIBDIR) && ln -s -f libcppcrypto$(SOVERSION) $(DESTDIR)$(LIBDIR)/libcppcrypto$(SOSUFFIX)
+	$(INSTALL_DATA) -pm 0755 $(LIBPREFIX)cppcrypto$(SOVERSION) $(DESTDIR)$(SODIR)
+	cd $(DESTDIR)$(SODIR) && ln -s -f $(LIBPREFIX)cppcrypto$(SOVERSION) $(DESTDIR)$(SODIR)/$(LIBPREFIX)cppcrypto$(SOSUFFIX)
 	$(INSTALL_DATA) -pm 0644 *.h  $(DESTDIR)$(INCLUDEDIR)
-	$(INSTALL_DATA) -pm 0644 libcppcrypto.a $(DESTDIR)$(LIBDIR)
+	$(INSTALL_DATA) -pm 0644 libcppcrypto*.a $(DESTDIR)$(LIBDIR)
 
 blake256-sse2.o: 3rdparty/blake256-sse2.c
 	$(CC) -c $(CFLAGS) 3rdparty/blake256-sse2.c
@@ -172,19 +200,19 @@ blake2s.o: 3rdparty/blake2s.c
 	$(CC) -c $(CFLAGS) $(ARCHSSE41) 3rdparty/blake2s.c
 
 b256avxs.o: 3rdparty/b256avxs.asm
-	yasm -f $(OBJ64FORMAT) -o b256avxs.o 3rdparty/b256avxs.asm
+	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o b256avxs.o 3rdparty/b256avxs.asm
 
 sha256_sse4.o: 3rdparty/sha256_sse4.asm
-	yasm -f $(OBJ64FORMAT) -DLINUX -o sha256_sse4.o 3rdparty/sha256_sse4.asm
+	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o sha256_sse4.o 3rdparty/sha256_sse4.asm
 
 sha256_avx2_rorx2.o: 3rdparty/sha256_avx2_rorx2.asm
-	yasm -f $(OBJ64FORMAT) -DLINUX -o sha256_avx2_rorx2.o 3rdparty/sha256_avx2_rorx2.asm
+	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o sha256_avx2_rorx2.o 3rdparty/sha256_avx2_rorx2.asm
 
 sha512_sse4.o: 3rdparty/sha512_sse4.asm
-	yasm -f $(OBJ64FORMAT) -o sha512_sse4.o 3rdparty/sha512_sse4.asm
+	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o sha512_sse4.o 3rdparty/sha512_sse4.asm
 
 sha512_avx2_rorx.o: 3rdparty/sha512_avx2_rorx.asm
-	yasm -f $(OBJ64FORMAT) -o sha512_avx2_rorx.o 3rdparty/sha512_avx2_rorx.asm
+	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o sha512_avx2_rorx.o 3rdparty/sha512_avx2_rorx.asm
 
 sha256-cryptopp-x64-linux.o: 3rdparty/sha256-cryptopp-x64-linux.cpp
 	$(CXX) -c $(CXXFLAGS) 3rdparty/sha256-cryptopp-x64-linux.cpp
@@ -226,7 +254,7 @@ sha1-nayuki.o: 3rdparty/sha1-nayuki.asm
 	yasm -f $(OBJ32FORMAT) -r raw -p gas -o sha1-nayuki.o 3rdparty/sha1-nayuki.asm
 
 sha1_ssse3.o: 3rdparty/sha1_ssse3.asm
-	yasm -f $(OBJ64FORMAT) -o sha1_ssse3.o 3rdparty/sha1_ssse3.asm
+	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o sha1_ssse3.o 3rdparty/sha1_ssse3.asm
 
 jh-impl-sse.o: 3rdparty/jh-impl-sse.cpp
 	$(CXX) -c $(CXXFLAGS) 3rdparty/jh-impl-sse.cpp
@@ -249,4 +277,12 @@ salsa20-xmm6int.o: 3rdparty/salsa20-xmm6int.c
 chacha-xmm.o: 3rdparty/chacha-xmm.c
 	$(CC) -c $(CFLAGS) $(ARCHSSSE3) 3rdparty/chacha-xmm.c
 
+poly1305-32.o: 3rdparty/poly1305-32.asm
+	yasm -f $(OBJ32FORMAT) -r nasm -p gas -o poly1305-32.o 3rdparty/poly1305-32.asm
+
+poly1305-64.o: 3rdparty/poly1305-64.asm
+	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -r nasm -p gas -o poly1305-64.o 3rdparty/poly1305-64.asm
+
+poly1305-impl-sse2.o: 3rdparty/poly1305-impl-sse2.cpp
+	$(CXX) -c $(CXXFLAGS) 3rdparty/poly1305-impl-sse2.cpp
 

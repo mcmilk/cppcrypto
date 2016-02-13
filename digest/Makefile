@@ -1,5 +1,5 @@
 ifeq ($(OS),Windows_NT)
-  UNAME := Windows
+  UNAME ?= Windows
 else
   UNAME := $(shell uname -s)
 endif
@@ -55,7 +55,22 @@ INSTALL_DATA = ginstall
 endif
 
 ifeq ($(UNAME),Windows)
-$(error Windows build is supported only via Visual C++ project files)
+define \n
+
+
+endef
+$(error Windows build is supported only via Visual C++ project files,$(\n)or run 'make UNAME=Cygwin' to build for Cygwin)
+endif
+
+ifeq ($(UNAME),Cygwin)
+PREFIX       ?= /usr
+LIBDIR       ?= $(PREFIX)/lib
+OBJ32FORMAT  := win32
+OBJ64FORMAT  := win64
+LDFLAGS=-lstdc++
+LDEXTRALIBS=-lcppcrypto -lssp
+CC=g++
+CXX=g++
 endif
 
 ifndef OBJ64FORMAT
@@ -97,7 +112,7 @@ OBJS= perftimer.o digest.o
 all: digest
 
 digest: $(OBJS) 
-
+	$(CC) $(LDFLAGS) -o digest $(OBJS) $(LDEXTRALIBS)
 
 clean:
 	rm -f *.o digest

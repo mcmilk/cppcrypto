@@ -946,14 +946,14 @@ namespace cppcrypto
 
 	void kupyna512::clear()
 	{
-		zero_memory(h.get(), h.size());
-		zero_memory(m.get(), m.size());
+		zero_memory(h.get(), h.bytes());
+		zero_memory(m.get(), m.bytes());
 	}
 
 	void kupyna256::clear()
 	{
-		zero_memory(h.get(), h.size());
-		zero_memory(m.get(), m.size());
+		zero_memory(h.get(), h.bytes());
+		zero_memory(m.get(), m.bytes());
 	}
 
 }

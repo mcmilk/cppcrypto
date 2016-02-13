@@ -1,3 +1,9 @@
+2015-02-13 cppcrypto-0.14
+
+New block cipher algorithms: Simon, Speck.
+New MAC algorithm: Poly1305.
+New supported platform: Cygwin (experimental).
+
 2015-12-27 cppcrypto-0.13
 
 New stream cipher algorithms: ChaCha, HC-128, HC-256, Salsa20, XChaCha, XSalsa20.

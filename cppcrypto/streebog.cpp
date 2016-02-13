@@ -8,6 +8,7 @@ and released into public domain.
 #include "portability.h"
 #include <memory.h>
 
+//#define NO_OPTIMIZED_VERSIONS
 //#define CPPCRYPTO_DEBUG
 
 #ifdef _MSC_VER
@@ -607,17 +608,17 @@ namespace cppcrypto
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("lps input: ", block);
 #endif
-		union { unsigned char ch[64]; unsigned long long ll[8]; } t;
-		memcpy(t.ll, block, 64);
+		unsigned char ch[64];
+		memcpy(ch, block, 64);
 
-		block[0] = T[0][(t.ch[0])] ^ T[1][(t.ch[8 + 0])] ^ T[2][(t.ch[16 + 0])] ^ T[3][(t.ch[24 + 0])] ^ T[4][(t.ch[32 + 0])] ^ T[5][(t.ch[40 + 0])] ^ T[6][(t.ch[48 + 0])] ^ T[7][(t.ch[56 + 0])];
-		block[1] = T[0][(t.ch[1])] ^ T[1][(t.ch[8 + 1])] ^ T[2][(t.ch[16 + 1])] ^ T[3][(t.ch[24 + 1])] ^ T[4][(t.ch[32 + 1])] ^ T[5][(t.ch[40 + 1])] ^ T[6][(t.ch[48 + 1])] ^ T[7][(t.ch[56 + 1])];
-		block[2] = T[0][(t.ch[2])] ^ T[1][(t.ch[8 + 2])] ^ T[2][(t.ch[16 + 2])] ^ T[3][(t.ch[24 + 2])] ^ T[4][(t.ch[32 + 2])] ^ T[5][(t.ch[40 + 2])] ^ T[6][(t.ch[48 + 2])] ^ T[7][(t.ch[56 + 2])];
-		block[3] = T[0][(t.ch[3])] ^ T[1][(t.ch[8 + 3])] ^ T[2][(t.ch[16 + 3])] ^ T[3][(t.ch[24 + 3])] ^ T[4][(t.ch[32 + 3])] ^ T[5][(t.ch[40 + 3])] ^ T[6][(t.ch[48 + 3])] ^ T[7][(t.ch[56 + 3])];
-		block[4] = T[0][(t.ch[4])] ^ T[1][(t.ch[8 + 4])] ^ T[2][(t.ch[16 + 4])] ^ T[3][(t.ch[24 + 4])] ^ T[4][(t.ch[32 + 4])] ^ T[5][(t.ch[40 + 4])] ^ T[6][(t.ch[48 + 4])] ^ T[7][(t.ch[56 + 4])];
-		block[5] = T[0][(t.ch[5])] ^ T[1][(t.ch[8 + 5])] ^ T[2][(t.ch[16 + 5])] ^ T[3][(t.ch[24 + 5])] ^ T[4][(t.ch[32 + 5])] ^ T[5][(t.ch[40 + 5])] ^ T[6][(t.ch[48 + 5])] ^ T[7][(t.ch[56 + 5])];
-		block[6] = T[0][(t.ch[6])] ^ T[1][(t.ch[8 + 6])] ^ T[2][(t.ch[16 + 6])] ^ T[3][(t.ch[24 + 6])] ^ T[4][(t.ch[32 + 6])] ^ T[5][(t.ch[40 + 6])] ^ T[6][(t.ch[48 + 6])] ^ T[7][(t.ch[56 + 6])];
-		block[7] = T[0][(t.ch[7])] ^ T[1][(t.ch[8 + 7])] ^ T[2][(t.ch[16 + 7])] ^ T[3][(t.ch[24 + 7])] ^ T[4][(t.ch[32 + 7])] ^ T[5][(t.ch[40 + 7])] ^ T[6][(t.ch[48 + 7])] ^ T[7][(t.ch[56 + 7])];
+		block[0] = T[0][(ch[0])] ^ T[1][(ch[8 + 0])] ^ T[2][(ch[16 + 0])] ^ T[3][(ch[24 + 0])] ^ T[4][(ch[32 + 0])] ^ T[5][(ch[40 + 0])] ^ T[6][(ch[48 + 0])] ^ T[7][(ch[56 + 0])];
+		block[1] = T[0][(ch[1])] ^ T[1][(ch[8 + 1])] ^ T[2][(ch[16 + 1])] ^ T[3][(ch[24 + 1])] ^ T[4][(ch[32 + 1])] ^ T[5][(ch[40 + 1])] ^ T[6][(ch[48 + 1])] ^ T[7][(ch[56 + 1])];
+		block[2] = T[0][(ch[2])] ^ T[1][(ch[8 + 2])] ^ T[2][(ch[16 + 2])] ^ T[3][(ch[24 + 2])] ^ T[4][(ch[32 + 2])] ^ T[5][(ch[40 + 2])] ^ T[6][(ch[48 + 2])] ^ T[7][(ch[56 + 2])];
+		block[3] = T[0][(ch[3])] ^ T[1][(ch[8 + 3])] ^ T[2][(ch[16 + 3])] ^ T[3][(ch[24 + 3])] ^ T[4][(ch[32 + 3])] ^ T[5][(ch[40 + 3])] ^ T[6][(ch[48 + 3])] ^ T[7][(ch[56 + 3])];
+		block[4] = T[0][(ch[4])] ^ T[1][(ch[8 + 4])] ^ T[2][(ch[16 + 4])] ^ T[3][(ch[24 + 4])] ^ T[4][(ch[32 + 4])] ^ T[5][(ch[40 + 4])] ^ T[6][(ch[48 + 4])] ^ T[7][(ch[56 + 4])];
+		block[5] = T[0][(ch[5])] ^ T[1][(ch[8 + 5])] ^ T[2][(ch[16 + 5])] ^ T[3][(ch[24 + 5])] ^ T[4][(ch[32 + 5])] ^ T[5][(ch[40 + 5])] ^ T[6][(ch[48 + 5])] ^ T[7][(ch[56 + 5])];
+		block[6] = T[0][(ch[6])] ^ T[1][(ch[8 + 6])] ^ T[2][(ch[16 + 6])] ^ T[3][(ch[24 + 6])] ^ T[4][(ch[32 + 6])] ^ T[5][(ch[40 + 6])] ^ T[6][(ch[48 + 6])] ^ T[7][(ch[56 + 6])];
+		block[7] = T[0][(ch[7])] ^ T[1][(ch[8 + 7])] ^ T[2][(ch[16 + 7])] ^ T[3][(ch[24 + 7])] ^ T[4][(ch[32 + 7])] ^ T[5][(ch[40 + 7])] ^ T[6][(ch[48 + 7])] ^ T[7][(ch[56 + 7])];
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("lps block: ", block);
 #endif
@@ -777,9 +778,9 @@ namespace cppcrypto
 
 	void streebog512::clear()
 	{
-		zero_memory(h.get(), h.size());
-		zero_memory(m.get(), m.size());
-		zero_memory(S.get(), S.size());
+		zero_memory(h.get(), h.bytes());
+		zero_memory(m.get(), m.bytes());
+		zero_memory(S.get(), S.bytes());
 	}
 
 #if 0

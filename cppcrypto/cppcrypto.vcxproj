@@ -284,6 +284,8 @@
     <ClInclude Include="mars.h" />
     <ClInclude Include="md5.h" />
     <ClInclude Include="pbkdf2.h" />
+    <ClInclude Include="poly1305-impl.h" />
+    <ClInclude Include="poly1305.h" />
     <ClInclude Include="portability.h" />
     <ClInclude Include="rijndael-impl-aesni-common.h" />
     <ClInclude Include="rijndael-impl.h" />
@@ -295,11 +297,13 @@
     <ClInclude Include="sha256.h" />
     <ClInclude Include="sha3.h" />
     <ClInclude Include="sha512.h" />
+    <ClInclude Include="simon.h" />
     <ClInclude Include="skein1024.h" />
     <ClInclude Include="skein256.h" />
     <ClInclude Include="skein512.h" />
     <ClInclude Include="sm3.h" />
     <ClInclude Include="sm4.h" />
+    <ClInclude Include="speck.h" />
     <ClInclude Include="stream_cipher.h" />
     <ClInclude Include="streebog.h" />
     <ClInclude Include="thread_pool.h" />
@@ -320,6 +324,7 @@
     </ClCompile>
     <ClCompile Include="3rdparty\gost3411-2012-sse41.c" />
     <ClCompile Include="3rdparty\jh-impl-sse.cpp" />
+    <ClCompile Include="3rdparty\poly1305-impl-sse2.cpp" />
     <ClCompile Include="3rdparty\salsa20-xmm6int.c" />
     <ClCompile Include="argon2.cpp" />
     <ClCompile Include="aria.cpp" />
@@ -356,6 +361,7 @@
     <ClCompile Include="mars.cpp" />
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="pbkdf2.cpp" />
+    <ClCompile Include="poly1305.cpp" />
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
     <ClCompile Include="rijndael-impl-aesni.cpp" />
     <ClCompile Include="rijndael.cpp" />
@@ -366,6 +372,7 @@
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="sha3.cpp" />
     <ClCompile Include="sha512.cpp" />
+    <ClCompile Include="simon.cpp" />
     <ClCompile Include="skein1024.cpp" />
     <ClCompile Include="skein256.cpp" />
     <ClCompile Include="skein512.cpp" />
@@ -376,6 +383,7 @@
     </ClCompile>
     <ClCompile Include="sm3.cpp" />
     <ClCompile Include="sm4.cpp" />
+    <ClCompile Include="speck.cpp" />
     <ClCompile Include="streebog.cpp" />
     <ClCompile Include="thread_pool.cpp" />
     <ClCompile Include="threefish.cpp" />
@@ -397,6 +405,28 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">true</ExcludedFromBuild>
+    </YASM>
+    <YASM Include="3rdparty\poly1305-32.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</Parser>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</Parser>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1</Parser>
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">0</PreProc>
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">0</PreProc>
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">0</PreProc>
+    </YASM>
+    <YASM Include="3rdparty\poly1305-64.asm">
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">0</PreProc>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">1</Parser>
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">0</PreProc>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">1</Parser>
+      <PreProc Condition="'$(Configuration)|$(Platform)'=='Release|x64'">0</PreProc>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release|x64'">1</Parser>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </YASM>
     <YASM Include="3rdparty\serpent-waite.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

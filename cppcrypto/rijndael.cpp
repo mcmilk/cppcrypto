@@ -479,7 +479,7 @@ namespace cppcrypto
 
 	void rijndael128_128::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael128_192::init(const uint8_t* key, block_cipher::direction direction)
@@ -564,7 +564,7 @@ namespace cppcrypto
 
 	void rijndael128_192::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael128_256::init(const uint8_t* key, block_cipher::direction direction)
@@ -649,7 +649,7 @@ namespace cppcrypto
 
 	void rijndael128_256::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael128_224::init(const uint8_t* key, block_cipher::direction direction)
@@ -730,7 +730,7 @@ namespace cppcrypto
 
 	void rijndael128_224::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael128_160::init(const uint8_t* key, block_cipher::direction direction)
@@ -813,7 +813,7 @@ namespace cppcrypto
 
 	void rijndael128_160::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 #define KEYIMC256(i) \
@@ -1003,7 +1003,7 @@ namespace cppcrypto
 
 		void rijndael256::clear()
 		{
-			zero_memory(W_, W_.size());
+			zero_memory(W_, W_.bytes());
 		}
 
 	}
@@ -1383,7 +1383,7 @@ namespace cppcrypto
 
 	void rijndael192_128::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 
@@ -1468,7 +1468,7 @@ namespace cppcrypto
 
 	void rijndael192_160::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 
@@ -1550,7 +1550,7 @@ namespace cppcrypto
 
 	void rijndael192_192::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael192_224::init(const uint8_t* key, block_cipher::direction direction)
@@ -1632,7 +1632,7 @@ namespace cppcrypto
 
 	void rijndael192_224::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael192_256::init(const uint8_t* key, block_cipher::direction direction)
@@ -1719,7 +1719,7 @@ namespace cppcrypto
 
 	void rijndael192_256::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 #define KEYIMC160(i) \
@@ -1875,7 +1875,7 @@ namespace cppcrypto
 
 	void rijndael160_128::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael160_160::init(const uint8_t* key, block_cipher::direction direction)
@@ -1954,7 +1954,7 @@ namespace cppcrypto
 
 	void rijndael160_160::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael160_192::init(const uint8_t* key, block_cipher::direction direction)
@@ -2036,7 +2036,7 @@ namespace cppcrypto
 
 	void rijndael160_192::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael160_224::init(const uint8_t* key, block_cipher::direction direction)
@@ -2118,7 +2118,7 @@ namespace cppcrypto
 
 	void rijndael160_224::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 	bool rijndael160_256::init(const uint8_t* key, block_cipher::direction direction)
@@ -2205,7 +2205,7 @@ namespace cppcrypto
 
 	void rijndael160_256::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 #define KEYIMC224(i) \
@@ -2499,7 +2499,7 @@ namespace cppcrypto
 
 		void rijndael224::clear()
 		{
-			zero_memory(W_, W_.size());
+			zero_memory(W_, W_.bytes());
 		}
 	}
 
@@ -2630,7 +2630,7 @@ namespace cppcrypto
 
 	void rijndael224_256::clear()
 	{
-		zero_memory(W_, W_.size());
+		zero_memory(W_, W_.bytes());
 	}
 
 

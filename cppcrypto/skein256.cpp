@@ -17,8 +17,9 @@ void Skein_256_Process_Block_mmx(uint64_t* T, uint64_t* X, const uint8_t *blkPtr
 
 namespace cppcrypto
 {
-
-	void skein256_256::update(const uint8_t* data, size_t len)
+namespace detail
+{
+	void skein256::update(const uint8_t* data, size_t len)
 	{
 		if (pos && pos + len > 32)
 		{
@@ -38,23 +39,32 @@ namespace cppcrypto
 			total += (bytes)* 8;
 			data += bytes;
 		}
-		memcpy(m+pos, data, len);
+		memcpy(m + pos, data, len);
 		pos += len;
 		total += len * 8;
 	}
 
-	void skein256_256::init()
+	void skein256::init()
 	{
 		tweak[0] = 0ULL;
-		tweak[1] = (1ULL << 62) | (48ULL << 56); // should be: 112 << 56
-
-		H[0] = 0xFC9DA860D048B449;
-		H[1] = 0x2FCA66479FA7D833;
-		H[2] = 0xB33BC3896656840F;
-		H[3] = 0x6A54E920FDE8DA69;
-
+		tweak[1] = (1ULL << 62) | (4ULL << 56) | (1ULL << 63);
 		pos = 0;
 		total = 0;
+
+		memset(H, 0, h.bytes());
+		memset(m, 0, sizeof(m));
+		m[0] = 0x53;
+		m[1] = 0x48;
+		m[2] = 0x41;
+		m[3] = 0x33;
+		m[4] = 0x01;
+		uint64_t size64 = hs;
+		memcpy(m + 8, &size64, 8);
+		transfunc(m, 1, 32);
+		pos = 0;
+		total = 0;
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (48ULL << 56);
 	};
 
 
@@ -82,7 +92,7 @@ namespace cppcrypto
 	G(G0, G3, G2, G1, 32, 32); \
 	KS(r + 1);
 
-	void skein256_256::transform(void* mp, uint64_t num_blks, size_t reallen)
+	void skein256::transform(void* mp, uint64_t num_blks, size_t reallen)
 	{
 		uint64_t keys[5];
 		uint64_t tweaks[3];
@@ -96,8 +106,8 @@ namespace cppcrypto
 				M[i] = (reinterpret_cast<const uint64_t*>(mp)[b * 4 + i]);
 			}
 
-			memcpy(keys, H, sizeof(uint64_t)*4);
-			memcpy(tweaks, tweak, sizeof(uint64_t)*2);
+			memcpy(keys, H, sizeof(uint64_t) * 4);
+			memcpy(tweaks, tweak, sizeof(uint64_t) * 2);
 			tweaks[0] += reallen;
 			tweaks[2] = tweaks[0] ^ tweaks[1];
 			keys[4] = 0x1BD11BDAA9FC1A22ULL ^ keys[0] ^ keys[1] ^ keys[2] ^ keys[3];
@@ -123,7 +133,7 @@ namespace cppcrypto
 			tweaks[1] &= ~(64ULL << 56);
 			tweak[0] = tweaks[0];
 			tweak[1] = tweaks[1];
-			
+
 			H[0] = G0 ^ M[0];
 			H[1] = G1 ^ M[1];
 			H[2] = G2 ^ M[2];
@@ -132,7 +142,7 @@ namespace cppcrypto
 
 	}
 
-	void skein256_256::final(uint8_t* hash)
+	void skein256::final(uint8_t* hash)
 	{
 		tweak[1] |= 1ULL << 63; // last block
 		if (pos < 32)
@@ -141,13 +151,85 @@ namespace cppcrypto
 		transfunc(m, 1, pos);
 
 		// generate output
-		tweak[0] = 0;
-		tweak[1] = 255ULL << 56;
 		memset(m, 0, 32);
-		transfunc(m, 1, 8);
+		if (hs <= 256)
+		{
+			tweak[0] = 0;
+			tweak[1] = 255ULL << 56;
+			transfunc(m, 1, 8);
+			memcpy(hash, H, hashsize() / 8);
+		}
+		else
+		{
+			uint64_t counter = 0;
+			size_t hb = hs;
+			uint64_t hbk[4 * 8];
+			memcpy(hbk, H, sizeof(hbk));
+			for (size_t i = 0; i < hs; i += 256)
+			{
+				size_t bytes = std::min(static_cast<size_t>(256), hb) / 8;
+				tweak[0] = 0;
+				tweak[1] = 255ULL << 56;
+				memcpy(m, &counter, 8);
+				transfunc(m, 1, 8);
+				memcpy(hash, H, bytes);
+				++counter;
+				hash += bytes;
+				hb -= 256;
+				memcpy(H, hbk, sizeof(hbk));
+			}
+		}
 
-		memcpy(hash, H, hashsize() / 8);
 	}
+
+
+	skein256::skein256(size_t hashsize)
+		: hs(hashsize)
+	{
+		H = h; // tests show that this helps MSVC++ optimizer a lot
+#ifndef NO_OPTIMIZED_VERSIONS
+#ifndef _M_X64
+#ifndef __clang__ // MMX code is very slow on clang compiles for some reason
+		if (cpu_info::mmx())
+			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { Skein_256_Process_Block_mmx(tweak, H, (uint8_t*)m, static_cast<size_t>(num_blks), reallen); };
+		else
+#endif
+#endif
+#endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { transform(m, num_blks, reallen); };
+#else
+			transfunc = std::bind(&skein256::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+#endif
+	}
+
+	skein256::~skein256()
+	{
+		clear();
+	}
+
+	void skein256::clear()
+	{
+		zero_memory(h.get(), h.bytes());
+		zero_memory(m, sizeof(m));
+		zero_memory(tweak, sizeof(tweak));
+	}
+} // namespace detail
+
+
+	void skein256_256::init()
+	{
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (48ULL << 56); // should be: 112 << 56
+
+		H[0] = 0xFC9DA860D048B449;
+		H[1] = 0x2FCA66479FA7D833;
+		H[2] = 0xB33BC3896656840F;
+		H[3] = 0x6A54E920FDE8DA69;
+
+		pos = 0;
+		total = 0;
+	};
 
 	void skein256_224::init()
 	{
@@ -190,36 +272,5 @@ namespace cppcrypto
 		pos = 0;
 		total = 0;
 	};
-
-	skein256_256::skein256_256()
-	{
-		H = h; // tests show that this helps MSVC++ optimizer a lot
-#ifndef NO_OPTIMIZED_VERSIONS
-#ifndef _M_X64
-#ifndef __clang__ // MMX code is very slow on clang compiles for some reason
-		if (cpu_info::mmx())
-			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { Skein_256_Process_Block_mmx(tweak, H, (uint8_t*)m, static_cast<size_t>(num_blks), reallen); };
-		else
-#endif
-#endif
-#endif
-#ifdef NO_BIND_TO_FUNCTION
-			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { transform(m, num_blks, reallen); };
-#else
-			transfunc = std::bind(&skein256_256::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-#endif
-	}
-
-	skein256_256::~skein256_256()
-	{
-		clear();
-	}
-
-	void skein256_256::clear()
-	{
-		zero_memory(h.get(), h.size());
-		zero_memory(m, sizeof(m));
-		zero_memory(tweak, sizeof(tweak));
-	}
 
 }

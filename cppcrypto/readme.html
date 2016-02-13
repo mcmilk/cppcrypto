@@ -84,7 +84,7 @@ span.toc {
 <span class="toc"><a href="#chsc">6. Stream cipher algorithms</a></span>
 <span class="toc"><a href="#chkdf">7. Key derivation functions</a></span>
 <span class="toc"><a href="#chdu">8. Digest utility</a></span>
-<span class="toc"><a href="#chpn">9. Platform notes</a></span>
+<span class="toc"><a href="#chpn">9. Portability notes</a></span>
 <span class="toc"><a href="#chdl">10. Download link</a></span>
 </p>
 <h2 id="chintro">1. Introduction</h2>
@@ -311,6 +311,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <p>You can run the hashing performance test on your own PC using the following command:</p>
 <pre>    digest test &lt;number_of_iterations&gt; &lt;filename_to_hash&gt;</pre>
 <h2 id="chmac">3. MAC algorithms</h2>
+<h3>3.1 HMAC</h3>
 <p>Class <code>hmac</code> is also derived from <code>crypto_hash</code> and implements the same interface. The only difference is that you need to pass a reference to a hash algorithm and a key in the constructor.
 <pre>
     hmac(const crypto_hash& hash, const uint8_t* key, size_t keylen);
@@ -324,6 +325,19 @@ then call <code>update()</code> any number of times to add the next chunk of dat
     hmac mac(sha256(), hmackey, sizeof(hmackey));
     uint8_t result[32];
     mac.hash_string("The quick brown fox jumps over the lazy dog", result);
+</pre>
+<h3>3.2 Poly1305</h3>
+<p>Class <code>poly1305</code> is also derived from <code>crypto_hash</code> and implements the same interface. The only difference is that you need to pass a key in the constructor.
+<pre>
+    poly1305(const uint8_t* key, size_t keylen);
+</pre>
+<p>The key <b><i>must</i></b> have length 32 bytes (256 bits). The following sample calculates Poly1305 of a string &quot;The quick brown fox jumps over the lazy dog&quot; with key &quot;\x00\x01\x02...\x31&quot;:</p>
+<pre>
+    uint8_t key[32];
+    std::iota(key, key + 32, 0);
+    poly1305 poly(key, sizeof(key));
+    uint8_t result[16];
+    poly.hash_string("The quick brown fox jumps over the lazy dog", result);
 </pre>
 <h2 id="chbc">4. Block cipher algorithms</h2>
 <h3>4.1. Interface description</h3>
@@ -391,8 +405,16 @@ In practice in most cases you probably want to use block ciphers in an encryptio
 <td class="descr"><b><a href="https://en.wikipedia.org/wiki/Serpent_%28cipher%29">Serpent</a></b> cipher (one of AES finalists)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
 </tr>
 <tr>
+<td><code>simon128_128</code><br><code>simon128_192</code><br><code>simon128_256</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Simon_%28cipher%29">Simon</a></b> cipher<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
+</tr>
+<tr>
 <td><code>sm4</code></td>
 <td class="descr"><b><a href="https://en.wikipedia.org/wiki/SMS4">SM4</a></b> cipher (Chinese national standard for Wireless LAN)<br>with block size 128 bits and key size 128 bits.</td>
+</tr>
+<tr>
+<td><code>speck128_128</code><br><code>speck128_192</code><br><code>speck128_256</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Speck_%28cipher%29">Speck</a></b> cipher<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
 </tr>
 <tr>
 <td><code>threefish256_256</code><br><code>threefish512_512</code><br><code>threefish1024_1024</code></td>
@@ -528,7 +550,13 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
 <tr><td class="algorithm top">Serpent-128</td><td class="top">84</td><td class="right top">96</td><td class="top">89</td><td class="right top">93</td><td class="top">90</td><td class="right top">93</td>
 <tr><td class="algorithm">Serpent-192</td><td>84</td><td class="right">96</td><td>89</td><td class="right">93</td><td>90</td><td class="right">93</td>
 <tr><td class="algorithm bottom">Serpent-256</td><td class="bottom">84</td><td class="right bottom">96</td><td>89</td><td class="right">93</td><td>90</td><td class="right">93</td>
+<tr><td class="algorithm top">Simon-128/128</td><td class="top">135</td><td class="right top">46</td><td class="top">136</td><td class="right top">43</td><td class="top">142</td><td class="right top">61</td>
+<tr><td class="algorithm">Simon-128/192</td><td>128</td><td class="right">53</td><td>134</td><td class="right">43</td><td>155</td><td class="right">65</td>
+<tr><td class="algorithm bottom">Simon-128/256</td><td class="bottom">128</td><td class="right bottom">44</td><td>130</td><td class="right">40</td><td>134</td><td class="right">58</td>
 <tr><td class="algorithm top">SM4</td><td class="top">77</td><td class="right top">75</td><td class="top">91</td><td class="right top">95</td><td class="top">75</td><td class="right top">80</td>
+<tr><td class="algorithm top">Speck-128/128</td><td class="top">423</td><td class="right top">199</td><td class="top">422</td><td class="right top">122</td><td class="top">427</td><td class="right top">206</td>
+<tr><td class="algorithm">Speck-128/192</td><td>416</td><td class="right">201</td><td>411</td><td class="right">120</td><td>414</td><td class="right">200</td>
+<tr><td class="algorithm bottom">Speck-128/256</td><td class="bottom">399</td><td class="right bottom">201</td><td>403</td><td class="right">115</td><td>406</td><td class="right">194</td>
 <tr><td class="algorithm top">Threefish-256/256</td><td class="top">334</td><td class="right top">115</td><td class="top">408</td><td class="right top">111</td><td class="top">396</td><td class="right top">137</td>
 <tr><td class="algorithm">Threefish-512/512</td><td>343</td><td class="right">118</td><td>620</td><td class="right">108</td><td>610</td><td class="right">129</td>
 <tr><td class="algorithm">Threefish-1024/1024</td><td>324</td><td class="right">104</td><td>359</td><td class="right">83</td><td>361</td><td class="right">100</td>
@@ -677,9 +705,9 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
     Input:
     password Passphrase.
     salt     Salt.
-    t        A time cost, which defines the amount of computation realized and therefore the execution time, given in number of iterations.
-    m        A memory cost, which defines the memory usage, given in kibibytes.
     p        A parallelism degree, which defines the number of parallel threads.
+    m        A memory cost, which defines the memory usage, given in kibibytes.
+    t        A time cost, which defines the amount of computation realized and therefore the execution time, given in number of iterations.
     dklen    Intended output length of the derived key, given in bytes.
 
     Optional input:
@@ -719,7 +747,7 @@ by the previous command, you can run:</p>
 <pre>
    digest -c skein512/256 checksums.skein
 </pre>
-<h2 id="chpn">9. Platform notes</h2>
+<h2 id="chpn">9. Portability notes</h2>
 <p>At the moment we support only x86 processors (in 32-bit or 64-bit mode).
 <br>To build cppcrypto from the sources you need to have yasm installed.
 <br>We have successfully compiled and tested cppcrypto under the following operating systems.</p>
@@ -733,6 +761,7 @@ If you're using Visual Studio 2015, right-click each project and choose &quot;Up
 <p>If you use the precompiled static libraries then you don't need yasm.
 Just link against cppcryptomd.lib or cppcryptomt.lib depending on your /MT or /MD settings.
 </p>
+<p>Experimental support for Cygwin gcc builds has been added recently; to build in cygwin, run 'make UNAME=Cygwin' and 'make UNAME=Cygwin install'.</p>
 <h3>9.2. Linux</h3>
 <p>Tested OS versions: openSUSE Tumbleweed (x86_64 and i586), Debian Sid (x86_64), Fedora 23 (x86_64).<br>
 Tested compilers: gcc 5.1.1, gcc 5.2.1, clang 3.7.0.</p>

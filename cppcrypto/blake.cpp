@@ -445,9 +445,9 @@ namespace cppcrypto
 
 	void blake256::clear()
 	{
-		zero_memory(H.get(), H.size());
-		zero_memory(s.data(), s.size());
-		zero_memory(m.get(), m.size());
+		zero_memory(H.get(), H.bytes());
+		zero_memory(s.data(), s.size() * sizeof(s[0]));
+		zero_memory(m.get(), m.bytes());
 	}
 
 	blake512::blake512()
@@ -473,9 +473,9 @@ namespace cppcrypto
 
 	void blake512::clear()
 	{
-		zero_memory(H.get(), H.size());
-		zero_memory(s.data(), s.size());
-		zero_memory(m.get(), m.size());
+		zero_memory(H.get(), H.bytes());
+		zero_memory(s.data(), s.size() * sizeof(s[0]));
+		zero_memory(m.get(), m.bytes());
 	}
 
 }

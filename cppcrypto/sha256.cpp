@@ -284,8 +284,8 @@ __attribute__ ((aligned (16)))
 
 	void sha256::clear()
 	{
-		zero_memory(H.get(), H.size());
-		zero_memory(m.data(), m.size());
+		zero_memory(H.get(), H.bytes());
+		zero_memory(m.data(), m.size() * sizeof(m[0]));
 	}
 
 }

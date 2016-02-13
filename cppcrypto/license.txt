@@ -1,4 +1,4 @@
-Copyright (c) 2015, kerukuro
+Copyright (c) 2015-2016, kerukuro
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -170,4 +170,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 % Maxim Locktyukhin
 % Ronen Zohar
 % Romain Dolbeau
-
+% Andrew Moon

@@ -8,6 +8,7 @@ and released into public domain.
 #include "portability.h"
 #include <memory.h>
 #include <functional>
+#include <assert.h>
 
 //#define CPPCRYPTO_DEBUG
 
@@ -18,8 +19,9 @@ void Skein_512_Process_Block_mmx(uint64_t* T, uint64_t* X, const uint8_t *blkPtr
 
 namespace cppcrypto
 {
-
-	void skein512_512::update(const uint8_t* data, size_t len)
+namespace detail
+{
+	void skein512::update(const uint8_t* data, size_t len)
 	{
 		if (pos && pos + len > 64)
 		{
@@ -44,23 +46,29 @@ namespace cppcrypto
 		total += len * 8;
 	}
 
-	void skein512_512::init()
+	void skein512::init()
 	{
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (4ULL << 56) | (1ULL << 63);
+		pos = 0;
+		total = 0;
+
+		memset(H, 0, h.bytes());
+		memset(m, 0, sizeof(m));
+		m[0] = 0x53;
+		m[1] = 0x48;
+		m[2] = 0x41;
+		m[3] = 0x33;
+		m[4] = 0x01;
+		uint64_t size64 = hs;
+		memcpy(m + 8, &size64, 8);
+		transfunc(m, 1, 32);
+		pos = 0;
+		total = 0;
 		tweak[0] = 0ULL;
 		tweak[1] = (1ULL << 62) | (48ULL << 56);
 
-		H[0] = 0x4903ADFF749C51CE;
-		H[1] = 0x0D95DE399746DF03;
-		H[2] = 0x8FD1934127C79BCE;
-		H[3] = 0x9A255629FF352CB1;
-		H[4] = 0x5DB62599DF6CA7B0;
-		H[5] = 0xEABE394CA9D5C3F4;
-		H[6] = 0x991112C71A75B523;
-		H[7] = 0xAE18A40B660FCC33;
-
-		pos = 0;
-		total = 0;
-	};
+	}
 
 #define G(G0, G1, G2, G3, G4, G5, G6, G7, C0, C1, C2, C3) \
 	G0 += G1; \
@@ -94,7 +102,7 @@ namespace cppcrypto
 	G(G6, G1, G0, G7, G2, G5, G4, G3, 8, 35, 56, 22); \
 	KS(r + 1)
 
-	void skein512_512::transform(void* mp, uint64_t num_blks, size_t reallen)
+	void skein512::transform(void* mp, uint64_t num_blks, size_t reallen)
 	{
 		uint64_t keys[9];
 		uint64_t tweaks[3];
@@ -151,7 +159,7 @@ namespace cppcrypto
 
 	}
 
-	void skein512_512::final(uint8_t* hash)
+	void skein512::final(uint8_t* hash)
 	{
 		tweak[1] |= 1ULL << 63; // last block
 		if (pos < 64)
@@ -160,14 +168,88 @@ namespace cppcrypto
 		transfunc(m, 1, pos);
 
 		// generate output
-		tweak[0] = 0;
-		tweak[1] = 255ULL << 56;
 		memset(m, 0, 64);
-		transfunc(m, 1, 8);
-
-		memcpy(hash, H, hashsize() / 8);
+		if (hs <= 512)
+		{
+			tweak[0] = 0;
+			tweak[1] = 255ULL << 56;
+			transfunc(m, 1, 8);
+			memcpy(hash, H, hashsize() / 8);
+		}
+		else
+		{
+			uint64_t counter = 0;
+			size_t hb = hs;
+			uint64_t hbk[8 * 8];
+			memcpy(hbk, H, sizeof(hbk));
+			for (size_t i = 0; i < hs; i += 512)
+			{
+				size_t bytes = std::min(static_cast<size_t>(512), hb) / 8;
+				tweak[0] = 0;
+				tweak[1] = 255ULL << 56;
+				memcpy(m, &counter, 8);
+				transfunc(m, 1, 8);
+				memcpy(hash, H, bytes);
+				++counter;
+				hash += bytes;
+				hb -= 512;
+				memcpy(H, hbk, sizeof(hbk));
+			}
+		}
 	}
 
+	skein512::skein512(size_t hashsize)
+		: hs(hashsize)
+	{
+		assert(hashsize > 0 && !(hashsize % 8));
+		H = h; // tests show that this helps MSVC++ optimizer a lot
+#ifndef NO_OPTIMIZED_VERSIONS
+#ifndef _M_X64
+#ifndef __clang__ // MMX code is very slow on clang compiles for some reason
+		if (cpu_info::mmx())
+			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { Skein_512_Process_Block_mmx(tweak, H, (uint8_t*)m, static_cast<size_t>(num_blks), reallen); };
+		else
+#endif
+#endif
+#endif
+#ifdef NO_BIND_TO_FUNCTION
+			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { transform(m, num_blks, reallen); };
+#else
+			transfunc = std::bind(&skein512::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+#endif
+	}
+
+	skein512::~skein512()
+	{
+		clear();
+	}
+
+	void skein512::clear()
+	{
+		zero_memory(h.get(), h.bytes());
+		zero_memory(m, sizeof(m));
+		zero_memory(tweak, sizeof(tweak));
+	}
+} // namespace detail
+
+
+	void skein512_512::init()
+	{
+		tweak[0] = 0ULL;
+		tweak[1] = (1ULL << 62) | (48ULL << 56);
+
+		H[0] = 0x4903ADFF749C51CE;
+		H[1] = 0x0D95DE399746DF03;
+		H[2] = 0x8FD1934127C79BCE;
+		H[3] = 0x9A255629FF352CB1;
+		H[4] = 0x5DB62599DF6CA7B0;
+		H[5] = 0xEABE394CA9D5C3F4;
+		H[6] = 0x991112C71A75B523;
+		H[7] = 0xAE18A40B660FCC33;
+
+		pos = 0;
+		total = 0;
+	};
 
 	void skein512_256::init()
 	{
@@ -259,36 +341,5 @@ namespace cppcrypto
 		pos = 0;
 		total = 0;
 	};
-
-	skein512_512::skein512_512()
-	{
-		H = h; // tests show that this helps MSVC++ optimizer a lot
-#ifndef NO_OPTIMIZED_VERSIONS
-#ifndef _M_X64
-#ifndef __clang__ // MMX code is very slow on clang compiles for some reason
-		if (cpu_info::mmx())
-			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { Skein_512_Process_Block_mmx(tweak, H, (uint8_t*)m, static_cast<size_t>(num_blks), reallen); };
-		else
-#endif
-#endif
-#endif
-#ifdef NO_BIND_TO_FUNCTION
-			transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { transform(m, num_blks, reallen); };
-#else
-			transfunc = std::bind(&skein512_512::transform, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-#endif
-	}
-
-	skein512_512::~skein512_512()
-	{
-		clear();
-	}
-
-	void skein512_512::clear()
-	{
-		zero_memory(h.get(), h.size());
-		zero_memory(m, sizeof(m));
-		zero_memory(tweak, sizeof(tweak));
-	}
 
 }

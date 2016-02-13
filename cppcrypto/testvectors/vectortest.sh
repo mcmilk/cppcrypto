@@ -59,7 +59,13 @@ digest -tv rijndael256-256 ./block_cipher/rijndael256_256.txt
 digest -tv serpent128 ./block_cipher/serpent128.txt
 digest -tv serpent192 ./block_cipher/serpent192.txt
 digest -tv serpent256 ./block_cipher/serpent256.txt
+digest -tv simon128_128 ./block_cipher/simon128_128.txt
+digest -tv simon128_192 ./block_cipher/simon128_192.txt
+digest -tv simon128_256 ./block_cipher/simon128_256.txt
 digest -tv sm4 ./block_cipher/sm4.txt
+digest -tv speck128_128 ./block_cipher/speck128_128.txt
+digest -tv speck128_192 ./block_cipher/speck128_192.txt
+digest -tv speck128_256 ./block_cipher/speck128_256.txt
 digest -tv threefish256_256 ./block_cipher/threefish256_256.txt
 digest -tv threefish512_512 ./block_cipher/threefish512_512.txt
 digest -tv threefish1024_1024 ./block_cipher/threefish1024_1024.txt
@@ -118,4 +124,17 @@ digest -tv sm3 ./hash/sm3.txt
 digest -tv streebog256 ./hash/streebog256.txt
 digest -tv streebog512 ./hash/streebog512.txt
 digest -tv whirlpool ./hash/whirlpool.txt
+digest -tv chacha12_128 ./stream_cipher/chacha12-128.txt
+digest -tv chacha12_256 ./stream_cipher/chacha12-256.txt
+digest -tv chacha20_128 ./stream_cipher/chacha20-128.txt
+digest -tv chacha20_256 ./stream_cipher/chacha20-256.txt
+digest -tv hc128 ./stream_cipher/hc-128.txt
+digest -tv hc256 ./stream_cipher/hc-256.txt
+digest -tv salsa20_12_128 ./stream_cipher/salsa20-12-128.txt
+digest -tv salsa20_12_256 ./stream_cipher/salsa20-12-256.txt
+digest -tv salsa20_128 ./stream_cipher/salsa20-20-128.txt
+digest -tv salsa20_256 ./stream_cipher/salsa20-20-256.txt
+digest -tv xchacha12_256 ./stream_cipher/xchacha12-256.txt
+digest -tv xchacha20_256 ./stream_cipher/xchacha20-256.txt
+digest -tv xsalsa20_256 ./stream_cipher/xsalsa20-256.txt
 
