@@ -18,14 +18,14 @@ namespace cppcrypto
 		camellia128();
 		~camellia128();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 128; }
-		block_cipher* clone() const { return new camellia128; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 128; }
+		camellia128* clone() const override { return new camellia128; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint64_t ks[26];
@@ -37,14 +37,14 @@ namespace cppcrypto
 		camellia256();
 		~camellia256();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 256; }
-		block_cipher* clone() const { return new camellia256; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 256; }
+		camellia256* clone() const override { return new camellia256; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint64_t ks[34];
@@ -53,10 +53,10 @@ namespace cppcrypto
 	class camellia192 : public camellia256
 	{
 	public:
-		size_t keysize() const { return 192; }
-		block_cipher* clone() const { return new camellia192; }
+		size_t keysize() const override { return 192; }
+		camellia192* clone() const override { return new camellia192; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 }

@@ -20,14 +20,14 @@ namespace cppcrypto
 		hc256();
 		virtual ~hc256();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void decrypt(const uint8_t* in, size_t len, uint8_t* out) override;
 
-		void clear();
-		stream_cipher* clone() const { return new hc256; }
-		size_t keysize() const { return 256; }
-		size_t ivsize() const { return 256; }
+		void clear() override;
+		hc256* clone() const override { return new hc256; }
+		size_t keysize() const override { return 256; }
+		size_t ivsize() const override { return 256; }
 
 	protected:
 		uint32_t block_[16];
@@ -45,14 +45,14 @@ namespace cppcrypto
 		hc128();
 		virtual ~hc128();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void decrypt(const uint8_t* in, size_t len, uint8_t* out) override;
 
-		void clear();
-		stream_cipher* clone() const { return new hc128; }
-		size_t keysize() const { return 128; }
-		size_t ivsize() const { return 128; }
+		void clear() override;
+		hc128* clone() const override { return new hc128; }
+		size_t keysize() const override { return 128; }
+		size_t ivsize() const override { return 128; }
 
 	protected:
 		uint32_t block_[16];

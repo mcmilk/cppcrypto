@@ -21,14 +21,14 @@ namespace cppcrypto
 			blake2b(size_t hashsize);
 			~blake2b();
 
-			void init();
-			void update(const uint8_t* data, size_t len);
-			void final(uint8_t* hash);
+			void init() override;
+			void update(const uint8_t* data, size_t len) override;
+			void final(uint8_t* hash) override;
 
-			size_t hashsize() const { return hs; }
-			size_t blocksize() const { return 1024; }
-			crypto_hash* clone() const { return new blake2b(hs); }
-			void clear();
+			size_t hashsize() const override { return hs; }
+			size_t blocksize() const override { return 1024; }
+			blake2b* clone() const override { return new blake2b(hs); }
+			void clear() override;
 
 		protected:
 			void transform(bool padding);
@@ -47,14 +47,14 @@ namespace cppcrypto
 			blake2s(size_t hashsize);
 			~blake2s();
 
-			void init();
-			void update(const uint8_t* data, size_t len);
-			void final(uint8_t* hash);
+			void init() override;
+			void update(const uint8_t* data, size_t len) override;
+			void final(uint8_t* hash) override;
 
-			size_t hashsize() const { return hs; }
-			size_t blocksize() const { return 512; }
-			crypto_hash* clone() const { return new blake2s(hs); }
-			void clear();
+			size_t hashsize() const override { return hs; }
+			size_t blocksize() const override { return 512; }
+			blake2s* clone() const override { return new blake2s(hs); }
+			void clear() override;
 
 		protected:
 			void transform(bool padding);
@@ -72,70 +72,70 @@ namespace cppcrypto
 	{
 	public:
 		blake2b_512() : blake2b(512) {}
-		crypto_hash* clone() const { return new blake2b_512; }
+		blake2b_512* clone() const override { return new blake2b_512; }
 	};
 
 	class blake2b_256 : public detail::blake2b
 	{
 	public:
 		blake2b_256() : blake2b(256) {}
-		crypto_hash* clone() const { return new blake2b_256; }
+		blake2b_256* clone() const override { return new blake2b_256; }
 	};
 
 	class blake2b_224 : public detail::blake2b
 	{
 	public:
 		blake2b_224() : blake2b(224) {}
-		crypto_hash* clone() const { return new blake2b_224; }
+		blake2b_224* clone() const override { return new blake2b_224; }
 	};
 
 	class blake2b_384 : public detail::blake2b
 	{
 	public:
 		blake2b_384() : blake2b(384) {}
-		crypto_hash* clone() const { return new blake2b_384; }
+		blake2b_384* clone() const override { return new blake2b_384; }
 	};
 
 	class blake2b_128 : public detail::blake2b
 	{
 	public:
 		blake2b_128() : blake2b(128) {}
-		crypto_hash* clone() const { return new blake2b_128; }
+		blake2b_128* clone() const override { return new blake2b_128; }
 	};
 
 	class blake2b_160 : public detail::blake2b
 	{
 	public:
 		blake2b_160() : blake2b(160) {}
-		crypto_hash* clone() const { return new blake2b_160; }
+		blake2b_160* clone() const override { return new blake2b_160; }
 	};
 
 	class blake2s_256 : public detail::blake2s
 	{
 	public:
 		blake2s_256() : blake2s(256) {}
-		crypto_hash* clone() const { return new blake2s_256; }
+		blake2s_256* clone() const override { return new blake2s_256; }
 	};
 
 	class blake2s_224 : public detail::blake2s
 	{
 	public:
 		blake2s_224() : blake2s(224) {}
-		crypto_hash* clone() const { return new blake2s_224; }
+		blake2s_224* clone() const override { return new blake2s_224; }
 	};
 
 	class blake2s_160 : public detail::blake2s
 	{
 	public:
 		blake2s_160() : blake2s(160) {}
-		crypto_hash* clone() const { return new blake2s_160; }
+		blake2s_160* clone() const override { return new blake2s_160; }
 	};
 
 	class blake2s_128 : public detail::blake2s
 	{
 	public:
 		blake2s_128() : blake2s(128) {}
-		crypto_hash* clone() const { return new blake2s_128; }
+		blake2s_128* clone() const override { return new blake2s_128; }
 	};
 
 }

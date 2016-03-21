@@ -20,14 +20,14 @@ namespace cppcrypto
 		md5();
 		~md5();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return 128; }
-		size_t blocksize() const { return 512; }
-		crypto_hash* clone() const { return new md5; }
-		void clear();
+		size_t hashsize() const override { return 128; }
+		size_t blocksize() const override { return 512; }
+		md5* clone() const override { return new md5; }
+		void clear() override;
 
 	protected:
 		void transform(const uint8_t* m, uint64_t num_blks);

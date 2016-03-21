@@ -20,14 +20,14 @@ namespace cppcrypto
 		blake256();
 		~blake256();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return 256; }
-		size_t blocksize() const { return 512; }
-		crypto_hash* clone() const { return new blake256; }
-		void clear();
+		size_t hashsize() const override { return 256; }
+		size_t blocksize() const override { return 512; }
+		blake256* clone() const override { return new blake256; }
+		void clear() override;
 
 	protected:
 		void transform(bool padding);
@@ -46,14 +46,14 @@ namespace cppcrypto
 		blake512();
 		~blake512();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return 512; }
-		size_t blocksize() const { return 1024; }
-		crypto_hash* clone() const { return new blake512; }
-		void clear();
+		size_t hashsize() const override { return 512; }
+		size_t blocksize() const override { return 1024; }
+		blake512* clone() const override { return new blake512; }
+		void clear() override;
 
 	protected:
 		void transform(bool padding);
@@ -69,17 +69,17 @@ namespace cppcrypto
 	class blake384 : public blake512
 	{
 	public:
-		void init();
-		size_t hashsize() const { return 384; }
-		crypto_hash* clone() const { return new blake384; }
+		void init() override;
+		size_t hashsize() const override { return 384; }
+		blake384* clone() const override { return new blake384; }
 	};
 
 	class blake224 : public blake256
 	{
 	public:
-		void init();
-		size_t hashsize() const { return 224; }
-		crypto_hash* clone() const { return new blake224; }
+		void init() override;
+		size_t hashsize() const override { return 224; }
+		blake224* clone() const override { return new blake224; }
 	};
 
 }

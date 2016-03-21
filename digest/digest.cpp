@@ -31,13 +31,6 @@ using namespace cppcrypto;
 #define _T(A) L ## A
 #endif
 
-#ifdef __CYGWIN__
-long stol(const string& s)
-{
-	return strtol(s.c_str(), 0, 10);
-}
-#endif
-
 long long file_size(const wchar_t* pathname)
 {
 	struct _stat64 st_stat;

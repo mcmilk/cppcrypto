@@ -40,9 +40,9 @@ namespace cppcrypto
 		public:
 			groestl_impl_ssse3_256();
 
-			void INIT(uint64_t* h);
-			void TF(uint64_t* h, uint64_t* m);
-			void OF(uint64_t* h);
+			void INIT(uint64_t* h) override;
+			void TF(uint64_t* h, uint64_t* m) override;
+			void OF(uint64_t* h) override;
 		};
 
 		class groestl_impl_ssse3_512 : public groestl_impl
@@ -103,9 +103,9 @@ namespace cppcrypto
 		public:
 			groestl_impl_aesni_512();
 
-			void INIT(uint64_t* h);
-			void TF(uint64_t* h, uint64_t* m);
-			void OF(uint64_t* h);
+			void INIT(uint64_t* h) override;
+			void TF(uint64_t* h, uint64_t* m) override;
+			void OF(uint64_t* h) override;
 		};
 
 	}

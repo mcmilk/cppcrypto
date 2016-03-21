@@ -78,7 +78,7 @@ namespace cppcrypto
 		hash_->final(hash);
 	}
 
-	crypto_hash* hmac::clone() const
+	hmac* hmac::clone() const
 	{
 		hmac* clone = new hmac(*hash_, ipad_, 0);
 		size_t nb = blocksize() / 8;

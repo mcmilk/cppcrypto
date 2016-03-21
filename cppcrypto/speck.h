@@ -16,14 +16,14 @@ namespace cppcrypto
 	public:
 		~speck128_128();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 128; }
-		block_cipher* clone() const { return new speck128_128; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 128; }
+		speck128_128* clone() const override { return new speck128_128; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint64_t W_[32];
@@ -34,14 +34,14 @@ namespace cppcrypto
 	public:
 		~speck128_192();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 192; }
-		block_cipher* clone() const { return new speck128_192; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 192; }
+		speck128_192* clone() const override { return new speck128_192; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint64_t W_[33];
@@ -52,14 +52,14 @@ namespace cppcrypto
 	public:
 		~speck128_256();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 256; }
-		block_cipher* clone() const { return new speck128_256; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 256; }
+		speck128_256* clone() const override { return new speck128_256; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint64_t W_[34];

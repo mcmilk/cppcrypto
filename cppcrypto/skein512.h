@@ -21,14 +21,14 @@ namespace cppcrypto
 			skein512(size_t hashsize);
 			~skein512();
 
-			void init();
-			void update(const uint8_t* data, size_t len);
-			void final(uint8_t* hash);
+			void init() override;
+			void update(const uint8_t* data, size_t len) override;
+			void final(uint8_t* hash) override;
 
-			size_t hashsize() const { return hs; }
-			size_t blocksize() const { return 512; }
-			crypto_hash* clone() const { return new skein512(hs); }
-			void clear();
+			size_t hashsize() const override { return hs; }
+			size_t blocksize() const override { return 512; }
+			skein512* clone() const override { return new skein512(hs); }
+			void clear() override;
 
 		protected:
 			void transform(void* m, uint64_t num_blks, size_t reallen);
@@ -48,48 +48,48 @@ namespace cppcrypto
 	{
 	public:
 		skein512_512() : skein512(512) {}
-		void init();
-		crypto_hash* clone() const { return new skein512_512; }
+		void init() override;
+		skein512_512* clone() const override { return new skein512_512; }
 	};
 
 	class skein512_256 : public detail::skein512
 	{
 	public:
 		skein512_256() : skein512(256) {}
-		void init();
-		crypto_hash* clone() const { return new skein512_256; }
+		void init() override;
+		skein512_256* clone() const override { return new skein512_256; }
 	};
 
 	class skein512_384 : public detail::skein512
 	{
 	public:
 		skein512_384() : skein512(384) {}
-		void init();
-		crypto_hash* clone() const { return new skein512_384; }
+		void init() override;
+		skein512_384* clone() const override { return new skein512_384; }
 	};
 
 	class skein512_224 : public detail::skein512
 	{
 	public:
 		skein512_224() : skein512(224) {}
-		void init();
-		crypto_hash* clone() const { return new skein512_224; }
+		void init() override;
+		skein512_224* clone() const override { return new skein512_224; }
 	};
 
 	class skein512_128 : public detail::skein512
 	{
 	public:
 		skein512_128() : skein512(128) {}
-		void init();
-		crypto_hash* clone() const { return new skein512_128; }
+		void init() override;
+		skein512_128* clone() const override { return new skein512_128; }
 	};
 
 	class skein512_160 : public detail::skein512
 	{
 	public:
 		skein512_160() : skein512(160) {}
-		void init();
-		crypto_hash* clone() const { return new skein512_160; }
+		void init() override;
+		skein512_160* clone() const override { return new skein512_160; }
 	};
 
 

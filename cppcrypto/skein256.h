@@ -20,14 +20,14 @@ namespace cppcrypto
 			skein256(size_t hashsize);
 			~skein256();
 
-			void init();
-			void update(const uint8_t* data, size_t len);
-			void final(uint8_t* hash);
+			void init() override;
+			void update(const uint8_t* data, size_t len) override;
+			void final(uint8_t* hash) override;
 
-			size_t hashsize() const { return hs; }
-			size_t blocksize() const { return 256; }
-			crypto_hash* clone() const { return new skein256(hs); }
-			void clear();
+			size_t hashsize() const override { return hs; }
+			size_t blocksize() const override { return 256; }
+			skein256* clone() const override { return new skein256(hs); }
+			void clear() override;
 
 		protected:
 			void transform(void* m, uint64_t num_blks, size_t reallen);
@@ -47,32 +47,32 @@ namespace cppcrypto
 	{
 	public:
 		skein256_256() : skein256(256) {}
-		void init();
-		crypto_hash* clone() const { return new skein256_256; }
+		void init() override;
+		skein256_256* clone() const override { return new skein256_256; }
 	};
 
 	class skein256_224 : public detail::skein256
 	{
 	public:
 		skein256_224() : skein256(224) {}
-		void init();
-		crypto_hash* clone() const { return new skein256_224; }
+		void init() override;
+		skein256_224* clone() const override { return new skein256_224; }
 	};
 
 	class skein256_160 : public detail::skein256
 	{
 	public:
 		skein256_160() : skein256(160) {}
-		void init();
-		crypto_hash* clone() const { return new skein256_160; }
+		void init() override;
+		skein256_160* clone() const override { return new skein256_160; }
 	};
 
 	class skein256_128 : public detail::skein256
 	{
 	public:
 		skein256_128() : skein256(128) {}
-		void init();
-		crypto_hash* clone() const { return new skein256_128; }
+		void init() override;
+		skein256_128* clone() const override { return new skein256_128; }
 	};
 
 }

@@ -22,15 +22,15 @@ namespace cppcrypto
 		poly1305(const std::string& key);
 		virtual ~poly1305();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
 		size_t keysize() const { return 256; }
-		size_t hashsize() const { return 128; }
-		size_t blocksize() const { return 128; }
-		crypto_hash* clone() const;
-		void clear();
+		size_t hashsize() const override { return 128; }
+		size_t blocksize() const override { return 128; }
+		poly1305* clone() const override;
+		void clear() override;
 
 	private:
 		poly1305(const poly1305&) = delete;

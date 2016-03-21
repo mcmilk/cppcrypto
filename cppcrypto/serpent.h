@@ -18,14 +18,14 @@ namespace cppcrypto
 		serpent256();
 		~serpent256();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 256; }
-		block_cipher* clone() const { return new serpent256; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 256; }
+		serpent256* clone() const override { return new serpent256; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	protected:
 		bool do_init();
@@ -38,9 +38,9 @@ namespace cppcrypto
 	public:
 		serpent128();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 128; }
-		block_cipher* clone() const { return new serpent128; }
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 128; }
+		serpent128* clone() const override { return new serpent128; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 	};
@@ -50,9 +50,9 @@ namespace cppcrypto
 	public:
 		serpent192();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 192; }
-		block_cipher* clone() const { return new serpent192; }
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 192; }
+		serpent192* clone() const override { return new serpent192; }
 
 		bool init(const uint8_t* key, block_cipher::direction direction);
 	};

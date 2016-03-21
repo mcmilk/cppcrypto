@@ -21,14 +21,14 @@ namespace cppcrypto
 		hmac(const crypto_hash& hash, const std::string& key);
 		virtual ~hmac();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return hash_->hashsize(); }
-		size_t blocksize() const { return hash_->blocksize(); }
-		crypto_hash* clone() const;
-		void clear();
+		size_t hashsize() const override { return hash_->hashsize(); }
+		size_t blocksize() const override { return hash_->blocksize(); }
+		hmac* clone() const override;
+		void clear() override;
 
 	private:
 		hmac(const hmac&) = delete;

@@ -242,7 +242,7 @@ namespace cppcrypto
 		memcpy(hash, accumulator_, 16);
 	}
 
-	crypto_hash* poly1305::clone() const
+	poly1305* poly1305::clone() const
 	{
 		return new poly1305(key_.get(), 32);
 	}

@@ -20,14 +20,14 @@ namespace cppcrypto
 		sha1();
 		~sha1();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return 160; }
-		size_t blocksize() const { return 512; }
-		crypto_hash* clone() const { return new sha1; }
-		void clear();
+		size_t hashsize() const override { return 160; }
+		size_t blocksize() const override { return 512; }
+		sha1* clone() const override { return new sha1; }
+		void clear() override;
 
 	protected:
 		void transform(void* m, uint64_t num_blks);

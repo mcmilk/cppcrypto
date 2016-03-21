@@ -20,14 +20,14 @@ namespace cppcrypto
 		streebog512();
 		~streebog512();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return 512; }
-		size_t blocksize() const { return 512; }
-		crypto_hash* clone() const { return new streebog512; }
-		void clear();
+		size_t hashsize() const override { return 512; }
+		size_t blocksize() const override { return 512; }
+		streebog512* clone() const override { return new streebog512; }
+		void clear() override;
 
 	protected:
 		void transform(bool adds = true);
@@ -42,11 +42,11 @@ namespace cppcrypto
 	class streebog256 : public streebog512
 	{
 	public:
-		void init();
+		void init() override;
 
-		size_t hashsize() const { return 256; }
-		size_t blocksize() const { return 512; }
-		crypto_hash* clone() const { return new streebog256; }
+		size_t hashsize() const override { return 256; }
+		size_t blocksize() const override { return 512; }
+		streebog256* clone() const override { return new streebog256; }
 	};
 
 }

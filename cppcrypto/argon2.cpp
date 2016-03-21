@@ -153,7 +153,7 @@ namespace cppcrypto
 		GP(v3, v4, v9, v14);
 	}
 
-	static inline void G(const uint8_t* in1, const uint8_t* in2, uint8_t* out)
+	static inline void G(const uint8_t* in1, const uint8_t* in2, uint8_t* out, bool xor_output)
 	{
 		uint64_t r[128], rsave[128];
 		xor_block_512r(in1, in2, (uint8_t*)r, 16);
@@ -176,7 +176,13 @@ namespace cppcrypto
 		P(r[10], r[11], r[26], r[27], r[42], r[43], r[58], r[59], r[74], r[75], r[90], r[91], r[106], r[107], r[122], r[123]);
 		P(r[12], r[13], r[28], r[29], r[44], r[45], r[60], r[61], r[76], r[77], r[92], r[93], r[108], r[109], r[124], r[125]);
 		P(r[14], r[15], r[30], r[31], r[46], r[47], r[62], r[63], r[78], r[79], r[94], r[95], r[110], r[111], r[126], r[127]);
-		xor_block_512r((const uint8_t*)r, (const uint8_t*)rsave, out, 16);
+		if (!xor_output)
+			xor_block_512r((const uint8_t*)r, (const uint8_t*)rsave, out, 16);
+		else
+		{
+			xor_block_512r((const uint8_t*)r, (const uint8_t*)rsave, (uint8_t*)r, 16);
+			xor_block_512r((const uint8_t*)r, out, out, 16);
+		}
 	}
 
 	static inline void calc_indices(uint64_t r, uint64_t l, uint64_t s, uint64_t m, uint64_t t, uint64_t x, uint64_t i, uint8_t* indices)
@@ -198,8 +204,8 @@ namespace cppcrypto
 		printf("\n");
 #endif
 
-		G(buf1, buf2, indices);
-		G(buf1, indices, indices);
+		G(buf1, buf2, indices, false);
+		G(buf1, indices, indices, false);
 
 #ifdef CPPCRYPTO_DEBUG
 		printf("result of double-G: ");
@@ -209,10 +215,11 @@ namespace cppcrypto
 #endif
 	}
 
-	static inline void calc_lanes(uint32_t iteration, uint32_t slice, uint8_t* B, uint32_t p, uint32_t q, uint32_t s, detail::thread_pool& tp, uint32_t y, uint32_t tt, uint32_t mt)
+	static inline void calc_lanes(uint32_t iteration, uint32_t slice, uint8_t* B, uint32_t p, uint32_t q, uint32_t s, detail::thread_pool& tp, uint32_t y, uint32_t tt, uint32_t mt, argon2_version version)
 	{
 		uint32_t firstcol = slice * s;
 		uint32_t startcol = firstcol + (iteration || slice ? 0 : 2);
+		bool xor_output = iteration && version != argon2_version::version12;
 
 #ifdef NO_CPP11_THREADS
 #pragma omp parallel for
@@ -270,7 +277,7 @@ namespace cppcrypto
 #ifdef CPPCRYPTO_DEBUG
 					printf("i=%d,s=%d,l=%d,c=%d: i=%d,j=%d (J1=%d,J2=%d R=%d)\n", iteration, slice, lane, (column-slice*s), l, (otherB - (B + (l*q * 1024)))/1024, origJ1, J2, R);
 #endif
-					G(prevB, otherB, thisB);
+					G(prevB, otherB, thisB, xor_output);
 				}
 #ifndef NO_CPP11_THREADS
 			});
@@ -280,12 +287,12 @@ namespace cppcrypto
 	}
 
 	static inline void argon2(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen, uint32_t y,
-		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen)
+		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
 	{
 		uint8_t h0[64];
 		blake2b_512 ih;
 		ih.init();
-		uint32_t v = 0x10;
+		uint32_t v = static_cast<uint32_t>(version);
 		ih.update(reinterpret_cast<const uint8_t*>(&p), sizeof(p));
 		ih.update(reinterpret_cast<const uint8_t*>(&dklen), sizeof(dklen));
 		ih.update(reinterpret_cast<const uint8_t*>(&m), sizeof(m));
@@ -318,7 +325,7 @@ namespace cppcrypto
 		{
 			for (uint32_t slice = 0; slice < 4; slice++)
 			{
-				calc_lanes(iteration, slice, B, p, q, s, tp, y, t, msize);
+				calc_lanes(iteration, slice, B, p, q, s, tp, y, t, msize, version);
 			}
 		}
 		uint8_t bm[1024];
@@ -348,15 +355,15 @@ namespace cppcrypto
 	}
 
 	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen)
+		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
 	{
-		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 0, data, datalen, secret, secretlen);
+		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 0, data, datalen, secret, secretlen, version);
 	}
 
 	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen)
+		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
 	{
-		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 1, data, datalen, secret, secretlen);
+		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 1, data, datalen, secret, secretlen, version);
 	}
 
 }

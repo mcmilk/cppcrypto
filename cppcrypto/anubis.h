@@ -17,14 +17,14 @@ namespace cppcrypto
 	public:
 		~anubis128();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 128; }
-		block_cipher* clone() const { return new anubis128; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 128; }
+		anubis128* clone() const override { return new anubis128; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint32_t W_[8 + 4 + 1][4];
@@ -35,14 +35,14 @@ namespace cppcrypto
 	public:
 		~anubis160();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 160; }
-		block_cipher* clone() const { return new anubis160; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 160; }
+		anubis160* clone() const override { return new anubis160; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint32_t W_[9 + 4 + 1][4];
@@ -53,14 +53,14 @@ namespace cppcrypto
 	public:
 		~anubis192();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 192; }
-		block_cipher* clone() const { return new anubis192; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 192; }
+		anubis192* clone() const override { return new anubis192; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint32_t W_[10 + 4 + 1][4];
@@ -71,14 +71,14 @@ namespace cppcrypto
 	public:
 		~anubis224();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 224; }
-		block_cipher* clone() const { return new anubis224; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 224; }
+		anubis224* clone() const override { return new anubis224; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint32_t W_[11 + 4 + 1][4];
@@ -89,14 +89,14 @@ namespace cppcrypto
 	public:
 		~anubis256();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 256; }
-		block_cipher* clone() const { return new anubis256; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 256; }
+		anubis256* clone() const override { return new anubis256; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint32_t W_[12 + 4 + 1][4];
@@ -107,14 +107,14 @@ namespace cppcrypto
 	public:
 		~anubis288();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 288; }
-		block_cipher* clone() const { return new anubis288; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 288; }
+		anubis288* clone() const override { return new anubis288; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint32_t W_[13 + 4 + 1][4];
@@ -125,14 +125,14 @@ namespace cppcrypto
 	public:
 		~anubis320();
 
-		size_t blocksize() const { return 128; }
-		size_t keysize() const { return 320; }
-		block_cipher* clone() const { return new anubis320; }
-		void clear();
+		size_t blocksize() const override { return 128; }
+		size_t keysize() const override { return 320; }
+		anubis320* clone() const override { return new anubis320; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint32_t W_[14 + 4 + 1][4];

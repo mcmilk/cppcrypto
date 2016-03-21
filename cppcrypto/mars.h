@@ -18,11 +18,11 @@ namespace cppcrypto
 		public:
 			~mars();
 
-			size_t blocksize() const { return 128; }
-			void clear();
+			size_t blocksize() const override { return 128; }
+			void clear() override;
 
-			void encrypt_block(const uint8_t* in, uint8_t* out);
-			void decrypt_block(const uint8_t* in, uint8_t* out);
+			void encrypt_block(const uint8_t* in, uint8_t* out) override;
+			void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 		protected:
 			uint32_t rk[40];
@@ -32,100 +32,100 @@ namespace cppcrypto
 	class mars448 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 448; }
-		block_cipher* clone() const { return new mars448; }
+		size_t keysize() const override { return 448; }
+		mars448* clone() const override { return new mars448; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars320 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 320; }
-		block_cipher* clone() const { return new mars320; }
+		size_t keysize() const override { return 320; }
+		mars320* clone() const override { return new mars320; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars256 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 256; }
-		block_cipher* clone() const { return new mars256; }
+		size_t keysize() const override { return 256; }
+		mars256* clone() const override { return new mars256; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars224 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 224; }
-		block_cipher* clone() const { return new mars224; }
+		size_t keysize() const override { return 224; }
+		mars224* clone() const override { return new mars224; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars192 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 192; }
-		block_cipher* clone() const { return new mars192; }
+		size_t keysize() const override { return 192; }
+		mars192* clone() const override { return new mars192; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars160 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 160; }
-		block_cipher* clone() const { return new mars160; }
+		size_t keysize() const override { return 160; }
+		mars160* clone() const override { return new mars160; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars128 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 128; }
-		block_cipher* clone() const { return new mars128; }
+		size_t keysize() const override { return 128; }
+		mars128* clone() const override { return new mars128; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars288 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 288; }
-		block_cipher* clone() const { return new mars288; }
+		size_t keysize() const override { return 288; }
+		mars288* clone() const override { return new mars288; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars352 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 352; }
-		block_cipher* clone() const { return new mars352; }
+		size_t keysize() const override { return 352; }
+		mars352* clone() const override { return new mars352; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars384 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 384; }
-		block_cipher* clone() const { return new mars384; }
+		size_t keysize() const override { return 384; }
+		mars384* clone() const override { return new mars384; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class mars416 : public detail::mars
 	{
 	public:
-		size_t keysize() const { return 416; }
-		block_cipher* clone() const { return new mars416; }
+		size_t keysize() const override { return 416; }
+		mars416* clone() const override { return new mars416; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 }

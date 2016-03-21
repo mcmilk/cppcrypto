@@ -35,14 +35,14 @@ namespace cppcrypto
 		sha3_512();
 		~sha3_512();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return 512; }
-		size_t blocksize() const { return 576; }
-		crypto_hash* clone() const { return new sha3_512; }
-		void clear();
+		size_t hashsize() const override { return 512; }
+		size_t blocksize() const override { return 576; }
+		sha3_512* clone() const override { return new sha3_512; }
+		void clear() override;
 
 	private:
 		void transform(void* m, uint64_t num_blks);
@@ -59,14 +59,14 @@ namespace cppcrypto
 		sha3_256();
 		~sha3_256();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
-		void clear();
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
+		void clear() override;
 
-		size_t hashsize() const { return 256; }
-		size_t blocksize() const { return 1088; }
-		crypto_hash* clone() const { return new sha3_256; }
+		size_t hashsize() const override { return 256; }
+		size_t blocksize() const override { return 1088; }
+		sha3_256* clone() const override { return new sha3_256; }
 
 	private:
 		void transform(void* m, uint64_t num_blks);
@@ -83,14 +83,14 @@ namespace cppcrypto
 		sha3_224();
 		~sha3_224();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return 224; }
-		size_t blocksize() const { return 1152; }
-		crypto_hash* clone() const { return new sha3_224; }
-		void clear();
+		size_t hashsize() const override { return 224; }
+		size_t blocksize() const override { return 1152; }
+		sha3_224* clone() const override { return new sha3_224; }
+		void clear() override;
 
 	private:
 		void transform(void* m, uint64_t num_blks);
@@ -107,14 +107,14 @@ namespace cppcrypto
 		sha3_384();
 		~sha3_384();
 
-		void init();
-		void update(const uint8_t* data, size_t len);
-		void final(uint8_t* hash);
+		void init() override;
+		void update(const uint8_t* data, size_t len) override;
+		void final(uint8_t* hash) override;
 
-		size_t hashsize() const { return 384; }
-		size_t blocksize() const { return 832; }
-		crypto_hash* clone() const { return new sha3_384; }
-		void clear();
+		size_t hashsize() const override { return 384; }
+		size_t blocksize() const override { return 832; }
+		sha3_384* clone() const override { return new sha3_384; }
+		void clear() override;
 
 	private:
 		void transform(void* m, uint64_t num_blks);

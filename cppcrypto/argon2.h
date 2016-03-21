@@ -12,6 +12,16 @@ and released into public domain.
 namespace cppcrypto
 {
 	/*
+	We support old versions of Argon2 for compatibility.
+	For new development always use the default (latest) version.
+	*/
+	enum class argon2_version
+	{
+		version12 = 0x10,
+		version13 = 0x13
+	};
+
+	/*
 	Argon2 key derivation function.
 	There are two versions of Argon2: argon2i and argon2d.
 	Argon2i is the safest against side-channel attacks, while Argon2d provides the highest resistance against GPU cracking attacks.
@@ -38,9 +48,9 @@ namespace cppcrypto
 
 	*/
 	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0);
+		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
 	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0);
+		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
 }
 
 #endif

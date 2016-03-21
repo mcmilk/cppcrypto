@@ -20,14 +20,14 @@ namespace cppcrypto
 		salsa20_256();
 		virtual ~salsa20_256();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void decrypt(const uint8_t* in, size_t len, uint8_t* out) override;
 
-		void clear();
-		stream_cipher* clone() const { return new salsa20_256; }
-		size_t keysize() const { return 256; }
-		size_t ivsize() const { return 64; }
+		void clear() override;
+		salsa20_256* clone() const override { return new salsa20_256; }
+		size_t keysize() const override { return 256; }
+		size_t ivsize() const override { return 64; }
 
 	protected:
 		uint32_t block_[16];
@@ -38,64 +38,64 @@ namespace cppcrypto
 	class salsa20_128 : public salsa20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new salsa20_128; }
-		size_t keysize() const { return 128; }
+		salsa20_128* clone() const override { return new salsa20_128; }
+		size_t keysize() const override { return 128; }
 	};
 
 	class xsalsa20_256 : public salsa20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new xsalsa20_256; }
-		size_t keysize() const { return 256; }
-		size_t ivsize() const { return 192; }
+		xsalsa20_256* clone() const override { return new xsalsa20_256; }
+		size_t keysize() const override { return 256; }
+		size_t ivsize() const override { return 192; }
 	};
 
 	class xsalsa20_128 : public xsalsa20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new xsalsa20_128; }
-		size_t keysize() const { return 128; }
+		xsalsa20_128* clone() const override { return new xsalsa20_128; }
+		size_t keysize() const override { return 128; }
 	};
 
 	class salsa20_12_256 : public salsa20_256
 	{
 	public:
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
 
-		stream_cipher* clone() const { return new salsa20_12_256; }
+		salsa20_12_256* clone() const override { return new salsa20_12_256; }
 	};
 
 	class salsa20_12_128 : public salsa20_128
 	{
 	public:
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
 
-		stream_cipher* clone() const { return new salsa20_12_128; }
+		salsa20_12_128* clone() const override { return new salsa20_12_128; }
 	};
 
 	class xsalsa20_12_256 : public salsa20_12_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new xsalsa20_12_256; }
-		size_t keysize() const { return 256; }
-		size_t ivsize() const { return 192; }
+		xsalsa20_12_256* clone() const override { return new xsalsa20_12_256; }
+		size_t keysize() const override { return 256; }
+		size_t ivsize() const override { return 192; }
 	};
 
 	class xsalsa20_12_128 : public xsalsa20_12_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new xsalsa20_12_128; }
-		size_t keysize() const { return 128; }
+		xsalsa20_12_128* clone() const override { return new xsalsa20_12_128; }
+		size_t keysize() const override { return 128; }
 	};
 
 }

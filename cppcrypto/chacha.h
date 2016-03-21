@@ -20,14 +20,14 @@ namespace cppcrypto
 		chacha20_256();
 		virtual ~chacha20_256();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void decrypt(const uint8_t* in, size_t len, uint8_t* out) override;
 
-		void clear();
-		stream_cipher* clone() const { return new chacha20_256; }
-		size_t keysize() const { return 256; }
-		size_t ivsize() const { return 64; }
+		void clear() override;
+		chacha20_256* clone() const override { return new chacha20_256; }
+		size_t keysize() const override { return 256; }
+		size_t ivsize() const override { return 64; }
 
 	protected:
 		uint32_t block_[16];
@@ -38,64 +38,64 @@ namespace cppcrypto
 	class chacha20_128 : public chacha20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new chacha20_128; }
-		size_t keysize() const { return 128; }
+		chacha20_128* clone() const override { return new chacha20_128; }
+		size_t keysize() const override { return 128; }
 	};
 
 	class xchacha20_256 : public chacha20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new xchacha20_256; }
-		size_t keysize() const { return 256; }
-		size_t ivsize() const { return 192; }
+		xchacha20_256* clone() const override { return new xchacha20_256; }
+		size_t keysize() const override { return 256; }
+		size_t ivsize() const override { return 192; }
 	};
 
 	class xchacha20_128 : public xchacha20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new xchacha20_128; }
-		size_t keysize() const { return 128; }
+		xchacha20_128* clone() const override { return new xchacha20_128; }
+		size_t keysize() const override { return 128; }
 	};
 
 	class chacha12_256 : public chacha20_256
 	{
 	public:
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
 
-		stream_cipher* clone() const { return new chacha12_256; }
+		chacha12_256* clone() const override { return new chacha12_256; }
 	};
 
 	class chacha12_128 : public chacha20_128
 	{
 	public:
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
 
-		stream_cipher* clone() const { return new chacha12_128; }
+		chacha12_128* clone() const override { return new chacha12_128; }
 	};
 
 	class xchacha12_256 : public chacha12_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new xchacha12_256; }
-		size_t keysize() const { return 256; }
-		size_t ivsize() const { return 192; }
+		xchacha12_256* clone() const override { return new xchacha12_256; }
+		size_t keysize() const override { return 256; }
+		size_t ivsize() const override { return 192; }
 	};
 
 	class xchacha12_128 : public xchacha12_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
+		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
 
-		stream_cipher* clone() const { return new xchacha12_128; }
-		size_t keysize() const { return 128; }
+		xchacha12_128* clone() const override { return new xchacha12_128; }
+		size_t keysize() const override { return 128; }
 	};
 
 }

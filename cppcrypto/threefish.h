@@ -24,16 +24,16 @@ namespace cppcrypto
 	public:
 		~threefish512_512();
 
-		size_t blocksize() const { return 512; }
-		size_t keysize() const { return 512; }
-		size_t tweaksize() const { return 128; }
-		block_cipher* clone() const { return new threefish512_512; }
-		void clear();
+		size_t blocksize() const override { return 512; }
+		size_t keysize() const override { return 512; }
+		size_t tweaksize() const override { return 128; }
+		threefish512_512* clone() const override { return new threefish512_512; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void set_tweak(const uint8_t* tweak);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void set_tweak(const uint8_t* tweak) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint64_t keys[9];
@@ -46,16 +46,16 @@ namespace cppcrypto
 	public:
 		~threefish1024_1024();
 
-		size_t blocksize() const { return 1024; }
-		size_t keysize() const { return 1024; }
-		size_t tweaksize() const { return 128; }
-		block_cipher* clone() const { return new threefish1024_1024; }
-		void clear();
+		size_t blocksize() const override { return 1024; }
+		size_t keysize() const override { return 1024; }
+		size_t tweaksize() const override { return 128; }
+		threefish1024_1024* clone() const override { return new threefish1024_1024; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void set_tweak(const uint8_t* tweak);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void set_tweak(const uint8_t* tweak) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint64_t keys[17];
@@ -68,16 +68,16 @@ namespace cppcrypto
 	public:
 		~threefish256_256();
 
-		size_t blocksize() const { return 256; }
-		size_t keysize() const { return 256; }
-		size_t tweaksize() const { return 128; }
-		block_cipher* clone() const { return new threefish256_256; }
-		void clear();
+		size_t blocksize() const override { return 256; }
+		size_t keysize() const override { return 256; }
+		size_t tweaksize() const override { return 128; }
+		threefish256_256* clone() const override { return new threefish256_256; }
+		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
-		void set_tweak(const uint8_t* tweak);
-		void encrypt_block(const uint8_t* in, uint8_t* out);
-		void decrypt_block(const uint8_t* in, uint8_t* out);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		void set_tweak(const uint8_t* tweak) override;
+		void encrypt_block(const uint8_t* in, uint8_t* out) override;
+		void decrypt_block(const uint8_t* in, uint8_t* out) override;
 
 	private:
 		uint64_t keys[5];
