@@ -42,7 +42,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 128; }
 		serpent128* clone() const override { return new serpent128; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 	class serpent192 : public serpent256
@@ -54,7 +54,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 192; }
 		serpent192* clone() const override { return new serpent192; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction);
+		bool init(const uint8_t* key, block_cipher::direction direction) override;
 	};
 
 }

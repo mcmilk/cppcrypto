@@ -8,7 +8,6 @@ and released into public domain.
 #include "blake2.h"
 #include <memory.h>
 #include <functional>
-#include <assert.h>
 
 //#define CPPCRYPTO_DEBUG
 //#define NO_OPTIMIZED_VERSIONS
@@ -24,8 +23,6 @@ extern "C"
 }
 
 namespace cppcrypto
-{
-namespace detail
 {
 	static const uint32_t IV256[8] = {
 		0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
@@ -194,7 +191,7 @@ namespace detail
 	blake2b::blake2b(size_t hashsize)
 		: hs(hashsize)
 	{
-		assert(hashsize > 0 && hashsize <= 512 && !(hashsize % 8));
+		validate_hash_size(hashsize, 512);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::sse41())
 			transfunc = [this](bool padding)
@@ -371,7 +368,7 @@ namespace detail
 	blake2s::blake2s(size_t hashsize)
 		: hs(hashsize)
 	{
-		assert(hashsize > 0 && hashsize <= 256 && !(hashsize % 8));
+		validate_hash_size(hashsize, 256);
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::sse41())
 			transfunc = [this](bool padding)
@@ -406,6 +403,5 @@ namespace detail
 		zero_memory(m.get(), m.bytes());
 	}
 
-}
 }
 

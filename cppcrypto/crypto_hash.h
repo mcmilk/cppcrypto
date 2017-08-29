@@ -8,6 +8,7 @@ and released into public domain.
 
 #include <stdint.h>
 #include <string>
+#include <initializer_list>
 
 namespace cppcrypto
 {
@@ -30,6 +31,10 @@ public:
 	void hash_string(const uint8_t* data, size_t len, uint8_t* hash);
 	void hash_string(const char* data, size_t len, uint8_t* hash);
 	void hash_string(const std::string& data, uint8_t* hash);
+
+protected:
+	void validate_hash_size(size_t hs, size_t max) const;
+	void validate_hash_size(size_t hs, std::initializer_list<size_t> set) const;
 
 private:
 	crypto_hash(const crypto_hash&) = delete;

@@ -13,6 +13,7 @@ and released into public domain.
 #include <Windows.h>
 #define swap_uint64 _byteswap_uint64
 #define swap_uint32 _byteswap_ulong
+#define swap_uint16 _byteswap_ushort
 #define aligned_allocate(a, b) _aligned_malloc(a, b)
 #define aligned_deallocate _aligned_free
 #define rotater32 _rotr
@@ -35,6 +36,10 @@ and released into public domain.
 #ifdef __SUNPRO_CC
 #define NO_BIND_TO_FUNCTION
 #define NO_CPP11_THREADS
+static inline uint16_t swap_uint16(uint16_t val)
+{
+    return ((val & 0xff) << 8) | ((val & 0xff00) >> 8);
+}
 static inline uint32_t swap_uint32(uint32_t val)
 {
     return (((val & 0xff000000) >> 24) | ((val & 0x00ff0000) >> 8) | ((val & 0x0000ff00) << 8) | ((val & 0x000000ff) << 24));
@@ -53,6 +58,7 @@ static inline uint64_t swap_uint64(uint64_t val)
 #else
 #define swap_uint64 __builtin_bswap64
 #define swap_uint32 __builtin_bswap32
+#define swap_uint16 __builtin_bswap16
 #endif
 #define FASTCALL
 #define CPPCRYPTOAPI
@@ -67,6 +73,7 @@ static inline uint32_t rotatel32(uint32_t x, unsigned n)
 	return (x << n) | (x >> (32 - n));
 }
 #else
+#include <x86intrin.h>
 #define rotater32 _rotr
 #define rotatel32 _rotl
 #endif

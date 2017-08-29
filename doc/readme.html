@@ -84,13 +84,14 @@ span.toc {
 <span class="toc"><a href="#chsc">6. Stream cipher algorithms</a></span>
 <span class="toc"><a href="#chkdf">7. Key derivation functions</a></span>
 <span class="toc"><a href="#chdu">8. Digest utility</a></span>
-<span class="toc"><a href="#chpn">9. Portability notes</a></span>
-<span class="toc"><a href="#chdl">10. Download link</a></span>
+<span class="toc"><a href="#chcryptor">9. Cryptor utility</a></span>
+<span class="toc"><a href="#chpn">10. Portability notes</a></span>
+<span class="toc"><a href="#chdl">11. Download link</a></span>
 </p>
 <h2 id="chintro">1. Introduction</h2>
 <p>cppcrypto is a small cross-platform BSD-licensed C++ library providing some cryptographic primitives. It has no external dependencies.</p>
 <p>The library thrives to be as fast as possible. CPU type is detected at runtime and the fastest implementation is selected dynamically.</p>
-<p><b>Supported compilers:</b> Visual C++ 2013, Visual C++ 2015 on Windows; gcc 5.1.1 or later, clang 3.4.1 or later on Linux, OS X, FreeBSD; Solaris Studio on Solaris.
+<p><b>Supported compilers:</b> Visual C++ 2013 or later on Windows; gcc 5.1.1 or later, clang 3.4.1 or later on Linux, OS X, FreeBSD; Solaris Studio 12.4 or later on Solaris.
 <br><b>Supported architectures:</b> x86_64 and x86.</p>
 <p><a href="https://sourceforge.net/projects/cppcrypto/files">Download cppcrypto from sourceforge</a></p>
 <p>Full list of supported cryptographic primitives is described below.
@@ -121,88 +122,91 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <h3>2.2. Supported algorithms</h3>
 <p>Classes derived from <code>crypto_hash</code>:</p>
 <table>
-<tr><th>Class Name</th><th>Description</th></tr>
+<tr><th>Class Name</th><th>Description</th><th>Supported output sizes</th></tr>
 <tr>
-<td><code>blake224</code><br><code>blake256</code><br><code>blake384</code><br><code>blake512</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/BLAKE_%28hash_function%29">BLAKE</a></b> hash function (one of SHA-3 finalists) with output sizes 224/256/384/512 bits.<br>This is one of the fastest hash functions and we recommend it you are free to choose.</td>
+<td><code>blake</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/BLAKE_%28hash_function%29">BLAKE</a></b> hash function (one of SHA-3 finalists).<br>This is one of the fastest hash functions and we recommend it you are free to choose.</td><td>224 / 256 / 384 / 512</td>
 </tr>
 <tr>
-<td><code>blake2b_128</code><br><code>blake2b_160</code><br><code>blake2b_224</code><br><code>blake2b_256</code><br><code>blake2b_384</code><br><code>blake2b_512</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/BLAKE_%28hash_function%29#BLAKE2">BLAKE2b</a></b> hash function with output sizes 128/160/224/256/384/512 bits.<br>This is a version of BLAKE-512 with reduced number of rounds and other simplifications.</td>
+<td><code>blake2b</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/BLAKE_%28hash_function%29#BLAKE2">BLAKE2b</a></b> hash function with variable output size up to 512 bits.<br>This is a version of BLAKE-512 with reduced number of rounds and other simplifications.</td><td>8 - 512</td>
 </tr>
 <tr>
-<td><code>blake2s_128</code><br><code>blake2s_160</code><br><code>blake2s_224</code><br><code>blake2s_256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/BLAKE_%28hash_function%29#BLAKE2">BLAKE2s</a></b> hash function with output sizes 128/160/224/256 bits.<br>This is a version of BLAKE-256 with reduced number of rounds and other simplifications.</td>
+<td><code>blake2s</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/BLAKE_%28hash_function%29#BLAKE2">BLAKE2s</a></b> hash function with variable output size up to 256 bits.<br>This is a version of BLAKE-256 with reduced number of rounds and other simplifications.</td><td>8 - 256</td>
 </tr>
 <tr>
-<td><code>groestl224</code><br><code>groestl256</code><br><code>groestl384</code><br><code>groestl512</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Gr%C3%B8stl">Grøstl</a></b> hash function (one of SHA-3 finalists) with output sizes 224/256/384/512 bits.</td>
+<td><code>groestl</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Gr%C3%B8stl">Grøstl</a></b> hash function (one of SHA-3 finalists).</td><td>8 - 512</td>
 </tr>
 <tr>
-<td><code>jh224</code><br><code>jh256</code><br><code>jh384</code><br><code>jh512</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/JH_%28hash_function%29">JH</a></b> hash function (one of SHA-3 finalists) with output sizes 224/256/384/512 bits.</td>
+<td><code>jh</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/JH_%28hash_function%29">JH</a></b> hash function (one of SHA-3 finalists).</td><td>224 / 256 / 384 / 512</td>
 </tr>
 <tr>
-<td><code>kupyna256</code><br><code>kupyna512</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Kupyna">Kupyna</a></b> hash function (Ukrainian national standard DSTU 7564:2014) with output sizes 256/512 bits.<br>224/384-bit functions are not provided because their output is identical to the truncated 256/512-bit output.</td>
-<!--<td class="descr"><b>Kupyna</b> hash function (Ukrainian national standard DSTU 7564:2014) with output sizes 256/512 bits.<br>Functions with output size 224/384 bits are not provided because their output is identical<br>to the output from 256/512 functions truncated to the corresponding number of bytes.</td>-->
+<td><code>kupyna</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Kupyna">Kupyna</a></b> hash function (Ukrainian national standard DSTU 7564:2014) with output sizes 256/512 bits.<br>224/384-bit functions are not provided because their output is identical to the truncated 256/512-bit output.</td><td>256 / 512</td>
 </tr>
 <tr>
 <td><code>md5</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/MD5">MD5</a></b> hash function. Not secure and therefore not recommended; use only if you need it for compatibility.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/MD5">MD5</a></b> hash function. Not secure and therefore not recommended; use only if you need it for compatibility.</td><td>128</td>
 </tr>
 <tr>
 <td><code>sha1</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/SHA-1">SHA-1</a></b> hash function. Not secure and therefore not recommended; use only if you need it for compatibility.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/SHA-1">SHA-1</a></b> hash function. Not secure and therefore not recommended; use only if you need it for compatibility.</td><td>160</td>
 </tr>
 <tr>
-<td><code>sha224</code><br><code>sha256</code><br><code>sha384</code><br><code>sha512</code><br><code>sha512_224</code><br><code>sha512_256</code></td>
+<td><code>sha224</code><br><code>sha256</code><br><code>sha384</code><br><code>sha512</code><br></td>
 <td class="descr"><b><a href="https://en.wikipedia.org/wiki/SHA-2">SHA-2</a></b> hash function (NIST standard FIPS 180-4).
-<br>New functions <code>sha512_224</code> and <code>sha512_256</code> are faster than <code>sha224</code> and <code>sha256</code> on 64-bit platforms.
 <br>Individual functions are known as SHA-224, SHA-256, SHA-384, SHA-512, SHA-512/224 and SHA-512/256.
-</td>
+<br>SHA-512 supports variable output size up to 512 bits (SHA-512/t).
+<br><code>sha512(224)</code> and <code>sha512(256)</code> are faster than <code>sha224</code> and <code>sha256</code> on 64-bit platforms.
+</td><td>224 / 256 / 384 / 512,<br>8 - 512 (SHA-512/t)</td>
 <!--<td class="descr"><b>SHA-2</b> hash function (NIST standard FIPS 180-4).<br>New functions <code>sha512_224</code> and <code>sha512_256</code> from the latest revision of the standard are faster than <code>sha224</code> and <code>sha256</code> on 64-bit platforms.</td>-->
 </tr>
 <tr>
-<td><code>sha3_224</code><br><code>sha3_256</code><br><code>sha3_384</code><br><code>sha3_512</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/SHA-3">SHA-3</a></b> hash function (NIST standard FIPS 202) based on Keccak algorithm.</td>
+<td><code>sha3</code><br><code>shake128</code><br><code>shake256</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/SHA-3">SHA-3</a></b> hash function (NIST standard FIPS 202) based on Keccak algorithm.
+<br>SHAKE-128 and SHAKE-256 support variable output size.
+<br>cSHAKE-128 and cSHAKE-256 as defined by NIST SP 800-185 are also supported.
+</td><td>224 / 256 / 384 / 512 (SHA-3)<br>arbitrary (SHAKE)</td>
 </tr>
 <tr>
-<td><code>skein256_128</code><br><code>skein256_160</code><br><code>skein256_224</code><br><code>skein256_256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein</a></b> hash function (one of SHA-3 finalists) with block size 256 bits and output sizes 128/160/224/256 bits.<br>These functions are slower than <code>skein512</code>, so use them only if you need them for compatibility.</td>
+<td><code>skein256</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein</a></b> hash function (one of SHA-3 finalists) with block size 256 bits and variable output size.<br>This algorithm is slower than <code>skein512</code> on modern PCs, so use it only if you need them for compatibility.</td><td>arbitrary</td>
 </tr>
 <tr>
-<td><code>skein512_128</code><br><code>skein512_160</code><br><code>skein512_224</code><br><code>skein512_256</code><br><code>skein512_384</code><br><code>skein512_512</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein</a></b> hash function (one of SHA-3 finalists) with block size 512 bits and output sizes 128/160/224/256/384/512 bits.<br>This is one of the fastest hash functions and we recommend it if you are free to choose.</td>
+<td><code>skein512</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein</a></b> hash function (one of SHA-3 finalists) with block size 512 bits and variable output size.<br>This is one of the fastest hash functions and we recommend it if you are free to choose.</td><td>arbitrary</td>
 </tr>
 <tr>
-<td><code>skein1024_256</code><br><code>skein1024_384</code><br><code>skein1024_512</code><br><code>skein1024_1024</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein</a></b> hash function (one of SHA-3 finalists) with block size 1024 bits and output sizes 256/384/512/1024 bits.</td>
+<td><code>skein1024</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Skein_%28hash_function%29">Skein</a></b> hash function (one of SHA-3 finalists) with block size 1024 bits and variable output size.</td><td>arbitrary</td>
 </tr>
 <tr>
 <td><code>sm3</code></td>
-<td class="descr"><b>SM3</b> hash function (Chinese national standard) with output size 256 bits.</td>
+<td class="descr"><b>SM3</b> hash function (Chinese national standard)</td><td>256</td>
 </tr>
 <tr>
-<td><code>streebog256</code><br><code>streebog512</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Streebog">Streebog</a></b> hash function (Russian standard GOST R 34.11-2012) with output sizes 256/512 bits.</td>
+<td><code>streebog</code></td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Streebog">Streebog</a></b> hash function (Russian standard GOST R 34.11-2012)</td><td>256 / 512</td>
 </tr>
 <tr>
 <td><code>whirlpool</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29">Whirlpool</a></b> hash function (recommended by NESSIE) with output size 512 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29">Whirlpool</a></b> hash function (recommended by NESSIE)</td><td>512</td>
 </tr>
 </table>
 <h3>2.3. Usage example</h3>
 <p>The following snippet calculates BLAKE-256 hash of a string using a single function call:</p>
 <pre>
     uint8_t hash[256/8];
-    blake256().hash_string("The quick brown fox jumps over the lazy dog", hash);
+    blake(256).hash_string("The quick brown fox jumps over the lazy dog", hash);
     // Now <i>hash</i> contains the hash
 </pre>
 <p>The following snippet demonstrates how to calculate the hash of a very long message using the init/update/final interface:</p>
 <p></p>
 <pre>
-    blake256 hasher;
+    blake(256) hasher;
     uint8_t hash[256/8];
     
     hasher.init();
@@ -252,7 +256,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <tr><td class="algorithm">JH-224</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
 <tr><td class="algorithm">SHA-224</td><td>398</td><td class="right">293</td><td>382</td><td class="right">282</td><td>382</td><td class="right">282</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
 <tr><td class="algorithm">SHA-512/224</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-224</td><td>270</td><td class="right">243</td><td>258</td><td class="right">221</td><td>260</td><td class="right">242</td><td>174</td><td class="right">143</td><td>122</td><td class="right">109</td></tr>
+<tr><td class="algorithm">SHA3-224</td><td>358</td><td class="right">322</td><td>358</td><td class="right">301</td><td>360</td><td class="right">293</td><td>174</td><td class="right">143</td><td>122</td><td class="right">109</td></tr>
 <tr><td class="algorithm">Skein-256/224</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
 <tr><td class="algorithm">Skein-512/224</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
 
@@ -267,7 +271,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <tr><td class="algorithm">Kupyna-256</td><td>127</td><td class="right">54</td><td>111</td><td class="right">54</td><td>113</td><td class="right">79</td><td>77</td><td class="right">28</td><td>53</td><td class="right">25</td></tr>
 <tr><td class="algorithm">SHA-256</td><td>398</td><td class="right">293</td><td>382</td><td class="right">282</td><td>382</td><td class="right">282</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
 <tr><td class="algorithm">SHA-512/256</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-256</td><td>256</td><td class="right">227</td><td>246</td><td class="right">206</td><td>245</td><td class="right">228</td><td>164</td><td class="right">133</td><td>114</td><td class="right">103</td></tr>
+<tr><td class="algorithm">SHA3-256</td><td>338</td><td class="right">304</td><td>340</td><td class="right">275</td><td>339</td><td class="right">276</td><td>164</td><td class="right">133</td><td>114</td><td class="right">103</td></tr>
 <tr><td class="algorithm">Skein-256/256</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
 <tr><td class="algorithm">Skein-512/256</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
 <tr><td class="algorithm">Skein-1024/256</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
@@ -283,7 +287,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <tr><td class="algorithm">Groestl-384</td><td>246</td><td class="right">197</td><td>220</td><td class="right">181</td><td>234</td><td class="right">182</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
 <tr><td class="algorithm">JH-384</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
 <tr><td class="algorithm">SHA-384</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-384</td><td>194</td><td class="right">175</td><td>187</td><td class="right">152</td><td>189</td><td class="right">175</td><td>126</td><td class="right">103</td><td>89</td><td class="right">79</td></tr>
+<tr><td class="algorithm">SHA3-384</td><td>260</td><td class="right">233</td><td>260</td><td class="right">203</td><td>258</td><td class="right">211</td><td>126</td><td class="right">103</td><td>89</td><td class="right">79</td></tr>
 <tr><td class="algorithm">Skein-512/384</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
 <tr><td class="algorithm">Skein-1024/384</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
 
@@ -296,7 +300,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <tr><td class="algorithm">JH-512</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
 <tr><td class="algorithm">Kupyna-512</td><td>81</td><td class="right">43</td><td>84</td><td class="right">41</td><td>88</td><td class="right">59</td><td>49</td><td class="right">22</td><td>23</td><td class="right">20</td></tr>
 <tr><td class="algorithm">SHA-512</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-512</td><td>136</td><td class="right">122</td><td>130</td><td class="right">103</td><td>133</td><td class="right">123</td><td>81</td><td class="right">72</td><td>61</td><td class="right">49</td></tr>
+<tr><td class="algorithm">SHA3-512</td><td>180</td><td class="right">162</td><td>180</td><td class="right">148</td><td>181</td><td class="right">147</td><td>81</td><td class="right">72</td><td>61</td><td class="right">49</td></tr>
 <tr><td class="algorithm">Skein-512/512</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
 <tr><td class="algorithm">Skein-1024/512</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
 <tr><td class="algorithm">Streebog-512</td><td>112</td><td class="right">64</td><td>116</td><td class="right">64</td><td>113</td><td class="right">68</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
@@ -362,34 +366,34 @@ In practice in most cases you probably want to use block ciphers in an encryptio
 <h3>4.2. Supported algorithms</h3>
 <p>Classes derived from <code>block_cipher</code>:</p>
 <table>
-<tr><th>Class Name</th><th>Description</th></tr>
+<tr><th>Class Name</th><th>Description</th><th>Supported block sizes</th><th>Supported key sizes</th></tr>
 <tr>
 <td><code>anubis128</code><br><code>anubis160</code><br><code>anubis192</code><br><code>anubis224</code><br><code>anubis256</code><br><code>anubis288</code><br><code>anubis320</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Anubis_%28cipher%29">Anubis</a></b> cipher<br>with block size 128 bits and key sizes 128/160/192/224/256/288/320 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Anubis_%28cipher%29">Anubis</a></b> cipher</td><td>128</td><td>128 / 160 / 192 / 224 / 256 / 288 / 320</td>
 </tr>
 <tr>
 <td><code>aria128</code><br><code>aria192</code><br><code>aria256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/ARIA_%28cipher%29">Aria</a></b> cipher (South Korean national standard)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/ARIA_%28cipher%29">Aria</a></b> cipher (South Korean national standard)</td><td>128</td><td>128 / 192 / 256</td>
 </tr>
 <tr>
 <td><code>cast6_128</code><br><code>cast6_160</code><br><code>cast6_192</code><br><code>cast6_224</code><br><code>cast6_256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/CAST-256">CAST6</a></b> (aka <b>CAST-256</b>) cipher<br>with block size 128 bits and key sizes 128/160/192/224/256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/CAST-256">CAST6</a></b> (aka <b>CAST-256</b>) cipher</td><td>128</td><td>128 / 160 / 192 / 224 / 256</td>
 </tr>
 <tr>
 <td><code>camellia128</code><br><code>camellia192</code><br><code>camellia256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Camellia_%28cipher%29">Camellia</a></b> cipher (recommended by NESSIE and CRYPTREC)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Camellia_%28cipher%29">Camellia</a></b> cipher (recommended by NESSIE and CRYPTREC)</td><td>128</td><td>128 / 192 / 256</td>
 </tr>
 <tr>
 <td><code>kalyna128_128</code><br><code>kalyna128_256</code><br><code>kalyna256_256</code><br><code>kalyna256_512</code><br><code>kalyna512_512</code></td>
-<td class="descr"><b>Kalyna</b> cipher (Ukrainian national standard DSTU 7624:2014)<br>with block sizes 128/256/512 bits and key sizes 128/256/512 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Kalyna_(cipher)">Kalyna</a></b> cipher (Ukrainian national standard DSTU 7624:2014)</td><td>128 / 256 / 512</td><td>128 / 256 / 512</td>
 </tr>
 <tr>
 <td><code>kuznyechik</code></td>
-<td class="descr"><b>Kuznyechik</b> cipher (Russian national standard GOST R 34.12-2015)<br>with block size 128 bits and key size 256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Kuznyechik">Kuznyechik</a></b> cipher (Russian national standard GOST R 34.12-2015)</td><td>128</td><td>256</td>
 </tr>
 <tr>
 <td><code>mars128</code><br><code>mars160</code><br><code>mars192</code><br><code>mars224</code><br><code>mars256</code><br><code>mars288</code><br><code>mars320</code><br><code>mars352</code><br><code>mars384</code><br><code>mars416</code><br><code>mars448</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/MARS_%28cryptography%29">MARS</a></b> cipher (one of AES finalists)<br>with block size 128 bits<br>and key sizes 128/160/192/224/256/288/320/352/384/416/448 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/MARS_%28cryptography%29">MARS</a></b> cipher (one of AES finalists)</td><td>128</td><td>128 / 160 / 192 / 224 / 256 / 288 / 320 / 352 / 384 / 416 / 448</td>
 </tr>
 <tr>
 <td><code>rijndael128_128</code><br><code>rijndael128_160</code><br><code>rijndael128_192</code><br><code>rijndael128_224</code><br><code>rijndael128_256</code>
@@ -398,31 +402,31 @@ In practice in most cases you probably want to use block ciphers in an encryptio
 <br><code>rijndael224_128</code><br><code>rijndael224_160</code><br><code>rijndael224_192</code><br><code>rijndael224_224</code><br><code>rijndael224_256</code>
 <br><code>rijndael256_128</code><br><code>rijndael256_160</code><br><code>rijndael256_192</code><br><code>rijndael256_224</code><br><code>rijndael256_256</code>
 </td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">Rijndael</a></b> cipher (AES winner)<br>with block sizes 128/160/192/224/256 bits<br>and key sizes 128/160/192/224/256 bits.<br><br>Rijndael with block size 128 bits and key size 128, 192, 256 bits<br>is also known as<br> <b>AES-128, AES-192, AES-256</b>.<br><br>All 25 Rijndael variants are accelerated using AES-NI instructions,<br>if they are supported by CPU.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Advanced_Encryption_Standard">Rijndael</a></b> cipher (AES winner)<br><br>Rijndael with block size 128 bits and key size 128, 192, 256 bits<br>is also known as<br> <b>AES-128, AES-192, AES-256</b>.<br><br>All 25 Rijndael variants are accelerated using AES-NI instructions,<br>if they are supported by CPU.</td><td>128 / 160 / 192 / 224 / 256</td><td>128 / 160 / 192 / 224 / 256</td>
 </tr>
 <tr>
 <td><code>serpent128</code><br><code>serpent192</code><br><code>serpent256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Serpent_%28cipher%29">Serpent</a></b> cipher (one of AES finalists)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Serpent_%28cipher%29">Serpent</a></b> cipher (one of AES finalists)</td><td>128</td><td>128 / 192 / 256</td>
 </tr>
 <tr>
 <td><code>simon128_128</code><br><code>simon128_192</code><br><code>simon128_256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Simon_%28cipher%29">Simon</a></b> cipher<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Simon_%28cipher%29">Simon</a></b> cipher</td><td>128</td><td>128 / 192 / 256</td>
 </tr>
 <tr>
 <td><code>sm4</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/SMS4">SM4</a></b> cipher (Chinese national standard for Wireless LAN)<br>with block size 128 bits and key size 128 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/SMS4">SM4</a></b> cipher (Chinese national standard for Wireless LAN)</td><td>128</td><td>128</td>
 </tr>
 <tr>
 <td><code>speck128_128</code><br><code>speck128_192</code><br><code>speck128_256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Speck_%28cipher%29">Speck</a></b> cipher<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Speck_%28cipher%29">Speck</a></b> cipher</td><td>128</td><td>128 / 192 / 256</td>
 </tr>
 <tr>
 <td><code>threefish256_256</code><br><code>threefish512_512</code><br><code>threefish1024_1024</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Threefish">Threefish</a></b> cipher<br>with block sizes 256/512/1024 bits and key sizes 256/512/1024 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Threefish">Threefish</a></b> cipher</td><td>256 / 512 / 1024</td><td>256 / 512 / 1024</td>
 </tr>
 <tr>
 <td><code>twofish128</code><br><code>twofish192</code><br><code>twofish256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Twofish">Twofish</a></b> cipher (one of AES finalists)<br>with block size 128 bits and key sizes 128/192/256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/Twofish">Twofish</a></b> cipher (one of AES finalists)</td><td>128</td><td>128 / 192 / 256</td>
 </tr>
 </table>
 <h2 id="chem">5. Block cipher encryption modes</h2>
@@ -454,8 +458,8 @@ In practice in most cases you probably want to use block ciphers in an encryptio
 <p>The functions are similar to the ones from the <code>crypto_hash</code> class.</p><p>To start encryption, pass one of the block ciphers to the constructor and initialize encryption using <code>init()</code> function. The length of the key in bytes should be equal to <code>keysize()/8</code> of the block cipher, and the length of the initialization vector (<code>iv</code>) in bytes should be equal to <code>blocksize()/8</code> of the block cipher. Then call <code>encrypt_update()</code> any number of times to add the next chunk of data of variable length. When all input is consumed by <code>encrypt_update()</code> function, call <code>encrypt_final()</code> to finish the encryption (at this stage the final block will be written to <code>out</code>).
 <p>Decryption is done in a similar way.</p>
 <p>If you use the low-level functions that write the output to a preallocated buffer, the <code>out</code> argument should point to the next location where the encrypted output should be written; <code>resultlen</code> is the number of bytes written to <code>out</code> as the result of the function call. Because the class implements PKCS#7 padding, the overall size of the output buffer should be equal to the size of the input rounded up to the block size of the cipher algorithm, plus one additional full block if the input size is the exact multiple of the block size. It is responsibility of the caller to make sure the buffer is large enough.</p>
-<p>A simpler but slower interface accepts a reference to <code>std::vector&lt;uint8_t&gt;</code> and appends encryption or decryption result to this vector, which is dynamically resized as needed, so that you do not need to calculate and allocate a buffer of proper size in advance:</p>
-<p>An even simpler but slower interface writes the output to <code>std::ostream</code>:</p>
+<p>A simpler but slower interface accepts a reference to <code>std::vector&lt;uint8_t&gt;</code> and appends encryption or decryption result to this vector, which is dynamically resized as needed, so that you do not need to calculate and allocate a buffer of proper size in advance.</p>
+<p>An even simpler but slower interface writes the output to <code>std::ostream</code>.</p>
 <p>Note that regardless of which interface you use, you still need to call <code>init()</code> function to set up the key and initialization vector.</p>
 <h3>5.2. CTR mode</h3>
 <p>Class <code>ctr</code> implements the <code>stream_cipher</code> interface for block ciphers:</p>
@@ -586,34 +590,30 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
 <h3>6.2. Supported algorithms</h3>
 <p>Classes derived from <code>stream_cipher</code>:</p>
 <table>
-<tr><th>Class Name</th><th>Description</th></tr>
+<tr><th>Class Name</th><th>Description</th><th>Supported key sizes</th><th>Supported IV/nonce sizes</th></tr>
 <tr>
 <td><code>chacha20_128</code><br><code>chacha20_256</code><br><code>chacha12_128</code><br><code>chacha12_256</code></td>
 <td class="descr"><b><a href="https://en.wikipedia.org/wiki/Salsa20#ChaCha_variant">ChaCha</a></b> cipher (a variant of Salsa20)
-<br>including full 20-round version and reduced 12-round version
-<br>with key sizes 128 and 256 bits and initialization vector size 64 bits.</td>
+<br>including full 20-round version and reduced 12-round version</td><td>128 / 256</td><td>64</td>
 </tr>
 <tr>
 <td><code>hc128</code><br><code>hc256</code></td>
-<td class="descr"><b><a href="https://en.wikipedia.org/wiki/HC-256">HC</a></b> cipher (member of eSTREAM portfolio)<br>with key sizes 128 and 256 bits and initialization vector sizes 128 and 256 bits.</td>
+<td class="descr"><b><a href="https://en.wikipedia.org/wiki/HC-256">HC</a></b> cipher (member of eSTREAM portfolio)</td><td>128 / 256</td><td>128 / 256</td>
 </tr>
 <tr>
 <td><code>salsa20_128</code><br><code>salsa20_256</code><br><code>salsa20_12_128</code><br><code>salsa20_12_256</code></td>
 <td class="descr"><b><a href="https://en.wikipedia.org/wiki/Salsa20">Salsa20</a></b> cipher (member of eSTREAM portfolio)
-<br>including full 20-round version and reduced 12-round version
-<br>with key sizes 128 and 256 bits and initialization vector size 64 bits.</td>
+<br>including full 20-round version and reduced 12-round version</td><td>128 / 256</td><td>64</td>
 </tr>
 <tr>
 <td><code>xchacha20_128</code><br><code>xchacha20_256</code><br><code>xchacha12_128</code><br><code>xchacha12_256</code></td>
 <td class="descr"><b>XChaCha</b> cipher (a variant of ChaCha with longer nonce)
-<br>including full 20-round version and reduced 12-round version
-<br>with key sizes 128 and 256 bits and initialization vector size 192 bits.</td>
+<br>including full 20-round version and reduced 12-round version</td><td>128 / 256</td><td>192</td>
 </tr>
 <tr>
 <td><code>xsalsa20_128</code><br><code>xsalsa20_256</code><br><code>xsalsa20_12_128</code><br><code>xsalsa20_12_256</code></td>
 <td class="descr"><b>XSalsa20</b> cipher (a variant of Salsa20 with longer nonce)
-<br>including full 20-round version and reduced 12-round version
-<br>with key sizes 128 and 256 bits and initialization vector size 192 bits.</td>
+<br>including full 20-round version and reduced 12-round version</td><td>128 / 256</td><td>192</td>
 </tr>
 </table>
 <p>You can also use any of the supported block ciphers like a stream cipher via <code>ctr</code> class, which implements the same <code>stream_cipher</code> interface.</p>
@@ -641,10 +641,10 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
 <tr><td class="algorithm">ChaCha12-256</td><td>1920</td><td class="right">1595</td><td>2070</td><td class="right">1585</td><td>2140</td><td class="right">1795</td>
 <tr><td class="algorithm top">HC-128</td><td class="top">1750</td><td class="right top">1350</td><td class="top">1760</td><td class="right top">1550</td><td class="top">1810</td><td class="right top">1965</td>
 <tr><td class="algorithm">HC-256</td><td>1050</td><td class="right">825</td><td>1157</td><td class="right">965</td><td>1110</td><td class="right">1095</td>
-<tr><td class="algorithm top">Salsa20-128</td><td class="top">1150</td><td class="right top">855</td><td class="top">1100</td><td class="right top">900</td><td class="top">1850</td><td class="right top">1045</td>
-<tr><td class="algorithm">Salsa20-256</td><td>1150</td><td class="right">855</td><td>1100</td><td class="right">900</td><td>1850</td><td class="right">1045</td>
-<tr><td class="algorithm">Salsa20/12-128</td><td>1835</td><td class="right">1310</td><td>1750</td><td class="right">1410</td><td>1170</td><td class="right">1660</td>
-<tr><td class="algorithm">Salsa20/12-256</td><td>1835</td><td class="right">1310</td><td>1750</td><td class="right">1410</td><td>1170</td><td class="right">1660</td>
+<tr><td class="algorithm top">Salsa20-128</td><td class="top">1150</td><td class="right top">855</td><td class="top">1100</td><td class="right top">900</td><td class="top">1170</td><td class="right top">1045</td>
+<tr><td class="algorithm">Salsa20-256</td><td>1150</td><td class="right">855</td><td>1100</td><td class="right">900</td><td>1170</td><td class="right">1045</td>
+<tr><td class="algorithm">Salsa20/12-128</td><td>1835</td><td class="right">1310</td><td>1750</td><td class="right">1410</td><td>1850</td><td class="right">1660</td>
+<tr><td class="algorithm">Salsa20/12-256</td><td>1835</td><td class="right">1310</td><td>1750</td><td class="right">1410</td><td>1850</td><td class="right">1660</td>
 <tr><td class="algorithm top">XChaCha20-128</td><td class="top">1200</td><td class="right top">1050</td><td class="top">1286</td><td class="right top">995</td><td class="top">1340</td><td class="right top">1130</td>
 <tr><td class="algorithm">XChaCha20-256</td><td>1200</td><td class="right">1050</td><td>1286</td><td class="right">995</td><td>1340</td><td class="right">1130</td>
 <tr><td class="algorithm">XChaCha12-128</td><td>1920</td><td class="right">1595</td><td>2070</td><td class="right">1585</td><td>2140</td><td class="right">1795</td>
@@ -697,8 +697,8 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
     scrypt(hmac, (const uint8_t*)"salt", 4, 16384, 8, 16, key, sizeof(key));
 </pre>
 <h3>7.3. Argon2</h3>
-<p>Argon2 is a winner of Password Hashing Competition and is the recommended function for hashing passwords.</p>
-<p>There are two versions of Argon2 function: <code>argon2i</code> and <code>argon2d</code>. Argon2i is the safest against side-channel attacks, while Argon2d provides the highest resistance against GPU cracking attacks.</p>
+<p><a href="https://en.wikipedia.org/wiki/Argon2">Argon2</a> is a winner of Password Hashing Competition and is the recommended function for hashing passwords.</p>
+<p>There are three versions of Argon2 function: <code>argon2i</code>, <code>argon2d</code> and <code>argon2id</code>. Argon2i is the safest against side-channel attacks, while Argon2d provides the highest resistance against GPU cracking attacks.</p>
 <pre><i>    /*
     Argon2 key derivation function.
 
@@ -728,6 +728,11 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
                  uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
                  uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0,
                  argon2_version version = argon2_version::version13);
+
+    void argon2id(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len,
+                  uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
+                  uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0,
+                  argon2_version version = argon2_version::version13);
 </pre>
 <p>The following snippet generates a 256-bit key from password "password" and salt "salt" using <code>argon2i</code> function with p=4, m=4096 and t=1000 (which takes 0.68 seconds on Intel Xeon E5-1650 v3):</p>
 <pre>
@@ -750,38 +755,55 @@ by the previous command, you can run:</p>
 <pre>
    digest -c skein512/256 checksums.skein
 </pre>
-<h2 id="chpn">9. Portability notes</h2>
+<h2 id="chcryptor">9. Cryptor utility</h2>
+<p>Command-line utility 'cryptor.exe' is intended to demonstrate how cppcrypto library can be utilized to encrypt or decrypt a file.
+To encrypt a file, run:</p>
+<pre>
+   cryptor enc file.ext
+</pre>
+<p>To decrypt a file, run:</p>
+<pre>
+   cryptor dec file.ext
+</pre>
+<p>The utility demonstrates the steps needed for encryption:<p>
+<ul><li>Generate random salt and initialization vector.</li>
+<li>Ask for a password and derive keys for encryption and authentication using argon2d key derivation function.</li>
+<li>Encrypt a file using Serpent algorithm with 256-bit key in CBC mode.</li>
+<li>Authenticate the encryption using HMAC-Grøstl-256.</li>
+</ul>
+<p>The utility is provided mainly for demonstration purposes, algorithm choice is arbitrary.</p>
+<h2 id="chpn">10. Portability notes</h2>
 <p>At the moment we support only x86 processors (in 32-bit or 64-bit mode).
 <br>To build cppcrypto from the sources you need to have yasm installed.
 <br>We have successfully compiled and tested cppcrypto under the following operating systems.</p>
-<h3>9.1. Windows</h3>
+<h3>10.1. Windows</h3>
 <p>Tested OS versions: Windows 7, Windows 10.
-<br>Tested compilers: Visual C++ 2013, Visual C++ 2015.</p>
+<br>Tested compilers: Visual C++ 2013, Visual C++ 2015, Visual C++ 2017.</p>
 <p>First, download the latest yasm for Visual Studio and install it according to the instructions in its readme.txt.
-Note that the latest stable release of yasm (1.3.0) ships vsyasm.props file which is not compatible with Visual Studio 2013 and 2015. The fixed version of vsyasm.props is included in the cppcrypto source archive, so you just need to replace that single file. (Alternatively, use the development version of yasm from their git repository, which reportedly fixes the compatibility issue.)</p>
+Note that the latest stable release of yasm (1.3.0) ships vsyasm.props file which is not compatible with Visual Studio 2013 or later. The fixed version of vsyasm.props is included in the cppcrypto source archive, so you just need to replace that single file. (Alternatively, use the development version of yasm from their git repository, which reportedly fixes the compatibility issue.)</p>
 <p>Then, open the supplied Visual C++ project files or solution file and build cppcrypto.
-If you're using Visual Studio 2015, right-click each project and choose &quot;Upgrade VC Compilers and Libraries&quot; menu item, since the provided project files are from VS2013.</p>
+If you're using Visual Studio 2015 or later, right-click each project and choose &quot;Upgrade VC Compilers and Libraries&quot; menu item, since the provided project files are from VS2013.</p>
 <p>If you use the precompiled static libraries then you don't need yasm.
 Just link against cppcryptomd.lib or cppcryptomt.lib depending on your /MT or /MD settings.
 </p>
 <p>Experimental support for Cygwin gcc builds has been added recently; to build in cygwin, run 'make UNAME=Cygwin' and 'make UNAME=Cygwin install'.</p>
-<h3>9.2. Linux</h3>
+<h3>10.2. Linux</h3>
 <p>Tested OS versions: openSUSE Tumbleweed (x86_64 and i586), Debian Sid (x86_64), Fedora 23 (x86_64).<br>
-Tested compilers: gcc 5.1.1, gcc 5.2.1, clang 3.7.0.</p>
+Tested compilers: gcc 5.1.1, gcc 5.2.1, gcc 7.1.1, clang 3.7.0, clang 4.0.1.</p>
 <p>Make sure yasm is installed, then run make and [sudo] make install as usual.</p>
-<p>Note that if you try to run the vectortest.sh script on Linux, you may get a crash during checking sha384 and sha512 test vectors. This is caused by a bug in the current version of libstdc++ (stack overflow on long regexes). The developers of libstdc++ are informed and acknowledge the bug. This bug does not affect the functionality of cppcrypto library anyhow, C++ regexes are only used in the test application for parsing the test vectors.</p>
-<h3>9.3. Mac OS X</h3>
+<p>Note that if you do not use recent versions of libstdc++ and try to run the vectortest.sh script on Linux, you may get a crash during checking sha384 and sha512 test vectors. This is caused by a bug in libstdc++ (stack overflow on long regexes), which is fixed in latest versions. This bug does not affect the functionality of cppcrypto library anyhow, C++ regexes are only used in the test application for parsing the test vectors.</p>
+<h3>10.3. Mac OS X</h3>
 <p>Tested OS versions: OS X 10.11.1 El Capitan.
 <br>Tested compilers: Apple LLVM version 7.0.0 (clang-700.1.76).</p>
 <p>Download and install yasm. Then run make and [sudo] make install to build and install cppcrypto.</p>
-<h3>9.4. FreeBSD</h3>
+<h3>10.4. FreeBSD</h3>
 <p>Tested OS versions: FreeBSD 10.2-RELEASE.
 <br>Tested compilers: clang 3.4.1.</p>
 <p>Install yasm (pkg install yasm) and GNU make (pkg install gmake). Then, run gmake and [sudo] gmake install to build and install cppcrypto.</p>
-<h3>9.5. Solaris</h3>
+<h3>10.5. Solaris</h3>
 <p>Tested OS versions: Solaris 11.3.
 <br>Tested compilers: Solaris Studio 12.4.</p>
 <p>Install yasm from OpenCSW. Be sure yasm, gmake, ginstall and Solaris Studio compiler (CC) are in the PATH. Then, run gmake and [sudo] gmake install to build and install cppcrypto.</p>
-<h2 id="chdl">10. Download link</h2>
+<h2 id="chdl">11. Download link</h2>
 <p><a href="https://sourceforge.net/projects/cppcrypto/files">Download cppcrypto from sourceforge</a></p>
 <p></p>

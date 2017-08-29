@@ -171,3 +171,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 % Ronen Zohar
 % Romain Dolbeau
 % Andrew Moon
+% Vladimir Sedach
+

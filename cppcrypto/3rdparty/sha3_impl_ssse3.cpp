@@ -36,6 +36,10 @@ namespace cppcrypto
 		{
 			Squeeze(static_cast<spongeState*>(state), hash, hashbitlen);
 		}
+		void sha3_impl_ssse3::set_padding_byte(unsigned char byte)
+		{
+			static_cast<spongeState*>(state)->paddingByte = byte;
+		}
 
 		sha3_impl_ssse3::sha3_impl_ssse3(sha3_impl_ssse3&& other)
 		{
@@ -47,6 +51,5 @@ namespace cppcrypto
 			std::swap(state, other.state);
 			return *this;
 		}
-
 	}
 }

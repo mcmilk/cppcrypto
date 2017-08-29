@@ -10,6 +10,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "digest", "digest\digest.vcx
 		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5} = {8978C0F5-41B2-4455-8D7A-63ACA8B063C5}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptor", "cryptor\cryptor.vcxproj", "{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5} = {8978C0F5-41B2-4455-8D7A-63ACA8B063C5}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|win32 = Debug|win32
@@ -44,6 +49,18 @@ Global
 		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release|win32.Build.0 = Release|Win32
 		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release|x64.ActiveCfg = Release|x64
 		{96461543-0BE0-4377-8DC4-7B08F9F55F5A}.Release|x64.Build.0 = Release|x64
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Debug|win32.ActiveCfg = Debug|Win32
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Debug|win32.Build.0 = Debug|Win32
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Debug|x64.ActiveCfg = Debug|x64
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Debug|x64.Build.0 = Debug|x64
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release - MT|win32.ActiveCfg = Release - MT|Win32
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release - MT|win32.Build.0 = Release - MT|Win32
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release - MT|x64.ActiveCfg = Release - MT|x64
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release - MT|x64.Build.0 = Release - MT|x64
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release|win32.ActiveCfg = Release|Win32
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release|win32.Build.0 = Release|Win32
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release|x64.ActiveCfg = Release|x64
+		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

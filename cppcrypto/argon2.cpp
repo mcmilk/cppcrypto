@@ -77,7 +77,7 @@ namespace cppcrypto
 	static inline void HP(uint8_t* in, uint32_t inlen, uint8_t* out, uint32_t outlen)
 	{
 		uint8_t buf1[64], buf2[64];
-		detail::blake2b hasher(std::min(outlen, 64U)*8);
+		blake2b hasher(std::min(outlen, 64U)*8);
 		hasher.init();
 		hasher.update(reinterpret_cast<uint8_t*>(&outlen), sizeof(outlen));
 		hasher.update(in, inlen);
@@ -101,7 +101,7 @@ namespace cppcrypto
 			out += 32;
 			std::swap(inb, outb);
 		}
-		detail::blake2b(rem*8).hash_string(inb, 64, out);
+		blake2b(rem*8).hash_string(inb, 64, out);
 	}
 
 	static inline void fill_first_blocks(uint8_t* B, uint32_t p, uint32_t q, uint8_t* h0)
@@ -237,7 +237,7 @@ namespace cppcrypto
 					uint8_t* thisB = B + (lane*q + column) * 1024;
 					uint8_t* prevB = column ? thisB - 1024 : B + (lane*q + q - 1) * 1024;
 					uint32_t J1, J2;
-					if (!y)
+					if (!y || (y == 2 && (iteration || slice >= 2)))
 					{
 						J1 = *(uint32_t*)prevB;
 						J2 = *(((uint32_t*)prevB) + 1);
@@ -290,7 +290,7 @@ namespace cppcrypto
 		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
 	{
 		uint8_t h0[64];
-		blake2b_512 ih;
+		blake2b ih(512);
 		ih.init();
 		uint32_t v = static_cast<uint32_t>(version);
 		ih.update(reinterpret_cast<const uint8_t*>(&p), sizeof(p));
@@ -327,6 +327,20 @@ namespace cppcrypto
 			{
 				calc_lanes(iteration, slice, B, p, q, s, tp, y, t, msize, version);
 			}
+#ifdef CPPCRYPTO_DEBUG
+			printf("after iteration %d:\n", iteration);
+			for (uint32_t i = 0; i < p; i++)
+			{
+				printf("block[%d]: ", i*q);
+				for (int k = 0; k < 1024; k++)
+					printf("%02x", B[i*q * 1024 + k]);
+				printf("\n");
+				printf("block[%d]: ", i*q+1);
+				for (int k = 0; k < 1024; k++)
+					printf("%02x", B[i*q * 1024 + 1024 + k]);
+				printf("\n");
+			}
+#endif
 		}
 		uint8_t bm[1024];
 		memset(bm, 0, sizeof(bm));
@@ -366,4 +380,11 @@ namespace cppcrypto
 		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 1, data, datalen, secret, secretlen, version);
 	}
 
+	void argon2id(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
+		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
+	{
+		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 2, data, datalen, secret, secretlen, version);
+	}
+
 }
+

@@ -168,6 +168,8 @@ namespace cppcrypto
 		return *this;
 	}
 #endif
+
 }
 
 #endif
+

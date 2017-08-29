@@ -8,6 +8,8 @@ This code is released under Simplified BSD License (see license.txt).
 #include "cpuinfo.h"
 #ifndef _MSC_VER
 #include <cpuid.h>
+#else
+#include <intrin.h>
 #endif
 
 namespace cppcrypto

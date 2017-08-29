@@ -37,6 +37,7 @@ namespace cppcrypto
 	Optional input:
 	data     Associated data which will affect the derived key.
 	secret   Secret value which will affect the derived key.
+	version  Version of the algorithm (argon2_version::version12 is supported for compatibility, for new development use the latest argon2_version::version13).
 
 	Output:
 	dk       Derived key, of length dklen bytes.
@@ -50,6 +51,8 @@ namespace cppcrypto
 	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
 		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
 	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
+		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
+	void argon2id(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
 		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
 }
 

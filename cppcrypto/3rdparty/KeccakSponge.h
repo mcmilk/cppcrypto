@@ -34,6 +34,7 @@ ALIGN typedef struct spongeStateStruct {
     unsigned int capacity;
     unsigned int bitsInQueue;
     unsigned int fixedOutputLength;
+    unsigned char paddingByte;
     int squeezing;
     unsigned int bitsAvailableForSqueezing;
 } spongeState;

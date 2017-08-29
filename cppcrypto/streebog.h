@@ -14,19 +14,19 @@ and released into public domain.
 namespace cppcrypto
 {
 
-	class streebog512 : public crypto_hash
+	class streebog : public crypto_hash
 	{
 	public:
-		streebog512();
-		~streebog512();
+		streebog(size_t hashsize);
+		~streebog();
 
 		void init() override;
 		void update(const uint8_t* data, size_t len) override;
 		void final(uint8_t* hash) override;
 
-		size_t hashsize() const override { return 512; }
+		size_t hashsize() const override { return hs; }
 		size_t blocksize() const override { return 512; }
-		streebog512* clone() const override { return new streebog512; }
+		streebog* clone() const override { return new streebog(hs); }
 		void clear() override;
 
 	protected:
@@ -35,18 +35,9 @@ namespace cppcrypto
 		aligned_pod_array<uint64_t, 8, 32> h;
 		aligned_pod_array<uint64_t, 8, 32> S;
 		aligned_pod_array<uint8_t, 64, 32> m;
+		size_t hs;
 		size_t pos;
 		uint64_t total;
-	};
-
-	class streebog256 : public streebog512
-	{
-	public:
-		void init() override;
-
-		size_t hashsize() const override { return 256; }
-		size_t blocksize() const override { return 512; }
-		streebog256* clone() const override { return new streebog256; }
 	};
 
 }

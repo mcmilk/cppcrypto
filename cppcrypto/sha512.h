@@ -17,17 +17,17 @@ namespace cppcrypto
 	class sha512 : public crypto_hash
 	{
 	public:
-		sha512();
+		sha512(size_t hashsize = 512);
 		~sha512();
 
 		void init() override;
 		void update(const uint8_t* data, size_t len) override;
 		void final(uint8_t* hash) override;
 
-		size_t hashsize() const override { return 512; }
+		size_t hashsize() const override { return hs; }
 		size_t blocksize() const override { return 1024; }
 		sha512* clone() const override { return new sha512; }
-		void clear();
+		void clear() override;
 
 	protected:
 		void transform(void* m, uint64_t num_blks);
@@ -37,32 +37,14 @@ namespace cppcrypto
 		std::array<uint8_t, 128> m;
 		size_t pos;
 		uint64_t total;
-	};
-
-	class sha512_256 : public sha512
-	{
-	public:
-		void init() override;
-
-		size_t hashsize() const override { return 256; }
-		sha512_256* clone() const override { return new sha512_256; }
-	};
-
-	class sha512_224 : public sha512
-	{
-	public:
-		void init() override;
-
-		size_t hashsize() const override { return 224; }
-		sha512_224* clone() const override { return new sha512_224; }
+		size_t hs;
 	};
 
 	class sha384 : public sha512
 	{
 	public:
-		void init() override;
+		sha384() : sha512(384) {}
 
-		size_t hashsize() const override { return 384; }
 		sha384* clone() const override { return new sha384; }
 	};
 

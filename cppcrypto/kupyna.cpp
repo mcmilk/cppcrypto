@@ -574,7 +574,7 @@ namespace cppcrypto
 			KUPYNA_T[4][(uint8_t)(x[3] >> 32)] ^ KUPYNA_T[5][(uint8_t)(x[2] >> 40)] ^ KUPYNA_T[6][(uint8_t)(x[1] >> 48)] ^ KUPYNA_T[7][(uint8_t)(x[0] >> 56)];
 	}
 
-	static inline void roundP(uint64_t* x, uint64_t* y, uint64_t i)
+	static inline void roundP_256(uint64_t* x, uint64_t* y, uint64_t i)
 	{
 		for (int idx = 0; idx < 8; idx++)
 			x[idx] ^= ((uint64_t)idx << 4) ^ i;
@@ -586,7 +586,7 @@ namespace cppcrypto
 		G(x, y);
 	}
 
-	static inline void roundQ(uint64_t* x, uint64_t* y, uint64_t i)
+	static inline void roundQ_256(uint64_t* x, uint64_t* y, uint64_t i)
 	{
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("in roundQ before xor with x: ", x);
@@ -602,23 +602,7 @@ namespace cppcrypto
 		G(x, y);
 	}
 
-	void kupyna256::update(const uint8_t* data, size_t len)
-	{
-		while (pos + len >= 64)
-		{
-			memcpy(m + pos, data, 64 - pos);
-			transform();
-			len -= 64 - pos;
-			total += (64 - pos) * 8;
-			data += 64 - pos;
-			pos = 0;
-		}
-		memcpy(m+pos, data, len);
-		pos += len;
-		total += len * 8;
-	}
-
-	void kupyna256::outputTransform()
+	static inline void outputTransform256(uint64_t* h)
 	{
 		uint64_t t1[8];
 		uint64_t t2[8];
@@ -629,8 +613,8 @@ namespace cppcrypto
 
 		for (uint64_t r = 0; r < 10; r += 2)
 		{
-			roundP(t1, t2, r);
-			roundP(t2, t1, r + 1);
+			roundP_256(t1, t2, r);
+			roundP_256(t2, t1, r + 1);
 		}
 
 		for (int column = 0; column < 8; column++) {
@@ -638,14 +622,14 @@ namespace cppcrypto
 		}
 	}
 
-	void kupyna256::transform()
+	static inline void transform256(uint64_t* h, uint64_t* m)
 	{
 		uint64_t AQ1[8], AQ2[8], AP1[8], AP2[8];
 
 		for (int column = 0; column < 8; column++)
 		{
-			AP1[column] = h[column] ^ ((uint64_t*)m.get())[column];
-			AQ1[column] = ((uint64_t*)m.get())[column];
+			AP1[column] = h[column] ^ m[column];
+			AQ1[column] = m[column];
 		}
 
 #ifdef CPPCRYPTO_DEBUG
@@ -657,21 +641,21 @@ namespace cppcrypto
 
 		for (uint64_t r = 0; r < 10; r += 2)
 		{
-			roundP(AP1, AP2, r);
+			roundP_256(AP1, AP2, r);
 #ifdef CPPCRYPTO_DEBUG
 			dump_state("P after round r: ", (uint64_t*)AP2);
 #endif
 
-			roundP(AP2, AP1, r + 1);
+			roundP_256(AP2, AP1, r + 1);
 #ifdef CPPCRYPTO_DEBUG
 			dump_state("P after round r+1: ", (uint64_t*)AP1);
 #endif
 
-			roundQ(AQ1, AQ2, r);
+			roundQ_256(AQ1, AQ2, r);
 #ifdef CPPCRYPTO_DEBUG
 			dump_state("Q after round r: ", (uint64_t*)AQ2);
 #endif
-			roundQ(AQ2, AQ1, r + 1);
+			roundQ_256(AQ2, AQ1, r + 1);
 #ifdef CPPCRYPTO_DEBUG
 			dump_state("Q after round r+1: ", (uint64_t*)AQ1);
 #endif
@@ -684,61 +668,6 @@ namespace cppcrypto
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("transform", h);
 #endif
-	}
-
-	void kupyna256::final(uint8_t* hash)
-	{
-#ifdef CPPCRYPTO_DEBUG
-		dump_state("pre-final", h);
-#endif
-		m[pos++] = 0x80;
-		if (pos > 52)
-		{
-			memset(m + pos, 0, 64 - pos);
-#ifdef CPPCRYPTO_DEBUG
-			dump_state("padded message (1)", (uint64_t*)m);
-#endif
-
-			transform();
-			pos = 0;
-		}
-		memset(m + pos, 0, 52 - pos);
-		memcpy(m + 52, &total, sizeof(uint64_t));
-		memset(m + 60, 0, 4);
-
-#ifdef CPPCRYPTO_DEBUG
-		dump_state("padded message (2)", (uint64_t*)m);
-#endif
-
-		transform();
-		outputTransform();
-
-		memcpy(hash, (uint8_t*)h.get() + 64 - hashsize()/8, hashsize()/8);
-
-#ifdef CPPCRYPTO_DEBUG
-		dump_state("post-final", h);
-#endif
-	}
-
-	void kupyna256::init()
-	{
-		pos = 0;
-		total = 0;
-		memset(h, 0, sizeof(uint64_t) * 8);
-		h[0] = 512/8; // state in bytes
-
-#ifdef CPPCRYPTO_DEBUG
-		dump_state("init", h);
-#endif
-	};
-
-	kupyna256::kupyna256()
-	{
-	}
-
-	kupyna256::~kupyna256()
-	{
-		clear();
 	}
 
 	static inline void G_512(uint64_t* x, uint64_t* y)
@@ -805,23 +734,7 @@ namespace cppcrypto
 		G_512(x, y);
 	}
 
-	void kupyna512::update(const uint8_t* data, size_t len)
-	{
-		while (pos + len >= 128)
-		{
-			memcpy(m + pos, data, 128 - pos);
-			transform();
-			len -= 128 - pos;
-			total += (128 - pos) * 8;
-			data += 128 - pos;
-			pos = 0;
-		}
-		memcpy(m+pos, data, len);
-		pos += len;
-		total += len * 8;
-	}
-
-	void kupyna512::outputTransform()
+	static inline void outputTransform512(uint64_t* h)
 	{
 		uint64_t t1[16];
 		uint64_t t2[16];
@@ -841,14 +754,14 @@ namespace cppcrypto
 		}
 	}
 
-	void kupyna512::transform()
+	static inline void transform512(uint64_t* h, uint64_t* m)
 	{
 		uint64_t AQ1[16], AQ2[16], AP1[16], AP2[16];
 
 		for (int column = 0; column < 16; column++)
 		{
-			AP1[column] = h[column] ^ ((uint64_t*)m.get())[column];
-			AQ1[column] = ((uint64_t*)m.get())[column];
+			AP1[column] = h[column] ^ m[column];
+			AQ1[column] = m[column];
 		}
 
 #ifdef CPPCRYPTO_DEBUG
@@ -889,71 +802,99 @@ namespace cppcrypto
 #endif
 	}
 
-	void kupyna512::final(uint8_t* hash)
+	void kupyna::update(const uint8_t* data, size_t len)
 	{
+		size_t b = blocksize() / 8;
+		while (pos + len >= b)
+		{
+			memcpy(m + pos, data, b - pos);
+			if (hs > 256)
+				transform512(h, (uint64_t*)m.get());
+			else
+				transform256(h, (uint64_t*)m.get());
+			len -= b - pos;
+			total += (b - pos) * 8;
+			data += b - pos;
+			pos = 0;
+		}
+		memcpy(m+pos, data, len);
+		pos += len;
+		total += len * 8;
+	}
+
+	void kupyna::final(uint8_t* hash)
+	{
+		size_t b = blocksize() / 8;
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("pre-final", h);
 #endif
 		m[pos++] = 0x80;
-		if (pos > 116)
+		if (pos > b - 12)
 		{
-			memset(m + pos, 0, 128 - pos);
+			memset(m + pos, 0, b - pos);
 #ifdef CPPCRYPTO_DEBUG
 			dump_state("padded message (1)", (uint64_t*)m);
 #endif
-
-			transform();
+			if (b == 64)
+				transform256(h, (uint64_t*)m.get());
+			else
+				transform512(h, (uint64_t*)m.get());
 			pos = 0;
 		}
-		memset(m + pos, 0, 116 - pos);
-		memcpy(m + 116, &total, sizeof(uint64_t));
-		memset(m + 124, 0, 4);
+		memset(m + pos, 0, b - 12 - pos);
+		memcpy(m + b - 12, &total, sizeof(uint64_t));
+		memset(m + b - 4, 0, 4);
 
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("padded message (2)", (uint64_t*)m);
 #endif
 
-		transform();
-		outputTransform();
+		if (b == 64)
+		{
+			transform256(h, (uint64_t*)m.get());
+			outputTransform256(h);
+		}
+		else
+		{
+			transform512(h, (uint64_t*)m.get());
+			outputTransform512(h);
+		}
 
-		memcpy(hash, (uint8_t*)h.get() + 128 - hashsize() / 8, hashsize() / 8);
+		memcpy(hash, (uint8_t*)h.get() + b - hashsize() / 8, hashsize() / 8);
 
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("post-final", h);
 #endif
 	}
 
-	void kupyna512::init()
+	void kupyna::init()
 	{
 		pos = 0;
 		total = 0;
 		memset(h, 0, sizeof(uint64_t) * 16);
-		h[0] = 1024 / 8; // state in bytes
+		h[0] = blocksize() / 8; // state in bytes
 
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("init", h);
 #endif
 	};
 
-	kupyna512::kupyna512()
+	kupyna::kupyna(size_t hashsize)
+		: hs(hashsize)
 	{
+		validate_hash_size(hashsize, {256, 512});
 	}
 
-	kupyna512::~kupyna512()
+	kupyna::~kupyna()
 	{
 		clear();
 	}
 
-	void kupyna512::clear()
-	{
-		zero_memory(h.get(), h.bytes());
-		zero_memory(m.get(), m.bytes());
-	}
-
-	void kupyna256::clear()
+	void kupyna::clear()
 	{
 		zero_memory(h.get(), h.bytes());
 		zero_memory(m.get(), m.bytes());
 	}
 
 }
+

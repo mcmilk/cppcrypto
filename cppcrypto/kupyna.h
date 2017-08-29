@@ -14,52 +14,25 @@ and released into public domain.
 namespace cppcrypto
 {
 
-	class kupyna256 : public crypto_hash
+	class kupyna : public crypto_hash
 	{
 	public:
-		kupyna256();
-		~kupyna256();
+		kupyna(size_t hashsize);
+		~kupyna();
 
 		void init() override;
 		void update(const uint8_t* data, size_t len) override;
 		void final(uint8_t* hash) override;
 
-		size_t hashsize() const override { return 256; }
-		size_t blocksize() const override { return 512; }
-		kupyna256* clone() const override { return new kupyna256; }
+		size_t hashsize() const override { return hs; }
+		size_t blocksize() const override { return hs > 256 ? 1024 : 512; }
+		kupyna* clone() const override { return new kupyna(hs); }
 		void clear() override;
 
 	private:
-		void transform();
-		void outputTransform();
-
-		aligned_pod_array<uint64_t, 8, 32> h;
-		aligned_pod_array<uint8_t, 64, 32> m;
-		size_t pos;
-		uint64_t total;
-	};
-
-	class kupyna512 : public crypto_hash
-	{
-	public:
-		kupyna512();
-		~kupyna512();
-
-		void init() override;
-		void update(const uint8_t* data, size_t len) override;
-		void final(uint8_t* hash) override;
-
-		size_t hashsize() const override { return 512; }
-		size_t blocksize() const override { return 1024; }
-		kupyna512* clone() const override { return new kupyna512; }
-		void clear() override;
-
-	private:
-		void transform();
-		void outputTransform();
-
 		aligned_pod_array<uint64_t, 16, 32> h;
 		aligned_pod_array<uint8_t, 128, 32> m;
+		size_t hs;
 		size_t pos;
 		uint64_t total;
 	};

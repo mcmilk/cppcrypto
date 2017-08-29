@@ -35,6 +35,7 @@ int InitSponge(spongeState *state, unsigned int rate, unsigned int capacity)
     state->bitsInQueue = 0;
     state->squeezing = 0;
     state->bitsAvailableForSqueezing = 0;
+    state->paddingByte = 0x06;
 
     return 0;
 }
@@ -196,7 +197,7 @@ int Absorb(spongeState *state, const unsigned char *data, unsigned long long dat
 void PadAndSwitchToSqueezingPhase(spongeState *state)
 {
     // Note: the bits are numbered from 0=LSB to 7=MSB
-	state->dataQueue[state->bitsInQueue / 8] = 0x06;
+	state->dataQueue[state->bitsInQueue / 8] = state->paddingByte;
     memset(state->dataQueue+state->bitsInQueue/8+1, 0, state->rate/8 - (state->bitsInQueue+7)/8 - 1);
     state->dataQueue[(state->rate-1)/8] |= 0x80;
 /*    if (state->bitsInQueue + 1 == state->rate) {

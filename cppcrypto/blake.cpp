@@ -53,37 +53,6 @@ namespace cppcrypto
 		return (x >> n) | (x << (32 - n));
 	}
 
-	void blake256::update(const uint8_t* data, size_t len)
-	{
-		while (pos + len >= 64)
-		{
-			memcpy(m + pos, data, 64 - pos);
-			len -= 64 - pos;
-			total += (64 - pos) * 8;
-			transfunc(false);
-			data += 64 - pos;
-			pos = 0;
-		}
-		memcpy(m+pos, data, len);
-		pos += len;
-		total += len * 8;
-	}
-
-	void blake256::init()
-	{
-		H[0] = 0x6a09e667;
-		H[1] = 0xbb67ae85;
-		H[2] = 0x3c6ef372;
-		H[3] = 0xa54ff53a;
-		H[4] = 0x510e527f;
-		H[5] = 0x9b05688c;
-		H[6] = 0x1f83d9ab;
-		H[7] = 0x5be0cd19;
-		s[0] = s[1] = s[2] = s[3] = 0;
-		pos = 0;
-		total = 0;
-	};
-
 	static inline void G(int r, int i, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t* M)
 	{
 		a = a + b + (M[S[r % 10][2 * i]] ^ (cppcrypto::c)[S[r % 10][2 * i + 1]]);
@@ -114,7 +83,7 @@ namespace cppcrypto
 
 	}
 
-	void blake256::transform(bool padding)
+	void blake::transform256(bool padding)
 	{
 		uint32_t M[16];
 		for (uint32_t i = 0; i < 64 / 4; i++)
@@ -137,11 +106,11 @@ namespace cppcrypto
 #endif
 
 		uint32_t v[16];
-		memcpy(v, H, sizeof(uint32_t) * 8);
-		v[8 + 0] = s[0] ^ c[0];
-		v[8 + 1] = s[1] ^ c[1];
-		v[8 + 2] = s[2] ^ c[2];
-		v[8 + 3] = s[3] ^ c[3];
+		memcpy(v, u.H256, sizeof(uint32_t) * 8);
+		v[8 + 0] = u.H256[8] ^ c[0];
+		v[8 + 1] = u.H256[9] ^ c[1];
+		v[8 + 2] = u.H256[10] ^ c[2];
+		v[8 + 3] = u.H256[11] ^ c[3];
 		v[12] = t0 ^ c[4];
 		v[13] = t0 ^ c[5];
 		v[14] = t1 ^ c[6];
@@ -168,57 +137,31 @@ namespace cppcrypto
 		round(12, M, v);
 		round(13, M, v);
 
-		H[0] = H[0] ^ s[0] ^ v[0] ^ v[0 + 8];
-		H[0 + 4] = H[0 + 4] ^ s[0] ^ v[0 + 4] ^ v[0 + 8 + 4];
-		H[1] = H[1] ^ s[1] ^ v[1] ^ v[1 + 8];
-		H[1 + 4] = H[1 + 4] ^ s[1] ^ v[1 + 4] ^ v[1 + 8 + 4];
-		H[2] = H[2] ^ s[2] ^ v[2] ^ v[2 + 8];
-		H[2 + 4] = H[2 + 4] ^ s[2] ^ v[2 + 4] ^ v[2 + 8 + 4];
-		H[3] = H[3] ^ s[3] ^ v[3] ^ v[3 + 8];
-		H[3 + 4] = H[3 + 4] ^ s[3] ^ v[3 + 4] ^ v[3 + 8 + 4];
+		u.H256[0] = u.H256[0] ^ u.H256[8] ^ v[0] ^ v[0 + 8];
+		u.H256[0 + 4] = u.H256[0 + 4] ^ u.H256[8] ^ v[0 + 4] ^ v[0 + 8 + 4];
+		u.H256[1] = u.H256[1] ^ u.H256[9] ^ v[1] ^ v[1 + 8];
+		u.H256[1 + 4] = u.H256[1 + 4] ^ u.H256[9] ^ v[1 + 4] ^ v[1 + 8 + 4];
+		u.H256[2] = u.H256[2] ^ u.H256[10] ^ v[2] ^ v[2 + 8];
+		u.H256[2 + 4] = u.H256[2 + 4] ^ u.H256[10] ^ v[2 + 4] ^ v[2 + 8 + 4];
+		u.H256[3] = u.H256[3] ^ u.H256[11] ^ v[3] ^ v[3 + 8];
+		u.H256[3 + 4] = u.H256[3 + 4] ^ u.H256[11] ^ v[3 + 4] ^ v[3 + 8 + 4];
 
 #ifdef	CPPCRYPTO_DEBUG
 		printf("H[0] - H[7]: %08X %08X %08X %08X %08X %08X %08X %08X\n",
-			H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
+			u.H256[0], u.H256[1], u.H256[2], u.H256[3], u.H256[4], u.H256[5], u.H256[6], u.H256[7]);
 #endif
 	}
 
-	void blake256::final(uint8_t* hash)
+	void blake::update(const uint8_t* data, size_t len)
 	{
-		bool padding = !pos;
-		m[pos] = pos == 55 && hashsize() == 256 ? 0x81 : 0x80;
-		if (++pos > 56)
+		size_t blockbytes = blocksize() / 8;
+		while (pos + len >= blockbytes)
 		{
-			memset(m + pos, 0, 64 - pos);
+			memcpy(m + pos, data, blockbytes - pos);
+			len -= blockbytes - pos;
+			total += (blockbytes - pos) * 8;
 			transfunc(false);
-			pos = 0;
-			padding = true;
-		}
-		if (pos < 56)
-		{
-			memset(m + pos, 0, 55 - pos);
-			m[55] = hashsize() == 256 ? 0x01 : 0x00;
-		}
-		uint64_t mlen = swap_uint64(total);
-		memcpy(m + (64 - 8), &mlen, 64 / 8);
-		transfunc(padding);
-		for (int i = 0; i < 8; i++)
-		{
-			H[i] = swap_uint32(H[i]);
-		}
-		memcpy(hash, H, hashsize()/8);
-	}
-
-
-	void blake512::update(const uint8_t* data, size_t len)
-	{
-		while (pos + len >= 128)
-		{
-			memcpy(m + pos, data, 128 - pos);
-			len -= 128 - pos;
-			total += (128 - pos) * 8;
-			transfunc(false);
-			data += 128 - pos;
+			data += blockbytes - pos;
 			pos = 0;
 		}
 		memcpy(m+pos, data, len);
@@ -234,19 +177,53 @@ namespace cppcrypto
 		0xBA7C9045F12C7F99, 0x24A19947B3916CF7, 0x0801F2E2858EFC16, 0x636920D871574E69
 	};
 
-	void blake512::init()
+	void blake::init()
 	{
-		H[0] = 0x6A09E667F3BCC908;
-		H[1] = 0xBB67AE8584CAA73B;
-		H[2] = 0x3C6EF372FE94F82B;
-		H[3] = 0xA54FF53A5F1D36F1;
-		H[4] = 0x510E527FADE682D1;
-		H[5] = 0x9B05688C2B3E6C1F;
-		H[6] = 0x1F83D9ABFB41BD6B;
-		H[7] = 0x5BE0CD19137E2179;
-		s[0] = s[1] = s[2] = s[3] = 0ULL;
 		pos = 0;
 		total = 0;
+		switch(hs)
+		{
+			case 512:
+				u.H512[0] = 0x6A09E667F3BCC908;
+				u.H512[1] = 0xBB67AE8584CAA73B;
+				u.H512[2] = 0x3C6EF372FE94F82B;
+				u.H512[3] = 0xA54FF53A5F1D36F1;
+				u.H512[4] = 0x510E527FADE682D1;
+				u.H512[5] = 0x9B05688C2B3E6C1F;
+				u.H512[6] = 0x1F83D9ABFB41BD6B;
+				u.H512[7] = 0x5BE0CD19137E2179;
+				break;
+			case 384:
+				u.H512[0] = 0xcbbb9d5dc1059ed8;
+				u.H512[1] = 0x629a292a367cd507;
+				u.H512[2] = 0x9159015a3070dd17;
+				u.H512[3] = 0x152fecd8f70e5939;
+				u.H512[4] = 0x67332667ffc00b31;
+				u.H512[5] = 0x8eb44a8768581511;
+				u.H512[6] = 0xdb0c2e0d64f98fa7;
+				u.H512[7] = 0x47b5481dbefa4fa4;
+				break;
+			case 256:
+				u.H256[0] = 0x6a09e667;
+				u.H256[1] = 0xbb67ae85;
+				u.H256[2] = 0x3c6ef372;
+				u.H256[3] = 0xa54ff53a;
+				u.H256[4] = 0x510e527f;
+				u.H256[5] = 0x9b05688c;
+				u.H256[6] = 0x1f83d9ab;
+				u.H256[7] = 0x5be0cd19;
+				break;
+			case 224:
+				u.H256[0] = 0xC1059ED8;
+				u.H256[1] = 0x367CD507;
+				u.H256[2] = 0x3070DD17;
+				u.H256[3] = 0xF70E5939;
+				u.H256[4] = 0xFFC00B31;
+				u.H256[5] = 0x68581511;
+				u.H256[6] = 0x64F98FA7;
+				u.H256[7] = 0xBEFA4FA4;
+				break;
+		}
 	};
 
 	static inline void G512(int r, int i, uint64_t& a, uint64_t& b, uint64_t& c, uint64_t& d, uint64_t* M) 
@@ -279,7 +256,7 @@ namespace cppcrypto
 
 	}
 
-	void blake512::transform(bool padding)
+	void blake::transform512(bool padding)
 	{
 		uint64_t M[16];
 		for (uint32_t i = 0; i < 128 / 8; i++)
@@ -301,11 +278,11 @@ namespace cppcrypto
 #endif
 
 		uint64_t v[16];
-		memcpy(v, H, sizeof(uint64_t)*8);
-		v[8 + 0] = s[0] ^ c512[0];
-		v[8 + 1] = s[1] ^ c512[1];
-		v[8 + 2] = s[2] ^ c512[2];
-		v[8 + 3] = s[3] ^ c512[3];
+		memcpy(v, u.H512, sizeof(uint64_t)*8);
+		v[8 + 0] = u.H512[8] ^ c512[0];
+		v[8 + 1] = u.H512[9] ^ c512[1];
+		v[8 + 2] = u.H512[10] ^ c512[2];
+		v[8 + 3] = u.H512[11] ^ c512[3];
 		v[12] = t0 ^ c512[4];
 		v[13] = t0 ^ c512[5];
 		v[14] = t1 ^ c512[6];
@@ -334,149 +311,184 @@ namespace cppcrypto
 		round512(14, M, v);
 		round512(15, M, v);
 
-		H[0] = H[0] ^ s[0] ^ v[0] ^ v[0 + 8];
-		H[0 + 4] = H[0 + 4] ^ s[0] ^ v[0 + 4] ^ v[0 + 8 + 4];
-		H[1] = H[1] ^ s[1] ^ v[1] ^ v[1 + 8];
-		H[1 + 4] = H[1 + 4] ^ s[1] ^ v[1 + 4] ^ v[1 + 8 + 4];
-		H[2] = H[2] ^ s[2] ^ v[2] ^ v[2 + 8];
-		H[2 + 4] = H[2 + 4] ^ s[2] ^ v[2 + 4] ^ v[2 + 8 + 4];
-		H[3] = H[3] ^ s[3] ^ v[3] ^ v[3 + 8];
-		H[3 + 4] = H[3 + 4] ^ s[3] ^ v[3 + 4] ^ v[3 + 8 + 4];
+		u.H512[0] = u.H512[0] ^ u.H512[8] ^ v[0] ^ v[0 + 8];
+		u.H512[0 + 4] = u.H512[0 + 4] ^ u.H512[8] ^ v[0 + 4] ^ v[0 + 8 + 4];
+		u.H512[1] = u.H512[1] ^ u.H512[9] ^ v[1] ^ v[1 + 8];
+		u.H512[1 + 4] = u.H512[1 + 4] ^ u.H512[9] ^ v[1 + 4] ^ v[1 + 8 + 4];
+		u.H512[2] = u.H512[2] ^ u.H512[10] ^ v[2] ^ v[2 + 8];
+		u.H512[2 + 4] = u.H512[2 + 4] ^ u.H512[10] ^ v[2 + 4] ^ v[2 + 8 + 4];
+		u.H512[3] = u.H512[3] ^ u.H512[11] ^ v[3] ^ v[3 + 8];
+		u.H512[3 + 4] = u.H512[3 + 4] ^ u.H512[11] ^ v[3 + 4] ^ v[3 + 8 + 4];
 
 #ifdef	CPPCRYPTO_DEBUG
-		printf("H[0] - H[7]: %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx\n",
-			H[0], H[1], H[2], H[3], H[4], H[5], H[6], H[7]);
+		printf("u.H512[0] - u.H512[7]: %016llx %016llx %016llx %016llx %016llx %016llx %016llx %016llx\n",
+			u.H512[0], u.H512[1], u.H512[2], u.H512[3], u.H512[4], u.H512[5], u.H512[6], u.H512[7]);
 #endif
 	}
 
-	void blake512::final(uint8_t* hash)
+	void blake::final(uint8_t* hash)
 	{
+		size_t blockbytes = blocksize() / 8;
+		size_t messageend = hs > 256 ? 111 : 55;
+		bool truncated = hs != 512 && hs != 256;
 		bool padding = !pos;
-		m[pos] = pos == 111 && hashsize() == 512 ? 0x81 : 0x80;
-		if (++pos > 112)
+		m[pos] = pos == messageend && !truncated ? 0x81 : 0x80;
+		if (pos++ > messageend)
 		{
-			memset(m + pos, 0, 128 - pos);
+			memset(m + pos, 0, blockbytes - pos);
 			transfunc(false);
 			pos = 0;
 			padding = true;
 		}
-		if (pos < 112)
+		if (pos <= messageend)
 		{
-			memset(m + pos, 0, 111 - pos);
-			m[111] = hashsize() == 512 ? 0x01 : 0x00;
+			memset(m + pos, 0, messageend - pos);
+			m[messageend] = truncated ? 0x00 : 0x01;
 		}
 		uint64_t mlen = swap_uint64(total);
-		memset(m + (128 - 16), 0, sizeof(uint64_t));
-		memcpy(m + (128 - 8), &mlen, sizeof(uint64_t));
+		if (blockbytes == 128)
+			memset(m + (128 - 16), 0, sizeof(uint64_t));
+		memcpy(m + (blockbytes - 8), &mlen, sizeof(uint64_t));
 		transfunc(padding);
-		for (int i = 0; i < 8; i++)
+		if (hs > 256)
 		{
-			H[i] = swap_uint64(H[i]);
+			for (int i = 0; i < 8; i++)
+			{
+				u.H512[i] = swap_uint64(u.H512[i]);
+			}
+			memcpy(hash, u.H512, hashsize()/8);
 		}
-		memcpy(hash, H, hashsize()/8);
+		else
+		{
+			for (int i = 0; i < 8; i++)
+			{
+				u.H256[i] = swap_uint32(u.H256[i]);
+			}
+			memcpy(hash, u.H256, hashsize()/8);
+		}
 	}
 
-
-	void blake384::init()
+	void blake::validate_salt_length(size_t saltlen) const
 	{
-		H[0] = 0xcbbb9d5dc1059ed8;
-		H[1] = 0x629a292a367cd507;
-		H[2] = 0x9159015a3070dd17;
-		H[3] = 0x152fecd8f70e5939;
-		H[4] = 0x67332667ffc00b31;
-		H[5] = 0x8eb44a8768581511;
-		H[6] = 0xdb0c2e0d64f98fa7;
-		H[7] = 0x47b5481dbefa4fa4;
-		s[0] = s[1] = s[2] = s[3] = 0ULL;
-		pos = 0;
-		total = 0;
-	};
+		if (saltlen && ((hs > 256 && saltlen != 32) || (hs <= 256 && saltlen != 16)))
+			throw std::runtime_error("invalid salt length");
+	}
 
-	void blake224::init()
+	blake::blake(size_t hashsize, const uint8_t* salt, size_t saltlen) : hs(hashsize)
 	{
-		H[0] = 0xC1059ED8;
-		H[1] = 0x367CD507;
-		H[2] = 0x3070DD17;
-		H[3] = 0xF70E5939;
-		H[4] = 0xFFC00B31;
-		H[5] = 0x68581511;
-		H[6] = 0x64F98FA7;
-		H[7] = 0xBEFA4FA4;
-		s[0] = s[1] = s[2] = s[3] = 0;
-		pos = 0;
-		total = 0;
-	};
-
-	blake256::blake256()
-	{
+		validate_hash_size(hashsize, {224, 256, 384, 512});
+		validate_salt_length(saltlen);
+		if (hs > 256)
+		{
+			// H[8]..H12] reserved for salt
+			u.H512 = static_cast<uint64_t*>(aligned_allocate(sizeof(uint64_t) * 12, 64));
+			if (saltlen)
+				for (int i = 0; i < 4; i++)
+					u.H512[8 + i] = swap_uint64((reinterpret_cast<const uint64_t*>(salt)[i]));
+			else 
+				u.H512[8] = u.H512[9] = u.H512[10] = u.H512[11] = 0;
 #ifndef NO_OPTIMIZED_VERSIONS
-#ifdef _M_X64
-		if (cpu_info::avx() && false)
-			transfunc = [this](bool padding) {
-			uint32_t t[2];
-			if (!padding)
-			{
-				t[0] = static_cast<uint32_t>(total);
-				t[1] = static_cast<uint32_t>((total) >> 32);
-			}
-
-			blake256_compress_avxs(H, m, padding, t); 
-			//_mm256_zeroall();
-			};
-		else
-#endif
-		if (cpu_info::sse41())
-			transfunc = [this](bool padding) { blake256_compress_sse41(H, padding, total, m); };
-		else if (cpu_info::sse2())
-			transfunc = [this](bool padding) { blake256_compress_sse2(H, padding, total, m); };
+		if (cpu_info::sse41() && !saltlen)
+			transfunc = [this](bool padding) { blake512_compress_sse41(u.H512, total, padding, m); };
+		else if (cpu_info::sse2() && !saltlen)
+			transfunc = [this](bool padding) { blake512_compress_sse2(u.H512, total, padding, m); };
 		else
 #endif
 #ifdef NO_BIND_TO_FUNCTION
-			transfunc = [this](bool padding) { transform(padding); };
+			transfunc = [this](bool padding) { transform512(padding); };
 #else
-			transfunc = std::bind(&blake256::transform, this, std::placeholders::_1);
+			transfunc = std::bind(&blake::transform512, this, std::placeholders::_1);
 #endif
-	}
-
-	blake256::~blake256()
-	{
-		clear();
-	}
-
-	void blake256::clear()
-	{
-		zero_memory(H.get(), H.bytes());
-		zero_memory(s.data(), s.size() * sizeof(s[0]));
-		zero_memory(m.get(), m.bytes());
-	}
-
-	blake512::blake512()
-	{
+		}
+		else
+		{
+			// H[8]..H12] reserved for salt
+			u.H256 = static_cast<uint32_t*>(aligned_allocate(sizeof(uint32_t) * 12, 64));
+			if (saltlen)
+				for (int i = 0; i < 4; i++)
+					u.H256[8 + i] = swap_uint32((reinterpret_cast<const uint32_t*>(salt)[i]));
+			else 
+				u.H256[8] = u.H256[9] = u.H256[10] = u.H256[11] = 0;
 #ifndef NO_OPTIMIZED_VERSIONS
-			if (cpu_info::sse41())
-				transfunc = [this](bool padding) { blake512_compress_sse41(H, total, padding, m); };
-			else if (cpu_info::sse2())
-				transfunc = [this](bool padding) { blake512_compress_sse2(H, total, padding, m); };
+#ifdef _M_X64
+			if (cpu_info::avx() && !saltlen && false)
+				transfunc = [this](bool padding) {
+				uint32_t t[2];
+				if (!padding)
+				{
+					t[0] = static_cast<uint32_t>(total);
+					t[1] = static_cast<uint32_t>((total) >> 32);
+				}
+
+				blake256_compress_avxs(u.H256, m, padding, t); 
+				//_mm256_zeroall();
+				};
+			else
+#endif
+			if (cpu_info::sse41() && !saltlen)
+				transfunc = [this](bool padding) { blake256_compress_sse41(u.H256, padding, total, m); };
+			else if (cpu_info::sse2() && !saltlen)
+				transfunc = [this](bool padding) { blake256_compress_sse2(u.H256, padding, total, m); };
 			else
 #endif
 #ifdef NO_BIND_TO_FUNCTION
-				transfunc = [this](bool padding) { transform(padding); };
+				transfunc = [this](bool padding) { transform256(padding); };
 #else
-				transfunc = std::bind(&blake512::transform, this, std::placeholders::_1);
+				transfunc = std::bind(&blake::transform256, this, std::placeholders::_1);
 #endif
+		}
 	}
 
-	blake512::~blake512()
+	blake::~blake()
 	{
 		clear();
+		if (hs > 256)
+			aligned_deallocate(u.H512);
+		else
+			aligned_deallocate(u.H256);
 	}
 
-	void blake512::clear()
+	void blake::clear()
 	{
-		zero_memory(H.get(), H.bytes());
-		zero_memory(s.data(), s.size() * sizeof(s[0]));
+		if (hs > 256)
+			zero_memory(u.H512, sizeof(uint64_t) * 12);
+		else
+			zero_memory(u.H256, sizeof(uint32_t) * 12);
 		zero_memory(m.get(), m.bytes());
 	}
 
+	blake* blake::clone() const
+	{
+		bool has_salt = false;
+		if (hs > 256)
+		{
+			if (u.H512[8] || u.H512[9] || u.H512[10] || u.H512[11])
+				has_salt = true;
+		}
+		else
+		{
+			if (u.H256[8] || u.H256[9] || u.H256[10] || u.H256[11])
+				has_salt = true;
+		}
+		if (!has_salt)
+			return new blake(hs);
+
+		uint8_t salt[sizeof(uint64_t) * 4];
+		size_t saltlen = hs > 256 ? 32 : 16;
+		for (int i = 0; i < 4; i++)
+		{
+			if (hs > 256)
+			{
+				uint64_t sp = swap_uint64(u.H512[8 + i]);
+				memcpy(salt + sizeof(uint64_t) * i, &sp, sizeof(uint64_t));
+			}
+			else
+			{
+				uint32_t sp = swap_uint32(u.H256[8 + i]);
+				memcpy(salt + sizeof(uint32_t) * i, &sp, sizeof(uint32_t));
+			}
+		}
+		return new blake(hs, salt, saltlen);
+	}
 }
 

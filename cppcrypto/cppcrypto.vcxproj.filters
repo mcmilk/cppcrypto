@@ -234,6 +234,18 @@
     <ClInclude Include="groestl-impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="3rdparty\KeccakHash.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakP-1600-AVX2.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakSpongeWidth1600.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="sha3-impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -433,6 +445,18 @@
     </ClCompile>
     <ClCompile Include="simon.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\KeccakHash.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\KeccakP-1600-AVX2.cpp">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\KeccakSpongeWidth1600.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\sha3_impl_avx2.cpp">
+      <Filter>3rdparty</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

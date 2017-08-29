@@ -8,6 +8,7 @@ and released into public domain.
 #include "jh.h"
 #include <memory.h>
 //#define CPPCRYPTO_DEBUG
+//#define NO_OPTIMIZED_VERSIONS
 
 #ifdef _MSC_VER
 #define inline __forceinline
@@ -39,8 +40,10 @@ namespace cppcrypto
 		0xd86902bd93ce25aa, 0xf908731afd43f65a, 0xa5194a17daef5fc0, 0x6a21fd4c33664d97, 0x701541db3198b435, 0x9b54cdedbb0f1eea, 0x72409751a163d09a, 0xe26f4791bf9d75f6
 	};
 
-	jh512::jh512()
+	jh::jh(size_t hashsize) : hs(hashsize)
 	{
+		validate_hash_size(hashsize, {224, 256, 384, 512});
+
 #ifndef NO_OPTIMIZED_VERSIONS
 		if (cpu_info::sse2())
 		{
@@ -49,36 +52,104 @@ namespace cppcrypto
 #endif
 	}
 
-	jh512::~jh512()
+	jh::~jh()
 	{
 		clear();
 	}
 
-	void jh512::init()
+	void jh::init()
 	{
 		pos = 0;
 		total = 0;
 		if (impl_)
 			return impl_->init(hashsize());
-		H[0] = 0x17aa003e964bd16f;
-		H[1] = 0x43d5157a052e6a63;
-		H[2] = 0x0bef970c8d5e228a;
-		H[3] = 0x61c3b3f2591234e9;
-		H[4] = 0x1e806f53c1a01d89;
-		H[5] = 0x806d2bea6b05a92a;
-		H[6] = 0xa6ba7520dbcc8e58;
-		H[7] = 0xf73bf8ba763a0fa9;
-		H[8] = 0x694ae34105e66901;
-		H[9] = 0x5ae66f2e8e8ab546;
-		H[10] = 0x243c84c1d0a74710;
-		H[11] = 0x99c15a2db1716e3b;
-		H[12] = 0x56f8b19decf657cf;
-		H[13] = 0x56b116577c8806a7;
-		H[14] = 0xfb1785e6dffcc2e3;
-		H[15] = 0x4bdd8ccc78465a54;
+
+		switch(hs)
+		{
+			case 512:
+				H[0] = 0x17aa003e964bd16f;
+				H[1] = 0x43d5157a052e6a63;
+				H[2] = 0x0bef970c8d5e228a;
+				H[3] = 0x61c3b3f2591234e9;
+				H[4] = 0x1e806f53c1a01d89;
+				H[5] = 0x806d2bea6b05a92a;
+				H[6] = 0xa6ba7520dbcc8e58;
+				H[7] = 0xf73bf8ba763a0fa9;
+				H[8] = 0x694ae34105e66901;
+				H[9] = 0x5ae66f2e8e8ab546;
+				H[10] = 0x243c84c1d0a74710;
+				H[11] = 0x99c15a2db1716e3b;
+				H[12] = 0x56f8b19decf657cf;
+				H[13] = 0x56b116577c8806a7;
+				H[14] = 0xfb1785e6dffcc2e3;
+				H[15] = 0x4bdd8ccc78465a54;
+				break;
+			case 256:
+				H[0] = 0xebd3202c41a398eb;
+				H[1] = 0xc145b29c7bbecd92;
+				H[2] = 0xfac7d4609151931c;
+				H[3] = 0x038a507ed6820026;
+				H[4] = 0x45b92677269e23a4;
+				H[5] = 0x77941ad4481afbe0;
+				H[6] = 0x7a176b0226abb5cd;
+				H[7] = 0xa82fff0f4224f056;
+				H[8] = 0x754d2e7f8996a371;
+				H[9] = 0x62e27df70849141d;
+				H[10] = 0x948f2476f7957627;
+				H[11] = 0x6c29804757b6d587;
+				H[12] = 0x6c0d8eac2d275e5c;
+				H[13] = 0x0f7a0557c6508451;
+				H[14] = 0xea12247067d3e47b;
+				H[15] = 0x69d71cd313abe389;
+				break;
+			case 384:
+				H[0] = 0x8a3913d8c63b1e48;
+				H[1] = 0x9b87de4a895e3b6d;
+				H[2] = 0x2ead80d468eafa63;
+				H[3] = 0x67820f4821cb2c33;
+				H[4] = 0x28b982904dc8ae98;
+				H[5] = 0x4942114130ea55d4;
+				H[6] = 0xec474892b255f536;
+				H[7] = 0xe13cf4ba930a25c7;
+				H[8] = 0x4c45db278a7f9b56;
+				H[9] = 0x0eaf976349bdfc9e;
+				H[10] = 0xcd80aa267dc29f58;
+				H[11] = 0xda2eeb9d8c8bc080;
+				H[12] = 0x3a37d5f8e881798a;
+				H[13] = 0x717ad1ddad6739f4;
+				H[14] = 0x94d375a4bdd3b4a9;
+				H[15] = 0x7f734298ba3f6c97;
+				break;
+			case 224:
+				H[0] = 0xac989af962ddfe2d;
+				H[1] = 0xe734d619d6ac7cae;
+				H[2] = 0x161230bc051083a4;
+				H[3] = 0x941466c9c63860b8;
+				H[4] = 0x6f7080259f89d966;
+				H[5] = 0xdc1a9b1d1ba39ece;
+				H[6] = 0x106e367b5f32e811;
+				H[7] = 0xc106fa027f8594f9;
+				H[8] = 0xb340c8d85c1b4f1b;
+				H[9] = 0x9980736e7fa1f697;
+				H[10] = 0xd3a3eaada593dfdc;
+				H[11] = 0x689a53c9dee831a4;
+				H[12] = 0xe4a186ec8aa9b422;
+				H[13] = 0xf06ce59c95ac74d5;
+				H[14] = 0xbf2babb5ea0d9615;
+				H[15] = 0x6eea64ddf0dc1196;
+				break;
+			default:
+				memset(H.get(), 0, H.bytes());
+				H[0] = swap_uint16(static_cast<uint16_t>(hs));
+
+				uint8_t msg[64];
+				memset(msg, 0, sizeof(msg));
+				transform(msg, 1);
+				break;
+		}
 	}
 
-	void jh512::update(const uint8_t* data, size_t len)
+	void jh::update(const uint8_t* data, size_t len)
 	{
 		if (pos && pos + len >= 64)
 		{
@@ -103,7 +174,7 @@ namespace cppcrypto
 		total += len * 8;
 	}
 
-	void jh512::final(uint8_t* hash)
+	void jh::final(uint8_t* hash)
 	{
 		m[pos++] = 0x80;
 		if (pos > 1)
@@ -186,7 +257,7 @@ namespace cppcrypto
 		H[13] ^= H[3];
 	}
 
-	void jh512::transform(void* mp, uint64_t num_blks)
+	void jh::transform(void* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
@@ -290,79 +361,7 @@ namespace cppcrypto
 		}
 	}
 
-	void jh384::init()
-	{
-		pos = 0;
-		total = 0;
-		if (impl_)
-			return impl_->init(hashsize());
-		H[0] = 0x8a3913d8c63b1e48;
-		H[1] = 0x9b87de4a895e3b6d;
-		H[2] = 0x2ead80d468eafa63;
-		H[3] = 0x67820f4821cb2c33;
-		H[4] = 0x28b982904dc8ae98;
-		H[5] = 0x4942114130ea55d4;
-		H[6] = 0xec474892b255f536;
-		H[7] = 0xe13cf4ba930a25c7;
-		H[8] = 0x4c45db278a7f9b56;
-		H[9] = 0x0eaf976349bdfc9e;
-		H[10] = 0xcd80aa267dc29f58;
-		H[11] = 0xda2eeb9d8c8bc080;
-		H[12] = 0x3a37d5f8e881798a;
-		H[13] = 0x717ad1ddad6739f4;
-		H[14] = 0x94d375a4bdd3b4a9;
-		H[15] = 0x7f734298ba3f6c97;
-	}
-
-	void jh224::init()
-	{
-		pos = 0;
-		total = 0;
-		if (impl_)
-			return impl_->init(hashsize());
-		H[0] = 0xac989af962ddfe2d;
-		H[1] = 0xe734d619d6ac7cae;
-		H[2] = 0x161230bc051083a4;
-		H[3] = 0x941466c9c63860b8;
-		H[4] = 0x6f7080259f89d966;
-		H[5] = 0xdc1a9b1d1ba39ece;
-		H[6] = 0x106e367b5f32e811;
-		H[7] = 0xc106fa027f8594f9;
-		H[8] = 0xb340c8d85c1b4f1b;
-		H[9] = 0x9980736e7fa1f697;
-		H[10] = 0xd3a3eaada593dfdc;
-		H[11] = 0x689a53c9dee831a4;
-		H[12] = 0xe4a186ec8aa9b422;
-		H[13] = 0xf06ce59c95ac74d5;
-		H[14] = 0xbf2babb5ea0d9615;
-		H[15] = 0x6eea64ddf0dc1196;
-	}
-
-	void jh256::init()
-	{
-		pos = 0;
-		total = 0;
-		if (impl_)
-			return impl_->init(hashsize());
-		H[0] = 0xebd3202c41a398eb;
-		H[1] = 0xc145b29c7bbecd92;
-		H[2] = 0xfac7d4609151931c;
-		H[3] = 0x038a507ed6820026;
-		H[4] = 0x45b92677269e23a4;
-		H[5] = 0x77941ad4481afbe0;
-		H[6] = 0x7a176b0226abb5cd;
-		H[7] = 0xa82fff0f4224f056;
-		H[8] = 0x754d2e7f8996a371;
-		H[9] = 0x62e27df70849141d;
-		H[10] = 0x948f2476f7957627;
-		H[11] = 0x6c29804757b6d587;
-		H[12] = 0x6c0d8eac2d275e5c;
-		H[13] = 0x0f7a0557c6508451;
-		H[14] = 0xea12247067d3e47b;
-		H[15] = 0x69d71cd313abe389;
-	}
-
-	void jh512::clear()
+	void jh::clear()
 	{
 		zero_memory(H.get(), H.bytes());
 		zero_memory(m.data(), m.size() * sizeof(m[0]));

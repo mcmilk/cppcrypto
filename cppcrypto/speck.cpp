@@ -204,7 +204,7 @@ namespace cppcrypto
 		}
 
 #ifdef CPPCRYPTO_DEBUG
-		for (int i = 0; i < 33; i++)
+		for (int i = 0; i < 34; i++)
 			printf("W_[%d]: %016llx\n", i, W_[i]);
 #endif
 

@@ -665,7 +665,7 @@ namespace cppcrypto
 		xor_blocks(h, (const uint64_t*)m);
 	}
 
-	void streebog512::update(const uint8_t* data, size_t len)
+	void streebog::update(const uint8_t* data, size_t len)
 	{
 		while (pos + len >= 64)
 		{
@@ -693,7 +693,7 @@ namespace cppcrypto
 		}
 	}
 
-	void streebog512::transform(bool final)
+	void streebog::transform(bool final)
 	{
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("transform started: ", h);
@@ -719,7 +719,7 @@ namespace cppcrypto
 			addm(m, S);
 	}
 
-	void streebog512::final(uint8_t* hash)
+	void streebog::final(uint8_t* hash)
 	{
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("pre-final", h);
@@ -743,11 +743,11 @@ namespace cppcrypto
 #endif
 	}
 
-	void streebog512::init()
+	void streebog::init()
 	{
 		pos = 0;
 		total = 0;
-		memset(h, 0, sizeof(uint64_t) * 8);
+		memset(h, hs == 512 ? 0 : 1, sizeof(uint64_t) * 8);
 		memset(S, 0, sizeof(uint64_t) * 8);
 
 #ifdef CPPCRYPTO_DEBUG
@@ -755,28 +755,18 @@ namespace cppcrypto
 #endif
 	};
 
-	streebog512::streebog512()
+	streebog::streebog(size_t hashsize)
+		: hs(hashsize)
 	{
+		validate_hash_size(hashsize, {256, 512});
 	}
 
-	streebog512::~streebog512()
+	streebog::~streebog()
 	{
 		clear();
 	}
 
-	void streebog256::init()
-	{
-		pos = 0;
-		total = 0;
-		memset(h, 1, sizeof(uint64_t) * 8);
-		memset(S, 0, sizeof(uint64_t) * 8);
-
-#ifdef CPPCRYPTO_DEBUG
-		dump_state("init", h);
-#endif
-	};
-
-	void streebog512::clear()
+	void streebog::clear()
 	{
 		zero_memory(h.get(), h.bytes());
 		zero_memory(m.get(), m.bytes());

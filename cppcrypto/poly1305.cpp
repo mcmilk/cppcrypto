@@ -56,7 +56,7 @@ namespace cppcrypto
 			impl_->clear();
 	}
 
-	// This implementation is based on the code from poly1305-donna by Andrew Moon
+	// This implementation is based on the public domain code from poly1305-donna by Andrew Moon
 	// See https://github.com/floodyberry/poly1305-donna
 
 	static inline void add(uint8_t* accumulator, const uint8_t* M)

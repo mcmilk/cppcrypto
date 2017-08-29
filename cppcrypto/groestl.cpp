@@ -9,6 +9,7 @@ and released into public domain.
 #include <memory.h>
 
 //#define CPPCRYPTO_DEBUG
+//#define NO_OPTIMIZED_VERSIONS
 
 namespace cppcrypto
 {
@@ -554,48 +555,96 @@ namespace cppcrypto
 		}
 	};
 
-static inline void roundP(uint64_t* x, uint64_t* y, uint64_t i)
+static inline void roundP_256(uint64_t* x, uint64_t* y, uint64_t i)
 {
-	for (int idx = 0; idx < 8; idx++)
-		x[idx] ^= ((uint64_t)idx << 4) ^ i;
+   for (int idx = 0; idx < 8; idx++)
+	   x[idx] ^= ((uint64_t)idx << 4) ^ i;
 
-	for (int c = 0; c < 8; c++)
-		y[c] = T[0][(uint8_t)x[(c + 0) % 8]] ^ T[1][(uint8_t)(x[(c + 1) % 8] >> 8)] ^ T[2][(uint8_t)(x[(c + 2) % 8] >> 16)] ^ T[3][(uint8_t)(x[(c + 3) % 8] >> 24)]
-		^ T[4][(uint8_t)(x[(c + 4) % 8] >> 32)] ^ T[5][(uint8_t)(x[(c + 5) % 8] >> 40)] ^ T[6][(uint8_t)(x[(c + 6) % 8] >> 48)] ^ T[7][(uint8_t)(x[(c + 7) % 8] >> 56)];
+   for (int c = 0; c < 8; c++)
+	   y[c] = T[0][(uint8_t)x[(c + 0) % 8]] ^ T[1][(uint8_t)(x[(c + 1) % 8] >> 8)] ^ T[2][(uint8_t)(x[(c + 2) % 8] >> 16)] ^ T[3][(uint8_t)(x[(c + 3) % 8] >> 24)]
+	   ^ T[4][(uint8_t)(x[(c + 4) % 8] >> 32)] ^ T[5][(uint8_t)(x[(c + 5) % 8] >> 40)] ^ T[6][(uint8_t)(x[(c + 6) % 8] >> 48)] ^ T[7][(uint8_t)(x[(c + 7) % 8] >> 56)];
 }
 
-static inline void roundQ(uint64_t* x, uint64_t* y, uint64_t i)
+static inline void roundQ_256(uint64_t* x, uint64_t* y, uint64_t i)
 {
-	for (int idx = 0; idx < 8; idx++)
-		x[idx] ^= (0xffffffffffffffffull - ((uint64_t)idx << 60)) ^ i;
+   for (int idx = 0; idx < 8; idx++)
+	   x[idx] ^= (0xffffffffffffffffull - ((uint64_t)idx << 60)) ^ i;
 
-	for (int c = 0; c < 8; c++)
-		y[c] = T[0][(uint8_t)x[(c + 1) % 8]] ^ T[1][(uint8_t)(x[(c + 3) % 8] >> 8)] ^ T[2][(uint8_t)(x[(c + 5) % 8] >> 16)] ^ T[3][(uint8_t)(x[(c + 7) % 8] >> 24)]
-		^ T[4][(uint8_t)(x[(c + 0) % 8] >> 32)] ^ T[5][(uint8_t)(x[(c + 2) % 8] >> 40)] ^ T[6][(uint8_t)(x[(c + 4) % 8] >> 48)] ^ T[7][(uint8_t)(x[(c + 6) % 8] >> 56)];
+   for (int c = 0; c < 8; c++)
+	   y[c] = T[0][(uint8_t)x[(c + 1) % 8]] ^ T[1][(uint8_t)(x[(c + 3) % 8] >> 8)] ^ T[2][(uint8_t)(x[(c + 5) % 8] >> 16)] ^ T[3][(uint8_t)(x[(c + 7) % 8] >> 24)]
+	   ^ T[4][(uint8_t)(x[(c + 0) % 8] >> 32)] ^ T[5][(uint8_t)(x[(c + 2) % 8] >> 40)] ^ T[6][(uint8_t)(x[(c + 4) % 8] >> 48)] ^ T[7][(uint8_t)(x[(c + 6) % 8] >> 56)];
 }
 
-void groestl256::update(const uint8_t* data, size_t len)
+static inline void roundP_512(uint64_t* x, uint64_t* y, uint64_t i)
 {
-	while (pos + len >= 64)
+   for (int idx = 0; idx < 16; idx++)
+	   x[idx] ^= ((uint64_t)idx << 4) ^ i;
+
+   for (int c = 15; c >= 0; c--)
+	   y[c] = T[0][(uint8_t)x[(c + 0) % 16]] ^ T[1][(uint8_t)(x[(c + 1) % 16] >> 8)] ^ T[2][(uint8_t)(x[(c + 2) % 16] >> 16)] ^ T[3][(uint8_t)(x[(c + 3) % 16] >> 24)]
+	   ^ T[4][(uint8_t)(x[(c + 4) % 16] >> 32)] ^ T[5][(uint8_t)(x[(c + 5) % 16] >> 40)] ^ T[6][(uint8_t)(x[(c + 6) % 16] >> 48)] ^ T[7][(uint8_t)(x[(c + 11) % 16] >> 56)];
+}
+
+static inline void roundQ_512(uint64_t* x, uint64_t* y, uint64_t i)
+{
+   for (int idx = 0; idx < 16; idx++)
+	   x[idx] ^= (0xffffffffffffffffull - ((uint64_t)idx << 60)) ^ i;
+
+   for (int c = 15; c >= 0; c--)
+	   y[c] = T[0][(uint8_t)x[(c+1)%16]] ^ T[1][(uint8_t)(x[(c+3)%16] >> 8)] ^ T[2][(uint8_t)(x[(c+5)%16] >> 16)] ^ T[3][(uint8_t)(x[(c+11)%16] >> 24)]
+	   ^ T[4][(uint8_t)(x[(c+0)%16] >> 32)] ^ T[5][(uint8_t)(x[(c+2)%16] >> 40)] ^ T[6][(uint8_t)(x[(c+4)%16] >> 48)] ^ T[7][(uint8_t)(x[(c+6)%16] >> 56)];
+}
+
+static inline void transform256(uint64_t* h, uint64_t* m)
+{
+	uint64_t AQ1[8], AQ2[8], AP1[8], AP2[8];
+
+	for (int column = 0; column < 8; column++)
 	{
-		memcpy(m + pos, data, 64 - pos);
-		transform();
-		len -= 64 - pos;
-		total += (64 - pos) * 8;
-		data += 64 - pos;
-		pos = 0;
+		AP1[column] = h[column] ^ m[column];
+		AQ1[column] = m[column];
 	}
-	memcpy(m+pos, data, len);
-	pos += len;
-	total += len * 8;
+
+	for (uint64_t r = 0; r < 10; r += 2)
+	{
+		roundP_256(AP1, AP2, r);
+		roundP_256(AP2, AP1, r + 1);
+		roundQ_256(AQ1, AQ2, r << 56);
+		roundQ_256(AQ2, AQ1, (r + 1ull) << 56);
+	}
+
+	for (int column = 0; column < 8; column++)
+	{
+		h[column] = AP1[column] ^ AQ1[column] ^ h[column];
+	}
 }
 
-
-void groestl256::outputTransform()
+static inline void transform512(uint64_t* h, uint64_t* m)
 {
-	if (impl_)
-		return impl_->OF(h);
+	uint64_t AQ1[16], AQ2[16], AP1[16], AP2[16];
 
+	for (int column = 0; column < 16; column++)
+	{
+		AP1[column] = h[column] ^ m[column];
+		AQ1[column] = m[column];
+	}
+
+	for (uint64_t r = 0; r < 14; r += 2)
+	{
+		roundP_512(AP1, AP2, r);
+		roundP_512(AP2, AP1, r + 1);
+		roundQ_512(AQ1, AQ2, r << 56);
+		roundQ_512(AQ2, AQ1, (r+1ull) << 56);
+	}
+
+	for (int column = 0; column < 16; column++)
+	{
+		h[column] = AP1[column] ^ AQ1[column] ^ h[column];
+	}
+}
+
+static inline void outputTransform256(uint64_t* h)
+{
 	uint64_t t1[8];
 	uint64_t t2[8];
 
@@ -605,8 +654,8 @@ void groestl256::outputTransform()
 
 	for (uint64_t r = 0; r < 10; r += 2)
 	{
-		roundP(t1, t2, r);
-		roundP(t2, t1, r + 1);
+		roundP_256(t1, t2, r);
+		roundP_256(t2, t1, r + 1);
 	}
 
 	for (int column = 0; column < 8; column++) {
@@ -614,166 +663,8 @@ void groestl256::outputTransform()
 	}
 }
 
-void groestl256::transform()
+static inline void outputTransform512(uint64_t* h)
 {
-	if (impl_)
-		return impl_->TF(h, (uint64_t*)m.get());
-
-	uint64_t AQ1[8], AQ2[8], AP1[8], AP2[8];
-
-	for (int column = 0; column < 8; column++)
-	{
-		AP1[column] = h[column] ^ ((uint64_t*)m.get())[column];
-		AQ1[column] = ((uint64_t*)m.get())[column];
-	}
-
-	for (uint64_t r = 0; r < 10; r += 2)
-	{
-		roundP(AP1, AP2, r);
-		roundP(AP2, AP1, r + 1);
-		roundQ(AQ1, AQ2, r << 56);
-		roundQ(AQ2, AQ1, (r + 1ull) << 56);
-	}
-
-	for (int column = 0; column < 8; column++)
-	{
-		h[column] = AP1[column] ^ AQ1[column] ^ h[column];
-	}
-#ifdef CPPCRYPTO_DEBUG
-	dump_state("transform", h);
-#endif
-}
-
-void groestl256::final(uint8_t* hash)
-{
-#ifdef CPPCRYPTO_DEBUG
-	dump_state("pre-final", h);
-#endif
-	m[pos++] = 0x80;
-	total += 8;
-	if (pos > 56)
-	{
-		memset(m + pos, 0, 64 - pos);
-		transform();
-		total += 512 - pos * 8;
-		pos = 0;
-	}
-	memset(m + pos, 0, 56 - pos);
-	total += 512 - pos * 8;
-	uint64_t mlen = swap_uint64(total / 512);
-	memcpy(m + (64 - 8), &mlen, 64 / 8);
-	transform();
-	outputTransform();
-
-	uint8_t* s = (uint8_t*)h.get();
-	for (size_t i = 64 - hashsize() / 8, j = 0; i < 64; i++, j++) {
-		hash[j] = s[i];
-	}
-#ifdef CPPCRYPTO_DEBUG
-	dump_state("post-final", h);
-#endif
-}
-
-void groestl256::init()
-{
-	pos = 0;
-	total = 0;
-	memset(h, 0, sizeof(uint64_t)*8);
-	h[7] = swap_uint64(hashsize());
-
-	if (impl_)
-		impl_->INIT(h);
-#ifdef CPPCRYPTO_DEBUG
-	dump_state("init", h);
-#endif
-};
-
-
-void groestl512::init()
-{
-	pos = 0;
-	total = 0;
-	memset(h, 0, sizeof(uint64_t)*16);
-	h[15] = swap_uint64(hashsize());
-
-	if (impl_)
-		impl_->INIT(h);
-#ifdef CPPCRYPTO_DEBUG
-	dump_state("init", h, 16);
-#endif
-};
-
-void groestl512::update(const uint8_t* data, size_t len)
-{
-	while (pos + len >= 128)
-	{
-		memcpy(m + pos, data, 128 - pos);
-		transform();
-		len -= 128 - pos;
-		total += (128 - pos) * 8;
-		data += 128 - pos;
-		pos = 0;
-	}
-	memcpy(m+pos, data, len);
-	pos += len;
-	total += len * 8;
-}
-
-void groestl512::final(uint8_t* hash)
-{
-#ifdef CPPCRYPTO_DEBUG
-	dump_state("pre-final", h, 16);
-#endif
-	m[pos++] = 0x80;
-	total += 8;
-	if (pos > 120)
-	{
-		memset(m + pos, 0, 128 - pos);
-		transform();
-		total += 1024 - pos * 8;
-		pos = 0;
-	}
-	memset(m + pos, 0, 120 - pos);
-	total += 1024 - pos * 8;
-	uint64_t mlen = swap_uint64(total / 1024);
-	memcpy(m + (128 - 8), &mlen, 64 / 8);
-	transform();
-	outputTransform();
-
-	uint8_t* s = (uint8_t*)h.get();
-	for (size_t i = 128 - hashsize()/8, j = 0; i < 128; i++, j++) {
-		hash[j] = s[i];
-	}
-#ifdef CPPCRYPTO_DEBUG
-	dump_state("post-final", h, 16);
-#endif
-}
-
-static inline void roundP_512(uint64_t* x, uint64_t* y, uint64_t i)
-{
-	for (int idx = 0; idx < 16; idx++)
-		x[idx] ^= ((uint64_t)idx << 4) ^ i;
-
-	for (int c = 15; c >= 0; c--)
-		y[c] = T[0][(uint8_t)x[(c + 0) % 16]] ^ T[1][(uint8_t)(x[(c + 1) % 16] >> 8)] ^ T[2][(uint8_t)(x[(c + 2) % 16] >> 16)] ^ T[3][(uint8_t)(x[(c + 3) % 16] >> 24)]
-		^ T[4][(uint8_t)(x[(c + 4) % 16] >> 32)] ^ T[5][(uint8_t)(x[(c + 5) % 16] >> 40)] ^ T[6][(uint8_t)(x[(c + 6) % 16] >> 48)] ^ T[7][(uint8_t)(x[(c + 11) % 16] >> 56)];
-}
-
-static inline void roundQ_512(uint64_t* x, uint64_t* y, uint64_t i)
-{
-	for (int idx = 0; idx < 16; idx++)
-		x[idx] ^= (0xffffffffffffffffull - ((uint64_t)idx << 60)) ^ i;
-
-	for (int c = 15; c >= 0; c--)
-		y[c] = T[0][(uint8_t)x[(c+1)%16]] ^ T[1][(uint8_t)(x[(c+3)%16] >> 8)] ^ T[2][(uint8_t)(x[(c+5)%16] >> 16)] ^ T[3][(uint8_t)(x[(c+11)%16] >> 24)]
-		^ T[4][(uint8_t)(x[(c+0)%16] >> 32)] ^ T[5][(uint8_t)(x[(c+2)%16] >> 40)] ^ T[6][(uint8_t)(x[(c+4)%16] >> 48)] ^ T[7][(uint8_t)(x[(c+6)%16] >> 56)];
-}
-
-void groestl512::outputTransform()
-{
-	if (impl_)
-		return impl_->OF(h);
-
 	uint64_t t1[16];
 	uint64_t t2[16];
 
@@ -791,84 +682,126 @@ void groestl512::outputTransform()
 	}
 }
 
-void groestl512::transform()
+void groestl::init()
+{
+	pos = 0;
+	total = 0;
+	memset(h, 0, sizeof(uint64_t)*16);
+	h[hs > 256 ? 15 : 7] = swap_uint64(hashsize());
+
+	if (impl_)
+		impl_->INIT(h);
+#ifdef CPPCRYPTO_DEBUG
+	dump_state("init", h, 16);
+#endif
+};
+
+void groestl::update(const uint8_t* data, size_t len)
+{
+	size_t limit = bs / 8;
+	while (pos + len >= limit)
+	{
+		memcpy(m + pos, data, limit - pos);
+		transform();
+		len -= limit - pos;
+		total += (limit - pos) * 8;
+		data += limit - pos;
+		pos = 0;
+	}
+	memcpy(m+pos, data, len);
+	pos += len;
+	total += len * 8;
+}
+
+void groestl::final(uint8_t* hash)
+{
+#ifdef CPPCRYPTO_DEBUG
+	dump_state("pre-final", h, 16);
+#endif
+	m[pos++] = 0x80;
+	total += 8;
+	size_t limit = bs / 8;
+	if (pos > limit - 8)
+	{
+		memset(m + pos, 0, limit - pos);
+		transform();
+		total += bs - pos * 8;
+		pos = 0;
+	}
+	memset(m + pos, 0, limit - 8 - pos);
+	total += bs - pos * 8;
+	uint64_t mlen = swap_uint64(total / bs);
+	memcpy(m + (limit - 8), &mlen, 64 / 8);
+	transform();
+	outputTransform();
+
+	uint8_t* s = (uint8_t*)h.get();
+	for (size_t i = limit - hashsize()/8, j = 0; i < limit; i++, j++) {
+		hash[j] = s[i];
+	}
+#ifdef CPPCRYPTO_DEBUG
+	dump_state("post-final", h, 16);
+#endif
+}
+
+void groestl::outputTransform()
+{
+	if (impl_)
+		return impl_->OF(h);
+
+	if (bs == 512)
+		outputTransform256(h);
+	else
+		outputTransform512(h);
+}
+
+void groestl::transform()
 {
 	if (impl_)
 		return impl_->TF(h.get(), (uint64_t*)m.get());
 
-	uint64_t AQ1[16], AQ2[16], AP1[16], AP2[16];
+	if (bs == 512)
+		transform256(h, (uint64_t*)m.get());
+	else
+		transform512(h, (uint64_t*)m.get());
 
-	for (int column = 0; column < 16; column++)
-	{
-		AP1[column] = h[column] ^ ((uint64_t*)m.get())[column];
-		AQ1[column] = ((uint64_t*)m.get())[column];
-	}
-
-	for (uint64_t r = 0; r < 14; r += 2)
-	{
-		roundP_512(AP1, AP2, r);
-		roundP_512(AP2, AP1, r + 1);
-		roundQ_512(AQ1, AQ2, r << 56);
-		roundQ_512(AQ2, AQ1, (r+1ull) << 56);
-	}
-
-	for (int column = 0; column < 16; column++)
-	{
-		h[column] = AP1[column] ^ AQ1[column] ^ h[column];
-	}
 #ifdef CPPCRYPTO_DEBUG
 	dump_state("transform", h, 16);
 #endif
 }
 
-groestl256::~groestl256()
+groestl::~groestl()
 {
 	clear();
 }
 
-groestl512::~groestl512()
+groestl::groestl(size_t hashsize)
+	: hs(hashsize), bs(hashsize > 256 ? 1024 : 512)
 {
-	clear();
-}
-
-groestl256::groestl256()
-{
+	validate_hash_size(hashsize, 512);
 #ifndef NO_OPTIMIZED_VERSIONS
 	if (cpu_info::aesni())
 	{
-		impl_.create<detail::groestl_impl_aesni_256>();
+		if (hashsize > 256)
+			impl_.create<detail::groestl_impl_aesni_512>();
+		else
+			impl_.create<detail::groestl_impl_aesni_256>();
 	}
 	else if (cpu_info::ssse3())
 	{
-		impl_.create<detail::groestl_impl_ssse3_256>();
+		if (hashsize > 256)
+			impl_.create<detail::groestl_impl_ssse3_512>();
+		else
+			impl_.create<detail::groestl_impl_ssse3_256>();
 	}
 #endif
 }
 
-groestl512::groestl512()
-{
-#ifndef NO_OPTIMIZED_VERSIONS
-	if (cpu_info::aesni())
-	{
-		impl_.create<detail::groestl_impl_aesni_512>();
-	}
-	else if (cpu_info::ssse3())
-	{
-		impl_.create<detail::groestl_impl_ssse3_512>();
-	}
-#endif
-}
-
-void groestl256::clear()
-{
-	zero_memory(h.get(), h.bytes());
-	zero_memory(m.get(), m.bytes());
-}
-
-void groestl512::clear()
+void groestl::clear()
 {
 	zero_memory(h.get(), h.bytes());
 	zero_memory(m.get(), m.bytes());
 }
 
 }
+

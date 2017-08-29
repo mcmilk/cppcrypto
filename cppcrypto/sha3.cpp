@@ -7,12 +7,13 @@ and released into public domain.
 #include "sha3.h"
 #include "portability.h"
 #include <memory.h>
+#include <algorithm>
 #include <functional>
 
 #ifdef _MSC_VER
 #define inline __forceinline
 #endif
-
+//#define NO_OPTIMIZED_VERSIONS
 
 namespace cppcrypto
 {
@@ -24,30 +25,32 @@ namespace cppcrypto
 		0x000000000000800A, 0x800000008000000A, 0x8000000080008081, 0x8000000000008080, 0x0000000080000001, 0x8000000080008008
 	};
 
-	void sha3_512::init()
+	void sha3::init()
 	{
 		if (impl_)
-			return impl_->init(576, 1024);
+			return impl_->init(static_cast<unsigned int>(rate), static_cast<unsigned int>(hs * 2));
+
 		memset(A, 0, sizeof(A));
 		pos = 0;
 	}
 
-	void sha3_512::update(const uint8_t* data, size_t len)
+	void sha3::update(const uint8_t* data, size_t len)
 	{
 		if (impl_)
 			return impl_->update(data, len);
-		if (pos && pos + len >= 72)
+		size_t r = rate / 8;
+		if (pos && pos + len >= r)
 		{
-			memcpy(m + pos, data, 72 - pos);
+			memcpy(m + pos, data, r - pos);
 			transform(m, 1);
-			len -= 72 - pos;
-			data += 72 - pos;
+			len -= r - pos;
+			data += r - pos;
 			pos = 0;
 		}
-		if (len >= 72)
+		if (len >= r)
 		{
-			size_t blocks = len / 72;
-			size_t bytes = blocks * 72;
+			size_t blocks = len / r;
+			size_t bytes = blocks * r;
 			transform((void*)data, blocks);
 			len -= bytes;
 			data += bytes;
@@ -137,265 +140,176 @@ namespace cppcrypto
 		}
 	}
 
-	void sha3_512::transform(void* mp, uint64_t num_blks)
+	void sha3::transform(void* mp, uint64_t num_blks)
 	{
+		size_t r = rate / 8;
+		size_t r64 = rate / 64;
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
-			for (int i = 0; i < 9; i++)
-				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp+blk*72)[i];
+			for (size_t i = 0; i < r64; i++)
+				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp+blk*r)[i];
 
 			dotransform(A);
 		}
 	}
 
-	void sha3_512::final(uint8_t* hash)
+	void sha3::final(uint8_t* hash)
 	{
 		if (impl_)
-			return impl_->final(hash, 512);
+			return impl_->final(hash, hs);
+		size_t r = rate / 8;
 		m[pos++] = 0x06;
-		memset(m + pos, 0, 72 - pos);
-		m[71] |= 0x80;
+		memset(m + pos, 0, r - pos);
+		m[r - 1] |= 0x80;
 		transform(m, 1);
 		memcpy(hash, A, hashsize() / 8);
 	}
 
-	void sha3_256::init()
+	sha3::sha3(size_t hashsize)
+		: m(nullptr), hs(hashsize), impl_(nullptr)
 	{
-		if (impl_)
-			return impl_->init(1088, 512);
-		memset(A, 0, sizeof(A));
-		pos = 0;
+		validate_hash_size(hashsize, {224, 256, 384, 512});
+
+		rate = 1600U - hs * 2;
+
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::avx2())
+			impl_ = new detail::sha3_impl_avx2;
+		else if (cpu_info::ssse3())
+			impl_ = new detail::sha3_impl_ssse3;
+		else
+#endif
+			m = new uint8_t[rate / 8];
 	}
 
-	void sha3_256::update(const uint8_t* data, size_t len)
+	sha3::~sha3()
 	{
-		if (impl_)
-			return impl_->update(data, len);
-		if (pos && pos + len >= 136)
-		{
-			memcpy(m + pos, data, 136 - pos);
-			transform(m, 1);
-			len -= 136 - pos;
-			data += 136 - pos;
-			pos = 0;
-		}
-		if (len >= 136)
-		{
-			size_t blocks = len / 136;
-			size_t bytes = blocks * 136;
-			transform((void*)data, blocks);
-			len -= bytes;
-			data += bytes;
-		}
-		memcpy(m + pos, data, len);
-		pos += len;
+		clear();
+		delete[] m;
+		delete impl_;
 	}
 
-	void sha3_256::transform(void* mp, uint64_t num_blks)
+	void sha3::clear()
 	{
-		for (uint64_t blk = 0; blk < num_blks; blk++)
-		{
-			for (int i = 0; i < 17; i++)
-				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp + blk * 136)[i];
+		zero_memory(A, sizeof(A));
+		if (m)
+			zero_memory(m, rate / 8);
+	}
 
-			dotransform(A);
+	shake128::shake128(size_t hashsize, const std::string& function_name, const std::string& customization)
+		: shake256(hashsize, function_name, customization)
+	{
+		validate_hash_size(hashsize, SIZE_MAX);
+		hs = 128;
+		rate = 1600U - 128 * 2;
+		if (m)
+		{
+			delete[] m;
+			m = new uint8_t[rate / 8];
+		}
+
+	}
+
+	shake256::shake256(size_t hashsize, const std::string& function_name, const std::string& customization)
+		: sha3(256), size(hashsize), N(function_name), S(customization)
+	{
+		validate_hash_size(hashsize, SIZE_MAX);
+	}
+
+	static inline size_t left_encode(size_t num, uint8_t* buf)
+	{
+		// first, calculate length
+		uint8_t n = 1;
+		size_t tmp = num;
+		while (tmp >>= 8)
+			++n;
+		buf[0] = n;
+		size_t result = n + 1;
+		size_t i = 0;
+		while (n)
+			buf[n--] = static_cast<uint8_t>(num >> (8*i++));
+		return result;
+	}
+
+	void shake256::init()
+	{
+		sha3::init();
+		if (impl_)
+			impl_->set_padding_byte(N.empty() && S.empty() ? 0x1F : 0x04);
+		if (!N.empty() || !S.empty())
+		{
+			uint8_t buf[1024];
+			size_t r = rate / 8;
+			size_t len = left_encode(r, buf);
+
+#ifdef CPPCRYPTO_DEBUG
+			for (size_t b = 0; b < len; b++)
+				printf("%02x ", (unsigned char)buf[b]);
+#endif
+
+			size_t total = len;
+			update(buf, len);
+			len = left_encode(N.length() * 8, buf);
+
+#ifdef CPPCRYPTO_DEBUG
+			for (size_t b = 0; b < len; b++)
+				printf("%02x ", (unsigned char)buf[b]);
+#endif
+
+			total += len;
+			update(buf, len);
+			if (!N.empty())
+				update(reinterpret_cast<uint8_t*>(&N[0]), N.length());
+			len = left_encode(S.length() * 8, buf);
+
+#ifdef CPPCRYPTO_DEBUG
+			for (size_t b = 0; b < len; b++)
+				printf("%02x ", (unsigned char)buf[b]);
+#endif
+
+			update(buf, len);
+			total += len;
+			if (!S.empty())
+				update(reinterpret_cast<uint8_t*>(&S[0]), S.length());
+
+#ifdef CPPCRYPTO_DEBUG
+			for (size_t b = 0; b < S.length(); b++)
+				printf("%02x ", (unsigned char)S[b]);
+#endif
+
+			total += S.length() + N.length();
+
+			len = r - (total % r);
+			memset(buf, 0, len);
+
+#ifdef CPPCRYPTO_DEBUG
+			for (size_t b = 0; b < len; b++)
+				printf("%02x ", (unsigned char)buf[b]);
+#endif
+
+			update(buf, len);
 		}
 	}
 
-	void sha3_256::final(uint8_t* hash)
+	void shake256::final(uint8_t* hash)
 	{
 		if (impl_)
-			return impl_->final(hash, 256);
-		m[pos++] = 0x06;
-		memset(m + pos, 0, 136 - pos);
-		m[135] |= 0x80;
+			return impl_->final(hash, hashsize());
+		size_t r = rate / 8;
+		m[pos++] = N.empty() && S.empty() ? 0x1F : 0x04;
+		memset(m + pos, 0, r - pos);
+		m[r - 1] |= 0x80;
 		transform(m, 1);
-		memcpy(hash, A, hashsize() / 8);
-	}
-
-	void sha3_384::init()
-	{
-		if (impl_)
-			return impl_->init(832, 768);
-		memset(A, 0, sizeof(A));
-		pos = 0;
-	}
-
-	void sha3_384::update(const uint8_t* data, size_t len)
-	{
-		if (impl_)
-			return impl_->update(data, len);
-		if (pos && pos + len >= 104)
+		size_t processed = 0;
+		while (processed < hashsize())
 		{
-			memcpy(m + pos, data, 104 - pos);
-			transform(m, 1);
-			len -= 104 - pos;
-			data += 104 - pos;
-			pos = 0;
+			if (processed)
+				dotransform(A);
+			size_t to_copy = std::min(hashsize(), rate);
+			memcpy(hash + processed / 8, A, to_copy / 8);
+			processed += to_copy;
 		}
-		if (len >= 104)
-		{
-			size_t blocks = len / 104;
-			size_t bytes = blocks * 104;
-			transform((void*)data, blocks);
-			len -= bytes;
-			data += bytes;
-		}
-		memcpy(m + pos, data, len);
-		pos += len;
-	}
-
-	void sha3_384::transform(void* mp, uint64_t num_blks)
-	{
-		for (uint64_t blk = 0; blk < num_blks; blk++)
-		{
-			for (int i = 0; i < 13; i++)
-				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp + blk * 104)[i];
-
-			dotransform(A);
-		}
-	}
-
-	void sha3_384::final(uint8_t* hash)
-	{
-		if (impl_)
-			return impl_->final(hash, 384);
-		m[pos++] = 0x06;
-		memset(m + pos, 0, 104 - pos);
-		m[103] |= 0x80;
-		transform(m, 1);
-		memcpy(hash, A, hashsize() / 8);
-	}
-
-	void sha3_224::init()
-	{
-		if (impl_)
-			return impl_->init(1152, 448);
-		memset(A, 0, sizeof(A));
-		pos = 0;
-	}
-
-	void sha3_224::update(const uint8_t* data, size_t len)
-	{
-		if (impl_)
-			return impl_->update(data, len);
-		if (pos && pos + len >= 144)
-		{
-			memcpy(m + pos, data, 144 - pos);
-			transform(m, 1);
-			len -= 144 - pos;
-			data += 144 - pos;
-			pos = 0;
-		}
-		if (len >= 144)
-		{
-			size_t blocks = len / 144;
-			size_t bytes = blocks * 144;
-			transform((void*)data, blocks);
-			len -= bytes;
-			data += bytes;
-		}
-		memcpy(m + pos, data, len);
-		pos += len;
-	}
-
-	void sha3_224::transform(void* mp, uint64_t num_blks)
-	{
-		for (uint64_t blk = 0; blk < num_blks; blk++)
-		{
-			for (int i = 0; i < 18; i++)
-				A[i] ^= reinterpret_cast<const uint64_t*>((char*)mp + blk * 144)[i];
-
-			dotransform(A);
-		}
-	}
-
-	void sha3_224::final(uint8_t* hash)
-	{
-		if (impl_)
-			return impl_->final(hash, 224);
-		m[pos++] = 0x06;
-		memset(m + pos, 0, 144 - pos);
-		m[143] |= 0x80;
-		transform(m, 1);
-		memcpy(hash, A, hashsize() / 8);
-	}
-
-	sha3_512::sha3_512()
-		: impl_(0)
-	{
-#ifndef NO_OPTIMIZED_VERSIONS
-		if (cpu_info::ssse3())
-			impl_ = new detail::sha3_impl_ssse3;
-#endif
-	}
-	sha3_512::~sha3_512()
-	{
-		clear();
-		delete impl_;
-	}
-	sha3_256::sha3_256()
-		: impl_(0)
-	{
-#ifndef NO_OPTIMIZED_VERSIONS
-		if (cpu_info::ssse3())
-			impl_ = new detail::sha3_impl_ssse3;
-#endif
-	}
-	sha3_256::~sha3_256()
-	{
-		clear();
-		delete impl_;
-	}
-	sha3_384::sha3_384()
-		: impl_(0)
-	{
-#ifndef NO_OPTIMIZED_VERSIONS
-		if (cpu_info::ssse3())
-			impl_ = new detail::sha3_impl_ssse3;
-#endif
-	}
-	sha3_384::~sha3_384()
-	{
-		clear();
-		delete impl_;
-	}
-	sha3_224::sha3_224()
-		: impl_(0)
-	{
-#ifndef NO_OPTIMIZED_VERSIONS
-		if (cpu_info::ssse3())
-			impl_ = new detail::sha3_impl_ssse3;
-#endif
-	}
-	sha3_224::~sha3_224()
-	{
-		clear();
-		delete impl_;
-	}
-
-	void sha3_224::clear()
-	{
-		zero_memory(A, sizeof(A));
-		zero_memory(m, sizeof(m));
-	}
-
-	void sha3_256::clear()
-	{
-		zero_memory(A, sizeof(A));
-		zero_memory(m, sizeof(m));
-	}
-
-	void sha3_384::clear()
-	{
-		zero_memory(A, sizeof(A));
-		zero_memory(m, sizeof(m));
-	}
-
-	void sha3_512::clear()
-	{
-		zero_memory(A, sizeof(A));
-		zero_memory(m, sizeof(m));
 	}
 
 }
+

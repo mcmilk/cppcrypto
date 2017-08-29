@@ -133,7 +133,7 @@ void block_cipher_perf_test(map<wstring, unique_ptr<block_cipher>>& ciphers, lon
 
 }
 
-void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, wstring filename)
+void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, wstring filename, size_t outputsize)
 {
 	perftimer timer;
 
@@ -169,7 +169,9 @@ void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, ws
 
 	for (auto it = hashes.begin(); it != hashes.end(); ++it)
 	{
-		wcout << it->first << _T(" ");
+		if (it->second->hashsize() != outputsize)
+			continue;
+		wcout << setfill(_T(' ')) << setw(14) << it->first << _T(" ");
 
 		timer.reset();
 		for (long i = 0; i < iterations; i++)
@@ -182,6 +184,17 @@ void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, ws
 		for (size_t i = 0; i < (it->second->hashsize() + 7) / 8; i++)
 			wcout << setfill(_T('0')) << setw(2) << hex << (unsigned int)hash[i];
 		wcout << endl;
+	}
+}
+
+void perftest(map<wstring, unique_ptr<crypto_hash>>& hashes, long iterations, wstring filename)
+{
+	array<size_t, 7> output_sizes { 128, 160, 224, 256, 384, 512, 1024 };
+
+	for (size_t outputsize : output_sizes)
+	{
+		wcout << _T("\nHashes with output size ") << dec << outputsize << _T("bits:") << endl;
+		perftest(hashes, iterations, filename, outputsize);
 	}
 }
 
@@ -464,6 +477,111 @@ void hex2array(const string& hex, uint8_t* array)
 		pos += 2;
 	}
 }
+
+
+void test_argon(const wstring& name, const wstring& filename)
+{
+	ifstream file(filename, ios::in | ios::binary);
+	string line;
+	uint8_t pwd[260], salt[260], secret[260], ad[260], tag[260], pwdhash[260];
+	uint32_t pwdlen = 0, saltlen = 0, secretlen = 0, adlen = 0, taglen = 32;
+	uint32_t memory = 32, iterations = 3, parallelism = 4;
+	uint32_t count = 0, failed = 0, success = 0;
+	regex eq(R"((\w+)\s*=\s*(\w*))");
+	while (getline(file, line))
+	{
+		line.erase(line.find_last_not_of("\r\n \t") + 1);
+		smatch sm;
+		if (regex_match(line, sm, eq))
+		{
+			string second = sm.str(2);
+			if (sm.str(1) == "PWD")
+			{
+				hex2array(second, pwd);
+				pwdlen = static_cast<uint32_t>(second.length() / 2);
+			}
+			if (sm.str(1) == "SALT")
+			{
+				hex2array(second, salt);
+				saltlen = static_cast<uint32_t>(second.length() / 2);
+			}
+			if (sm.str(1) == "SECRET")
+			{
+				hex2array(second, secret);
+				secretlen = static_cast<uint32_t>(second.length() / 2);
+			}
+			if (sm.str(1) == "AD")
+			{
+				hex2array(second, ad);
+				adlen = static_cast<uint32_t>(second.length() / 2);
+			}
+			if (sm.str(1) == "MEMORY")
+				memory = stoul(second);
+			if (sm.str(1) == "ITERATIONS")
+				iterations = stoul(second);
+			if (sm.str(1) == "PARALLELISM")
+				parallelism = stoul(second);
+			if (sm.str(1) == "TAG")
+			{
+				bool error = false;
+				hex2array(second, tag);
+				taglen = static_cast<uint32_t>(second.length() / 2);
+				if (name == _T("argon2d"))
+					argon2d(reinterpret_cast<const char*>(pwd), pwdlen, salt, saltlen, parallelism, memory, iterations, pwdhash, taglen, ad, adlen, secret, secretlen);
+				else if (name == _T("argon2i"))
+					argon2i(reinterpret_cast<const char*>(pwd), pwdlen, salt, saltlen, parallelism, memory, iterations, pwdhash, taglen, ad, adlen, secret, secretlen);
+				else if (name == _T("argon2id"))
+					argon2id(reinterpret_cast<const char*>(pwd), pwdlen, salt, saltlen, parallelism, memory, iterations, pwdhash, taglen, ad, adlen, secret, secretlen);
+					
+				if (memcmp(pwdhash, tag, second.length() / 2))
+				{
+					wcerr << _T("Error for test ") << count << endl;
+#define CPPCRYPTO_DEBUG
+#ifdef CPPCRYPTO_DEBUG
+					wcerr << _T("password was: ");
+					for (size_t i = 0; i < pwdlen; i++)
+						wcerr << setfill(_T('0')) << setw(2) << hex << (unsigned int)pwd[i];
+					wcerr << _T("\nsalt was: ");
+					for (size_t i = 0; i < saltlen; i++)
+						wcerr << setfill(_T('0')) << setw(2) << hex << (unsigned int)salt[i];
+					wcerr << _T("\nsecret was: ");
+					for (size_t i = 0; i < secretlen; i++)
+						wcerr << setfill(_T('0')) << setw(2) << hex << (unsigned int)secret[i];
+					wcerr << _T("\nad was: ");
+					for (size_t i = 0; i < adlen; i++)
+						wcerr << setfill(_T('0')) << setw(2) << hex << (unsigned int)ad[i];
+					wcerr << endl << "memory: " << memory << ", iterations: " << iterations << ", parallelism: " << parallelism;
+					wcerr << "\nexpected is: ";
+					for (size_t i = 0; i < taglen; i++)
+						wcerr << setfill(_T('0')) << setw(2) << hex << (unsigned int)tag[i];
+					wcerr << "\nactual is: ";
+					for (size_t i = 0; i < taglen; i++)
+						wcerr << setfill(_T('0')) << setw(2) << hex << (unsigned int)pwdhash[i];
+					wcerr << endl;
+#endif
+					error = true;
+				}
+				count++;
+				if (error)
+					failed++;
+				else
+					success++;
+			}
+
+		}
+	}
+	wcout << name << _T(": ");
+	if (success)
+		wcout << (success) << _T("/") << count << _T(" OK");
+	if (failed && success)
+		wcout << _T(", ");
+	if (failed)
+		wcout << failed << _T("/") << count << _T(" FAILED");
+	if (!success && !failed)
+		wcout << _T("No tests found");
+	wcout << endl;
+}
+
 
 void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 {
@@ -928,66 +1046,84 @@ int wmain(int argc, wchar_t* argv[])
 
 	map<wstring, unique_ptr<crypto_hash>> hashes;
 	hashes.emplace(make_pair(_T("sha256"), unique_ptr<crypto_hash>(new sha256)));
-	hashes.emplace(make_pair(_T("groestl256"), unique_ptr<crypto_hash>(new groestl256)));
-	hashes.emplace(make_pair(_T("blake256"), unique_ptr<crypto_hash>(new blake256)));
+	hashes.emplace(make_pair(_T("groestl/256"), unique_ptr<crypto_hash>(new groestl(256))));
+	hashes.emplace(make_pair(_T("blake/256"), unique_ptr<crypto_hash>(new blake(256))));
 
-	hashes.emplace(make_pair(_T("groestl512"), unique_ptr<crypto_hash>(new groestl512)));
+	hashes.emplace(make_pair(_T("groestl/512"), unique_ptr<crypto_hash>(new groestl(512))));
 	hashes.emplace(make_pair(_T("sha512"), unique_ptr<crypto_hash>(new sha512)));
-	hashes.emplace(make_pair(_T("sha512/256"), unique_ptr<crypto_hash>(new sha512_256)));
-	hashes.emplace(make_pair(_T("sha512/224"), unique_ptr<crypto_hash>(new sha512_224)));
+	hashes.emplace(make_pair(_T("sha512/256"), unique_ptr<crypto_hash>(new sha512(256))));
+	hashes.emplace(make_pair(_T("sha512/224"), unique_ptr<crypto_hash>(new sha512(224))));
 	hashes.emplace(make_pair(_T("sha384"), unique_ptr<crypto_hash>(new sha384)));
-	hashes.emplace(make_pair(_T("groestl384"), unique_ptr<crypto_hash>(new groestl384)));
-	hashes.emplace(make_pair(_T("groestl224"), unique_ptr<crypto_hash>(new groestl224)));
+	hashes.emplace(make_pair(_T("groestl/384"), unique_ptr<crypto_hash>(new groestl(384))));
+	hashes.emplace(make_pair(_T("groestl/224"), unique_ptr<crypto_hash>(new groestl(224))));
 
-	hashes.emplace(make_pair(_T("skein512/256"), unique_ptr<crypto_hash>(new skein512_256)));
-	hashes.emplace(make_pair(_T("skein512/512"), unique_ptr<crypto_hash>(new skein512_512)));
-	hashes.emplace(make_pair(_T("blake512"), unique_ptr<crypto_hash>(new blake512)));
-	hashes.emplace(make_pair(_T("blake384"), unique_ptr<crypto_hash>(new blake384)));
-	hashes.emplace(make_pair(_T("blake224"), unique_ptr<crypto_hash>(new blake224)));
-	hashes.emplace(make_pair(_T("skein512/384"), unique_ptr<crypto_hash>(new skein512_384)));
-	hashes.emplace(make_pair(_T("skein512/224"), unique_ptr<crypto_hash>(new skein512_224)));
+	hashes.emplace(make_pair(_T("skein512/256"), unique_ptr<crypto_hash>(new skein512(256))));
+	hashes.emplace(make_pair(_T("skein512/512"), unique_ptr<crypto_hash>(new skein512(512))));
+	hashes.emplace(make_pair(_T("blake/512"), unique_ptr<crypto_hash>(new blake(512))));
+	hashes.emplace(make_pair(_T("blake/384"), unique_ptr<crypto_hash>(new blake(384))));
+	hashes.emplace(make_pair(_T("blake/224"), unique_ptr<crypto_hash>(new blake(224))));
+	hashes.emplace(make_pair(_T("skein512/384"), unique_ptr<crypto_hash>(new skein512(384))));
+	hashes.emplace(make_pair(_T("skein512/224"), unique_ptr<crypto_hash>(new skein512(224))));
 
-	hashes.emplace(make_pair(_T("skein256/256"), unique_ptr<crypto_hash>(new skein256_256)));
-	hashes.emplace(make_pair(_T("skein256/224"), unique_ptr<crypto_hash>(new skein256_224)));
-	hashes.emplace(make_pair(_T("skein1024/1024"), unique_ptr<crypto_hash>(new skein1024_1024)));
-	hashes.emplace(make_pair(_T("skein1024/512"), unique_ptr<crypto_hash>(new skein1024_512)));
-	hashes.emplace(make_pair(_T("skein1024/384"), unique_ptr<crypto_hash>(new skein1024_384)));
+	hashes.emplace(make_pair(_T("skein256/256"), unique_ptr<crypto_hash>(new skein256(256))));
+	hashes.emplace(make_pair(_T("skein256/224"), unique_ptr<crypto_hash>(new skein256(224))));
+	hashes.emplace(make_pair(_T("skein1024/1024"), unique_ptr<crypto_hash>(new skein1024(1024))));
+	hashes.emplace(make_pair(_T("skein1024/512"), unique_ptr<crypto_hash>(new skein1024(512))));
+	hashes.emplace(make_pair(_T("skein1024/384"), unique_ptr<crypto_hash>(new skein1024(384))));
 	hashes.emplace(make_pair(_T("sha224"), unique_ptr<crypto_hash>(new sha224)));
 
 	hashes.emplace(make_pair(_T("whirlpool"), unique_ptr<crypto_hash>(new whirlpool)));
-	hashes.emplace(make_pair(_T("kupyna256"), unique_ptr<crypto_hash>(new kupyna256)));
-	hashes.emplace(make_pair(_T("kupyna512"), unique_ptr<crypto_hash>(new kupyna512)));
-	hashes.emplace(make_pair(_T("skein512/128"), unique_ptr<crypto_hash>(new skein512_128)));
-	hashes.emplace(make_pair(_T("skein512/160"), unique_ptr<crypto_hash>(new skein512_160)));
-	hashes.emplace(make_pair(_T("skein256/128"), unique_ptr<crypto_hash>(new skein256_128)));
-	hashes.emplace(make_pair(_T("skein256/160"), unique_ptr<crypto_hash>(new skein256_160)));
-	hashes.emplace(make_pair(_T("skein1024/256"), unique_ptr<crypto_hash>(new skein1024_256)));
+	hashes.emplace(make_pair(_T("kupyna/256"), unique_ptr<crypto_hash>(new kupyna(256))));
+	hashes.emplace(make_pair(_T("kupyna/512"), unique_ptr<crypto_hash>(new kupyna(512))));
+	hashes.emplace(make_pair(_T("skein512/128"), unique_ptr<crypto_hash>(new skein512(128))));
+	hashes.emplace(make_pair(_T("skein512/160"), unique_ptr<crypto_hash>(new skein512(160))));
+	hashes.emplace(make_pair(_T("skein256/128"), unique_ptr<crypto_hash>(new skein256(128))));
+	hashes.emplace(make_pair(_T("skein256/160"), unique_ptr<crypto_hash>(new skein256(160))));
+	hashes.emplace(make_pair(_T("skein1024/256"), unique_ptr<crypto_hash>(new skein1024(256))));
 
-	hashes.emplace(make_pair(_T("sha3_512"), unique_ptr<crypto_hash>(new sha3_512)));
-	hashes.emplace(make_pair(_T("sha3_256"), unique_ptr<crypto_hash>(new sha3_256)));
-	hashes.emplace(make_pair(_T("sha3_384"), unique_ptr<crypto_hash>(new sha3_384)));
-	hashes.emplace(make_pair(_T("sha3_224"), unique_ptr<crypto_hash>(new sha3_224)));
-	hashes.emplace(make_pair(_T("jh512"), unique_ptr<crypto_hash>(new jh512)));
-	hashes.emplace(make_pair(_T("jh384"), unique_ptr<crypto_hash>(new jh384)));
-	hashes.emplace(make_pair(_T("jh224"), unique_ptr<crypto_hash>(new jh224)));
-	hashes.emplace(make_pair(_T("jh256"), unique_ptr<crypto_hash>(new jh256)));
+	hashes.emplace(make_pair(_T("sha3/512"), unique_ptr<crypto_hash>(new sha3(512))));
+	hashes.emplace(make_pair(_T("sha3/256"), unique_ptr<crypto_hash>(new sha3(256))));
+	hashes.emplace(make_pair(_T("sha3/384"), unique_ptr<crypto_hash>(new sha3(384))));
+	hashes.emplace(make_pair(_T("sha3/224"), unique_ptr<crypto_hash>(new sha3(224))));
+	hashes.emplace(make_pair(_T("jh/512"), unique_ptr<crypto_hash>(new jh(512))));
+	hashes.emplace(make_pair(_T("jh/384"), unique_ptr<crypto_hash>(new jh(384))));
+	hashes.emplace(make_pair(_T("jh/224"), unique_ptr<crypto_hash>(new jh(224))));
+	hashes.emplace(make_pair(_T("jh/256"), unique_ptr<crypto_hash>(new jh(256))));
 	hashes.emplace(make_pair(_T("sha1"), unique_ptr<crypto_hash>(new sha1)));
 
-	hashes.emplace(make_pair(_T("streebog512"), unique_ptr<crypto_hash>(new streebog512)));
-	hashes.emplace(make_pair(_T("streebog256"), unique_ptr<crypto_hash>(new streebog256)));
+	hashes.emplace(make_pair(_T("streebog/512"), unique_ptr<crypto_hash>(new streebog(512))));
+	hashes.emplace(make_pair(_T("streebog/256"), unique_ptr<crypto_hash>(new streebog(256))));
 	hashes.emplace(make_pair(_T("sm3"), unique_ptr<crypto_hash>(new sm3)));
 	hashes.emplace(make_pair(_T("md5"), unique_ptr<crypto_hash>(new md5)));
 
-	hashes.emplace(make_pair(_T("blake2b_512"), unique_ptr<crypto_hash>(new blake2b_512)));
-	hashes.emplace(make_pair(_T("blake2b_256"), unique_ptr<crypto_hash>(new blake2b_256)));
-	hashes.emplace(make_pair(_T("blake2b_384"), unique_ptr<crypto_hash>(new blake2b_384)));
-	hashes.emplace(make_pair(_T("blake2b_224"), unique_ptr<crypto_hash>(new blake2b_224)));
-	hashes.emplace(make_pair(_T("blake2b_160"), unique_ptr<crypto_hash>(new blake2b_160)));
-	hashes.emplace(make_pair(_T("blake2b_128"), unique_ptr<crypto_hash>(new blake2b_128)));
-	hashes.emplace(make_pair(_T("blake2s_256"), unique_ptr<crypto_hash>(new blake2s_256)));
-	hashes.emplace(make_pair(_T("blake2s_224"), unique_ptr<crypto_hash>(new blake2s_224)));
-	hashes.emplace(make_pair(_T("blake2s_160"), unique_ptr<crypto_hash>(new blake2s_160)));
-	hashes.emplace(make_pair(_T("blake2s_128"), unique_ptr<crypto_hash>(new blake2s_128)));
+	hashes.emplace(make_pair(_T("blake2b/512"), unique_ptr<crypto_hash>(new blake2b(512))));
+	hashes.emplace(make_pair(_T("blake2b/256"), unique_ptr<crypto_hash>(new blake2b(256))));
+	hashes.emplace(make_pair(_T("blake2b/384"), unique_ptr<crypto_hash>(new blake2b(384))));
+	hashes.emplace(make_pair(_T("blake2b/224"), unique_ptr<crypto_hash>(new blake2b(224))));
+	hashes.emplace(make_pair(_T("blake2b/160"), unique_ptr<crypto_hash>(new blake2b(160))));
+	hashes.emplace(make_pair(_T("blake2b/128"), unique_ptr<crypto_hash>(new blake2b(128))));
+	hashes.emplace(make_pair(_T("blake2s/256"), unique_ptr<crypto_hash>(new blake2s(256))));
+	hashes.emplace(make_pair(_T("blake2s/224"), unique_ptr<crypto_hash>(new blake2s(224))));
+	hashes.emplace(make_pair(_T("blake2s/160"), unique_ptr<crypto_hash>(new blake2s(160))));
+	hashes.emplace(make_pair(_T("blake2s/128"), unique_ptr<crypto_hash>(new blake2s(128))));
+
+	hashes.emplace(make_pair(_T("shake128/256"), unique_ptr<crypto_hash>(new shake128(256))));
+	hashes.emplace(make_pair(_T("shake256/512"), unique_ptr<crypto_hash>(new shake256(512))));
+
+	// additional variants for test vector testing
+	map<wstring, unique_ptr<crypto_hash>> test_hashes;
+	test_hashes.emplace(make_pair(_T("skein256/2056"), unique_ptr<crypto_hash>(new skein256(2056))));
+	test_hashes.emplace(make_pair(_T("skein512/2056"), unique_ptr<crypto_hash>(new skein512(2056))));
+	test_hashes.emplace(make_pair(_T("skein1024/2056"), unique_ptr<crypto_hash>(new skein1024(2056))));
+	test_hashes.emplace(make_pair(_T("shake256/4096"), unique_ptr<crypto_hash>(new shake256(4096))));
+	test_hashes.emplace(make_pair(_T("cshake256/512"), unique_ptr<crypto_hash>(new shake256(512, "", "Email Signature"))));
+	test_hashes.emplace(make_pair(_T("shake128/1120"), unique_ptr<crypto_hash>(new shake128(1120))));
+	uint8_t blakesalt[32];
+	iota(blakesalt, blakesalt + sizeof(blakesalt), 0);
+	test_hashes.emplace(make_pair(_T("blake/256salt"), unique_ptr<crypto_hash>(new blake(256, blakesalt, 16))));
+	blake temp12(384, blakesalt, 32);
+	test_hashes.emplace(make_pair(_T("blake/384salt"), unique_ptr<crypto_hash>(temp12.clone())));
+
 
 	if (argc < 3)
 	{
@@ -1012,11 +1148,18 @@ int wmain(int argc, wchar_t* argv[])
 		}
 		hash = argv[2];
 		auto hashit = block_ciphers.find(hash);
-		if (hashit == block_ciphers.end())
+		if (hash == _T("argon2i") || hash == _T("argon2d") || hash == _T("argon2id"))
+		{
+			test_argon(hash, argv[3]);
+			return 0;
+		}
+		else if (hashit == block_ciphers.end())
 		{
 			// maybe it's hash
 			auto hashit2 = hashes.find(hash);
 			if (hashit2 == hashes.end())
+				hashit2 = test_hashes.find(hash);
+			if (hashit2 == hashes.end() || hashit2 == test_hashes.end())
 			{
 				// maybe it's a stream cipher
 				auto hashit3 = stream_ciphers.find(hash);

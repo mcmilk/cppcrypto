@@ -1,9 +1,17 @@
-2015-03-21 cppcrypto-0.15
+2017-08-29 cppcrypto-0.16
+
+New hash algorithm: SHAKE128, SHAKE256.
+New key derivation function: Argon2id.
+Added 'cryptor' utility demonstrating how to use cppcrypto for file encryption.
+API change: blake, blake2s, blake2b, skein256, skein512, skein1024, sha512, sha3, jh, groestl, streebog now accept output length parameter.
+Output length specific classes for these algorithms were removed.
+
+2016-03-21 cppcrypto-0.15
 
 Argon2 implementation updated to match version 1.3 of the specification.
 (Old version is still supported for compatibility.)
 
-2015-02-13 cppcrypto-0.14
+2016-02-13 cppcrypto-0.14
 
 New block cipher algorithms: Simon, Speck.
 New MAC algorithm: Poly1305.

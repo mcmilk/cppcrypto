@@ -30,8 +30,10 @@ namespace cppcrypto
 	{
 		clear();
 	}
-	sha512::sha512()
+	sha512::sha512(size_t hashsize)
+		: hs(hashsize)
 	{
+		validate_hash_size(hashsize, 512);
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifdef _M_X64
 		if (cpu_info::avx2() && cpu_info::bmi2())
@@ -157,14 +159,62 @@ namespace cppcrypto
 
 	void sha512::init()
 	{
-		H[0] = 0x6a09e667f3bcc908;
-		H[1] = 0xbb67ae8584caa73b;
-		H[2] = 0x3c6ef372fe94f82b;
-		H[3] = 0xa54ff53a5f1d36f1;
-		H[4] = 0x510e527fade682d1;
-		H[5] = 0x9b05688c2b3e6c1f;
-		H[6] = 0x1f83d9abfb41bd6b;
-		H[7] = 0x5be0cd19137e2179;
+		pos = 0;
+		total = 0;
+		switch(hs)
+		{
+			case 224:
+				H[0] = 0x8C3D37C819544DA2;
+				H[1] = 0x73E1996689DCD4D6;
+				H[2] = 0x1DFAB7AE32FF9C82;
+				H[3] = 0x679DD514582F9FCF;
+				H[4] = 0x0F6D2B697BD44DA8;
+				H[5] = 0x77E36F7304C48942;
+				H[6] = 0x3F9D85A86A1D36C8;
+				H[7] = 0x1112E6AD91D692A1;
+				return;
+			case 256:
+				H[0] = 0x22312194FC2BF72C;
+				H[1] = 0x9F555FA3C84C64C2;
+				H[2] = 0x2393B86B6F53B151;
+				H[3] = 0x963877195940EABD;
+				H[4] = 0x96283EE2A88EFFE3;
+				H[5] = 0xBE5E1E2553863992;
+				H[6] = 0x2B0199FC2C85B8AA;
+				H[7] = 0x0EB72DDC81C52CA2;
+				return;
+			case 384:
+				H[0] = 0xcbbb9d5dc1059ed8;
+				H[1] = 0x629a292a367cd507;
+				H[2] = 0x9159015a3070dd17;
+				H[3] = 0x152fecd8f70e5939;
+				H[4] = 0x67332667ffc00b31;
+				H[5] = 0x8eb44a8768581511;
+				H[6] = 0xdb0c2e0d64f98fa7;
+				H[7] = 0x47b5481dbefa4fa4;
+				return;
+			default:
+				H[0] = 0x6a09e667f3bcc908;
+				H[1] = 0xbb67ae8584caa73b;
+				H[2] = 0x3c6ef372fe94f82b;
+				H[3] = 0xa54ff53a5f1d36f1;
+				H[4] = 0x510e527fade682d1;
+				H[5] = 0x9b05688c2b3e6c1f;
+				H[6] = 0x1f83d9abfb41bd6b;
+				H[7] = 0x5be0cd19137e2179;
+		}
+		if (hs == 512)
+			return;
+
+		for (int i = 0; i < 8; i++)
+			H[i] ^= 0xa5a5a5a5a5a5a5a5;
+		std::string tmp = "SHA-512/" + std::to_string(hashsize());
+
+		update((uint8_t*)&tmp[0], tmp.length());
+		uint8_t buf[512 / 8];
+		final(buf);
+		for (int i = 0; i < 8; i++)
+			H[i] = swap_uint64(H[i]);
 		pos = 0;
 		total = 0;
 	};
@@ -240,8 +290,7 @@ namespace cppcrypto
 	void sha512::final(uint8_t* hash)
 	{
 		m[pos++] = 0x80;
-		if (pos > 112)
-		{
+		if (pos > 112) {
 			memset(&m[0] + pos, 0, 128 - pos);
 			transfunc(&m[0], 1);
 			pos = 0;
@@ -251,55 +300,9 @@ namespace cppcrypto
 		memcpy(&m[0] + (128 - 8), &mlen, 64 / 8);
 		transfunc(&m[0], 1);
 		for (int i = 0; i < 8; i++)
-		{
 			H[i] = swap_uint64(H[i]);
-		}
 		memcpy(hash, H, hashsize()/8);
 	}
-
-
-	void sha512_256::init()
-	{
-		H[0] = 0x22312194FC2BF72C;
-		H[1] = 0x9F555FA3C84C64C2;
-		H[2] = 0x2393B86B6F53B151;
-		H[3] = 0x963877195940EABD;
-		H[4] = 0x96283EE2A88EFFE3;
-		H[5] = 0xBE5E1E2553863992;
-		H[6] = 0x2B0199FC2C85B8AA;
-		H[7] = 0x0EB72DDC81C52CA2;
-		pos = 0;
-		total = 0;
-	};
-
-
-	void sha512_224::init()
-	{
-		H[0] = 0x8C3D37C819544DA2;
-		H[1] = 0x73E1996689DCD4D6;
-		H[2] = 0x1DFAB7AE32FF9C82;
-		H[3] = 0x679DD514582F9FCF;
-		H[4] = 0x0F6D2B697BD44DA8;
-		H[5] = 0x77E36F7304C48942;
-		H[6] = 0x3F9D85A86A1D36C8;
-		H[7] = 0x1112E6AD91D692A1;
-		pos = 0;
-		total = 0;
-	};
-
-	void sha384::init()
-	{
-		H[0] = 0xcbbb9d5dc1059ed8;
-		H[1] = 0x629a292a367cd507;
-		H[2] = 0x9159015a3070dd17;
-		H[3] = 0x152fecd8f70e5939;
-		H[4] = 0x67332667ffc00b31;
-		H[5] = 0x8eb44a8768581511;
-		H[6] = 0xdb0c2e0d64f98fa7;
-		H[7] = 0x47b5481dbefa4fa4;
-		pos = 0;
-		total = 0;
-	};
 
 	void sha512::clear()
 	{

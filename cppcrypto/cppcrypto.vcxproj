@@ -123,6 +123,12 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <YASM>
+      <ObjectFile>$(IntDir)\%(FileName).obj</ObjectFile>
+    </YASM>
+    <Lib>
+      <AdditionalOptions>/ignore:4042</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -139,6 +145,12 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <YASM>
+      <ObjectFile>$(IntDir)\%(FileName).obj</ObjectFile>
+    </YASM>
+    <Lib>
+      <AdditionalOptions>/ignore:4042</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -164,6 +176,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <YASM>
+      <ObjectFile>$(IntDir)\%(FileName).obj</ObjectFile>
+    </YASM>
+    <Lib>
+      <AdditionalOptions>/ignore:4042</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">
     <ClCompile>
@@ -188,6 +206,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <YASM>
+      <ObjectFile>$(IntDir)\%(FileName).obj</ObjectFile>
+    </YASM>
+    <Lib>
+      <AdditionalOptions>/ignore:4042</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -211,6 +235,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <YASM>
+      <ObjectFile>$(IntDir)\%(FileName).obj</ObjectFile>
+    </YASM>
+    <Lib>
+      <AdditionalOptions>/ignore:4042</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">
     <ClCompile>
@@ -235,6 +265,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
+    <YASM>
+      <ObjectFile>$(IntDir)\%(FileName).obj</ObjectFile>
+    </YASM>
+    <Lib>
+      <AdditionalOptions>/ignore:4042</AdditionalOptions>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -250,6 +286,9 @@
     <ClInclude Include="3rdparty\chacha_u4.h" />
     <ClInclude Include="3rdparty\crypto_scrypt_smix_sse2.h" />
     <ClInclude Include="3rdparty\gost3411-2012-sse2.h" />
+    <ClInclude Include="3rdparty\KeccakHash.h" />
+    <ClInclude Include="3rdparty\KeccakP-1600-AVX2.h" />
+    <ClInclude Include="3rdparty\KeccakSpongeWidth1600.h" />
     <ClInclude Include="3rdparty\salsa20_u1.h" />
     <ClInclude Include="3rdparty\salsa20_u4.h" />
     <ClInclude Include="argon2.h" />
@@ -295,6 +334,7 @@
     <ClInclude Include="serpent.h" />
     <ClInclude Include="sha1.h" />
     <ClInclude Include="sha256.h" />
+    <ClInclude Include="sha3-impl.h" />
     <ClInclude Include="sha3.h" />
     <ClInclude Include="sha512.h" />
     <ClInclude Include="simon.h" />
@@ -324,8 +364,12 @@
     </ClCompile>
     <ClCompile Include="3rdparty\gost3411-2012-sse41.c" />
     <ClCompile Include="3rdparty\jh-impl-sse.cpp" />
+    <ClCompile Include="3rdparty\KeccakHash.c" />
+    <ClCompile Include="3rdparty\KeccakP-1600-AVX2.cpp" />
+    <ClCompile Include="3rdparty\KeccakSpongeWidth1600.c" />
     <ClCompile Include="3rdparty\poly1305-impl-sse2.cpp" />
     <ClCompile Include="3rdparty\salsa20-xmm6int.c" />
+    <ClCompile Include="3rdparty\sha3_impl_avx2.cpp" />
     <ClCompile Include="argon2.cpp" />
     <ClCompile Include="aria.cpp" />
     <ClCompile Include="blake2.cpp" />

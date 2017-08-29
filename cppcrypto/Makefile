@@ -144,7 +144,7 @@ OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1
       jh-impl-sse.o streebog.o gost3411-2012-sse41.o sm3.o md5.o serpent.o cast6.o camellia.o kalyna.o \
       aria.o kuznyechik.o sm4.o mars.o blake2.o blake2b.o blake2s.o threefish.o scrypt.o crypto_scrypt_smix_sse2.o \
       argon2.o thread_pool.o salsa20.o salsa20-xmm6int.o hc.o chacha.o chacha-xmm.o poly1305.o poly1305-impl-sse2.o \
-      simon.o speck.o 
+      simon.o speck.o KeccakP-1600-AVX2.o KeccakSpongeWidth1600.o KeccakHash.o sha3_impl_avx2.o
 
 OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha1-nayuki.o serpent-waite.o poly1305-32.o
 OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o \
@@ -249,6 +249,18 @@ KeccakSponge.o: 3rdparty/KeccakSponge.c
 
 KeccakF-1600-opt64.o: 3rdparty/KeccakF-1600-opt64.c
 	$(CC) -c $(CFLAGS) $(ARCHSSSE3) 3rdparty/KeccakF-1600-opt64.c
+
+KeccakP-1600-AVX2.o: 3rdparty/KeccakP-1600-AVX2.cpp
+	$(CXX) -c $(CFLAGS) $(ARCHAVX2) 3rdparty/KeccakP-1600-AVX2.cpp
+
+KeccakSpongeWidth1600.o: 3rdparty/KeccakSpongeWidth1600.c
+	$(CC) -c $(CFLAGS) $(ARCHAVX2) 3rdparty/KeccakSpongeWidth1600.c
+
+KeccakHash.o: 3rdparty/KeccakHash.c
+	$(CC) -c $(CFLAGS) $(ARCHAVX2) 3rdparty/KeccakHash.c
+
+sha3_impl_avx2.o: 3rdparty/sha3_impl_avx2.cpp
+	$(CXX) -c $(CXXFLAGS) $(ARCHAVX2) 3rdparty/sha3_impl_avx2.cpp
 
 sha1-nayuki.o: 3rdparty/sha1-nayuki.asm
 	yasm -f $(OBJ32FORMAT) -r raw -p gas -o sha1-nayuki.o 3rdparty/sha1-nayuki.asm
