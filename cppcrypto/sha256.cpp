@@ -140,7 +140,7 @@ __attribute__ ((aligned (16)))
 		return rotr(x, 17) ^ rotr(x, 19) ^ shr(x, 10);
 	}
 
-	void sha256::update(const uint8_t* data, size_t len)
+	void sha256::update(const unsigned char* data, size_t len)
 	{
 		if (pos && pos + len >= 64)
 		{
@@ -247,7 +247,7 @@ __attribute__ ((aligned (16)))
 		}
 	}
 
-	void sha256::final(uint8_t* hash)
+	void sha256::final(unsigned char* hash)
 	{
 		m[pos++] = 0x80;
 		if (pos > 56)

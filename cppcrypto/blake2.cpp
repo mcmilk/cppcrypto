@@ -18,8 +18,8 @@ and released into public domain.
 
 extern "C"
 {
-	int blake2s_compress(uint32_t* ph, uint32_t* ptf, const uint8_t block[64]);
-	int blake2b_compress(uint64_t* ph, const uint64_t* ptf, const uint8_t block[128]);
+	int blake2s_compress(uint32_t* ph, uint32_t* ptf, const unsigned char block[64]);
+	int blake2b_compress(uint64_t* ph, const uint64_t* ptf, const unsigned char block[128]);
 }
 
 namespace cppcrypto
@@ -48,7 +48,7 @@ namespace cppcrypto
 		{ 14, 10, 4, 8, 9, 15, 13, 6, 1, 12, 0, 2, 11, 7, 5, 3 }
 	};
 
-	void blake2b::update(const uint8_t* data, size_t len)
+	void blake2b::update(const unsigned char* data, size_t len)
 	{
 		while (pos + len > 128)
 		{
@@ -68,7 +68,7 @@ namespace cppcrypto
 	{
 		memcpy(H, IV512, 64);
 		H[0] ^= 0x0000000001010000ULL;
-		*((uint8_t*)H.get()) ^= hashsize()/8;
+		*((unsigned char*)H.get()) ^= hashsize()/8;
 		pos = 0;
 		total = 0;
 	};
@@ -180,7 +180,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void blake2b::final(uint8_t* hash)
+	void blake2b::final(unsigned char* hash)
 	{
 		memset(m + pos, 0, 128 - pos);
 		transfunc(true);
@@ -227,7 +227,7 @@ namespace cppcrypto
 	}
 
 
-	void blake2s::update(const uint8_t* data, size_t len)
+	void blake2s::update(const unsigned char* data, size_t len)
 	{
 		while (pos + len > 64)
 		{
@@ -247,7 +247,7 @@ namespace cppcrypto
 	{
 		memcpy(H, IV256, 32);
 		H[0] ^= 0x01010000ULL;
-		*((uint8_t*)H.get()) ^= hashsize() / 8;
+		*((unsigned char*)H.get()) ^= hashsize() / 8;
 		pos = 0;
 		total = 0;
 	};
@@ -357,7 +357,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void blake2s::final(uint8_t* hash)
+	void blake2s::final(unsigned char* hash)
 	{
 		memset(m + pos, 0, 64 - pos);
 		transfunc(true);

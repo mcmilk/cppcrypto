@@ -22,9 +22,9 @@ namespace cppcrypto
 		anubis128* clone() const override { return new anubis128; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t W_[8 + 4 + 1][4];
@@ -40,9 +40,9 @@ namespace cppcrypto
 		anubis160* clone() const override { return new anubis160; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t W_[9 + 4 + 1][4];
@@ -58,9 +58,9 @@ namespace cppcrypto
 		anubis192* clone() const override { return new anubis192; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t W_[10 + 4 + 1][4];
@@ -76,9 +76,9 @@ namespace cppcrypto
 		anubis224* clone() const override { return new anubis224; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t W_[11 + 4 + 1][4];
@@ -94,9 +94,9 @@ namespace cppcrypto
 		anubis256* clone() const override { return new anubis256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t W_[12 + 4 + 1][4];
@@ -112,9 +112,9 @@ namespace cppcrypto
 		anubis288* clone() const override { return new anubis288; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t W_[13 + 4 + 1][4];
@@ -130,9 +130,9 @@ namespace cppcrypto
 		anubis320* clone() const override { return new anubis320; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t W_[14 + 4 + 1][4];

@@ -22,9 +22,9 @@ namespace cppcrypto
 		kalyna512_512* clone() const override { return new kalyna512_512; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint64_t rk[19 * 8];
@@ -40,9 +40,9 @@ namespace cppcrypto
 		kalyna256_512* clone() const override { return new kalyna256_512; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint64_t rk[19 * 4];
@@ -58,9 +58,9 @@ namespace cppcrypto
 		kalyna256_256* clone() const override { return new kalyna256_256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint64_t rk[15 * 4];
@@ -76,9 +76,9 @@ namespace cppcrypto
 		kalyna128_256* clone() const override { return new kalyna128_256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint64_t rk[15 * 2];
@@ -94,9 +94,9 @@ namespace cppcrypto
 		kalyna128_128* clone() const override { return new kalyna128_128; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint64_t rk[11 * 2];

@@ -18,7 +18,7 @@ extern "C"
 	void sha512_sse4(const void* M, uint64_t D[8], uint64_t L);
 	void sha512_avx(const void* M, void* D, uint64_t L);
 #else
-	void sha512_compress_nayuki(uint64_t state[8], const uint8_t block[128]);
+	void sha512_compress_nayuki(uint64_t state[8], const unsigned char block[128]);
 #endif
 }
 
@@ -57,7 +57,7 @@ namespace cppcrypto
 					transfunc = [this](void* m, uint64_t num_blks)
 				{
 					for (uint64_t i = 0; i < num_blks; i++)
-						sha512_compress_nayuki(H, (uint8_t*)m + i * 128);
+						sha512_compress_nayuki(H, (unsigned char*)m + i * 128);
 				};
 		else
 #endif
@@ -132,7 +132,7 @@ namespace cppcrypto
 		return rotr(x, 19) ^ rotr(x, 61) ^ shr(x, 6);
 	}
 
-	void sha512::update(const uint8_t* data, size_t len)
+	void sha512::update(const unsigned char* data, size_t len)
 	{
 		if (pos && pos + len >= 128)
 		{
@@ -210,8 +210,8 @@ namespace cppcrypto
 			H[i] ^= 0xa5a5a5a5a5a5a5a5;
 		std::string tmp = "SHA-512/" + std::to_string(hashsize());
 
-		update((uint8_t*)&tmp[0], tmp.length());
-		uint8_t buf[512 / 8];
+		update((unsigned char*)&tmp[0], tmp.length());
+		unsigned char buf[512 / 8];
 		final(buf);
 		for (int i = 0; i < 8; i++)
 			H[i] = swap_uint64(H[i]);
@@ -287,7 +287,7 @@ namespace cppcrypto
 		}
 	}
 
-	void sha512::final(uint8_t* hash)
+	void sha512::final(unsigned char* hash)
 	{
 		m[pos++] = 0x80;
 		if (pos > 112) {

@@ -20,9 +20,9 @@ namespace cppcrypto
 		chacha20_256();
 		virtual ~chacha20_256();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
+		void decrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		void clear() override;
 		chacha20_256* clone() const override { return new chacha20_256; }
@@ -38,7 +38,7 @@ namespace cppcrypto
 	class chacha20_128 : public chacha20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		chacha20_128* clone() const override { return new chacha20_128; }
 		size_t keysize() const override { return 128; }
@@ -47,7 +47,7 @@ namespace cppcrypto
 	class xchacha20_256 : public chacha20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		xchacha20_256* clone() const override { return new xchacha20_256; }
 		size_t keysize() const override { return 256; }
@@ -57,7 +57,7 @@ namespace cppcrypto
 	class xchacha20_128 : public xchacha20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		xchacha20_128* clone() const override { return new xchacha20_128; }
 		size_t keysize() const override { return 128; }
@@ -66,7 +66,7 @@ namespace cppcrypto
 	class chacha12_256 : public chacha20_256
 	{
 	public:
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		chacha12_256* clone() const override { return new chacha12_256; }
 	};
@@ -74,7 +74,7 @@ namespace cppcrypto
 	class chacha12_128 : public chacha20_128
 	{
 	public:
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		chacha12_128* clone() const override { return new chacha12_128; }
 	};
@@ -82,7 +82,7 @@ namespace cppcrypto
 	class xchacha12_256 : public chacha12_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		xchacha12_256* clone() const override { return new xchacha12_256; }
 		size_t keysize() const override { return 256; }
@@ -92,7 +92,7 @@ namespace cppcrypto
 	class xchacha12_128 : public xchacha12_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		xchacha12_128* clone() const override { return new xchacha12_128; }
 		size_t keysize() const override { return 128; }

@@ -19,8 +19,8 @@ namespace cppcrypto
 		~sha3();
 
 		void init() override;
-		void update(const uint8_t* data, size_t len) override;
-		void final(uint8_t* hash) override;
+		void update(const unsigned char* data, size_t len) override;
+		void final(unsigned char* hash) override;
 
 		size_t hashsize() const override { return hs; }
 		size_t blocksize() const override { return rate; }
@@ -31,7 +31,7 @@ namespace cppcrypto
 		void transform(void* m, uint64_t num_blks);
 
 		uint64_t A[25];
-		uint8_t* m;
+		unsigned char* m;
 		size_t pos;
 		size_t hs;
 		size_t rate;
@@ -43,7 +43,7 @@ namespace cppcrypto
 	public:
 		shake256(size_t hashsize = 512, const std::string& function_name = "", const std::string& customization = "");
 		void init() override;
-		void final(uint8_t* hash) override;
+		void final(unsigned char* hash) override;
 
 		size_t hashsize() const override { return size; }
 		shake256* clone() const override { return new shake256(size, N, S); }

@@ -17,7 +17,7 @@ and released into public domain.
 
 namespace cppcrypto
 {
-	static const uint8_t Q[2][256] = {
+	static const unsigned char Q[2][256] = {
 		{
 			0xa9, 0x67, 0xb3, 0xe8, 0x04, 0xfd, 0xa3, 0x76, 0x9a, 0x92, 0x80, 0x78, 0xe4, 0xdd, 0xd1, 0x38,
 			0x0d, 0xc6, 0x35, 0x98, 0x18, 0xf7, 0xec, 0x6c, 0x43, 0x75, 0x37, 0x26, 0xfa, 0x13, 0x94, 0x48,
@@ -470,10 +470,10 @@ namespace cppcrypto
 		},
 	};
 
-	bool twofish128::init(const uint8_t* key, block_cipher::direction direction)
+	bool twofish128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		union {
-			uint8_t S8[8];
+			unsigned char S8[8];
 			uint32_t S32[2];
 		} us;
 
@@ -546,7 +546,7 @@ namespace cppcrypto
 			zero_memory(s, sizeof(s));
 		}
 
-		void twofish::encrypt_block(const uint8_t* in, uint8_t* out)
+		void twofish::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			uint32_t x0 = *(((const uint32_t*)in) + 0) ^ rk[0];
 			uint32_t x1 = *(((const uint32_t*)in) + 1) ^ rk[1];
@@ -580,7 +580,7 @@ namespace cppcrypto
 #endif
 		}
 
-		void twofish::decrypt_block(const uint8_t* in, uint8_t* out)
+		void twofish::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			uint32_t x0 = *(((const uint32_t*)in) + 0) ^ rk[4];
 			uint32_t x1 = *(((const uint32_t*)in) + 1) ^ rk[5];
@@ -601,10 +601,10 @@ namespace cppcrypto
 		}
 	}
 
-	bool twofish192::init(const uint8_t* key, block_cipher::direction direction)
+	bool twofish192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		union {
-			uint8_t S8[12];
+			unsigned char S8[12];
 			uint32_t S32[3];
 		} us;
 
@@ -638,10 +638,10 @@ namespace cppcrypto
 		return true;
 	}
 
-	bool twofish256::init(const uint8_t* key, block_cipher::direction direction)
+	bool twofish256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		union {
-			uint8_t S8[16];
+			unsigned char S8[16];
 			uint32_t S32[4];
 		} us;
 
@@ -677,9 +677,9 @@ namespace cppcrypto
 	}
 
 #if 0
-	static inline uint8_t mul_gf(uint8_t x, uint8_t y, uint16_t p) {
-		uint8_t r = 0;
-		uint8_t hbit = 0;
+	static inline unsigned char mul_gf(unsigned char x, unsigned char y, uint16_t p) {
+		unsigned char r = 0;
+		unsigned char hbit = 0;
 		while (y) {
 			if (y & 1)
 				r ^= x;
@@ -694,7 +694,7 @@ namespace cppcrypto
 
 	void generate_tables()
 	{
-		uint8_t t[2][4][16] = {
+		unsigned char t[2][4][16] = {
 			{
 				{ 0x8, 0x1, 0x7, 0xd, 0x6, 0xf, 0x3, 0x2, 0x0, 0xb, 0x5, 0x9, 0xe, 0xc, 0xa, 0x4, },
 				{ 0xe, 0xc, 0xb, 0x8, 0x1, 0x2, 0x3, 0x5, 0xf, 0x4, 0xa, 0x6, 0x7, 0x0, 0x9, 0xd, },
@@ -709,14 +709,14 @@ namespace cppcrypto
 			},
 		};
 
-		uint8_t mds[4][4] = {
+		unsigned char mds[4][4] = {
 			{ 0x01, 0xef, 0x5b, 0x5b, },
 			{ 0x5b, 0xef, 0xef, 0x01, },
 			{ 0xef, 0x5b, 0x01, 0xef, },
 			{ 0xef, 0x01, 0xef, 0x5b, },
 		};
 
-		uint8_t rs[4][8] = {
+		unsigned char rs[4][8] = {
 			{ 0x01, 0xa4, 0x55, 0x87, 0x5a, 0x58, 0xdb, 0x9e, },
 			{ 0xa4, 0x56, 0x82, 0xf3, 0x1e, 0xc6, 0x68, 0xe5, },
 			{ 0x02, 0xa1, 0xfc, 0xc1, 0x47, 0xae, 0x3d, 0x19, },
@@ -724,22 +724,22 @@ namespace cppcrypto
 		};
 
 		// generate Q tables
-		std::cout << "static const uint8_t Q[2][256] = {\n";
+		std::cout << "static const unsigned char Q[2][256] = {\n";
 		for (int q = 0; q < 2; q++)
 		{
 			std::cout << "\t{";
 			for (int x = 0; x < 256; x++)
 			{
-				uint8_t a0 = x / 16;
-				uint8_t b0 = x % 16;
-				uint8_t a1 = a0 ^ b0;
-				uint8_t b1 = (a0 ^ ((b0 << 3 | b0 >> 1) & 0xF) ^ (8 * a0)) % 16;
-				uint8_t a2 = t[q][0][a1];
-				uint8_t b2 = t[q][1][b1];
-				uint8_t a3 = a2 ^ b2;
-				uint8_t b3 = (a2 ^ ((b2 << 3 | b2 >> 1) & 0xF) ^ (8 * a2)) % 16;
-				uint8_t a4 = t[q][2][a3];
-				uint8_t b4 = t[q][3][b3];
+				unsigned char a0 = x / 16;
+				unsigned char b0 = x % 16;
+				unsigned char a1 = a0 ^ b0;
+				unsigned char b1 = (a0 ^ ((b0 << 3 | b0 >> 1) & 0xF) ^ (8 * a0)) % 16;
+				unsigned char a2 = t[q][0][a1];
+				unsigned char b2 = t[q][1][b1];
+				unsigned char a3 = a2 ^ b2;
+				unsigned char b3 = (a2 ^ ((b2 << 3 | b2 >> 1) & 0xF) ^ (8 * a2)) % 16;
+				unsigned char a4 = t[q][2][a3];
+				unsigned char b4 = t[q][3][b3];
 				uint32_t y = 16 * b4 + a4;
 
 				if (!(x % 16))
@@ -763,7 +763,7 @@ namespace cppcrypto
 			for (int y = 0; y < 256; y++)
 			{
 				uint32_t val = 0;
-				uint8_t yq;
+				unsigned char yq;
 				if (column == 0 || column == 2)
 					yq = Q[1][y];
 				else

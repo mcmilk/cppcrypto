@@ -50,7 +50,7 @@ namespace cppcrypto
 	}
 
 
-	void sm3::update(const uint8_t* data, size_t len)
+	void sm3::update(const unsigned char* data, size_t len)
 	{
 		if (pos && pos + len >= 64)
 		{
@@ -89,7 +89,7 @@ namespace cppcrypto
 		total = 0;
 	};
 
-	void sm3::transform(const uint8_t* mp, uint64_t num_blks)
+	void sm3::transform(const unsigned char* mp, uint64_t num_blks)
 	{
 		for (uint64_t blk = 0; blk < num_blks; blk++)
 		{
@@ -188,7 +188,7 @@ namespace cppcrypto
 		}
 	}
 
-	void sm3::final(uint8_t* hash)
+	void sm3::final(unsigned char* hash)
 	{
 		m[pos++] = 0x80;
 		if (pos > 56)

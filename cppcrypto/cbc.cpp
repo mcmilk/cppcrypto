@@ -16,8 +16,8 @@ namespace cppcrypto
 cbc::cbc(const block_cipher& cipher)
 	: block_(0), iv_(0), pos(0), nb_(cipher.blocksize() / 8), cipher_(cipher.clone())
 {
-	block_ = new uint8_t[nb_];
-	iv_ = new uint8_t[nb_];
+	block_ = new unsigned char[nb_];
+	iv_ = new unsigned char[nb_];
 }
 
 cbc::~cbc()
@@ -28,7 +28,7 @@ cbc::~cbc()
 	delete[] iv_;
 }
 
-void cbc::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, block_cipher::direction direction)
+void cbc::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, block_cipher::direction direction)
 {
 	assert(keylen == cipher_->keysize() / 8);
 	assert(ivlen <= nb_);
@@ -38,7 +38,7 @@ void cbc::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivle
 	pos = 0;
 }
 
-static inline void xor_block_256(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+static inline void xor_block_256(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 {
 //#define USE_AVX
 #ifdef USE_AVX
@@ -69,7 +69,7 @@ static inline void xor_block_256(const uint8_t* in, const uint8_t* prev, uint8_t
 
 }
 
-static inline void xor_block_128(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+static inline void xor_block_128(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 {
 	if (cpu_info::sse2())
 	{
@@ -85,7 +85,7 @@ static inline void xor_block_128(const uint8_t* in, const uint8_t* prev, uint8_t
 
 }
 
-static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_t* out, size_t n)
+static inline void xor_block_128n(const unsigned char* in, const unsigned char* prev, unsigned char* out, size_t n)
 {
 	if (cpu_info::sse2())
 	{
@@ -103,7 +103,7 @@ static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_
 
 }
 
-static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+static inline void xor_block_512(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 {
 #ifdef USE_AVX
 	if (cpu_info::avx())
@@ -146,7 +146,7 @@ static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t
 }
 
 
-void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen)
+void cbc::encrypt_update(const unsigned char* in, size_t len, unsigned char* out, size_t& resultlen)
 {
 	resultlen = 0;
 	size_t nb = nb_;
@@ -169,7 +169,7 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 		{
 			size_t blocks = len / 16;
 			size_t bytes = blocks * 16;
-			const uint8_t* prev = iv_;
+			const unsigned char* prev = iv_;
 
 			for (size_t i = 0; i < blocks; i++)
 			{
@@ -187,7 +187,7 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 		{
 			size_t blocks = len / 32;
 			size_t bytes = blocks * 32;
-			const uint8_t* prev = iv_;
+			const unsigned char* prev = iv_;
 			for (size_t i = 0; i < blocks; i++)
 			{
 				xor_block_256(in, prev, block_);
@@ -204,7 +204,7 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 		{
 			size_t blocks = len / 64;
 			size_t bytes = blocks * 64;
-			const uint8_t* prev = iv_;
+			const unsigned char* prev = iv_;
 			for (size_t i = 0; i < blocks; i++)
 			{
 				xor_block_512(in, prev, block_);
@@ -221,7 +221,7 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 		{
 			size_t blocks = len / nb;
 			size_t bytes = blocks * nb;
-			const uint8_t* prev = iv_;
+			const unsigned char* prev = iv_;
 
 			for (size_t i = 0; i < blocks; i++)
 			{
@@ -257,7 +257,7 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 	pos += len;
 }
 
-void cbc::encrypt_final(uint8_t* out, size_t& resultlen)
+void cbc::encrypt_final(unsigned char* out, size_t& resultlen)
 {
 	int padding = static_cast<int>(nb_) - static_cast<int>(pos);
 	memset(block_ + pos, padding, padding);
@@ -267,7 +267,7 @@ void cbc::encrypt_final(uint8_t* out, size_t& resultlen)
 	resultlen = nb_;
 }
 
-void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen)
+void cbc::decrypt_update(const unsigned char* in, size_t len, unsigned char* out, size_t& resultlen)
 {
 	resultlen = 0;
 	size_t nb = nb_;
@@ -290,7 +290,7 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 		{
 			size_t blocks = (len-1) / 16;
 			size_t bytes = blocks * 16;
-			const uint8_t* prev = iv_;
+			const unsigned char* prev = iv_;
 
 			for (size_t i = 0; i < blocks; i++)
 			{
@@ -309,7 +309,7 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 		{
 			size_t blocks = (len-1) / 32;
 			size_t bytes = blocks * 32;
-			const uint8_t* prev = iv_;
+			const unsigned char* prev = iv_;
 			for (size_t i = 0; i < blocks; i++)
 			{
 				cipher_->decrypt_block(in, block_);
@@ -326,7 +326,7 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 		{
 			size_t blocks = (len - 1) / 64;
 			size_t bytes = blocks * 64;
-			const uint8_t* prev = iv_;
+			const unsigned char* prev = iv_;
 			for (size_t i = 0; i < blocks; i++)
 			{
 				cipher_->decrypt_block(in, block_);
@@ -343,7 +343,7 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 		{
 			size_t blocks = (len - 1) / nb;
 			size_t bytes = blocks * nb;
-			const uint8_t* prev = iv_;
+			const unsigned char* prev = iv_;
 
 			for (size_t i = 0; i < blocks; i++)
 			{
@@ -380,13 +380,13 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& re
 	pos += len;
 }
 
-void cbc::decrypt_final(uint8_t* out, size_t& resultlen)
+void cbc::decrypt_final(unsigned char* out, size_t& resultlen)
 {
 	assert(pos == nb_);
 	cipher_->decrypt_block(block_, block_);
 	for (size_t i = 0; i < nb_; i++)
 		block_[i] ^= iv_[i];
-	uint8_t padding = block_[pos - 1];
+	unsigned char padding = block_[pos - 1];
 	if (padding <= nb_)
 	{
 		resultlen = nb_ - padding;
@@ -396,9 +396,9 @@ void cbc::decrypt_final(uint8_t* out, size_t& resultlen)
 		resultlen = 0;
 }
 
-void cbc::encrypt_update(const uint8_t* in, size_t len, std::ostream& out)
+void cbc::encrypt_update(const unsigned char* in, size_t len, std::ostream& out)
 {
-	uint8_t buf[1024];
+	unsigned char buf[1024];
 	size_t maxsize = sizeof(buf) - nb_;
 	for (size_t i = 0; i < len; i += maxsize)
 	{
@@ -412,16 +412,16 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, std::ostream& out)
 
 void cbc::encrypt_final(std::ostream& out)
 {
-	uint8_t buf[1024];
+	unsigned char buf[1024];
 	size_t resultlen;
 	encrypt_final(buf, resultlen);
 	if (resultlen)
 		out.write(reinterpret_cast<char*>(buf), resultlen);
 }
 
-void cbc::decrypt_update(const uint8_t* in, size_t len, std::ostream& out)
+void cbc::decrypt_update(const unsigned char* in, size_t len, std::ostream& out)
 {
-	uint8_t buf[1024];
+	unsigned char buf[1024];
 	size_t maxsize = sizeof(buf) - nb_;
 	for (size_t i = 0; i < len; i += maxsize)
 	{
@@ -435,14 +435,14 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, std::ostream& out)
 
 void cbc::decrypt_final(std::ostream& out)
 {
-	uint8_t buf[1024];
+	unsigned char buf[1024];
 	size_t resultlen;
 	decrypt_final(buf, resultlen);
 	if (resultlen)
 		out.write(reinterpret_cast<char*>(buf), resultlen);
 }
 
-void cbc::encrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out)
+void cbc::encrypt_update(const unsigned char* in, size_t len, std::vector<unsigned char>& out)
 {
 	auto oldsize = out.size();
 	out.resize(oldsize + ((pos + len) / nb_) * nb_);
@@ -451,7 +451,7 @@ void cbc::encrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& ou
 	assert(resultlen == out.size() - oldsize);
 }
 
-void cbc::encrypt_final(std::vector<uint8_t>& out)
+void cbc::encrypt_final(std::vector<unsigned char>& out)
 {
 	auto oldsize = out.size();
 	out.resize(oldsize + nb_);
@@ -460,7 +460,7 @@ void cbc::encrypt_final(std::vector<uint8_t>& out)
 	assert(resultlen == out.size() - oldsize);
 }
 
-void cbc::decrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out)
+void cbc::decrypt_update(const unsigned char* in, size_t len, std::vector<unsigned char>& out)
 {
 	auto oldsize = out.size();
 	out.resize(oldsize + ((pos + len - 1) / nb_) * nb_);
@@ -469,7 +469,7 @@ void cbc::decrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& ou
 	assert(resultlen == out.size() - oldsize);
 }
 
-void cbc::decrypt_final(std::vector<uint8_t>& out)
+void cbc::decrypt_final(std::vector<unsigned char>& out)
 {
 	auto oldsize = out.size();
 	out.resize(oldsize + nb_);

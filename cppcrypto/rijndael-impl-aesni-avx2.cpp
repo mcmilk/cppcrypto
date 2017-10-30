@@ -97,9 +97,9 @@ namespace cppcrypto
 		KEY_224_ASSIST_2(&temp1, &temp3); \
 		rk[idx+1] = temp3;
 
-		bool rijndael128_160_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael128_160_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 160 / 8);
 
@@ -176,9 +176,9 @@ namespace cppcrypto
 			*temp3 = _mm_xor_si128(*temp3, temp2);
 		}
 
-		bool rijndael128_224_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael128_224_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 224 / 8);
 
@@ -224,9 +224,9 @@ namespace cppcrypto
 			return true;
 		}
 
-		bool rijndael256_224_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael256_224_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 224 / 8);
 
@@ -285,9 +285,9 @@ namespace cppcrypto
 			return true;
 		}
 
-		bool rijndael256_160_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael256_160_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 160 / 8);
 
@@ -349,9 +349,9 @@ namespace cppcrypto
 			return true;
 		}
 
-		bool rijndael192_160_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael192_160_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 160 / 8);
 
@@ -420,9 +420,9 @@ namespace cppcrypto
 			return _mm_castpd_si128(f1);
 		}
 
-		bool rijndael192_224_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael192_224_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 224 / 8);
 
@@ -492,9 +492,9 @@ namespace cppcrypto
 			return true;
 		}
 
-		bool rijndael160_160_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael160_160_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 160 / 8);
 
@@ -557,9 +557,9 @@ namespace cppcrypto
 			return true;
 		}
 
-		bool rijndael160_224_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael160_224_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 224 / 8);
 
@@ -683,7 +683,7 @@ namespace cppcrypto
 			rk[22] = _mm_blend_epi32(rk[22], t1, 7);
 		}
 
-		bool rijndael224_128_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael224_128_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
 			rk[0] = _mm_loadu_si128((const __m128i*) key);
 			rk[1] = _mm_xor_si128(aes128_keyexpand(rk[0]), _mm_shuffle_epi32(_mm_aeskeygenassist_si128(rk[0], 0x01), 0xff));
@@ -719,9 +719,9 @@ namespace cppcrypto
 			return true;
 		}
 
-		bool rijndael224_160_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael224_160_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 160 / 8);
 
@@ -763,9 +763,9 @@ namespace cppcrypto
 			return true;
 		}
 
-		bool rijndael224_192_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael224_192_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 192 / 8);
 
@@ -806,9 +806,9 @@ namespace cppcrypto
 			return true;
 		}
 
-		bool rijndael224_224_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael224_224_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 224 / 8);
 
@@ -875,7 +875,7 @@ namespace cppcrypto
 		}
 
 
-		static inline void rijndael160_encrypt_block(const uint8_t* in, uint8_t* out, int r, __m128i* rk)
+		static inline void rijndael160_encrypt_block(const unsigned char* in, unsigned char* out, int r, __m128i* rk)
 		{
 			__m128i tmp1, tmp2, data1, data2;
 			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x80808000);
@@ -887,7 +887,7 @@ namespace cppcrypto
 #else
 			__attribute__((aligned(32)))
 #endif
-				uint8_t buf[32];
+				unsigned char buf[32];
 			memset(buf, 0, sizeof(buf));
 			memcpy(buf, in, 160 / 8);
 			data1 = _mm_load_si128(&((__m128i*)buf)[0]);
@@ -957,7 +957,7 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
-		static inline void rijndael160_decrypt_block(const uint8_t* in, uint8_t* out, int r, __m128i* rk)
+		static inline void rijndael160_decrypt_block(const unsigned char* in, unsigned char* out, int r, __m128i* rk)
 		{
 			__m128i tmp1, tmp2, data1, data2;
 			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x00008000, 0x00800000, 0x80000000, 0x00000000);
@@ -969,7 +969,7 @@ namespace cppcrypto
 #else
 			__attribute__((aligned(32)))
 #endif
-				uint8_t buf[32];
+				unsigned char buf[32];
 			memset(buf, 0, sizeof(buf));
 			memcpy(buf, in, 160 / 8);
 			data1 = _mm_load_si128(&((__m128i*)buf)[0]);
@@ -1005,17 +1005,17 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
-		void rijndael160_128_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_128_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_encrypt_block(in, out, 11, rk);
 		}
 
-		void rijndael160_128_impl_aesni::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_128_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 11, rk);
 		}
 
-		bool rijndael160_128_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael160_128_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
 			rk[0] = _mm_loadu_si128((const __m128i*) key);
 			rk[1] = _mm_xor_si128(aes128_keyexpand(rk[0]), _mm_shuffle_epi32(_mm_aeskeygenassist_si128(rk[0], 0x01), 0xff));
@@ -1083,30 +1083,30 @@ namespace cppcrypto
 			return true;
 		}
 
-		void rijndael160_160_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_160_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_encrypt_block(in, out, 11, rk);
 		}
 
-		void rijndael160_160_impl_aesni::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_160_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 11, rk);
 		}
 
 
-		void rijndael160_192_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_192_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_encrypt_block(in, out, 12, rk);
 		}
 
-		void rijndael160_192_impl_aesni::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_192_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 12, rk);
 		}
 
-		bool rijndael160_192_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael160_192_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
-			uint8_t keycopy[32];
+			unsigned char keycopy[32];
 			memset(keycopy, 0, sizeof(keycopy));
 			memcpy(keycopy, key, 192 / 8);
 
@@ -1177,27 +1177,27 @@ namespace cppcrypto
 			return true;
 		}
 
-		void rijndael160_224_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_224_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_encrypt_block(in, out, 13, rk);
 		}
 
-		void rijndael160_224_impl_aesni::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_224_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 13, rk);
 		}
 
-		void rijndael160_256_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_256_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_encrypt_block(in, out, 14, rk);
 		}
 
-		void rijndael160_256_impl_aesni::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael160_256_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 14, rk);
 		}
 
-		bool rijndael160_256_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael160_256_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
 			__m128i temp1 = _mm_loadu_si128((__m128i*) key);
 			__m128i temp3 = _mm_loadu_si128((__m128i*) (key + 16));
@@ -1297,7 +1297,7 @@ namespace cppcrypto
 			}
 		}
 
-		static inline void rijndael224_encrypt_block(const uint8_t* in, uint8_t* out, int r, __m128i* rk)
+		static inline void rijndael224_encrypt_block(const unsigned char* in, unsigned char* out, int r, __m128i* rk)
 		{
 			__m128i tmp1, tmp2, data1, data2;
 			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x00000000, 0x80000000, 0x80800000, 0x80808000);
@@ -1309,7 +1309,7 @@ namespace cppcrypto
 #else
 			__attribute__((aligned(32)))
 #endif
-				uint8_t buf[32];
+				unsigned char buf[32];
 			memset(buf, 0, sizeof(buf));
 			memcpy(buf, in, 224 / 8);
 			data1 = _mm_load_si128(&((__m128i*)buf)[0]);
@@ -1381,7 +1381,7 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
-		static inline void rijndael224_decrypt_block(const uint8_t* in, uint8_t* out, int r, __m128i* rk)
+		static inline void rijndael224_decrypt_block(const unsigned char* in, unsigned char* out, int r, __m128i* rk)
 		{
 			__m128i tmp1, tmp2, data1, data2;
 			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x80808000, 0x80800000, 0x80000000, 0x00000000);
@@ -1393,7 +1393,7 @@ namespace cppcrypto
 #else
 			__attribute__((aligned(32)))
 #endif
-				uint8_t buf[32];
+				unsigned char buf[32];
 			memset(buf, 0, sizeof(buf));
 			memcpy(buf, in, 224 / 8);
 			data1 = _mm_load_si128(&((__m128i*)buf)[0]);
@@ -1432,27 +1432,27 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
-		void rijndael224_128_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael224_128_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael224_encrypt_block(in, out, 13, rk);
 		}
 
-		void rijndael224_128_impl_aesni::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael224_128_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael224_decrypt_block(in, out, 13, rk);
 		}
 
-		void rijndael224_256_impl_aesni::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael224_256_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael224_encrypt_block(in, out, 14, rk);
 		}
 
-		void rijndael224_256_impl_aesni::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael224_256_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael224_decrypt_block(in, out, 14, rk);
 		}
 
-		bool rijndael224_256_impl_aesni::init(const uint8_t* key, block_cipher::direction direction)
+		bool rijndael224_256_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
 			__m128i temp1 = _mm_loadu_si128((__m128i*) key);
 			__m128i temp3 = _mm_loadu_si128((__m128i*) (key + 16));

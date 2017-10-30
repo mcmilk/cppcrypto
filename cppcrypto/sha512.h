@@ -21,8 +21,8 @@ namespace cppcrypto
 		~sha512();
 
 		void init() override;
-		void update(const uint8_t* data, size_t len) override;
-		void final(uint8_t* hash) override;
+		void update(const unsigned char* data, size_t len) override;
+		void final(unsigned char* hash) override;
 
 		size_t hashsize() const override { return hs; }
 		size_t blocksize() const override { return 1024; }
@@ -34,7 +34,7 @@ namespace cppcrypto
 
 		std::function<void(void*, uint64_t)> transfunc;
 		aligned_pod_array<uint64_t, 8, 32> H;
-		std::array<uint8_t, 128> m;
+		std::array<unsigned char, 128> m;
 		size_t pos;
 		uint64_t total;
 		size_t hs;

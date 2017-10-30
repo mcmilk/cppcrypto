@@ -74,7 +74,7 @@ namespace cppcrypto
 	G512(G6, G1, G0, G7, G2, G5, G4, G3, 8, 35, 56, 22); \
 	KS512(r + 1)
 
-	bool threefish512_512::init(const uint8_t* key, block_cipher::direction direction)
+	bool threefish512_512::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		memcpy(keys, key, 512 / 8);
 		keys[8] = 0x1BD11BDAA9FC1A22ULL ^ keys[0] ^ keys[1] ^ keys[2] ^ keys[3] ^ keys[4] ^ keys[5] ^ keys[6] ^ keys[7];
@@ -83,13 +83,13 @@ namespace cppcrypto
 		return true;
 	}
 
-	void threefish512_512::set_tweak(const uint8_t* tweak)
+	void threefish512_512::set_tweak(const unsigned char* tweak)
 	{
 		memcpy(tweaks, tweak, 128 / 8);
 		tweaks[2] = tweaks[0] ^ tweaks[1];
 	}
 
-	void threefish512_512::decrypt_block(const uint8_t* in, uint8_t* out)
+	void threefish512_512::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t G0, G1, G2, G3, G4, G5, G6, G7;
 		G0 = (reinterpret_cast<const uint64_t*>(in)[0]) - keys[0];
@@ -125,7 +125,7 @@ namespace cppcrypto
 		reinterpret_cast<uint64_t*>(out)[7] = G7;
 	}
 
-	void threefish512_512::encrypt_block(const uint8_t* in, uint8_t* out)
+	void threefish512_512::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t G0, G1, G2, G3, G4, G5, G6, G7;
 		G0 = (reinterpret_cast<const uint64_t*>(in)[0]) + keys[0];
@@ -267,7 +267,7 @@ namespace cppcrypto
 	KS1024(r + 1);
 
 
-	bool threefish1024_1024::init(const uint8_t* key, block_cipher::direction direction)
+	bool threefish1024_1024::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		memcpy(keys, key, 1024 / 8);
 		keys[16] = 0x1BD11BDAA9FC1A22ULL ^ keys[0] ^ keys[1] ^ keys[2] ^ keys[3] ^ keys[4] ^ keys[5] ^ keys[6] ^ keys[7]
@@ -277,13 +277,13 @@ namespace cppcrypto
 		return true;
 	}
 
-	void threefish1024_1024::set_tweak(const uint8_t* tweak)
+	void threefish1024_1024::set_tweak(const unsigned char* tweak)
 	{
 		memcpy(tweaks, tweak, 128 / 8);
 		tweaks[2] = tweaks[0] ^ tweaks[1];
 	}
 
-	void threefish1024_1024::decrypt_block(const uint8_t* in, uint8_t* out)
+	void threefish1024_1024::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		// Making this an array results in a less efficient compiled code
 		uint64_t G0, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15;
@@ -336,7 +336,7 @@ namespace cppcrypto
 		reinterpret_cast<uint64_t*>(out)[15] = G15;
 	}
 
-	void threefish1024_1024::encrypt_block(const uint8_t* in, uint8_t* out)
+	void threefish1024_1024::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		// Making this an array results in a less efficient compiled code
 		uint64_t G0, G1, G2, G3, G4, G5, G6, G7, G8, G9, G10, G11, G12, G13, G14, G15;
@@ -448,7 +448,7 @@ namespace cppcrypto
 	IG256(G0, G1, G2, G3, 14, 16); \
 	IKS256(r - 1);
 
-	bool threefish256_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool threefish256_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		memcpy(keys, key, 256 / 8);
 		keys[4] = 0x1BD11BDAA9FC1A22ULL ^ keys[0] ^ keys[1] ^ keys[2] ^ keys[3];
@@ -457,13 +457,13 @@ namespace cppcrypto
 		return true;
 	}
 
-	void threefish256_256::set_tweak(const uint8_t* tweak)
+	void threefish256_256::set_tweak(const unsigned char* tweak)
 	{
 		memcpy(tweaks, tweak, 128 / 8);
 		tweaks[2] = tweaks[0] ^ tweaks[1];
 	}
 
-	void threefish256_256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void threefish256_256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		// Making this an array results in a less efficient compiled code
 		uint64_t G0, G1, G2, G3;
@@ -491,7 +491,7 @@ namespace cppcrypto
 		reinterpret_cast<uint64_t*>(out)[3] = G3;
 	}
 
-	void threefish256_256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void threefish256_256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		// Making this an array results in a less efficient compiled code
 		uint64_t G0, G1, G2, G3;

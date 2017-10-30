@@ -11,7 +11,7 @@ and released into public domain.
 
 namespace cppcrypto
 {
-	void pbkdf2(hmac& hmac, const uint8_t* salt, size_t salt_len, int iterations, uint8_t* dk, size_t dklen);
+	void pbkdf2(hmac& hmac, const unsigned char* salt, size_t salt_len, int iterations, unsigned char* dk, size_t dklen);
 }
 
 

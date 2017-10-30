@@ -16,7 +16,7 @@ extern "C"
 #ifdef _M_X64
 	void sha1_update_intel(unsigned int *hash, void* input, size_t num_blocks);
 #else
-	void sha1_compress(uint32_t* state, const uint8_t* block);
+	void sha1_compress(uint32_t* state, const unsigned char* block);
 #endif
 }
 
@@ -42,7 +42,7 @@ namespace cppcrypto
 			transfunc = [this](void* m, uint64_t num_blks)
 		{
 			for (uint64_t i = 0; i < num_blks; i++)
-				sha1_compress(H, (uint8_t*)m + i * 64);
+				sha1_compress(H, (unsigned char*)m + i * 64);
 		};
 #endif
 		else
@@ -73,7 +73,7 @@ namespace cppcrypto
 		return (x & y) ^ (x & z) ^ (y & z);
 	}
 
-	void sha1::update(const uint8_t* data, size_t len)
+	void sha1::update(const unsigned char* data, size_t len)
 	{
 		if (pos && pos + len >= 64)
 		{
@@ -167,7 +167,7 @@ namespace cppcrypto
 		}
 	}
 
-	void sha1::final(uint8_t* hash)
+	void sha1::final(unsigned char* hash)
 	{
 		m[pos++] = 0x80;
 		if (pos > 56)

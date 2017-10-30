@@ -34,7 +34,7 @@ namespace cppcrypto
 		pos = 0;
 	}
 
-	void sha3::update(const uint8_t* data, size_t len)
+	void sha3::update(const unsigned char* data, size_t len)
 	{
 		if (impl_)
 			return impl_->update(data, len);
@@ -153,7 +153,7 @@ namespace cppcrypto
 		}
 	}
 
-	void sha3::final(uint8_t* hash)
+	void sha3::final(unsigned char* hash)
 	{
 		if (impl_)
 			return impl_->final(hash, hs);
@@ -179,7 +179,7 @@ namespace cppcrypto
 			impl_ = new detail::sha3_impl_ssse3;
 		else
 #endif
-			m = new uint8_t[rate / 8];
+			m = new unsigned char[rate / 8];
 	}
 
 	sha3::~sha3()
@@ -205,7 +205,7 @@ namespace cppcrypto
 		if (m)
 		{
 			delete[] m;
-			m = new uint8_t[rate / 8];
+			m = new unsigned char[rate / 8];
 		}
 
 	}
@@ -216,10 +216,10 @@ namespace cppcrypto
 		validate_hash_size(hashsize, SIZE_MAX);
 	}
 
-	static inline size_t left_encode(size_t num, uint8_t* buf)
+	static inline size_t left_encode(size_t num, unsigned char* buf)
 	{
 		// first, calculate length
-		uint8_t n = 1;
+		unsigned char n = 1;
 		size_t tmp = num;
 		while (tmp >>= 8)
 			++n;
@@ -227,7 +227,7 @@ namespace cppcrypto
 		size_t result = n + 1;
 		size_t i = 0;
 		while (n)
-			buf[n--] = static_cast<uint8_t>(num >> (8*i++));
+			buf[n--] = static_cast<unsigned char>(num >> (8*i++));
 		return result;
 	}
 
@@ -238,7 +238,7 @@ namespace cppcrypto
 			impl_->set_padding_byte(N.empty() && S.empty() ? 0x1F : 0x04);
 		if (!N.empty() || !S.empty())
 		{
-			uint8_t buf[1024];
+			unsigned char buf[1024];
 			size_t r = rate / 8;
 			size_t len = left_encode(r, buf);
 
@@ -259,7 +259,7 @@ namespace cppcrypto
 			total += len;
 			update(buf, len);
 			if (!N.empty())
-				update(reinterpret_cast<uint8_t*>(&N[0]), N.length());
+				update(reinterpret_cast<unsigned char*>(&N[0]), N.length());
 			len = left_encode(S.length() * 8, buf);
 
 #ifdef CPPCRYPTO_DEBUG
@@ -270,7 +270,7 @@ namespace cppcrypto
 			update(buf, len);
 			total += len;
 			if (!S.empty())
-				update(reinterpret_cast<uint8_t*>(&S[0]), S.length());
+				update(reinterpret_cast<unsigned char*>(&S[0]), S.length());
 
 #ifdef CPPCRYPTO_DEBUG
 			for (size_t b = 0; b < S.length(); b++)
@@ -291,7 +291,7 @@ namespace cppcrypto
 		}
 	}
 
-	void shake256::final(uint8_t* hash)
+	void shake256::final(unsigned char* hash)
 	{
 		if (impl_)
 			return impl_->final(hash, hashsize());

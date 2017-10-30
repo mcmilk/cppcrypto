@@ -21,7 +21,7 @@ and released into public domain.
 
 namespace cppcrypto
 {
-	static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	static inline void xor_block_512(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
 #ifdef USE_AVX
 		if (cpu_info::avx())
@@ -63,7 +63,7 @@ namespace cppcrypto
 
 	}
 
-	static inline void xor_block_512r(const uint8_t* in, const uint8_t* prev, uint8_t* out, size_t r)
+	static inline void xor_block_512r(const unsigned char* in, const unsigned char* prev, unsigned char* out, size_t r)
 	{
 		for (size_t i = 0; i < r; i++)
 		{
@@ -74,12 +74,12 @@ namespace cppcrypto
 		}
 	}
 
-	static inline void HP(uint8_t* in, uint32_t inlen, uint8_t* out, uint32_t outlen)
+	static inline void HP(unsigned char* in, uint32_t inlen, unsigned char* out, uint32_t outlen)
 	{
-		uint8_t buf1[64], buf2[64];
+		unsigned char buf1[64], buf2[64];
 		blake2b hasher(std::min(outlen, 64U)*8);
 		hasher.init();
-		hasher.update(reinterpret_cast<uint8_t*>(&outlen), sizeof(outlen));
+		hasher.update(reinterpret_cast<unsigned char*>(&outlen), sizeof(outlen));
 		hasher.update(in, inlen);
 
 		if (outlen <= 64)
@@ -90,8 +90,8 @@ namespace cppcrypto
 		if (!rem)
 			rem = 64;
 		uint32_t vnum = (outlen - rem) / 32;
-		uint8_t* inb = buf1;
-		uint8_t* outb = buf2;
+		unsigned char* inb = buf1;
+		unsigned char* outb = buf2;
 		memcpy(out, buf1, 32);
 		out += 32;
 		for (uint32_t i = 1; i < vnum; i++)
@@ -104,9 +104,9 @@ namespace cppcrypto
 		blake2b(rem*8).hash_string(inb, 64, out);
 	}
 
-	static inline void fill_first_blocks(uint8_t* B, uint32_t p, uint32_t q, uint8_t* h0)
+	static inline void fill_first_blocks(unsigned char* B, uint32_t p, uint32_t q, unsigned char* h0)
 	{
-		uint8_t buf[64 + 8];
+		unsigned char buf[64 + 8];
 		memcpy(buf, h0, 64);
 		for (uint32_t i = 0; i < p; i++)
 		{
@@ -153,10 +153,10 @@ namespace cppcrypto
 		GP(v3, v4, v9, v14);
 	}
 
-	static inline void G(const uint8_t* in1, const uint8_t* in2, uint8_t* out, bool xor_output)
+	static inline void G(const unsigned char* in1, const unsigned char* in2, unsigned char* out, bool xor_output)
 	{
 		uint64_t r[128], rsave[128];
-		xor_block_512r(in1, in2, (uint8_t*)r, 16);
+		xor_block_512r(in1, in2, (unsigned char*)r, 16);
 		memcpy(rsave, r, 1024);
 
 		P(r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]);
@@ -177,17 +177,17 @@ namespace cppcrypto
 		P(r[12], r[13], r[28], r[29], r[44], r[45], r[60], r[61], r[76], r[77], r[92], r[93], r[108], r[109], r[124], r[125]);
 		P(r[14], r[15], r[30], r[31], r[46], r[47], r[62], r[63], r[78], r[79], r[94], r[95], r[110], r[111], r[126], r[127]);
 		if (!xor_output)
-			xor_block_512r((const uint8_t*)r, (const uint8_t*)rsave, out, 16);
+			xor_block_512r((const unsigned char*)r, (const unsigned char*)rsave, out, 16);
 		else
 		{
-			xor_block_512r((const uint8_t*)r, (const uint8_t*)rsave, (uint8_t*)r, 16);
-			xor_block_512r((const uint8_t*)r, out, out, 16);
+			xor_block_512r((const unsigned char*)r, (const unsigned char*)rsave, (unsigned char*)r, 16);
+			xor_block_512r((const unsigned char*)r, out, out, 16);
 		}
 	}
 
-	static inline void calc_indices(uint64_t r, uint64_t l, uint64_t s, uint64_t m, uint64_t t, uint64_t x, uint64_t i, uint8_t* indices)
+	static inline void calc_indices(uint64_t r, uint64_t l, uint64_t s, uint64_t m, uint64_t t, uint64_t x, uint64_t i, unsigned char* indices)
 	{
-		uint8_t buf1[1024], buf2[1024];
+		unsigned char buf1[1024], buf2[1024];
 		memset(buf1, 0, 1024);
 		memset(buf2+56, 0, 968);
 		memcpy(buf2, &r, 8);
@@ -215,7 +215,7 @@ namespace cppcrypto
 #endif
 	}
 
-	static inline void calc_lanes(uint32_t iteration, uint32_t slice, uint8_t* B, uint32_t p, uint32_t q, uint32_t s, detail::thread_pool& tp, uint32_t y, uint32_t tt, uint32_t mt, argon2_version version)
+	static inline void calc_lanes(uint32_t iteration, uint32_t slice, unsigned char* B, uint32_t p, uint32_t q, uint32_t s, detail::thread_pool& tp, uint32_t y, uint32_t tt, uint32_t mt, argon2_version version)
 	{
 		uint32_t firstcol = slice * s;
 		uint32_t startcol = firstcol + (iteration || slice ? 0 : 2);
@@ -229,13 +229,13 @@ namespace cppcrypto
 #ifndef NO_CPP11_THREADS
 			tp.run_async([=] {
 #endif
-				uint8_t indices[1024];
+				unsigned char indices[1024];
 				uint64_t counter = 1;
-				uint8_t* current = indices + 1024 - 8;
+				unsigned char* current = indices + 1024 - 8;
 				for (uint32_t column = startcol; column < firstcol + s; column++)
 				{
-					uint8_t* thisB = B + (lane*q + column) * 1024;
-					uint8_t* prevB = column ? thisB - 1024 : B + (lane*q + q - 1) * 1024;
+					unsigned char* thisB = B + (lane*q + column) * 1024;
+					unsigned char* prevB = column ? thisB - 1024 : B + (lane*q + q - 1) * 1024;
 					uint32_t J1, J2;
 					if (!y || (y == 2 && (iteration || slice >= 2)))
 					{
@@ -268,7 +268,7 @@ namespace cppcrypto
 					J1 = (static_cast<uint64_t>(J1)*static_cast<uint64_t>(J1)) >> 32;
 					J1 = (static_cast<uint64_t>(R)*static_cast<uint64_t>(J1)) >> 32;
 					J1 = R - 1 - J1;
-					uint8_t* otherB = B + l * q * 1024;
+					unsigned char* otherB = B + l * q * 1024;
 					if (iteration)
 						otherB += (slice + 1) * s * 1024;
 					otherB += J1 * 1024;
@@ -286,26 +286,26 @@ namespace cppcrypto
 		tp.wait_for_all();
 	}
 
-	static inline void argon2(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen, uint32_t y,
-		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
+	static inline void argon2(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen, uint32_t y,
+		unsigned char* data, uint32_t datalen, unsigned char* secret, uint32_t secretlen, argon2_version version)
 	{
-		uint8_t h0[64];
+		unsigned char h0[64];
 		blake2b ih(512);
 		ih.init();
 		uint32_t v = static_cast<uint32_t>(version);
-		ih.update(reinterpret_cast<const uint8_t*>(&p), sizeof(p));
-		ih.update(reinterpret_cast<const uint8_t*>(&dklen), sizeof(dklen));
-		ih.update(reinterpret_cast<const uint8_t*>(&m), sizeof(m));
-		ih.update(reinterpret_cast<const uint8_t*>(&t), sizeof(t));
-		ih.update(reinterpret_cast<const uint8_t*>(&v), sizeof(v));
-		ih.update(reinterpret_cast<const uint8_t*>(&y), sizeof(y));
-		ih.update(reinterpret_cast<const uint8_t*>(&pwd_len), sizeof(pwd_len));
-		ih.update(reinterpret_cast<const uint8_t*>(password), pwd_len);
-		ih.update(reinterpret_cast<const uint8_t*>(&salt_len), sizeof(salt_len));
+		ih.update(reinterpret_cast<const unsigned char*>(&p), sizeof(p));
+		ih.update(reinterpret_cast<const unsigned char*>(&dklen), sizeof(dklen));
+		ih.update(reinterpret_cast<const unsigned char*>(&m), sizeof(m));
+		ih.update(reinterpret_cast<const unsigned char*>(&t), sizeof(t));
+		ih.update(reinterpret_cast<const unsigned char*>(&v), sizeof(v));
+		ih.update(reinterpret_cast<const unsigned char*>(&y), sizeof(y));
+		ih.update(reinterpret_cast<const unsigned char*>(&pwd_len), sizeof(pwd_len));
+		ih.update(reinterpret_cast<const unsigned char*>(password), pwd_len);
+		ih.update(reinterpret_cast<const unsigned char*>(&salt_len), sizeof(salt_len));
 		ih.update(salt, salt_len);
-		ih.update(reinterpret_cast<const uint8_t*>(&secretlen), sizeof(secretlen));
+		ih.update(reinterpret_cast<const unsigned char*>(&secretlen), sizeof(secretlen));
 		ih.update(secret, secretlen);
-		ih.update(reinterpret_cast<const uint8_t*>(&datalen), sizeof(datalen));
+		ih.update(reinterpret_cast<const unsigned char*>(&datalen), sizeof(datalen));
 		ih.update(data, datalen);
 		ih.final(h0);
 #ifdef CPPCRYPTO_DEBUG
@@ -318,7 +318,7 @@ namespace cppcrypto
 		uint32_t msize = std::max((m / 4 / p) * 4 * p, 8*p);
 		uint32_t q = msize / p;
 		uint32_t s = q / 4;
-		uint8_t* B = new uint8_t[msize * 1024];
+		unsigned char* B = new unsigned char[msize * 1024];
 		fill_first_blocks(B, p, q, h0);
 		detail::thread_pool tp(p);
 		for (uint32_t iteration = 0; iteration < t; iteration++)
@@ -342,7 +342,7 @@ namespace cppcrypto
 			}
 #endif
 		}
-		uint8_t bm[1024];
+		unsigned char bm[1024];
 		memset(bm, 0, sizeof(bm));
 		for (uint32_t i = 0; i < p; i++)
 		{
@@ -368,20 +368,20 @@ namespace cppcrypto
 		delete[] B;
 	}
 
-	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
+	void argon2d(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+		unsigned char* data, uint32_t datalen, unsigned char* secret, uint32_t secretlen, argon2_version version)
 	{
 		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 0, data, datalen, secret, secretlen, version);
 	}
 
-	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
+	void argon2i(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+		unsigned char* data, uint32_t datalen, unsigned char* secret, uint32_t secretlen, argon2_version version)
 	{
 		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 1, data, datalen, secret, secretlen, version);
 	}
 
-	void argon2id(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data, uint32_t datalen, uint8_t* secret, uint32_t secretlen, argon2_version version)
+	void argon2id(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+		unsigned char* data, uint32_t datalen, unsigned char* secret, uint32_t secretlen, argon2_version version)
 	{
 		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 2, data, datalen, secret, secretlen, version);
 	}

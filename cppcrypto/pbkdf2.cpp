@@ -10,11 +10,11 @@ and released into public domain.
 
 namespace cppcrypto
 {
-	void pbkdf2(hmac& hmac, const uint8_t* salt, size_t salt_len, int iterations, uint8_t* dk, size_t dklen)
+	void pbkdf2(hmac& hmac, const unsigned char* salt, size_t salt_len, int iterations, unsigned char* dk, size_t dklen)
 	{
 		size_t hlen = hmac.hashsize() / 8;
-		uint8_t* res = dk;
-		uint8_t* temp1 = new uint8_t[hlen*2];
+		unsigned char* res = dk;
+		unsigned char* temp1 = new unsigned char[hlen*2];
 		size_t remaining = dklen;
 
 		for (uint32_t i = 0; res < dk + remaining; i++)
@@ -22,7 +22,7 @@ namespace cppcrypto
 			hmac.init();
 			hmac.update(salt, salt_len);
 			uint32_t ir = swap_uint32(i + 1);
-			hmac.update((const uint8_t*)&ir, sizeof(ir));
+			hmac.update((const unsigned char*)&ir, sizeof(ir));
 			hmac.final(temp1);
 			size_t sz = std::min(hlen, remaining);
 			memcpy(res, temp1, sz);

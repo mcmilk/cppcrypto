@@ -19,8 +19,8 @@ namespace cppcrypto
 		~skein256();
 
 		void init() override;
-		void update(const uint8_t* data, size_t len) override;
-		void final(uint8_t* hash) override;
+		void update(const unsigned char* data, size_t len) override;
+		void final(unsigned char* hash) override;
 
 		size_t hashsize() const override { return hs; }
 		size_t blocksize() const override { return 256; }
@@ -33,7 +33,7 @@ namespace cppcrypto
 		std::function<void(void*, uint64_t, size_t)> transfunc;
 		aligned_pod_array<uint64_t, 4, 32> h;
 		uint64_t* H;
-		uint8_t m[32];
+		unsigned char m[32];
 		size_t pos;
 		uint64_t total;
 		uint64_t tweak[2];

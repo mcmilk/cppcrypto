@@ -1,3 +1,7 @@
+2017-10-30 cppcrypto-0.17
+
+Fixed crash on some older CPUs.
+
 2017-08-29 cppcrypto-0.16
 
 New hash algorithm: SHAKE128, SHAKE256.

@@ -142,14 +142,14 @@ namespace cppcrypto
 				memset(H.get(), 0, H.bytes());
 				H[0] = swap_uint16(static_cast<uint16_t>(hs));
 
-				uint8_t msg[64];
+				unsigned char msg[64];
 				memset(msg, 0, sizeof(msg));
 				transform(msg, 1);
 				break;
 		}
 	}
 
-	void jh::update(const uint8_t* data, size_t len)
+	void jh::update(const unsigned char* data, size_t len)
 	{
 		if (pos && pos + len >= 64)
 		{
@@ -174,7 +174,7 @@ namespace cppcrypto
 		total += len * 8;
 	}
 
-	void jh::final(uint8_t* hash)
+	void jh::final(unsigned char* hash)
 	{
 		m[pos++] = 0x80;
 		if (pos > 1)
@@ -191,7 +191,7 @@ namespace cppcrypto
 		if (impl_)
 			return impl_->output(hash, hashsize());
 
-		memcpy(hash, ((uint8_t*)H.get()) + 128 - hashsize() / 8, hashsize() / 8);
+		memcpy(hash, ((unsigned char*)H.get()) + 128 - hashsize() / 8, hashsize() / 8);
 	}
 
 	static inline void bitswap(uint64_t& x, const uint64_t mask, int shift)
@@ -263,10 +263,10 @@ namespace cppcrypto
 		{
 			if (impl_)
 			{
-				impl_->F8(((const uint8_t*)mp) + blk * 64);
+				impl_->F8(((const unsigned char*)mp) + blk * 64);
 				continue;
 			}
-			const uint64_t* M = (const uint64_t*)(((const uint8_t*)mp) + blk * 64);
+			const uint64_t* M = (const uint64_t*)(((const unsigned char*)mp) + blk * 64);
 			H[0] ^= M[0];
 			H[1] ^= M[1];
 			H[2] ^= M[2];

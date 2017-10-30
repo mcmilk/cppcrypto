@@ -26,14 +26,14 @@ namespace cppcrypto
 		zero_memory(W_, sizeof(W_));
 	}
 
-	static inline uint64_t ks(uint64_t prev, uint64_t pprev, uint8_t z)
+	static inline uint64_t ks(uint64_t prev, uint64_t pprev, unsigned char z)
 	{
 		uint64_t tmp = rotater64(prev, 3);
 		tmp = tmp ^ rotater64(tmp, 1);
 		return 0xfffffffffffffffc ^ pprev ^ z ^ tmp;
 	}
 
-	bool simon128_128::init(const uint8_t* key, block_cipher::direction direction)
+	bool simon128_128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		W_[0] = *(((const uint64_t*)key) + 0);
 		W_[1] = *(((const uint64_t*)key) + 1);
@@ -117,7 +117,7 @@ namespace cppcrypto
 		return (rotatel64(x, 1) & rotatel64(x, 8)) ^ rotatel64(x, 2);
 	}
 
-	void simon128_128::encrypt_block(const uint8_t* in, uint8_t* out)
+	void simon128_128::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);
@@ -134,7 +134,7 @@ namespace cppcrypto
 		*(((uint64_t*)out) + 1) = x;
 	}
 
-	void simon128_128::decrypt_block(const uint8_t* in, uint8_t* out)
+	void simon128_128::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 0);
 		uint64_t y = *(((const uint64_t*)in) + 1);
@@ -162,7 +162,7 @@ namespace cppcrypto
 		zero_memory(W_, sizeof(W_));
 	}
 
-	bool simon128_192::init(const uint8_t* key, block_cipher::direction direction)
+	bool simon128_192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		W_[0] = *(((const uint64_t*)key) + 0);
 		W_[1] = *(((const uint64_t*)key) + 1);
@@ -242,7 +242,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void simon128_192::encrypt_block(const uint8_t* in, uint8_t* out)
+	void simon128_192::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);
@@ -262,7 +262,7 @@ namespace cppcrypto
 		*(((uint64_t*)out) + 1) = y;
 	}
 
-	void simon128_192::decrypt_block(const uint8_t* in, uint8_t* out)
+	void simon128_192::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 0);
 		uint64_t y = *(((const uint64_t*)in) + 1);
@@ -293,14 +293,14 @@ namespace cppcrypto
 		zero_memory(W_, sizeof(W_));
 	}
 
-	static inline uint64_t ks(uint64_t iplus3, uint64_t i, uint64_t iplus1, uint8_t z)
+	static inline uint64_t ks(uint64_t iplus3, uint64_t i, uint64_t iplus1, unsigned char z)
 	{
 		uint64_t tmp = rotater64(iplus3, 3) ^ iplus1;
 		tmp = tmp ^ rotater64(tmp, 1);
 		return 0xfffffffffffffffc ^ i ^ z ^ tmp;
 	}
 
-	bool simon128_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool simon128_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		W_[0] = *(((const uint64_t*)key) + 0);
 		W_[1] = *(((const uint64_t*)key) + 1);
@@ -383,7 +383,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void simon128_256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void simon128_256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);
@@ -400,7 +400,7 @@ namespace cppcrypto
 		*(((uint64_t*)out) + 1) = x;
 	}
 
-	void simon128_256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void simon128_256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 0);
 		uint64_t y = *(((const uint64_t*)in) + 1);

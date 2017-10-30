@@ -561,8 +561,8 @@ static inline void roundP_256(uint64_t* x, uint64_t* y, uint64_t i)
 	   x[idx] ^= ((uint64_t)idx << 4) ^ i;
 
    for (int c = 0; c < 8; c++)
-	   y[c] = T[0][(uint8_t)x[(c + 0) % 8]] ^ T[1][(uint8_t)(x[(c + 1) % 8] >> 8)] ^ T[2][(uint8_t)(x[(c + 2) % 8] >> 16)] ^ T[3][(uint8_t)(x[(c + 3) % 8] >> 24)]
-	   ^ T[4][(uint8_t)(x[(c + 4) % 8] >> 32)] ^ T[5][(uint8_t)(x[(c + 5) % 8] >> 40)] ^ T[6][(uint8_t)(x[(c + 6) % 8] >> 48)] ^ T[7][(uint8_t)(x[(c + 7) % 8] >> 56)];
+	   y[c] = T[0][(unsigned char)x[(c + 0) % 8]] ^ T[1][(unsigned char)(x[(c + 1) % 8] >> 8)] ^ T[2][(unsigned char)(x[(c + 2) % 8] >> 16)] ^ T[3][(unsigned char)(x[(c + 3) % 8] >> 24)]
+	   ^ T[4][(unsigned char)(x[(c + 4) % 8] >> 32)] ^ T[5][(unsigned char)(x[(c + 5) % 8] >> 40)] ^ T[6][(unsigned char)(x[(c + 6) % 8] >> 48)] ^ T[7][(unsigned char)(x[(c + 7) % 8] >> 56)];
 }
 
 static inline void roundQ_256(uint64_t* x, uint64_t* y, uint64_t i)
@@ -571,8 +571,8 @@ static inline void roundQ_256(uint64_t* x, uint64_t* y, uint64_t i)
 	   x[idx] ^= (0xffffffffffffffffull - ((uint64_t)idx << 60)) ^ i;
 
    for (int c = 0; c < 8; c++)
-	   y[c] = T[0][(uint8_t)x[(c + 1) % 8]] ^ T[1][(uint8_t)(x[(c + 3) % 8] >> 8)] ^ T[2][(uint8_t)(x[(c + 5) % 8] >> 16)] ^ T[3][(uint8_t)(x[(c + 7) % 8] >> 24)]
-	   ^ T[4][(uint8_t)(x[(c + 0) % 8] >> 32)] ^ T[5][(uint8_t)(x[(c + 2) % 8] >> 40)] ^ T[6][(uint8_t)(x[(c + 4) % 8] >> 48)] ^ T[7][(uint8_t)(x[(c + 6) % 8] >> 56)];
+	   y[c] = T[0][(unsigned char)x[(c + 1) % 8]] ^ T[1][(unsigned char)(x[(c + 3) % 8] >> 8)] ^ T[2][(unsigned char)(x[(c + 5) % 8] >> 16)] ^ T[3][(unsigned char)(x[(c + 7) % 8] >> 24)]
+	   ^ T[4][(unsigned char)(x[(c + 0) % 8] >> 32)] ^ T[5][(unsigned char)(x[(c + 2) % 8] >> 40)] ^ T[6][(unsigned char)(x[(c + 4) % 8] >> 48)] ^ T[7][(unsigned char)(x[(c + 6) % 8] >> 56)];
 }
 
 static inline void roundP_512(uint64_t* x, uint64_t* y, uint64_t i)
@@ -581,8 +581,8 @@ static inline void roundP_512(uint64_t* x, uint64_t* y, uint64_t i)
 	   x[idx] ^= ((uint64_t)idx << 4) ^ i;
 
    for (int c = 15; c >= 0; c--)
-	   y[c] = T[0][(uint8_t)x[(c + 0) % 16]] ^ T[1][(uint8_t)(x[(c + 1) % 16] >> 8)] ^ T[2][(uint8_t)(x[(c + 2) % 16] >> 16)] ^ T[3][(uint8_t)(x[(c + 3) % 16] >> 24)]
-	   ^ T[4][(uint8_t)(x[(c + 4) % 16] >> 32)] ^ T[5][(uint8_t)(x[(c + 5) % 16] >> 40)] ^ T[6][(uint8_t)(x[(c + 6) % 16] >> 48)] ^ T[7][(uint8_t)(x[(c + 11) % 16] >> 56)];
+	   y[c] = T[0][(unsigned char)x[(c + 0) % 16]] ^ T[1][(unsigned char)(x[(c + 1) % 16] >> 8)] ^ T[2][(unsigned char)(x[(c + 2) % 16] >> 16)] ^ T[3][(unsigned char)(x[(c + 3) % 16] >> 24)]
+	   ^ T[4][(unsigned char)(x[(c + 4) % 16] >> 32)] ^ T[5][(unsigned char)(x[(c + 5) % 16] >> 40)] ^ T[6][(unsigned char)(x[(c + 6) % 16] >> 48)] ^ T[7][(unsigned char)(x[(c + 11) % 16] >> 56)];
 }
 
 static inline void roundQ_512(uint64_t* x, uint64_t* y, uint64_t i)
@@ -591,8 +591,8 @@ static inline void roundQ_512(uint64_t* x, uint64_t* y, uint64_t i)
 	   x[idx] ^= (0xffffffffffffffffull - ((uint64_t)idx << 60)) ^ i;
 
    for (int c = 15; c >= 0; c--)
-	   y[c] = T[0][(uint8_t)x[(c+1)%16]] ^ T[1][(uint8_t)(x[(c+3)%16] >> 8)] ^ T[2][(uint8_t)(x[(c+5)%16] >> 16)] ^ T[3][(uint8_t)(x[(c+11)%16] >> 24)]
-	   ^ T[4][(uint8_t)(x[(c+0)%16] >> 32)] ^ T[5][(uint8_t)(x[(c+2)%16] >> 40)] ^ T[6][(uint8_t)(x[(c+4)%16] >> 48)] ^ T[7][(uint8_t)(x[(c+6)%16] >> 56)];
+	   y[c] = T[0][(unsigned char)x[(c+1)%16]] ^ T[1][(unsigned char)(x[(c+3)%16] >> 8)] ^ T[2][(unsigned char)(x[(c+5)%16] >> 16)] ^ T[3][(unsigned char)(x[(c+11)%16] >> 24)]
+	   ^ T[4][(unsigned char)(x[(c+0)%16] >> 32)] ^ T[5][(unsigned char)(x[(c+2)%16] >> 40)] ^ T[6][(unsigned char)(x[(c+4)%16] >> 48)] ^ T[7][(unsigned char)(x[(c+6)%16] >> 56)];
 }
 
 static inline void transform256(uint64_t* h, uint64_t* m)
@@ -696,7 +696,7 @@ void groestl::init()
 #endif
 };
 
-void groestl::update(const uint8_t* data, size_t len)
+void groestl::update(const unsigned char* data, size_t len)
 {
 	size_t limit = bs / 8;
 	while (pos + len >= limit)
@@ -713,7 +713,7 @@ void groestl::update(const uint8_t* data, size_t len)
 	total += len * 8;
 }
 
-void groestl::final(uint8_t* hash)
+void groestl::final(unsigned char* hash)
 {
 #ifdef CPPCRYPTO_DEBUG
 	dump_state("pre-final", h, 16);
@@ -735,7 +735,7 @@ void groestl::final(uint8_t* hash)
 	transform();
 	outputTransform();
 
-	uint8_t* s = (uint8_t*)h.get();
+	unsigned char* s = (unsigned char*)h.get();
 	for (size_t i = limit - hashsize()/8, j = 0; i < limit; i++, j++) {
 		hash[j] = s[i];
 	}

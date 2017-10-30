@@ -22,7 +22,7 @@ namespace cppcrypto
 		0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1, 0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 	};
 
-	static const uint8_t S[64] = {
+	static const unsigned char S[64] = {
 		7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,	4,
 		11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21
 	};
@@ -36,7 +36,7 @@ namespace cppcrypto
 	{
 	}
 
-	void md5::update(const uint8_t* data, size_t len)
+	void md5::update(const unsigned char* data, size_t len)
 	{
 		if (pos && pos + len >= 64)
 		{
@@ -91,7 +91,7 @@ namespace cppcrypto
 		a = b + rotatel32(a + (c ^ (b | ~d)) + K[round] + M[(7 * round) % 16], S[round]);
 	}
 
-	void md5::transform(const uint8_t* mp, uint64_t num_blks)
+	void md5::transform(const unsigned char* mp, uint64_t num_blks)
 	{
 		const uint32_t* M = (const uint32_t*)mp;
 		for (uint64_t blk = 0; blk < num_blks; blk++, M += 16)
@@ -176,7 +176,7 @@ namespace cppcrypto
 		}
 	}
 
-	void md5::final(uint8_t* hash)
+	void md5::final(unsigned char* hash)
 	{
 		m[pos++] = 0x80;
 		if (pos > 56)

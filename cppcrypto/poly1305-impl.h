@@ -14,7 +14,7 @@ namespace cppcrypto
 		{
 		public:
 			virtual ~poly1305_impl() {}
-			virtual void init(const uint8_t* key) = 0;
+			virtual void init(const unsigned char* key) = 0;
 			virtual void transform(const unsigned char *in, size_t inlen) = 0;
 			virtual void finish(const unsigned char *in, size_t remaining, unsigned char *mac) = 0;
 			virtual int blockbytes() const = 0;
@@ -24,14 +24,14 @@ namespace cppcrypto
 		class poly1305_impl_sse2 : public poly1305_impl
 		{
 		public:
-			virtual void init(const uint8_t* key) override;
+			virtual void init(const unsigned char* key) override;
 			virtual void transform(const unsigned char *in, size_t inlen) override;
 			virtual void finish(const unsigned char *in, size_t remaining, unsigned char *mac) override;
 			virtual void clear() override;
 			virtual int blockbytes() const override { return 32; }
 
 		private:
-			aligned_pod_array<uint8_t, 320, 32> state_;
+			aligned_pod_array<unsigned char, 320, 32> state_;
 		};
 	}
 }

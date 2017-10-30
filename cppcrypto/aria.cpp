@@ -161,7 +161,7 @@ namespace cppcrypto
 		{ 0xdb92371d, 0x2126e970, 0x03249775, 0x04e8c90e }
 	};
 
-	static const uint8_t S[2][256] = {
+	static const unsigned char S[2][256] = {
 		{
 			0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67, 0x2b, 0xfe, 0xd7, 0xab, 0x76,
 			0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47, 0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0,
@@ -200,7 +200,7 @@ namespace cppcrypto
 		},
 	};
 
-	static const uint8_t IS[2][256] = {
+	static const unsigned char IS[2][256] = {
 		{
 			0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3, 0x9e, 0x81, 0xf3, 0xd7, 0xfb,
 			0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff, 0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb,
@@ -251,10 +251,10 @@ namespace cppcrypto
 
 	static inline void IMC(uint32_t& x0, uint32_t& x1, uint32_t& x2, uint32_t& x3)
 	{
-		x0 = T[0][IS[0][uint8_t(x0 >> 24)]] ^ T[1][IS[1][uint8_t(x0 >> 16)]] ^ T[2][S[0][(uint8_t(x0 >> 8))]] ^ T[3][S[1][(uint8_t(x0))]];
-		x1 = T[0][IS[0][uint8_t(x1 >> 24)]] ^ T[1][IS[1][uint8_t(x1 >> 16)]] ^ T[2][S[0][(uint8_t(x1 >> 8))]] ^ T[3][S[1][(uint8_t(x1))]];
-		x2 = T[0][IS[0][uint8_t(x2 >> 24)]] ^ T[1][IS[1][uint8_t(x2 >> 16)]] ^ T[2][S[0][(uint8_t(x2 >> 8))]] ^ T[3][S[1][(uint8_t(x2))]];
-		x3 = T[0][IS[0][uint8_t(x3 >> 24)]] ^ T[1][IS[1][uint8_t(x3 >> 16)]] ^ T[2][S[0][(uint8_t(x3 >> 8))]] ^ T[3][S[1][(uint8_t(x3))]];
+		x0 = T[0][IS[0][(unsigned char)(x0 >> 24)]] ^ T[1][IS[1][(unsigned char)(x0 >> 16)]] ^ T[2][S[0][((unsigned char)(x0 >> 8))]] ^ T[3][S[1][((unsigned char)(x0))]];
+		x1 = T[0][IS[0][(unsigned char)(x1 >> 24)]] ^ T[1][IS[1][(unsigned char)(x1 >> 16)]] ^ T[2][S[0][((unsigned char)(x1 >> 8))]] ^ T[3][S[1][((unsigned char)(x1))]];
+		x2 = T[0][IS[0][(unsigned char)(x2 >> 24)]] ^ T[1][IS[1][(unsigned char)(x2 >> 16)]] ^ T[2][S[0][((unsigned char)(x2 >> 8))]] ^ T[3][S[1][((unsigned char)(x2))]];
+		x3 = T[0][IS[0][(unsigned char)(x3 >> 24)]] ^ T[1][IS[1][(unsigned char)(x3 >> 16)]] ^ T[2][S[0][((unsigned char)(x3 >> 8))]] ^ T[3][S[1][((unsigned char)(x3))]];
 		uint32_t t0 = x0 ^ x1 ^ x2;
 		uint32_t t1 = x0 ^ x2 ^ x3;
 		uint32_t t2 = x0 ^ x1 ^ x3;
@@ -275,10 +275,10 @@ namespace cppcrypto
 		x2 ^= k2;
 		x3 ^= k3;
 
-		x0 = T[0][uint8_t(x0 >> 24)] ^ T[1][uint8_t(x0 >> 16)] ^ T[2][(uint8_t(x0 >> 8))] ^ T[3][(uint8_t(x0))];
-		x1 = T[0][uint8_t(x1 >> 24)] ^ T[1][uint8_t(x1 >> 16)] ^ T[2][(uint8_t(x1 >> 8))] ^ T[3][(uint8_t(x1))];
-		x2 = T[0][uint8_t(x2 >> 24)] ^ T[1][uint8_t(x2 >> 16)] ^ T[2][(uint8_t(x2 >> 8))] ^ T[3][(uint8_t(x2))];
-		x3 = T[0][uint8_t(x3 >> 24)] ^ T[1][uint8_t(x3 >> 16)] ^ T[2][(uint8_t(x3 >> 8))] ^ T[3][(uint8_t(x3))];
+		x0 = T[0][(unsigned char)(x0 >> 24)] ^ T[1][(unsigned char)(x0 >> 16)] ^ T[2][((unsigned char)(x0 >> 8))] ^ T[3][((unsigned char)(x0))];
+		x1 = T[0][(unsigned char)(x1 >> 24)] ^ T[1][(unsigned char)(x1 >> 16)] ^ T[2][((unsigned char)(x1 >> 8))] ^ T[3][((unsigned char)(x1))];
+		x2 = T[0][(unsigned char)(x2 >> 24)] ^ T[1][(unsigned char)(x2 >> 16)] ^ T[2][((unsigned char)(x2 >> 8))] ^ T[3][((unsigned char)(x2))];
+		x3 = T[0][(unsigned char)(x3 >> 24)] ^ T[1][(unsigned char)(x3 >> 16)] ^ T[2][((unsigned char)(x3 >> 8))] ^ T[3][((unsigned char)(x3))];
 		uint32_t t0 = x0 ^ x1 ^ x2;
 		uint32_t t1 = x0 ^ x2 ^ x3;
 		uint32_t t2 = x0 ^ x1 ^ x3;
@@ -298,10 +298,10 @@ namespace cppcrypto
 		x1 ^= k1;
 		x2 ^= k2;
 		x3 ^= k3;
-		x0 = T[2][uint8_t(x0 >> 24)] ^ T[3][uint8_t(x0 >> 16)] ^ T[0][(uint8_t(x0 >> 8))] ^ T[1][(uint8_t(x0))];
-		x1 = T[2][uint8_t(x1 >> 24)] ^ T[3][uint8_t(x1 >> 16)] ^ T[0][(uint8_t(x1 >> 8))] ^ T[1][(uint8_t(x1))];
-		x2 = T[2][uint8_t(x2 >> 24)] ^ T[3][uint8_t(x2 >> 16)] ^ T[0][(uint8_t(x2 >> 8))] ^ T[1][(uint8_t(x2))];
-		x3 = T[2][uint8_t(x3 >> 24)] ^ T[3][uint8_t(x3 >> 16)] ^ T[0][(uint8_t(x3 >> 8))] ^ T[1][(uint8_t(x3))];
+		x0 = T[2][(unsigned char)(x0 >> 24)] ^ T[3][(unsigned char)(x0 >> 16)] ^ T[0][((unsigned char)(x0 >> 8))] ^ T[1][((unsigned char)(x0))];
+		x1 = T[2][(unsigned char)(x1 >> 24)] ^ T[3][(unsigned char)(x1 >> 16)] ^ T[0][((unsigned char)(x1 >> 8))] ^ T[1][((unsigned char)(x1))];
+		x2 = T[2][(unsigned char)(x2 >> 24)] ^ T[3][(unsigned char)(x2 >> 16)] ^ T[0][((unsigned char)(x2 >> 8))] ^ T[1][((unsigned char)(x2))];
+		x3 = T[2][(unsigned char)(x3 >> 24)] ^ T[3][(unsigned char)(x3 >> 16)] ^ T[0][((unsigned char)(x3 >> 8))] ^ T[1][((unsigned char)(x3))];
 		uint32_t t0 = x0 ^ x1 ^ x2;
 		uint32_t t1 = x0 ^ x2 ^ x3;
 		uint32_t t2 = x0 ^ x1 ^ x3;
@@ -321,10 +321,10 @@ namespace cppcrypto
 		x1 ^= k1;
 		x2 ^= k2;
 		x3 ^= k3;
-		x0 = (uint32_t(IS[0][uint8_t(x0 >> 24)]) << 24) ^ (uint32_t(IS[1][uint8_t(x0 >> 16)]) << 16) ^ (uint32_t(S[0][(uint8_t(x0 >> 8))]) << 8) ^ uint32_t(S[1][(uint8_t(x0))]);
-		x1 = (uint32_t(IS[0][uint8_t(x1 >> 24)]) << 24) ^ (uint32_t(IS[1][uint8_t(x1 >> 16)]) << 16) ^ (uint32_t(S[0][(uint8_t(x1 >> 8))]) << 8) ^ uint32_t(S[1][(uint8_t(x1))]);
-		x2 = (uint32_t(IS[0][uint8_t(x2 >> 24)]) << 24) ^ (uint32_t(IS[1][uint8_t(x2 >> 16)]) << 16) ^ (uint32_t(S[0][(uint8_t(x2 >> 8))]) << 8) ^ uint32_t(S[1][(uint8_t(x2))]);
-		x3 = (uint32_t(IS[0][uint8_t(x3 >> 24)]) << 24) ^ (uint32_t(IS[1][uint8_t(x3 >> 16)]) << 16) ^ (uint32_t(S[0][(uint8_t(x3 >> 8))]) << 8) ^ uint32_t(S[1][(uint8_t(x3))]);
+		x0 = (uint32_t(IS[0][(unsigned char)(x0 >> 24)]) << 24) ^ (uint32_t(IS[1][(unsigned char)(x0 >> 16)]) << 16) ^ (uint32_t(S[0][((unsigned char)(x0 >> 8))]) << 8) ^ uint32_t(S[1][((unsigned char)(x0))]);
+		x1 = (uint32_t(IS[0][(unsigned char)(x1 >> 24)]) << 24) ^ (uint32_t(IS[1][(unsigned char)(x1 >> 16)]) << 16) ^ (uint32_t(S[0][((unsigned char)(x1 >> 8))]) << 8) ^ uint32_t(S[1][((unsigned char)(x1))]);
+		x2 = (uint32_t(IS[0][(unsigned char)(x2 >> 24)]) << 24) ^ (uint32_t(IS[1][(unsigned char)(x2 >> 16)]) << 16) ^ (uint32_t(S[0][((unsigned char)(x2 >> 8))]) << 8) ^ uint32_t(S[1][((unsigned char)(x2))]);
+		x3 = (uint32_t(IS[0][(unsigned char)(x3 >> 24)]) << 24) ^ (uint32_t(IS[1][(unsigned char)(x3 >> 16)]) << 16) ^ (uint32_t(S[0][((unsigned char)(x3 >> 8))]) << 8) ^ uint32_t(S[1][((unsigned char)(x3))]);
 	}
 
 	static inline void genrk19r(uint32_t x1, uint32_t x2, uint32_t x3, uint32_t x4, uint32_t y1, uint32_t y2, uint32_t y3, uint32_t y4, uint32_t& rk1, uint32_t& rk2, uint32_t& rk3, uint32_t& rk4)
@@ -379,7 +379,7 @@ namespace cppcrypto
 	}
 
 
-	bool aria128::init(const uint8_t* key, block_cipher::direction direction)
+	bool aria128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t W00 = swap_uint32(*(((const uint32_t*)key) + 0));
 		uint32_t W01 = swap_uint32(*(((const uint32_t*)key) + 1));
@@ -454,7 +454,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void aria128::encrypt_block(const uint8_t* in, uint8_t* out)
+	void aria128::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint32_t x0 = swap_uint32(*(((const uint32_t*)in) + 0));
 		uint32_t x1 = swap_uint32(*(((const uint32_t*)in) + 1));
@@ -480,7 +480,7 @@ namespace cppcrypto
 		*(((uint32_t*)out) + 3) = swap_uint32(x3 ^ rk[51]);
 	}
 
-	void aria128::decrypt_block(const uint8_t* in, uint8_t* out)
+	void aria128::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		encrypt_block(in, out);
 	}
@@ -495,7 +495,7 @@ namespace cppcrypto
 		clear();
 	}
 
-	void aria256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void aria256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint32_t x0 = swap_uint32(*(((const uint32_t*)in) + 0));
 		uint32_t x1 = swap_uint32(*(((const uint32_t*)in) + 1));
@@ -525,13 +525,13 @@ namespace cppcrypto
 		*(((uint32_t*)out) + 3) = swap_uint32(x3 ^ rk[67]);
 	}
 
-	void aria256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void aria256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		encrypt_block(in, out);
 	}
 
 
-	bool aria256::init(const uint8_t* key, block_cipher::direction direction)
+	bool aria256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t W00 = swap_uint32(*(((const uint32_t*)key) + 0));
 		uint32_t W01 = swap_uint32(*(((const uint32_t*)key) + 1));
@@ -629,7 +629,7 @@ namespace cppcrypto
 	}
 
 
-	void aria192::encrypt_block(const uint8_t* in, uint8_t* out)
+	void aria192::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint32_t x0 = swap_uint32(*(((const uint32_t*)in) + 0));
 		uint32_t x1 = swap_uint32(*(((const uint32_t*)in) + 1));
@@ -657,13 +657,13 @@ namespace cppcrypto
 		*(((uint32_t*)out) + 3) = swap_uint32(x3 ^ rk[59]);
 	}
 
-	void aria192::decrypt_block(const uint8_t* in, uint8_t* out)
+	void aria192::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		encrypt_block(in, out);
 	}
 
 
-	bool aria192::init(const uint8_t* key, block_cipher::direction direction)
+	bool aria192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t W00 = swap_uint32(*(((const uint32_t*)key) + 0));
 		uint32_t W01 = swap_uint32(*(((const uint32_t*)key) + 1));

@@ -23,9 +23,9 @@ namespace cppcrypto
 
 		void clear();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out);
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out);
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen);
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out);
+		void decrypt(const unsigned char* in, size_t len, unsigned char* out);
 
 		size_t keysize() const { return cipher_->keysize(); }
 		size_t ivsize() const { return cipher_->blocksize(); }
@@ -34,8 +34,8 @@ namespace cppcrypto
 		ctr(const ctr&) = delete;
 		void operator=(const ctr&) = delete;
 
-		uint8_t* block_;
-		uint8_t* iv_;
+		unsigned char* block_;
+		unsigned char* iv_;
 		size_t pos;
 		size_t nb_;
 		std::unique_ptr<block_cipher> cipher_;

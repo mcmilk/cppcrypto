@@ -18,8 +18,8 @@ namespace cppcrypto
 		public:
 			virtual ~sha3_impl() {}
 			virtual void init(unsigned int rate, unsigned int capacity) = 0;
-			virtual void update(const uint8_t* data, size_t len) = 0;
-			virtual void final(uint8_t* hash, unsigned long long hashsize) = 0;
+			virtual void update(const unsigned char* data, size_t len) = 0;
+			virtual void final(unsigned char* hash, unsigned long long hashsize) = 0;
 			virtual void set_padding_byte(unsigned char byte) = 0;
 		};
 
@@ -29,8 +29,8 @@ namespace cppcrypto
 			sha3_impl_ssse3();
 			~sha3_impl_ssse3();
 			void init(unsigned int rate, unsigned int capacity) override;
-			void update(const uint8_t* data, size_t len) override;
-			void final(uint8_t* hash, unsigned long long hashsize) override;
+			void update(const unsigned char* data, size_t len) override;
+			void final(unsigned char* hash, unsigned long long hashsize) override;
 			void set_padding_byte(unsigned char byte) override;
 
 			sha3_impl_ssse3(sha3_impl_ssse3&& other);
@@ -45,8 +45,8 @@ namespace cppcrypto
 			sha3_impl_avx2();
 			~sha3_impl_avx2();
 			void init(unsigned int rate, unsigned int capacity) override;
-			void update(const uint8_t* data, size_t len) override;
-			void final(uint8_t* hash, unsigned long long hashsize) override;
+			void update(const unsigned char* data, size_t len) override;
+			void final(unsigned char* hash, unsigned long long hashsize) override;
 			void set_padding_byte(unsigned char byte) override;
 
 			sha3_impl_avx2(sha3_impl_avx2&& other);

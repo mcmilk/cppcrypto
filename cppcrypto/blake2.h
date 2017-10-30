@@ -20,8 +20,8 @@ namespace cppcrypto
 		~blake2b();
 
 		void init() override;
-		void update(const uint8_t* data, size_t len) override;
-		void final(uint8_t* hash) override;
+		void update(const unsigned char* data, size_t len) override;
+		void final(unsigned char* hash) override;
 
 		size_t hashsize() const override { return hs; }
 		size_t blocksize() const override { return 1024; }
@@ -33,7 +33,7 @@ namespace cppcrypto
 
 		std::function<void(bool)> transfunc;
 		aligned_pod_array<uint64_t, 8, 64> H;
-		aligned_pod_array<uint8_t, 128, 64> m;
+		aligned_pod_array<unsigned char, 128, 64> m;
 		size_t pos;
 		uint64_t total;
 		size_t hs;
@@ -46,8 +46,8 @@ namespace cppcrypto
 		~blake2s();
 
 		void init() override;
-		void update(const uint8_t* data, size_t len) override;
-		void final(uint8_t* hash) override;
+		void update(const unsigned char* data, size_t len) override;
+		void final(unsigned char* hash) override;
 
 		size_t hashsize() const override { return hs; }
 		size_t blocksize() const override { return 512; }
@@ -59,7 +59,7 @@ namespace cppcrypto
 
 		std::function<void(bool)> transfunc;
 		aligned_pod_array<uint32_t, 8, 64> H;
-		aligned_pod_array<uint8_t, 64, 64> m;
+		aligned_pod_array<unsigned char, 64, 64> m;
 		size_t pos;
 		uint64_t total;
 		size_t hs;

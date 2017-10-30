@@ -20,9 +20,9 @@ namespace cppcrypto
 		hc256();
 		virtual ~hc256();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
+		void decrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		void clear() override;
 		hc256* clone() const override { return new hc256; }
@@ -45,9 +45,9 @@ namespace cppcrypto
 		hc128();
 		virtual ~hc128();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
+		void decrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		void clear() override;
 		hc128* clone() const override { return new hc128; }

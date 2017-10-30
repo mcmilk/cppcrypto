@@ -13,21 +13,21 @@ namespace cppcrypto
 	{
 	}
 
-	void crypto_hash::hash_string(const char* data, size_t len, uint8_t* hash)
+	void crypto_hash::hash_string(const char* data, size_t len, unsigned char* hash)
 	{
-		hash_string((const uint8_t*)data, len, hash);
+		hash_string((const unsigned char*)data, len, hash);
 	}
 
-	void crypto_hash::hash_string(const uint8_t* data, size_t len, uint8_t* hash)
+	void crypto_hash::hash_string(const unsigned char* data, size_t len, unsigned char* hash)
 	{
 		init();
-		update((const uint8_t*)data, len);
+		update((const unsigned char*)data, len);
 		final(hash);
 	}
 
-	void crypto_hash::hash_string(const std::string& data, uint8_t* hash)
+	void crypto_hash::hash_string(const std::string& data, unsigned char* hash)
 	{
-		hash_string((const uint8_t*)data.c_str(), data.length(), hash);
+		hash_string((const unsigned char*)data.c_str(), data.length(), hash);
 	}
 
 	void crypto_hash::validate_hash_size(size_t hs, std::initializer_list<size_t> set) const

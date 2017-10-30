@@ -81,6 +81,24 @@ inline static __m128i _mm256_castsi256_si128(__m256i val)
 }
 #endif
 
+#define SET(i0, i1, i2, i3)             _mm256_setr_epi64x(i0, i1, i2, i3)
+
+#define ROLV_TYPE       __m256i
+
+#ifdef __GNUC__
+#define _ROLV_TYPE  volatile __m256i
+#else
+#define _ROLV_TYPE  __m256i
+#endif
+
+#define ROLV_CONST(name, i0, i1, i2, i3) \
+    s->SLLV##name = SET(i0, i1, i2, i3); \
+    s->SRLV##name = SET(64 - i0, 64 - i1, 64 - i2, 64 - i3);
+
+#define _ROLV_CONST(name, i0, i1, i2, i3) \
+    s->SLLV##name = SET(i0, i1, i2, i3); \
+    s->SRLV##name = SET(64 - i0, 64 - i1, 64 - i2, 64 - i3);
+
 
 //*******************
 struct keccak_state_t
@@ -89,9 +107,33 @@ struct keccak_state_t
     __m256i a0, a1, a2, a3, a4; //a[row, 0..3] rows
     __m256i c4;                 //a[0..3, 4] column
     __m256i a44;                //a[4, 4]
+
+	ROLV_TYPE SLLVA0;
+	ROLV_TYPE SRLVA0;
+	_ROLV_TYPE SLLV_A0;
+	_ROLV_TYPE SRLV_A0;
+	ROLV_TYPE SLLVA1;
+	ROLV_TYPE SRLVA1;
+	_ROLV_TYPE SLLV_A1;
+	_ROLV_TYPE SRLV_A1;
+	ROLV_TYPE SLLVA2;
+	ROLV_TYPE SRLVA2;
+	_ROLV_TYPE SLLV_A2;
+	_ROLV_TYPE SRLV_A2;
+	ROLV_TYPE SLLVA3;
+	ROLV_TYPE SRLVA3;
+	_ROLV_TYPE SLLV_A3;
+	_ROLV_TYPE SRLV_A3;
+	ROLV_TYPE SLLVA4;
+	ROLV_TYPE SRLVA4;
+	_ROLV_TYPE SLLV_A4;
+	_ROLV_TYPE SRLV_A4;
+	ROLV_TYPE SLLVC4;
+	ROLV_TYPE SRLVC4;
+	_ROLV_TYPE SLLV_C4;
+	_ROLV_TYPE SRLV_C4;
 };
 
-#define SET(i0, i1, i2, i3)             _mm256_setr_epi64x(i0, i1, i2, i3)
 #define XOR(a, b)                       _mm256_xor_si256(a, b)
 #define PERMUTE(a, i0, i1, i2, i3)      _mm256_permute4x64_epi64(a, _MM_SHUFFLE(i3, i2, i1, i0))
 #define BLEND(a, b, i0, i1, i2, i3)     _mm256_blend_epi32(a, b, _MM_SHUFFLE(3*(i3), 3*(i2), 3*(i1), 3*(i0)))
@@ -110,41 +152,28 @@ struct keccak_state_t
 
 #define LOAD0(p)                        _mm256_castsi128_si256(_mm_move_epi64(*(__m128i *)(p)))
 
-#define ROLV_TYPE       static __m256i
+void Keccak_SetConstants(keccak_state_t* s)
+{
+	// Rotation constants w/o "volatile" attribute.
+	ROLV_CONST(A0, 0, 1, 62, 28)
+	ROLV_CONST(A1, 36, 44, 6, 55)
+	ROLV_CONST(A2, 3, 10, 43, 25)
+	ROLV_CONST(A3, 41, 45, 15, 21)
+	ROLV_CONST(A4, 18, 2, 61, 56)
+	ROLV_CONST(C4, 27, 20, 39, 8)
 
-#ifdef __GNUC__
-    #define _ROLV_TYPE  volatile static __m256i
-#else
-    #define _ROLV_TYPE  static __m256i
-#endif
-
-#define ROLV_CONST(name, i0, i1, i2, i3) \
-    ROLV_TYPE   SLLV##name = SET(i0, i1, i2, i3); \
-    ROLV_TYPE   SRLV##name = SET(64 - i0, 64 - i1, 64 - i2, 64 - i3);
-
-#define _ROLV_CONST(name, i0, i1, i2, i3) \
-    _ROLV_TYPE  SLLV##name = SET(i0, i1, i2, i3); \
-    _ROLV_TYPE  SRLV##name = SET(64 - i0, 64 - i1, 64 - i2, 64 - i3);
-
-// Rotation constants w/o "volatile" attribute.
-ROLV_CONST(A0,  0,  1, 62, 28)
-ROLV_CONST(A1, 36, 44,  6, 55)
-ROLV_CONST(A2,  3, 10, 43, 25)
-ROLV_CONST(A3, 41, 45, 15, 21)
-ROLV_CONST(A4, 18,  2, 61, 56)
-ROLV_CONST(C4, 27, 20, 39,  8)
-
-// Rotation constants with "volatile" attribute (GC only).
-_ROLV_CONST(_A0,  0,  1, 62, 28)
-_ROLV_CONST(_A1, 36, 44,  6, 55)
-_ROLV_CONST(_A2,  3, 10, 43, 25)
-_ROLV_CONST(_A3, 41, 45, 15, 21)
-_ROLV_CONST(_A4, 18,  2, 61, 56)
-_ROLV_CONST(_C4, 27, 20, 39,  8)
+	// Rotation constants with "volatile" attribute (GC only).
+	_ROLV_CONST(_A0, 0, 1, 62, 28)
+	_ROLV_CONST(_A1, 36, 44, 6, 55)
+	_ROLV_CONST(_A2, 3, 10, 43, 25)
+	_ROLV_CONST(_A3, 41, 45, 15, 21)
+	_ROLV_CONST(_A4, 18, 2, 61, 56)
+	_ROLV_CONST(_C4, 27, 20, 39, 8)
+}
 
 #define ROLV(a, name) \
-    XOR(_mm256_sllv_epi64(a, SLLV##name), \
-        _mm256_srlv_epi64(a, SRLV##name))
+    XOR(_mm256_sllv_epi64(a, s.SLLV##name), \
+        _mm256_srlv_epi64(a, s.SRLV##name))
 
 #define ROL(a, i) \
     XOR(_mm256_slli_epi64(a, i), \
@@ -488,12 +517,17 @@ ALIGN(32) keccak_rc_t keccak_rc[24] =
 //*****************************
 void KeccakP1600_StaticInitialize(void)
 //*****************************
-{}
+{
+}
 
 //******************************
 void KeccakP1600_Initialize(void *state)
 //******************************
-{   memset(state, 0, sizeof(keccak_state_t));}
+{   
+	memset(state, 0, sizeof(keccak_state_t));
+	keccak_state_t  &s = *(keccak_state_t *)state;
+	Keccak_SetConstants(&s);
+}
 
 //__KeccakP1600_AddByte
 //*****************************************************************************

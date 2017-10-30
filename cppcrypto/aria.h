@@ -22,9 +22,9 @@ namespace cppcrypto
 		aria128* clone() const override { return new aria128; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t rk[13 * 4];
@@ -40,9 +40,9 @@ namespace cppcrypto
 		aria256* clone() const override { return new aria256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t rk[17 * 4];
@@ -59,9 +59,9 @@ namespace cppcrypto
 		aria192* clone() const override { return new aria192; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint32_t rk[15 * 4];

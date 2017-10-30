@@ -6,6 +6,8 @@ and related or neighboring rights to the source code in this file.
 http://creativecommons.org/publicdomain/zero/1.0/
 */
 
+// Modified by kerukuro for use in cppcrypto.
+
 #ifndef _KeccakP_1600_SnP_h_
 #define _KeccakP_1600_SnP_h_
 
@@ -13,7 +15,7 @@ http://creativecommons.org/publicdomain/zero/1.0/
  */
 
 #define KeccakP1600_implementation      "AVX2 optimized implementation"
-#define KeccakP1600_stateSizeInBytes    (7 * 4 * 8)
+#define KeccakP1600_stateSizeInBytes    ((7 + 24) * 4 * 8)
 #define KeccakP1600_stateAlignment      32
 #define KeccakF1600_FastLoop_supported
 

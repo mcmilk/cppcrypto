@@ -26,7 +26,7 @@ using namespace cppcrypto;
 namespace
 {
 	// Magic file header, just to quickly reject invalid files during decryption
-	const uint8_t magic[5] { 0x71, 0x84, 0x68, 0x96, 0x01 };
+	const unsigned char magic[5] { 0x71, 0x84, 0x68, 0x96, 0x01 };
 }
 
 // Suppress console echo during password input
@@ -47,15 +47,15 @@ void enable_tty_echo(bool on)
 }
 
 // Compare magic file header
-bool compare_magic(uint8_t* other)
+bool compare_magic(unsigned char* other)
 {
 	return equal(magic, magic + sizeof(magic), other);
 }
 
 // Generate random bytes for salt and initialization vector
-bool gen_random_bytes(uint8_t* buffer, size_t buflen)
+bool gen_random_bytes(unsigned char* buffer, size_t buflen)
 {
-	uint8_t buf[4096];
+	unsigned char buf[4096];
 #ifdef WIN32
 	HCRYPTPROV prov = 0;
 
@@ -97,13 +97,13 @@ void encrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	wcout << endl;
 
 	// Generate salt and initialization vector
-	uint8_t salt[32];
-	uint8_t iv[128];
+	unsigned char salt[32];
+	unsigned char iv[128];
 	gen_random_bytes(salt, sizeof(salt));
 	gen_random_bytes(iv, sizeof(iv));
 
 	// Generate encryption and HMAC keys (in one wide array)
-	uint8_t pwdhash[160];
+	unsigned char pwdhash[160];
 	argon2d(pwd.c_str(), static_cast<uint32_t>(pwd.length()), salt, static_cast<uint32_t>(sizeof(salt)), 4, 4096, 1000, pwdhash, static_cast<uint32_t>(sizeof(pwdhash)));
 	zero_memory(&pwd[0], pwd.length());
 
@@ -132,8 +132,8 @@ void encrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	file.write(iv, cipher->ivsize() / 8);
 
 	// Encrypt a file in blocks of 10240 bytes
-	uint8_t buffer[10240];
-	uint8_t ct[10240 + 2048];
+	unsigned char buffer[10240];
+	unsigned char ct[10240 + 2048];
 	long long read = 0;
 	size_t resultLen = 0;
 	while (read < fileSize)
@@ -152,7 +152,7 @@ void encrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	file.write(ct, resultLen);
 
 	// Calculate final HMAC and write it to a file
-	uint8_t sum[128];
+	unsigned char sum[128];
 	hmac.final(sum);
 	file.write(sum, hmac.hashsize() / 8);
 
@@ -173,9 +173,9 @@ void decrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	file_wrapper file(filename);
 	long long fileSize = file.file_size();
 	long long read = 0;
-	uint8_t magic[5];
-	uint8_t salt[32];
-	uint8_t iv[128];
+	unsigned char magic[5];
+	unsigned char salt[32];
+	unsigned char iv[128];
 
 	if (fileSize < static_cast<long long>(sizeof(salt) + sizeof(magic) + cipher->ivsize() / 8 + hash->hashsize() / 8))
 		throw runtime_error("Invalid input file");
@@ -203,7 +203,7 @@ void decrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	cout << endl;
 
 	// Generate encryption and HMAC keys (in one wide array)
-	uint8_t pwdhash[160];
+	unsigned char pwdhash[160];
 	argon2d(pwd.c_str(), static_cast<uint32_t>(pwd.length()), salt, static_cast<uint32_t>(sizeof(salt)), 4, 4096, 1000, pwdhash, static_cast<uint32_t>(sizeof(pwdhash)));
 	zero_memory(&pwd[0], pwd.length());
 
@@ -227,8 +227,8 @@ void decrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	zero_memory(pwdhash, sizeof(pwdhash));
 
 	// Decrypt a file in blocks of 10240 bytes
-	uint8_t buffer[10240];
-	uint8_t ct[10240 + 2048];
+	unsigned char buffer[10240];
+	unsigned char ct[10240 + 2048];
 	fileSize -= hmac.hashsize() / 8;
 	size_t resultLen = 0;
 	while (read < fileSize)
@@ -244,8 +244,8 @@ void decrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	file.write(ct, resultLen);
 
 	// Calculate final HMAC and compare it with the one saved in a file
-	uint8_t sum[128];
-	uint8_t expectedsum[128];
+	unsigned char sum[128];
+	unsigned char expectedsum[128];
 	hmac.final(sum);
 	file.read(expectedsum, hmac.hashsize() / 8);
 

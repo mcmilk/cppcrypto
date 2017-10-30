@@ -16,12 +16,12 @@ and released into public domain.
 
 extern "C"
 {
-	void salsa20_ECRYPT_encrypt_bytes(size_t bytes, uint32_t* x, const uint8_t* m, uint8_t* out, uint8_t* output, unsigned int r);
+	void salsa20_ECRYPT_encrypt_bytes(size_t bytes, uint32_t* x, const unsigned char* m, unsigned char* out, unsigned char* output, unsigned int r);
 }
 
 namespace cppcrypto
 {
-	static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	static inline void xor_block_512(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
 #ifdef USE_AVX
 		if (cpu_info::avx())
@@ -134,14 +134,14 @@ namespace cppcrypto
 			++input[9];
 	}
 
-	static inline void do_encrypt(const uint8_t* in, size_t len, uint8_t* out, int r, size_t& pos, uint32_t* input, uint32_t* block)
+	static inline void do_encrypt(const unsigned char* in, size_t len, unsigned char* out, int r, size_t& pos, uint32_t* input, uint32_t* block)
 	{
 		size_t i = 0;
 		if (pos)
 		{
 			while (pos < len && pos < 64)
 			{
-				out[i] = in[i] ^ ((uint8_t*)block)[pos++];
+				out[i] = in[i] ^ ((unsigned char*)block)[pos++];
 				++i;
 			}
 			len -= i;
@@ -154,13 +154,13 @@ namespace cppcrypto
 			size_t fullblocks = len - len % 64;
 			if (fullblocks)
 			{
-				salsa20_ECRYPT_encrypt_bytes(fullblocks, input, in + i, out + i, (uint8_t*)block, r);
+				salsa20_ECRYPT_encrypt_bytes(fullblocks, input, in + i, out + i, (unsigned char*)block, r);
 				i += fullblocks;
 				len -= fullblocks;
 			}
 			if (len)
 			{
-				salsa20_ECRYPT_encrypt_bytes(len, input, in + i, out + i, (uint8_t*)block, r);
+				salsa20_ECRYPT_encrypt_bytes(len, input, in + i, out + i, (unsigned char*)block, r);
 				pos = len;
 			}
 			return;
@@ -171,23 +171,23 @@ namespace cppcrypto
 			incrementSalsaCounter(input, block, r);
 			if (len >= 64)
 			{
-				xor_block_512(in + i, (uint8_t*)block, out + i);
+				xor_block_512(in + i, (unsigned char*)block, out + i);
 				i += 64;
 			}
 			else
 			{
 				for (; pos < len; pos++, i++)
-					out[i] = in[i] ^ ((uint8_t*)block)[pos];
+					out[i] = in[i] ^ ((unsigned char*)block)[pos];
 			}
 		}
 	}
 
-	void salsa20_256::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void salsa20_256::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		do_encrypt(in, len, out, 10, pos, input_, block_);
 	}
 
-	void salsa20_256::decrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void salsa20_256::decrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		return encrypt(in, len, out);
 	}
@@ -201,7 +201,7 @@ namespace cppcrypto
 			input[tr[i]] = tmp[i];
 	}
 
-	void salsa20_256::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void salsa20_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		assert(keylen == keysize() / 8);
 		assert(ivlen == 8);
@@ -223,7 +223,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void salsa20_128::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void salsa20_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		assert(keylen == keysize() / 8);
 		assert(ivlen == 8);
@@ -261,7 +261,7 @@ namespace cppcrypto
 		out[7] = x[9];
 	}
 
-	static inline void do_xsalsa20_128_init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
+	static inline void do_xsalsa20_128_init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
 	{
 		assert(keylen == 128 / 8);
 		assert(ivlen == 24);
@@ -290,7 +290,7 @@ namespace cppcrypto
 #endif
 	}
 
-	static inline void do_xsalsa20_256_init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
+	static inline void do_xsalsa20_256_init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
 	{
 		assert(keylen == 256 / 8);
 		assert(ivlen == 24);
@@ -319,32 +319,32 @@ namespace cppcrypto
 #endif
 	}
 
-	void xsalsa20_256::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void xsalsa20_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xsalsa20_256_init(key, keylen, iv, ivlen, 10, input_, pos);
 	}
 
-	void xsalsa20_128::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void xsalsa20_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xsalsa20_128_init(key, keylen, iv, ivlen, 10, input_, pos);
 	}
 
-	void salsa20_12_256::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void salsa20_12_256::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		do_encrypt(in, len, out, 6, pos, input_, block_);
 	}
 
-	void salsa20_12_128::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void salsa20_12_128::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		do_encrypt(in, len, out, 6, pos, input_, block_);
 	}
 
-	void xsalsa20_12_256::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void xsalsa20_12_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xsalsa20_256_init(key, keylen, iv, ivlen, 6, input_, pos);
 	}
 
-	void xsalsa20_12_128::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void xsalsa20_12_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xsalsa20_128_init(key, keylen, iv, ivlen, 6, input_, pos);
 	}

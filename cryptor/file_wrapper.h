@@ -7,8 +7,8 @@ class file_wrapper
 public:
 	file_wrapper(const std::wstring& filename);
 	~file_wrapper();
-	void read(uint8_t* buf, size_t len);
-	void write(const uint8_t* buf, size_t len);
+	void read(unsigned char* buf, size_t len);
+	void write(const unsigned char* buf, size_t len);
 	void complete();
 	long long file_size() const;
 	bool file_exists() const;

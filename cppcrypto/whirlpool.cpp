@@ -14,7 +14,7 @@ and released into public domain.
 extern "C"
 {
 #ifndef _M_X64
-	void whirlpool_compress_asm(uint8_t state[64], const uint8_t block[64]);
+	void whirlpool_compress_asm(unsigned char state[64], const unsigned char block[64]);
 #endif
 }
 
@@ -564,7 +564,7 @@ namespace cppcrypto
 		}
 	};
 
-	void whirlpool::update(const uint8_t* data, size_t len)
+	void whirlpool::update(const unsigned char* data, size_t len)
 	{
 		if (pos && pos + len >= 64)
 		{
@@ -590,7 +590,7 @@ namespace cppcrypto
 	}
 
 
-	void whirlpool::final(uint8_t* hash)
+	void whirlpool::final(unsigned char* hash)
 	{
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("pre-final", h);
@@ -667,7 +667,7 @@ namespace cppcrypto
 #ifndef NO_OPTIMIZED_VERSIONS
 #ifndef _M_X64
 		if (cpu_info::sse2())
-			transfunc = [this](void* mp, uint64_t num_blks) { for (uint64_t b = 0; b < num_blks; b++) whirlpool_compress_asm((uint8_t*)h.get(), ((const uint8_t*)mp)+b*64); };
+			transfunc = [this](void* mp, uint64_t num_blks) { for (uint64_t b = 0; b < num_blks; b++) whirlpool_compress_asm((unsigned char*)h.get(), ((const unsigned char*)mp)+b*64); };
 		else
 #endif
 #endif

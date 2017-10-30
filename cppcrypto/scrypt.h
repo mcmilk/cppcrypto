@@ -27,11 +27,11 @@ namespace cppcrypto
 
 	Example:
 
-	    uint8_t dk[32];
-	    scrypt(hmac(sha256(), "password"), (const uint8_t*)"salt", 4, 16384, 8, 16, dk, sizeof(dk));
+	    unsigned char dk[32];
+	    scrypt(hmac(sha256(), "password"), (const unsigned char*)"salt", 4, 16384, 8, 16, dk, sizeof(dk));
 
 	*/
-	void scrypt(hmac& hmac, const uint8_t* salt, size_t salt_len, size_t N, size_t r, size_t p, uint8_t* dk, size_t dklen);
+	void scrypt(hmac& hmac, const unsigned char* salt, size_t salt_len, size_t N, size_t r, size_t p, unsigned char* dk, size_t dklen);
 }
 
 

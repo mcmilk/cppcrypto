@@ -12,20 +12,20 @@ namespace cppcrypto
 	hmac::hmac(const crypto_hash& hash, const std::string& key)
 		: ipad_(0), opad_(0), hash_(hash.clone())
 	{
-		construct(reinterpret_cast<const uint8_t*>(&key[0]), key.length());
+		construct(reinterpret_cast<const unsigned char*>(&key[0]), key.length());
 	}
 
-	hmac::hmac(const crypto_hash& hash, const uint8_t* key, size_t keylen)
+	hmac::hmac(const crypto_hash& hash, const unsigned char* key, size_t keylen)
 		: ipad_(0), opad_(0), hash_(hash.clone())
 	{
 		construct(key, keylen);
 	}
 
-	void hmac::construct(const uint8_t* key, size_t keylen)
+	void hmac::construct(const unsigned char* key, size_t keylen)
 	{
 		size_t nb = blocksize() / 8;
-		ipad_ = new uint8_t[nb];
-		opad_ = new uint8_t[nb];
+		ipad_ = new unsigned char[nb];
+		opad_ = new unsigned char[nb];
 		memset(ipad_, 0, nb);
 		memset(opad_, 0, nb);
 
@@ -56,7 +56,7 @@ namespace cppcrypto
 		delete[] opad_;
 	}
 
-	void hmac::update(const uint8_t* data, size_t len)
+	void hmac::update(const unsigned char* data, size_t len)
 	{
 		hash_->update(data, len);
 	}
@@ -67,9 +67,9 @@ namespace cppcrypto
 		hash_->update(ipad_, blocksize()/8); 
 	};
 
-	void hmac::final(uint8_t* hash)
+	void hmac::final(unsigned char* hash)
 	{
-		uint8_t* temp = new uint8_t[hashsize()/8];
+		unsigned char* temp = new unsigned char[hashsize()/8];
 		hash_->final(temp);
 		hash_->init();
 		hash_->update(opad_, blocksize()/8);

@@ -18,12 +18,12 @@ and released into public domain.
 
 extern "C"
 {
-	int blake256_compress_sse41(uint32_t* h, int padding, uint64_t total, const uint8_t * datablock);
-	int blake256_compress_sse2(uint32_t* h, int padding, uint64_t total, const uint8_t * datablock);
-	int blake512_compress_sse2(uint64_t* h, uint64_t t0, int padding, const uint8_t* datablock);
-	int blake512_compress_sse41(uint64_t* h, uint64_t t0, int padding, const uint8_t* datablock);
+	int blake256_compress_sse41(uint32_t* h, int padding, uint64_t total, const unsigned char * datablock);
+	int blake256_compress_sse2(uint32_t* h, int padding, uint64_t total, const unsigned char * datablock);
+	int blake512_compress_sse2(uint64_t* h, uint64_t t0, int padding, const unsigned char* datablock);
+	int blake512_compress_sse41(uint64_t* h, uint64_t t0, int padding, const unsigned char* datablock);
 #ifdef _M_X64
-	int blake256_compress_avxs(uint32_t* h, const uint8_t * datablock, uint64_t padding, uint32_t* total);
+	int blake256_compress_avxs(uint32_t* h, const unsigned char * datablock, uint64_t padding, uint32_t* total);
 #endif
 }
 
@@ -152,7 +152,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void blake::update(const uint8_t* data, size_t len)
+	void blake::update(const unsigned char* data, size_t len)
 	{
 		size_t blockbytes = blocksize() / 8;
 		while (pos + len >= blockbytes)
@@ -326,7 +326,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void blake::final(uint8_t* hash)
+	void blake::final(unsigned char* hash)
 	{
 		size_t blockbytes = blocksize() / 8;
 		size_t messageend = hs > 256 ? 111 : 55;
@@ -374,7 +374,7 @@ namespace cppcrypto
 			throw std::runtime_error("invalid salt length");
 	}
 
-	blake::blake(size_t hashsize, const uint8_t* salt, size_t saltlen) : hs(hashsize)
+	blake::blake(size_t hashsize, const unsigned char* salt, size_t saltlen) : hs(hashsize)
 	{
 		validate_hash_size(hashsize, {224, 256, 384, 512});
 		validate_salt_length(saltlen);
@@ -473,7 +473,7 @@ namespace cppcrypto
 		if (!has_salt)
 			return new blake(hs);
 
-		uint8_t salt[sizeof(uint64_t) * 4];
+		unsigned char salt[sizeof(uint64_t) * 4];
 		size_t saltlen = hs > 256 ? 32 : 16;
 		for (int i = 0; i < 4; i++)
 		{

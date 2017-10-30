@@ -184,7 +184,7 @@ namespace cppcrypto
 		{ 0x0723d551, 0x75fdc0f2, 0xe4d7ac93, 0x53b19834, 0xc28b83d5, 0x31656f76, 0xa03f5b17, 0x0f1946b8 }
 	};
 	
-	static const uint8_t tr[24][8] = {
+	static const unsigned char tr[24][8] = {
 		{ 0x13, 0x04, 0x15, 0x06, 0x17, 0x08, 0x19, 0x0a },
 		{ 0x1b, 0x0c, 0x1d, 0x0e, 0x1f, 0x10, 0x01, 0x12 },
 		{ 0x03, 0x14, 0x05, 0x16, 0x07, 0x18, 0x09, 0x1a },
@@ -211,25 +211,25 @@ namespace cppcrypto
 		{ 0x0b, 0x1c, 0x0d, 0x1e, 0x0f, 0x00, 0x11, 0x02 },
 	};
 
-	static inline uint32_t f1(uint32_t D, uint8_t kr, uint32_t km)
+	static inline uint32_t f1(uint32_t D, unsigned char kr, uint32_t km)
 	{
 		uint32_t I = rotatel32(km + D, kr);
 		return ((S[0][(I >> 24) & 0xff] ^ S[1][(I >> 16) & 0xff]) - S[2][(I >> 8) & 0xff]) + S[3][I & 0xff];
 	}
 
-	static inline uint32_t f2(uint32_t D, uint8_t kr, uint32_t km)
+	static inline uint32_t f2(uint32_t D, unsigned char kr, uint32_t km)
 	{
 		uint32_t I = rotatel32(km ^ D, kr);
 		return ((S[0][(I >> 24) & 0xff] - S[1][(I >> 16) & 0xff]) + S[2][(I >> 8) & 0xff]) ^ S[3][I & 0xff];
 	}
 
-	static inline uint32_t f3(uint32_t D, uint8_t kr, uint32_t km)
+	static inline uint32_t f3(uint32_t D, unsigned char kr, uint32_t km)
 	{
 		uint32_t I = rotatel32(km - D, kr);
 		return ((S[0][(I >> 24) & 0xff] + S[1][(I >> 16) & 0xff]) ^ S[2][(I >> 8) & 0xff]) - S[3][I & 0xff];
 	}
 
-	static inline void ks(int i, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t& e, uint32_t& f, uint32_t& g, uint32_t& h, uint32_t* km, uint8_t* kr)
+	static inline void ks(int i, uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t& e, uint32_t& f, uint32_t& g, uint32_t& h, uint32_t* km, unsigned char* kr)
 	{
 		g ^= f1(h, tr[i*2][0], tm[i*2][0]);
 		f ^= f2(g, tr[i*2][1], tm[i*2][1]);
@@ -273,7 +273,7 @@ namespace cppcrypto
 		zero_memory(kr, sizeof(kr));
 	}
 
-	static inline void do_init(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t& e, uint32_t& f, uint32_t& g, uint32_t& h, uint32_t* km, uint8_t* kr)
+	static inline void do_init(uint32_t& a, uint32_t& b, uint32_t& c, uint32_t& d, uint32_t& e, uint32_t& f, uint32_t& g, uint32_t& h, uint32_t* km, unsigned char* kr)
 	{
 		ks(0, a, b, c, d, e, f, g, h, km, kr);
 		ks(1, a, b, c, d, e, f, g, h, km, kr);
@@ -289,7 +289,7 @@ namespace cppcrypto
 		ks(11, a, b, c, d, e, f, g, h, km, kr);
 	}
 
-	bool cast6_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool cast6_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
 		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
@@ -304,7 +304,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void cast6_256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void cast6_256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint32_t a = swap_uint32(*(((const uint32_t*)in) + 0));
 		uint32_t b = swap_uint32(*(((const uint32_t*)in) + 1));
@@ -437,7 +437,7 @@ namespace cppcrypto
 		*(((uint32_t*)out) + 3) = swap_uint32(d);
 	}
 
-	void cast6_256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void cast6_256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint32_t a = swap_uint32(*(((const uint32_t*)in) + 0));
 		uint32_t b = swap_uint32(*(((const uint32_t*)in) + 1));
@@ -515,8 +515,8 @@ namespace cppcrypto
 	{
 		uint32_t cm = 0x5a827999;
 		uint32_t mm = 0x6ed9eba1;
-		uint8_t cr = 19;
-		uint8_t mr = 17;
+		unsigned char cr = 19;
+		unsigned char mr = 17;
 
 		printf("static const uint32_t tm[24][8] = {");
 		for (int i = 0; i < 24; i++)
@@ -534,7 +534,7 @@ namespace cppcrypto
 				printf(",");
 		}
 
-		printf("static const uint8_t tr[24][8] = {");
+		printf("static const unsigned char tr[24][8] = {");
 		for (int i = 0; i < 24; i++)
 		{
 			printf("\n{\n");
@@ -553,7 +553,7 @@ namespace cppcrypto
 	}
 #endif
 
-	bool cast6_224::init(const uint8_t* key, block_cipher::direction direction)
+	bool cast6_224::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
 		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
@@ -568,7 +568,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	bool cast6_192::init(const uint8_t* key, block_cipher::direction direction)
+	bool cast6_192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
 		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
@@ -583,7 +583,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	bool cast6_160::init(const uint8_t* key, block_cipher::direction direction)
+	bool cast6_160::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
 		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));
@@ -598,7 +598,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	bool cast6_128::init(const uint8_t* key, block_cipher::direction direction)
+	bool cast6_128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t a = swap_uint32(*(((const uint32_t*)key) + 0));
 		uint32_t b = swap_uint32(*(((const uint32_t*)key) + 1));

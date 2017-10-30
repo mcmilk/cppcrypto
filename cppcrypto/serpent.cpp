@@ -512,7 +512,7 @@ namespace cppcrypto
 		w0 = rotater32(w0, 13);
 	}
 
-	bool serpent256::init(const uint8_t* key, block_cipher::direction direction)
+	bool serpent256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 #ifdef SERPENT_AS_TNEPRES
 		W[7] = swap_uint32(*(((const uint32_t*)key) + 0));
@@ -606,7 +606,7 @@ namespace cppcrypto
 	x[2] ^= W[w*4+10]; \
 	x[3] ^= W[w*4+11];
 
-	void serpent256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void serpent256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint32_t x[4];
 #ifndef _M_X64
@@ -691,7 +691,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void serpent256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void serpent256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint32_t x[4];
 #ifndef _M_X64
@@ -771,7 +771,7 @@ namespace cppcrypto
 #endif
 	}
 
-	bool serpent128::init(const uint8_t* key, block_cipher::direction direction)
+	bool serpent128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 #ifdef SERPENT_AS_TNEPRES
 		W[3] = swap_uint32(*(((const uint32_t*)key) + 0));
@@ -792,7 +792,7 @@ namespace cppcrypto
 		return do_init();
 	}
 
-	bool serpent192::init(const uint8_t* key, block_cipher::direction direction)
+	bool serpent192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 #ifdef SERPENT_AS_TNEPRES
 		W[5] = swap_uint32(*(((const uint32_t*)key) + 0));

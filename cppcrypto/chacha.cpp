@@ -16,12 +16,12 @@ and released into public domain.
 
 extern "C"
 {
-	void chacha_ECRYPT_encrypt_bytes(size_t bytes, uint32_t* x, const uint8_t* m, uint8_t* out, uint8_t* output, unsigned int r);
+	void chacha_ECRYPT_encrypt_bytes(size_t bytes, uint32_t* x, const unsigned char* m, unsigned char* out, unsigned char* output, unsigned int r);
 }
 
 namespace cppcrypto
 {
-	static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	static inline void xor_block_512(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
 #ifdef USE_AVX
 		if (cpu_info::avx())
@@ -173,14 +173,14 @@ namespace cppcrypto
 			++input[13];
 	}
 
-	static inline void do_encrypt(const uint8_t* in, size_t len, uint8_t* out, int r, size_t& pos, uint32_t* input, uint32_t* block)
+	static inline void do_encrypt(const unsigned char* in, size_t len, unsigned char* out, int r, size_t& pos, uint32_t* input, uint32_t* block)
 	{
 		size_t i = 0;
 		if (pos)
 		{
 			while (pos < len && pos < 64)
 			{
-				out[i] = in[i] ^ ((uint8_t*)block)[pos++];
+				out[i] = in[i] ^ ((unsigned char*)block)[pos++];
 				++i;
 			}
 			len -= i;
@@ -193,13 +193,13 @@ namespace cppcrypto
 			size_t fullblocks = len - len % 64;
 			if (fullblocks)
 			{
-				chacha_ECRYPT_encrypt_bytes(fullblocks, input, in + i, out + i, (uint8_t*)block, r);
+				chacha_ECRYPT_encrypt_bytes(fullblocks, input, in + i, out + i, (unsigned char*)block, r);
 				i += fullblocks;
 				len -= fullblocks;
 			}
 			if (len)
 			{
-				chacha_ECRYPT_encrypt_bytes(len, input, in + i, out + i, (uint8_t*)block, r);
+				chacha_ECRYPT_encrypt_bytes(len, input, in + i, out + i, (unsigned char*)block, r);
 				pos = len;
 			}
 			return;
@@ -210,28 +210,28 @@ namespace cppcrypto
 			incrementSalsaCounter(input, block, r);
 			if (len >= 64)
 			{
-				xor_block_512(in + i, (uint8_t*)block, out + i);
+				xor_block_512(in + i, (unsigned char*)block, out + i);
 				i += 64;
 			}
 			else
 			{
 				for (; pos < len; pos++, i++)
-					out[i] = in[i] ^ ((uint8_t*)block)[pos];
+					out[i] = in[i] ^ ((unsigned char*)block)[pos];
 			}
 		}
 	}
 
-	void chacha20_256::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void chacha20_256::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		do_encrypt(in, len, out, 10, pos, input_, block_);
 	}
 
-	void chacha20_256::decrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void chacha20_256::decrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		return encrypt(in, len, out);
 	}
 
-	void chacha20_256::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void chacha20_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		assert(keylen == keysize() / 8);
 		assert(ivlen == 8 || ivlen == 12);
@@ -247,7 +247,7 @@ namespace cppcrypto
 		pos = 0;
 	}
 
-	void chacha20_128::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void chacha20_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		assert(keylen == keysize() / 8);
 		assert(ivlen == 8 || ivlen == 12);
@@ -280,7 +280,7 @@ namespace cppcrypto
 		out[7] = x[15];
 	}
 
-	static inline void do_xchacha_128_init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
+	static inline void do_xchacha_128_init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
 	{
 		assert(keylen == 128 / 8);
 		assert(ivlen == 24);
@@ -303,7 +303,7 @@ namespace cppcrypto
 		input[13] = 0;
 	}
 
-	static inline void do_xchacha_256_init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
+	static inline void do_xchacha_256_init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
 	{
 		assert(keylen == 256 / 8);
 		assert(ivlen == 24);
@@ -325,32 +325,32 @@ namespace cppcrypto
 		input[13] = 0;
 	}
 
-	void xchacha20_256::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void xchacha20_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xchacha_256_init(key, keylen, iv, ivlen, 10, input_, pos);
 	}
 
-	void xchacha20_128::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void xchacha20_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xchacha_128_init(key, keylen, iv, ivlen, 10, input_, pos);
 	}
 
-	void chacha12_256::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void chacha12_256::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		do_encrypt(in, len, out, 6, pos, input_, block_);
 	}
 
-	void chacha12_128::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void chacha12_128::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		do_encrypt(in, len, out, 6, pos, input_, block_);
 	}
 
-	void xchacha12_256::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void xchacha12_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xchacha_256_init(key, keylen, iv, ivlen, 6, input_, pos);
 	}
 
-	void xchacha12_128::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void xchacha12_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xchacha_128_init(key, keylen, iv, ivlen, 6, input_, pos);
 	}

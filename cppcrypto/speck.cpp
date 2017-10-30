@@ -32,7 +32,7 @@ namespace cppcrypto
 		nk = rotatel64(pk, 3) ^ y;
 	}
 
-	bool speck128_128::init(const uint8_t* key, block_cipher::direction direction)
+	bool speck128_128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		W_[0] = *(((const uint64_t*)key) + 0);
 		uint64_t x = *(((const uint64_t*)key) + 1), y;
@@ -77,7 +77,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void speck128_128::encrypt_block(const uint8_t* in, uint8_t* out)
+	void speck128_128::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);
@@ -95,7 +95,7 @@ namespace cppcrypto
 		*(((uint64_t*)out) + 1) = x;
 	}
 
-	void speck128_128::decrypt_block(const uint8_t* in, uint8_t* out)
+	void speck128_128::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);
@@ -124,7 +124,7 @@ namespace cppcrypto
 		zero_memory(W_, sizeof(W_));
 	}
 
-	bool speck128_192::init(const uint8_t* key, block_cipher::direction direction)
+	bool speck128_192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		W_[0] = *(((const uint64_t*)key) + 0);
 		uint64_t l[34];
@@ -144,7 +144,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void speck128_192::encrypt_block(const uint8_t* in, uint8_t* out)
+	void speck128_192::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);
@@ -162,7 +162,7 @@ namespace cppcrypto
 		*(((uint64_t*)out) + 1) = x;
 	}
 
-	void speck128_192::decrypt_block(const uint8_t* in, uint8_t* out)
+	void speck128_192::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);
@@ -191,7 +191,7 @@ namespace cppcrypto
 		zero_memory(W_, sizeof(W_));
 	}
 
-	bool speck128_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool speck128_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		W_[0] = *(((const uint64_t*)key) + 0);
 		uint64_t l[36];
@@ -211,7 +211,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void speck128_256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void speck128_256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);
@@ -229,7 +229,7 @@ namespace cppcrypto
 		*(((uint64_t*)out) + 1) = x;
 	}
 
-	void speck128_256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void speck128_256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x = *(((const uint64_t*)in) + 1);
 		uint64_t y = *(((const uint64_t*)in) + 0);

@@ -637,7 +637,7 @@ namespace cppcrypto
 		block[7] ^= toxor[7];
 	}
 
-	static inline void e(uint64_t* K, const uint8_t* m)
+	static inline void e(uint64_t* K, const unsigned char* m)
 	{
 		uint64_t tmp[8];
 		memcpy(tmp, K, 64);
@@ -651,7 +651,7 @@ namespace cppcrypto
 		}
 	}
 
-	static inline void gN(uint64_t* h, const uint8_t* m, uint64_t N)
+	static inline void gN(uint64_t* h, const unsigned char* m, uint64_t N)
 	{
 		uint64_t hN[8];
 		memcpy(hN, h, 64);
@@ -665,7 +665,7 @@ namespace cppcrypto
 		xor_blocks(h, (const uint64_t*)m);
 	}
 
-	void streebog::update(const uint8_t* data, size_t len)
+	void streebog::update(const unsigned char* data, size_t len)
 	{
 		while (pos + len >= 64)
 		{
@@ -680,7 +680,7 @@ namespace cppcrypto
 		pos += len;
 	}
 
-	static inline void addm(const uint8_t* m, uint64_t* h)
+	static inline void addm(const unsigned char* m, uint64_t* h)
 	{
 		const uint64_t* m64 = (const uint64_t*)m;
 		bool carry = false, overflow = false;
@@ -719,7 +719,7 @@ namespace cppcrypto
 			addm(m, S);
 	}
 
-	void streebog::final(uint8_t* hash)
+	void streebog::final(unsigned char* hash)
 	{
 #ifdef CPPCRYPTO_DEBUG
 		dump_state("pre-final", h);
@@ -776,7 +776,7 @@ namespace cppcrypto
 #if 0
 	void generate_tables()
 	{
-		static const uint8_t pi[256] = {
+		static const unsigned char pi[256] = {
 			252, 238, 221, 17, 207, 110, 49, 22, 251, 196, 250, 218, 35, 197, 4, 77,
 			233, 119, 240, 219, 147, 46, 153, 186, 23, 54, 241, 187, 20, 205, 95, 193,
 			249, 24, 101, 90, 226, 92, 239, 33, 129, 28, 60, 66, 139, 1, 142, 79,
@@ -795,14 +795,14 @@ namespace cppcrypto
 			89, 166, 116, 210, 230, 244, 180, 192, 209, 102, 175, 194, 57, 75, 99, 182,
 		};
 
-		static const uint8_t tao[64] = {
+		static const unsigned char tao[64] = {
 			0, 8, 16, 24, 32, 40, 48, 56, 1, 9, 17, 25, 33, 41, 49, 57,
 			2, 10, 18, 26, 34, 42, 50, 58, 3, 11, 19, 27, 35, 43, 51, 59,
 			4, 12, 20, 28, 36, 44, 52, 60, 5, 13, 21, 29, 37, 45, 53, 61,
 			6, 14, 22, 30, 38, 46, 54, 62, 7, 15, 23, 31, 39, 47, 55, 63,
 		};
 
-		static const uint8_t _A[64][8] = {
+		static const unsigned char _A[64][8] = {
 			{ 0x70, 0xb4, 0xa0, 0x2b, 0xa7, 0xfa, 0x20, 0x8e },
 			{ 0x38, 0x5a, 0x50, 0x9b, 0xdd, 0x7d, 0x10, 0x47 },
 			{ 0x1c, 0x2d, 0x28, 0xc3, 0xe0, 0xb0, 0x08, 0xad },
@@ -879,11 +879,11 @@ namespace cppcrypto
 					printf(", ");
 				if ((m % 4) == 0)
 					printf("\n\t\t");
-				uint8_t t = pi[m];
+				unsigned char t = pi[m];
 
-				uint8_t a[8 * 8];
+				unsigned char a[8 * 8];
 				memset(a, 0, sizeof(a));
-				uint8_t tmp0 = t;
+				unsigned char tmp0 = t;
 				for (int w = 0; w < 8; w++)
 				{
 					if (tmp0 & 1)

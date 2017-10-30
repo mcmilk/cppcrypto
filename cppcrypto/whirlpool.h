@@ -21,8 +21,8 @@ namespace cppcrypto
 		~whirlpool();
 
 		void init() override;
-		void update(const uint8_t* data, size_t len) override;
-		void final(uint8_t* hash) override;
+		void update(const unsigned char* data, size_t len) override;
+		void final(unsigned char* hash) override;
 
 		size_t hashsize() const override { return 512; }
 		size_t blocksize() const override { return 512; }
@@ -35,7 +35,7 @@ namespace cppcrypto
 
 		std::function<void(void*, uint64_t)> transfunc;
 		aligned_pod_array<uint64_t, 8, 16> h;
-		aligned_pod_array<uint8_t, 64, 16> m;
+		aligned_pod_array<unsigned char, 64, 16> m;
 		size_t pos;
 		uint64_t total;
 	};

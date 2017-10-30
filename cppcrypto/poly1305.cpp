@@ -16,15 +16,15 @@ namespace cppcrypto
 {
 	poly1305::poly1305(const std::string& key)
 	{
-		construct(reinterpret_cast<const uint8_t*>(&key[0]), key.length());
+		construct(reinterpret_cast<const unsigned char*>(&key[0]), key.length());
 	}
 
-	poly1305::poly1305(const uint8_t* key, size_t keylen)
+	poly1305::poly1305(const unsigned char* key, size_t keylen)
 	{
 		construct(key, keylen);
 	}
 
-	void poly1305::construct(const uint8_t* key, size_t keylen)
+	void poly1305::construct(const unsigned char* key, size_t keylen)
 	{
 		assert(keylen == 32);
 
@@ -59,17 +59,17 @@ namespace cppcrypto
 	// This implementation is based on the public domain code from poly1305-donna by Andrew Moon
 	// See https://github.com/floodyberry/poly1305-donna
 
-	static inline void add(uint8_t* accumulator, const uint8_t* M)
+	static inline void add(unsigned char* accumulator, const unsigned char* M)
 	{
 		for (uint16_t res = 0, i = 0; i < 17; i++)
 		{
 			res += static_cast<uint16_t>(accumulator[i] + static_cast<uint16_t>(M[i]));
-			accumulator[i] = static_cast<uint8_t>(res);
+			accumulator[i] = static_cast<unsigned char>(res);
 			res >>= 8;
 		}
 	}
 
-	static inline void multiply(uint8_t* accumulator, uint8_t* r, unsigned long* th)
+	static inline void multiply(unsigned char* accumulator, unsigned char* r, unsigned long* th)
 	{
 		for (int i = 0; i < 17; i++)
 		{
@@ -86,7 +86,7 @@ namespace cppcrypto
 		}
 	}
 
-	static inline void reduce(uint8_t* h, unsigned long* hr)
+	static inline void reduce(unsigned char* h, unsigned long* hr)
 	{
 		unsigned long u = 0;
 		for (int i = 0; i < 16; i++)
@@ -125,11 +125,11 @@ namespace cppcrypto
 	}
 
 
-	void poly1305::transform(const uint8_t* mp, size_t num_blks, bool incomplete)
+	void poly1305::transform(const unsigned char* mp, size_t num_blks, bool incomplete)
 	{
 		for (size_t blk = 0; blk < num_blks; blk++)
 		{
-			uint8_t M[17];
+			unsigned char M[17];
 			unsigned long th[17];
 			memcpy(M, mp, 17);
 			if (!incomplete)
@@ -158,7 +158,7 @@ namespace cppcrypto
 #ifdef CPPCRYPTO_DEBUG
 			printf("multiplied: ");
 			for (int i = 0; i < sizeof(th); i++)
-				printf("%02x", ((uint8_t*)th)[i]);
+				printf("%02x", ((unsigned char*)th)[i]);
 			printf("\n");
 #endif
 
@@ -176,7 +176,7 @@ namespace cppcrypto
 		}
 	}
 
-	void poly1305::update(const uint8_t* data, size_t len)
+	void poly1305::update(const unsigned char* data, size_t len)
 	{
 		size_t bs = impl_ ? impl_->blockbytes() : 16;
 		if (pos && pos + len >= bs)
@@ -225,7 +225,7 @@ namespace cppcrypto
 #endif
 	};
 
-	void poly1305::final(uint8_t* hash)
+	void poly1305::final(unsigned char* hash)
 	{
 		if (impl_)
 			return impl_->finish(&m_[0], pos, hash);

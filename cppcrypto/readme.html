@@ -103,16 +103,16 @@ span.toc {
     {
     public:
         virtual void init() = 0;
-        virtual void update(const uint8_t* data, size_t len) = 0;
-        virtual void final(uint8_t* hash) = 0;
+        virtual void update(const unsigned char* data, size_t len) = 0;
+        virtual void final(unsigned char* hash) = 0;
 
         virtual size_t hashsize() const = 0;
         virtual size_t blocksize() const = 0;
 
         // Convenience functions
-        void hash_string(const uint8_t* data, size_t len, uint8_t* hash);
-        void hash_string(const char* data, size_t len, uint8_t* hash);
-        void hash_string(const std::string& data, uint8_t* hash);
+        void hash_string(const unsigned char* data, size_t len, unsigned char* hash);
+        void hash_string(const char* data, size_t len, unsigned char* hash);
+        void hash_string(const std::string& data, unsigned char* hash);
     };
 </pre>
 <p>If you have a short message, you can calculate the hash using a single <code>hash_string()</code> call.
@@ -199,7 +199,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <h3>2.3. Usage example</h3>
 <p>The following snippet calculates BLAKE-256 hash of a string using a single function call:</p>
 <pre>
-    uint8_t hash[256/8];
+    unsigned char hash[256/8];
     blake(256).hash_string("The quick brown fox jumps over the lazy dog", hash);
     // Now <i>hash</i> contains the hash
 </pre>
@@ -207,7 +207,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <p></p>
 <pre>
     blake(256) hasher;
-    uint8_t hash[256/8];
+    unsigned char hash[256/8];
     
     hasher.init();
     hasher.update(datachunk1, chunk1len);
@@ -318,29 +318,29 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <h3>3.1 HMAC</h3>
 <p>Class <code>hmac</code> is also derived from <code>crypto_hash</code> and implements the same interface. The only difference is that you need to pass a reference to a hash algorithm and a key in the constructor.
 <pre>
-    hmac(const crypto_hash& hash, const uint8_t* key, size_t keylen);
+    hmac(const crypto_hash& hash, const unsigned char* key, size_t keylen);
 </pre>
 <p>The key can be of any length and you can use any of the supported hash algorithms to calculate HMAC. The following sample calculates HMAC-SHA-256 of a string &quot;The quick brown fox jumps over the lazy dog&quot; with key &quot;key&quot;:</p>
 <pre>
-    uint8_t hmackey[3];
+    unsigned char hmackey[3];
     hmackey[0] = 'k';
     hmackey[1] = 'e';
     hmackey[2] = 'y';
     hmac mac(sha256(), hmackey, sizeof(hmackey));
-    uint8_t result[32];
+    unsigned char result[32];
     mac.hash_string("The quick brown fox jumps over the lazy dog", result);
 </pre>
 <h3>3.2 Poly1305</h3>
 <p>Class <code>poly1305</code> is also derived from <code>crypto_hash</code> and implements the same interface. The only difference is that you need to pass a key in the constructor.
 <pre>
-    poly1305(const uint8_t* key, size_t keylen);
+    poly1305(const unsigned char* key, size_t keylen);
 </pre>
 <p>The key <b><i>must</i></b> have length 32 bytes (256 bits). The following sample calculates Poly1305 of a string &quot;The quick brown fox jumps over the lazy dog&quot; with key &quot;\x00\x01\x02...\x31&quot;:</p>
 <pre>
-    uint8_t key[32];
+    unsigned char key[32];
     std::iota(key, key + 32, 0);
     poly1305 poly(key, sizeof(key));
-    uint8_t result[16];
+    unsigned char result[16];
     poly.hash_string("The quick brown fox jumps over the lazy dog", result);
 </pre>
 <h2 id="chbc">4. Block cipher algorithms</h2>
@@ -355,9 +355,9 @@ then call <code>update()</code> any number of times to add the next chunk of dat
         virtual size_t blocksize() const = 0;
         virtual size_t keysize() const = 0;
 
-        virtual bool init(const uint8_t* key, block_cipher::direction direction) = 0;
-        virtual void encrypt_block(const uint8_t* in, uint8_t* out) = 0;
-        virtual void decrypt_block(const uint8_t* in, uint8_t* out) = 0;
+        virtual bool init(const unsigned char* key, block_cipher::direction direction) = 0;
+        virtual void encrypt_block(const unsigned char* in, unsigned char* out) = 0;
+        virtual void decrypt_block(const unsigned char* in, unsigned char* out) = 0;
     };
 </pre>
 <p>A low-level interface to the block cipher. To start encryption or decryption, call <code>init()</code> (<code>key</code> should point to a key of <code>keysize()/8</code> bytes), then call <code>encrypt_block()</code> or <code>decrypt_block()</code> to encrypt or decrypt a single block of <code>blocksize()/8</code> bytes.<br>
@@ -435,30 +435,30 @@ In practice in most cases you probably want to use block ciphers in an encryptio
 <pre>
     cbc(const block_cipher& cipher);
 
-    void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen, block_cipher::direction direction);
+    void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, block_cipher::direction direction);
 
     <i>// Functions writing output to preallocated raw buffer (the fastest)</i>
-    void encrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
-    void encrypt_final(uint8_t* out, size_t& resultlen);
-    void decrypt_update(const uint8_t* in, size_t len, uint8_t* out, size_t& resultlen);
-    void decrypt_final(uint8_t* out, size_t& resultlen);
+    void encrypt_update(const unsigned char* in, size_t len, unsigned char* out, size_t& resultlen);
+    void encrypt_final(unsigned char* out, size_t& resultlen);
+    void decrypt_update(const unsigned char* in, size_t len, unsigned char* out, size_t& resultlen);
+    void decrypt_final(unsigned char* out, size_t& resultlen);
 
     <i>// Functions writing output to std::vector (slower)</i>
-    void encrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
-    void encrypt_final(std::vector<uint8_t>& out);
-    void decrypt_update(const uint8_t* in, size_t len, std::vector<uint8_t>& out);
-    void decrypt_final(std::vector<uint8_t>& out);
+    void encrypt_update(const unsigned char* in, size_t len, std::vector&lt;unsigned char&gt;& out);
+    void encrypt_final(std::vector<unsigned char>& out);
+    void decrypt_update(const unsigned char* in, size_t len, std::vector&lt;unsigned char&gt;& out);
+    void decrypt_final(std::vector<unsigned char>& out);
 
     <i>// Functions writing output to std::ostream (the slowest)</i>
-    void encrypt_update(const uint8_t* in, size_t len, std::ostream& out);
+    void encrypt_update(const unsigned char* in, size_t len, std::ostream& out);
     void encrypt_final(std::ostream& out);
-    void decrypt_update(const uint8_t* in, size_t len, std::ostream& out);
+    void decrypt_update(const unsigned char* in, size_t len, std::ostream& out);
     void decrypt_final(std::ostream& out);
 </pre>
 <p>The functions are similar to the ones from the <code>crypto_hash</code> class.</p><p>To start encryption, pass one of the block ciphers to the constructor and initialize encryption using <code>init()</code> function. The length of the key in bytes should be equal to <code>keysize()/8</code> of the block cipher, and the length of the initialization vector (<code>iv</code>) in bytes should be equal to <code>blocksize()/8</code> of the block cipher. Then call <code>encrypt_update()</code> any number of times to add the next chunk of data of variable length. When all input is consumed by <code>encrypt_update()</code> function, call <code>encrypt_final()</code> to finish the encryption (at this stage the final block will be written to <code>out</code>).
 <p>Decryption is done in a similar way.</p>
 <p>If you use the low-level functions that write the output to a preallocated buffer, the <code>out</code> argument should point to the next location where the encrypted output should be written; <code>resultlen</code> is the number of bytes written to <code>out</code> as the result of the function call. Because the class implements PKCS#7 padding, the overall size of the output buffer should be equal to the size of the input rounded up to the block size of the cipher algorithm, plus one additional full block if the input size is the exact multiple of the block size. It is responsibility of the caller to make sure the buffer is large enough.</p>
-<p>A simpler but slower interface accepts a reference to <code>std::vector&lt;uint8_t&gt;</code> and appends encryption or decryption result to this vector, which is dynamically resized as needed, so that you do not need to calculate and allocate a buffer of proper size in advance.</p>
+<p>A simpler but slower interface accepts a reference to <code>std::vector&lt;unsigned char&gt;</code> and appends encryption or decryption result to this vector, which is dynamically resized as needed, so that you do not need to calculate and allocate a buffer of proper size in advance.</p>
 <p>An even simpler but slower interface writes the output to <code>std::ostream</code>.</p>
 <p>Note that regardless of which interface you use, you still need to call <code>init()</code> function to set up the key and initialization vector.</p>
 <h3>5.2. CTR mode</h3>
@@ -466,9 +466,9 @@ In practice in most cases you probably want to use block ciphers in an encryptio
 <pre>
     ctr(const block_cipher& cipher);
 
-    void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen);
-    void encrypt(const uint8_t* in, size_t len, uint8_t* out);
-    void decrypt(const uint8_t* in, size_t len, uint8_t* out);
+    void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen);
+    void encrypt(const unsigned char* in, size_t len, unsigned char* out);
+    void decrypt(const unsigned char* in, size_t len, unsigned char* out);
 </pre>
 <p>CTR mode turns block cipher into a stream cipher, so no padding is needed in this mode and the size of the output buffer must be the same as the size of the input data.
 The length of the key in bytes should be equal to <code>keysize()/8</code> of the block cipher, and the length of the initialization vector (<code>iv</code>) in bytes should be equal to or smaller than <code>blocksize()/8</code> of the block cipher.
@@ -580,9 +580,9 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
         virtual size_t keysize() const = 0;
         virtual size_t ivsize() const = 0;
 
-        virtual void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) = 0;
-        virtual void encrypt(const uint8_t* in, size_t len, uint8_t* out) = 0;
-        virtual void decrypt(const uint8_t* in, size_t len, uint8_t* out) = 0;
+        virtual void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) = 0;
+        virtual void encrypt(const unsigned char* in, size_t len, unsigned char* out) = 0;
+        virtual void decrypt(const unsigned char* in, size_t len, unsigned char* out) = 0;
     };
 </pre>
 <p>To start encryption or decryption, call <code>init()</code> (<code>key</code> should point to a key of <code>keysize()/8</code> bytes, and iv should point to an initialization vector of <code>ivsize()/8</code> bytes). Then call <code>encrypt()</code> or <code>decrypt()</code> to encrypt or decrypt a stream of any length.</p>
@@ -660,14 +660,14 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
 <h3>7.1. PBKDF2</h3>
 <p>Function <a href="https://en.wikipedia.org/wiki/PBKDF2">pbkdf2</a> has the following prototype:</p>
 <pre>
-    void pbkdf2(hmac& hmac, const uint8_t* salt, size_t salt_len, int iterations, uint8_t* dk, size_t dklen);
+    void pbkdf2(hmac& hmac, const unsigned char* salt, size_t salt_len, int iterations, unsigned char* dk, size_t dklen);
 </pre>
 <p>You can use this function to derive an encryption key from a password. The password should be passed to the constructor of <code>hmac</code> object as the key.</p>
 <p>The following snippet generates a 256-bit key from password "password" and salt "salt" using PBKDF2 algorithm with 100000 iterations of HMAC-SHA256:</p>
 <pre>
     hmac hmac(sha256(), "password");
-    uint8_t key[256 / 8];
-    pbkdf2(hmac, (const uint8_t*)"salt", 4, 100000, key, sizeof(key));
+    unsigned char key[256 / 8];
+    pbkdf2(hmac, (const unsigned char*)"salt", 4, 100000, key, sizeof(key));
 </pre>
 <h3>7.2. scrypt</h3>
 <p>Function <a href="https://en.wikipedia.org/wiki/Scrypt">scrypt</a> has the following prototype:</p>
@@ -687,14 +687,14 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
     dk      Derived key, of length dklen bytes.
     */</i>
 
-    void scrypt(hmac& hmac, const uint8_t* salt, size_t salt_len, size_t N, size_t r, size_t p, uint8_t* dk, size_t dklen);
+    void scrypt(hmac& hmac, const unsigned char* salt, size_t salt_len, size_t N, size_t r, size_t p, unsigned char* dk, size_t dklen);
 </pre>
 <p>You can use this function to derive an encryption key from a password. The password should be passed to the constructor of <code>hmac</code> object as the key.</p>
 <p>The following snippet generates a 256-bit key from password "password" and salt "salt" using scrypt with N=16384, r=8 and p=16 (which takes 0.10 seconds on Intel Xeon E5-1650 v3):</p>
 <pre>
     hmac hmac(sha256(), "password");
-    uint8_t key[256 / 8];
-    scrypt(hmac, (const uint8_t*)"salt", 4, 16384, 8, 16, key, sizeof(key));
+    unsigned char key[256 / 8];
+    scrypt(hmac, (const unsigned char*)"salt", 4, 16384, 8, 16, key, sizeof(key));
 </pre>
 <h3>7.3. Argon2</h3>
 <p><a href="https://en.wikipedia.org/wiki/Argon2">Argon2</a> is a winner of Password Hashing Competition and is the recommended function for hashing passwords.</p>
@@ -719,25 +719,25 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
     dk       Derived key, of length dklen bytes.
     */</i>
 
-    void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len,
-                 uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-                 uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0,
+    void argon2d(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len,
+                 uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+                 unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0,
                  argon2_version version = argon2_version::version13);
 
-    void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len,
-                 uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-                 uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0,
+    void argon2i(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len,
+                 uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+                 unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0,
                  argon2_version version = argon2_version::version13);
 
-    void argon2id(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len,
-                  uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-                  uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0,
+    void argon2id(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len,
+                  uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+                  unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0,
                   argon2_version version = argon2_version::version13);
 </pre>
 <p>The following snippet generates a 256-bit key from password "password" and salt "salt" using <code>argon2i</code> function with p=4, m=4096 and t=1000 (which takes 0.68 seconds on Intel Xeon E5-1650 v3):</p>
 <pre>
-    uint8_t key[256 / 8];
-    argon2i("password", 8, (const uint8_t*)"salt", 4, 4, 4096, 1000, key, sizeof(key));
+    unsigned char key[256 / 8];
+    argon2i("password", 8, (const unsigned char*)"salt", 4, 4, 4096, 1000, key, sizeof(key));
 </pre>
 <p>Our implementation of Argon2 is faster than the optimized reference implementation, which needs 1.05 seconds to compute the same Argon2i hash on the same PC (both implementations were compiled by VC++ 2015 with /O2 optimization).</p>
 <h2 id="chdu">8. Digest utility</h2>

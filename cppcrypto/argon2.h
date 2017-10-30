@@ -44,16 +44,16 @@ namespace cppcrypto
 
 	Example:
 
-	    uint8_t dk[32];
-	    argon2i("password", 8, (const uint8_t*)"salt", 4, 4, 4096, 1000, dk, sizeof(dk));
+	    unsigned char dk[32];
+	    argon2i("password", 8, (const unsigned char*)"salt", 4, 4, 4096, 1000, dk, sizeof(dk));
 
 	*/
-	void argon2d(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
-	void argon2i(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
-	void argon2id(const char* password, uint32_t pwd_len, const uint8_t* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, uint8_t* dk, uint32_t dklen,
-		uint8_t* data = nullptr, uint32_t datalen = 0, uint8_t* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
+	void argon2d(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+		unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
+	void argon2i(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+		unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
+	void argon2id(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
+		unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0, argon2_version version = argon2_version::version13);
 }
 
 #endif

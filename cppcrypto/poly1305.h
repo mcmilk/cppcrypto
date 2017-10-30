@@ -18,13 +18,13 @@ namespace cppcrypto
 	class poly1305 : public crypto_hash
 	{
 	public:
-		poly1305(const uint8_t* key, size_t keylen);
+		poly1305(const unsigned char* key, size_t keylen);
 		poly1305(const std::string& key);
 		virtual ~poly1305();
 
 		void init() override;
-		void update(const uint8_t* data, size_t len) override;
-		void final(uint8_t* hash) override;
+		void update(const unsigned char* data, size_t len) override;
+		void final(unsigned char* hash) override;
 
 		size_t keysize() const { return 256; }
 		size_t hashsize() const override { return 128; }
@@ -35,14 +35,14 @@ namespace cppcrypto
 	private:
 		poly1305(const poly1305&) = delete;
 		void operator=(const poly1305&) = delete;
-		void construct(const uint8_t* key, size_t keylen);
-		void transform(const uint8_t* m, size_t num_blks, bool incomplete);
+		void construct(const unsigned char* key, size_t keylen);
+		void transform(const unsigned char* m, size_t num_blks, bool incomplete);
 
 		aligned_impl_ptr<detail::poly1305_impl, 32> impl_;
-		aligned_pod_array<uint8_t, 32, 32> key_;
-		aligned_pod_array<uint8_t, 17, 32> r_;
-		aligned_pod_array<uint8_t, 17, 32> accumulator_;
-		aligned_pod_array<uint8_t, 33, 32> m_;
+		aligned_pod_array<unsigned char, 32, 32> key_;
+		aligned_pod_array<unsigned char, 17, 32> r_;
+		aligned_pod_array<unsigned char, 17, 32> accumulator_;
+		aligned_pod_array<unsigned char, 33, 32> m_;
 		size_t pos;
 	};
 

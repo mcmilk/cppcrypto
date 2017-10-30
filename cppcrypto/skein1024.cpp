@@ -18,7 +18,7 @@ and released into public domain.
 namespace cppcrypto
 {
 
-void skein1024::update(const uint8_t* data, size_t len)
+void skein1024::update(const unsigned char* data, size_t len)
 {
 	if (pos && pos + len > 128)
 	{
@@ -335,7 +335,7 @@ void skein1024::init()
 	tweak[1] = (1ULL << 62) | (48ULL << 56);
 }
 
-void skein1024::final(uint8_t* hash)
+void skein1024::final(unsigned char* hash)
 {
 	tweak[1] |= 1ULL << 63; // last block
 	if (pos < 128)

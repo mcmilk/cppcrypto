@@ -25,9 +25,9 @@ namespace cppcrypto
 		rijndael128_128* clone() const override { return new rijndael128_128; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 44, 64> W_;
@@ -45,9 +45,9 @@ namespace cppcrypto
 		rijndael128_160* clone() const override { return new rijndael128_160; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 48, 64> W_;
@@ -65,9 +65,9 @@ namespace cppcrypto
 		rijndael128_192* clone() const override { return new rijndael128_192; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 52, 64> W_;
@@ -85,9 +85,9 @@ namespace cppcrypto
 		rijndael128_224* clone() const override { return new rijndael128_224; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 56, 64> W_;
@@ -105,9 +105,9 @@ namespace cppcrypto
 		rijndael128_256* clone() const override { return new rijndael128_256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 60, 64> W_;
@@ -125,8 +125,8 @@ namespace cppcrypto
 
 			size_t blocksize() const override { return 256; }
 
-			void encrypt_block(const uint8_t* in, uint8_t* out) override;
-			void decrypt_block(const uint8_t* in, uint8_t* out) override;
+			void encrypt_block(const unsigned char* in, unsigned char* out) override;
+			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 		protected:
 			aligned_pod_array<uint32_t, 120, 64> W_;
@@ -142,7 +142,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 128; }
 		rijndael256_128* clone() const override { return new rijndael256_128; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael256_160 : public detail::rijndael256
@@ -153,7 +153,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 160; }
 		rijndael256_160* clone() const override { return new rijndael256_160; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael256_192 : public detail::rijndael256
@@ -164,7 +164,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 192; }
 		rijndael256_192* clone() const override { return new rijndael256_192; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael256_224 : public detail::rijndael256
@@ -175,7 +175,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 224; }
 		rijndael256_224* clone() const override { return new rijndael256_224; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael256_256 : public detail::rijndael256
@@ -186,7 +186,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 256; }
 		rijndael256_256* clone() const override { return new rijndael256_256; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael192_128 : public block_cipher
@@ -200,9 +200,9 @@ namespace cppcrypto
 		rijndael192_128* clone() const override { return new rijndael192_128; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 78, 64> W_;
@@ -220,9 +220,9 @@ namespace cppcrypto
 		rijndael192_160* clone() const override { return new rijndael192_160; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 78, 64> W_;
@@ -241,9 +241,9 @@ namespace cppcrypto
 		rijndael192_192* clone() const override { return new rijndael192_192; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 78, 64> W_;
@@ -261,9 +261,9 @@ namespace cppcrypto
 		rijndael192_224* clone() const override { return new rijndael192_224; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 84, 64> W_;
@@ -281,9 +281,9 @@ namespace cppcrypto
 		rijndael192_256* clone() const override { return new rijndael192_256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 90, 64> W_;
@@ -301,9 +301,9 @@ namespace cppcrypto
 		rijndael160_128* clone() const override { return new rijndael160_128; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 60, 64> W_;
@@ -321,9 +321,9 @@ namespace cppcrypto
 		rijndael160_160* clone() const override { return new rijndael160_160; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 60, 64> W_;
@@ -341,9 +341,9 @@ namespace cppcrypto
 		rijndael160_192* clone() const override { return new rijndael160_192; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 65, 64> W_;
@@ -361,9 +361,9 @@ namespace cppcrypto
 		rijndael160_224* clone() const override { return new rijndael160_224; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 70, 64> W_;
@@ -381,9 +381,9 @@ namespace cppcrypto
 		rijndael160_256* clone() const override { return new rijndael160_256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 75, 64> W_;
@@ -402,8 +402,8 @@ namespace cppcrypto
 
 			size_t blocksize() const override { return 224; }
 
-			void encrypt_block(const uint8_t* in, uint8_t* out) override;
-			void decrypt_block(const uint8_t* in, uint8_t* out) override;
+			void encrypt_block(const unsigned char* in, unsigned char* out) override;
+			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 		protected:
 			aligned_pod_array<uint32_t, 98, 64> W_;
@@ -418,7 +418,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 128; }
 		rijndael224_128* clone() const override { return new rijndael224_128; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael224_160 : public detail::rijndael224
@@ -428,7 +428,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 160; }
 		rijndael224_160* clone() const override { return new rijndael224_160; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael224_192 : public detail::rijndael224
@@ -438,7 +438,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 192; }
 		rijndael224_192* clone() const override { return new rijndael224_192; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael224_224 : public detail::rijndael224
@@ -448,7 +448,7 @@ namespace cppcrypto
 		size_t keysize() const override { return 224; }
 		rijndael224_224* clone() const override { return new rijndael224_224; }
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
 	};
 
 	class rijndael224_256 : public block_cipher
@@ -462,9 +462,9 @@ namespace cppcrypto
 		rijndael224_256* clone() const override { return new rijndael224_256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		aligned_pod_array<uint32_t, 105, 64> W_;

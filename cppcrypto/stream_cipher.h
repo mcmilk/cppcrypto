@@ -23,9 +23,9 @@ namespace cppcrypto
 		virtual stream_cipher* clone() const = 0;
 		virtual void clear() = 0;
 
-		virtual void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) = 0;
-		virtual void encrypt(const uint8_t* in, size_t len, uint8_t* out) = 0;
-		virtual void decrypt(const uint8_t* in, size_t len, uint8_t* out) = 0;
+		virtual void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) = 0;
+		virtual void encrypt(const unsigned char* in, size_t len, unsigned char* out) = 0;
+		virtual void decrypt(const unsigned char* in, size_t len, unsigned char* out) = 0;
 
 	private:
 		stream_cipher(const stream_cipher&) = delete;

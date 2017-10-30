@@ -11,7 +11,7 @@ namespace cppcrypto
 	{
 	}
 
-	void block_cipher::encrypt_blocks(const uint8_t* in, uint8_t* out, size_t n)
+	void block_cipher::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
 	{
 		size_t bs = blocksize();
 		for (size_t i = 0; i < n; i++)
@@ -22,7 +22,7 @@ namespace cppcrypto
 		}
 	}
 
-	void block_cipher::decrypt_blocks(const uint8_t* in, uint8_t* out, size_t n)
+	void block_cipher::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
 	{
 		size_t bs = blocksize();
 		for (size_t i = 0; i < n; i++)

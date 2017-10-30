@@ -90,11 +90,11 @@ bool hash_file(const wchar_t* filename, vector<char>* hashsum, size_t hashsize, 
 
 		read += blockSize;
 
-		hash->update((const uint8_t*)buffer, static_cast<size_t>(blockSize));
+		hash->update((const unsigned char*)buffer, static_cast<size_t>(blockSize));
 	}
 
 	hashsum->resize(hashsize/8);
-	hash->final((uint8_t*)(&((*hashsum)[0])));
+	hash->final((unsigned char*)(&((*hashsum)[0])));
 
 	return true;
 }
@@ -269,7 +269,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		{
 			cbc.init(key, it->second->keysize()/8, iv,it->second->blocksize()/8 ,block_cipher::encryption);
 			next = ct;
-			cbc.encrypt_update((uint8_t*)message, static_cast<size_t>(fileSize), ct, resultlen);
+			cbc.encrypt_update((unsigned char*)message, static_cast<size_t>(fileSize), ct, resultlen);
 			next += resultlen;
 			cbc.encrypt_final(next, resultlen);
 		}
@@ -282,13 +282,13 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		ofile.write((const char*)ct, next - ct);
 #endif
 
-		uint8_t* next2 = pt;
+		unsigned char* next2 = pt;
 		timer.reset();
 		for (long i = 0; i < iterations; i++)
 		{
 			cbc.init(key, it->second->keysize()/8, iv, it->second->blocksize()/8, block_cipher::decryption);
 			next2 = pt;
-			cbc.decrypt_update((uint8_t*)ct, next-ct, next2, resultlen);
+			cbc.decrypt_update((unsigned char*)ct, next-ct, next2, resultlen);
 			next2 += resultlen;
 			cbc.decrypt_final(next2, resultlen);
 		}
@@ -311,7 +311,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		for (long i = 0; i < iterations; i++)
 		{
 			ctr.init(key, it->second->keysize() / 8, iv, it->second->blocksize() / 8);
-			ctr.encrypt((uint8_t*)message, static_cast<size_t>(fileSize), ct);
+			ctr.encrypt((unsigned char*)message, static_cast<size_t>(fileSize), ct);
 		}
 		seconds = timer.elapsed();
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s) ");
@@ -325,7 +325,7 @@ void bcperftest(map<wstring, unique_ptr<block_cipher>>& ciphers, long iterations
 		for (long i = 0; i < iterations; i++)
 		{
 			ctr.init(key, it->second->keysize() / 8, iv, it->second->blocksize() / 8);
-			ctr.decrypt((uint8_t*)ct, static_cast<size_t>(fileSize), pt);
+			ctr.decrypt((unsigned char*)ct, static_cast<size_t>(fileSize), pt);
 		}
 		seconds = timer.elapsed();
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s)");
@@ -411,7 +411,7 @@ void scperftest(map<wstring, unique_ptr<stream_cipher>>& ciphers, long iteration
 		for (long i = 0; i < iterations; i++)
 		{
 			sc->init(key, it->second->keysize() / 8, iv, it->second->ivsize() / 8);
-			sc->encrypt((uint8_t*)message, static_cast<size_t>(fileSize), ct);
+			sc->encrypt((unsigned char*)message, static_cast<size_t>(fileSize), ct);
 		}
 		double seconds = timer.elapsed();
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s) ");
@@ -425,7 +425,7 @@ void scperftest(map<wstring, unique_ptr<stream_cipher>>& ciphers, long iteration
 		for (long i = 0; i < iterations; i++)
 		{
 			sc->init(key, it->second->keysize() / 8, iv, it->second->ivsize() / 8);
-			sc->decrypt((uint8_t*)ct, static_cast<size_t>(fileSize), pt);
+			sc->decrypt((unsigned char*)ct, static_cast<size_t>(fileSize), pt);
 		}
 		seconds = timer.elapsed();
 		wcout << fixed << setprecision(5) << seconds << _T(" (") << setprecision(2) << (static_cast<double>(fileSize) / 1024.0 / 1024.0 * iterations / seconds) << _T(" MB/s)");
@@ -469,7 +469,7 @@ void checksumfile(const wchar_t* filename, crypto_hash* hash)
 	}
 }
 
-void hex2array(const string& hex, uint8_t* array)
+void hex2array(const string& hex, unsigned char* array)
 {
 	const char* pos = hex.c_str();
 	for (size_t count = 0; count < hex.size()/2; count++) {
@@ -483,7 +483,7 @@ void test_argon(const wstring& name, const wstring& filename)
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
-	uint8_t pwd[260], salt[260], secret[260], ad[260], tag[260], pwdhash[260];
+	unsigned char pwd[260], salt[260], secret[260], ad[260], tag[260], pwdhash[260];
 	uint32_t pwdlen = 0, saltlen = 0, secretlen = 0, adlen = 0, taglen = 32;
 	uint32_t memory = 32, iterations = 3, parallelism = 4;
 	uint32_t count = 0, failed = 0, success = 0;
@@ -587,7 +587,7 @@ void test_vector(const wstring& name, block_cipher* bc, const wstring& filename)
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
-	uint8_t key[260], pt[260], ct[260], res[260], tweak[260];
+	unsigned char key[260], pt[260], ct[260], res[260], tweak[260];
 	uint32_t count = 0, failed = 0, success = 0, repeat = 1;
 	bool tweakable = false;
 	regex eq(R"((\w+)\s*=\s*(\w+))");
@@ -703,8 +703,8 @@ void test_vector(const wstring& name, crypto_hash* ch, const wstring& filename)
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
-	uint8_t md[1024], res[4096];
-	vector<uint8_t> msg;
+	unsigned char md[1024], res[4096];
+	vector<unsigned char> msg;
 	uint32_t count = 0, failed = 0, success = 0;
 	regex eq(R"((\w+)\s*=\s*(\w*))");
 	while (getline(file, line))
@@ -767,11 +767,11 @@ void test_vector(const wstring& name, stream_cipher* ch, const wstring& filename
 {
 	ifstream file(filename, ios::in | ios::binary);
 	string line;
-	uint8_t key[260], iv[260], xord[260];
+	unsigned char key[260], iv[260], xord[260];
 	size_t keylen = 0, ivlen = 0, ptlen = 0;
-	vector<uint8_t> pt;
-	vector<uint8_t> res;
-	vector<uint8_t> ct;
+	vector<unsigned char> pt;
+	vector<unsigned char> res;
+	vector<unsigned char> ct;
 	uint32_t count = 0, failed = 0, success = 0;
 	regex eq(R"((\w+)\s*=\s*(\w*))");
 	while (getline(file, line))
@@ -880,7 +880,7 @@ void test_vector(const wstring& name, stream_cipher* ch, const wstring& filename
 				ch->init(key, keylen, iv, ivlen);
 				if (isxor)
 				{
-					vector<uint8_t> res2(res);
+					vector<unsigned char> res2(res);
 					ch->decrypt(&res2[0], ptlen, &res[0]);
 				}
 				else
@@ -1118,7 +1118,7 @@ int wmain(int argc, wchar_t* argv[])
 	test_hashes.emplace(make_pair(_T("shake256/4096"), unique_ptr<crypto_hash>(new shake256(4096))));
 	test_hashes.emplace(make_pair(_T("cshake256/512"), unique_ptr<crypto_hash>(new shake256(512, "", "Email Signature"))));
 	test_hashes.emplace(make_pair(_T("shake128/1120"), unique_ptr<crypto_hash>(new shake128(1120))));
-	uint8_t blakesalt[32];
+	unsigned char blakesalt[32];
 	iota(blakesalt, blakesalt + sizeof(blakesalt), 0);
 	test_hashes.emplace(make_pair(_T("blake/256salt"), unique_ptr<crypto_hash>(new blake(256, blakesalt, 16))));
 	blake temp12(384, blakesalt, 32);

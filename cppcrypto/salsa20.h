@@ -20,9 +20,9 @@ namespace cppcrypto
 		salsa20_256();
 		virtual ~salsa20_256();
 
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
-		void decrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
+		void decrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		void clear() override;
 		salsa20_256* clone() const override { return new salsa20_256; }
@@ -38,7 +38,7 @@ namespace cppcrypto
 	class salsa20_128 : public salsa20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		salsa20_128* clone() const override { return new salsa20_128; }
 		size_t keysize() const override { return 128; }
@@ -47,7 +47,7 @@ namespace cppcrypto
 	class xsalsa20_256 : public salsa20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		xsalsa20_256* clone() const override { return new xsalsa20_256; }
 		size_t keysize() const override { return 256; }
@@ -57,7 +57,7 @@ namespace cppcrypto
 	class xsalsa20_128 : public xsalsa20_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		xsalsa20_128* clone() const override { return new xsalsa20_128; }
 		size_t keysize() const override { return 128; }
@@ -66,7 +66,7 @@ namespace cppcrypto
 	class salsa20_12_256 : public salsa20_256
 	{
 	public:
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		salsa20_12_256* clone() const override { return new salsa20_12_256; }
 	};
@@ -74,7 +74,7 @@ namespace cppcrypto
 	class salsa20_12_128 : public salsa20_128
 	{
 	public:
-		void encrypt(const uint8_t* in, size_t len, uint8_t* out) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		salsa20_12_128* clone() const override { return new salsa20_12_128; }
 	};
@@ -82,7 +82,7 @@ namespace cppcrypto
 	class xsalsa20_12_256 : public salsa20_12_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		xsalsa20_12_256* clone() const override { return new xsalsa20_12_256; }
 		size_t keysize() const override { return 256; }
@@ -92,7 +92,7 @@ namespace cppcrypto
 	class xsalsa20_12_128 : public xsalsa20_12_256
 	{
 	public:
-		void init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen) override;
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
 
 		xsalsa20_12_128* clone() const override { return new xsalsa20_12_128; }
 		size_t keysize() const override { return 128; }

@@ -17,7 +17,7 @@ and released into public domain.
 namespace cppcrypto
 {
 
-	static const uint8_t S[256] = {
+	static const unsigned char S[256] = {
 		0xd6, 0x90, 0xe9, 0xfe, 0xcc, 0xe1, 0x3d, 0xb7, 0x16, 0xb6, 0x14, 0xc2, 0x28, 0xfb, 0x2c, 0x05,
 		0x2b, 0x67, 0x9a, 0x76, 0x2a, 0xbe, 0x04, 0xc3, 0xaa, 0x44, 0x13, 0x26, 0x49, 0x86, 0x06, 0x99,
 		0x9c, 0x42, 0x50, 0xf4, 0x91, 0xef, 0x98, 0x7a, 0x33, 0x54, 0x0b, 0x43, 0xed, 0xcf, 0xac, 0x62,
@@ -38,13 +38,13 @@ namespace cppcrypto
 
 	static inline uint32_t T(uint32_t x)
 	{
-		x = uint32_t(S[uint8_t(x)]) ^ (uint32_t(S[uint8_t(x >> 8)]) << 8) ^ (uint32_t(S[uint8_t(x >> 16)]) << 16) ^ (uint32_t(S[uint8_t(x >> 24)]) << 24);
+		x = uint32_t(S[(unsigned char)(x)]) ^ (uint32_t(S[(unsigned char)(x >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(x >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(x >> 24)]) << 24);
 		return x ^ rotatel32(x, 2) ^ rotatel32(x, 10) ^ rotatel32(x, 18) ^ rotatel32(x, 24);
 	}
 
 	static inline uint32_t TK(uint32_t x)
 	{
-		x = uint32_t(S[uint8_t(x)]) ^ (uint32_t(S[uint8_t(x >> 8)]) << 8) ^ (uint32_t(S[uint8_t(x >> 16)]) << 16) ^ (uint32_t(S[uint8_t(x >> 24)]) << 24);
+		x = uint32_t(S[(unsigned char)(x)]) ^ (uint32_t(S[(unsigned char)(x >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(x >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(x >> 24)]) << 24);
 		return x ^ rotatel32(x, 13) ^ rotatel32(x, 23);
 	}
 
@@ -63,7 +63,7 @@ namespace cppcrypto
 		zero_memory(rk, sizeof(rk));
 	}
 
-	bool sm4::init(const uint8_t* key, block_cipher::direction direction)
+	bool sm4::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t k0 = swap_uint32(*(uint32_t*)key) ^ 0xa3b1bac6;
 		uint32_t k1 = swap_uint32(*(((uint32_t*)key) + 1)) ^ 0x56aa3350;
@@ -114,7 +114,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void sm4::encrypt_block(const uint8_t* in, uint8_t* out)
+	void sm4::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint32_t x0 = swap_uint32(*(uint32_t*)in);
 		uint32_t x1 = swap_uint32(*(((uint32_t*)in) + 1));
@@ -159,7 +159,7 @@ namespace cppcrypto
 		*(((uint32_t*)out) + 3) = swap_uint32(x0);
 	}
 
-	void sm4::decrypt_block(const uint8_t* in, uint8_t* out)
+	void sm4::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		return encrypt_block(in, out);
 	}

@@ -25,7 +25,7 @@ namespace cppcrypto
 		0xb3000000, 0x7d000000, 0xfa000000, 0xef000000, 0xc5000000, 0x91000000, 0x39000000, 0x72000000
 	};
 
-	static const uint8_t S[256] =
+	static const unsigned char S[256] =
 	{
 		0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
 		0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
@@ -45,7 +45,7 @@ namespace cppcrypto
 		0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16
 	};
 
-	static const uint8_t IS[256] = 
+	static const unsigned char IS[256] = 
 	{
 		0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB,
 		0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB,
@@ -338,16 +338,16 @@ namespace cppcrypto
 	};
 
 #define KEYIMC(i) \
-		w[i*4] = IT[0][S[uint8_t(w[i*4] >> 24)]] ^ IT[1][S[(uint8_t(w[i*4] >> 16))]] ^ IT[2][S[uint8_t(w[i*4] >> 8)]] ^ IT[3][S[uint8_t(w[i*4])]]; \
-		w[i*4+1] = IT[0][S[uint8_t(w[i*4+1] >> 24)]] ^ IT[1][S[(uint8_t(w[i*4+1] >> 16))]] ^ IT[2][S[uint8_t(w[i*4+1] >> 8)]] ^ IT[3][S[uint8_t(w[i*4+1])]]; \
-		w[i*4+2] = IT[0][S[uint8_t(w[i*4+2] >> 24)]] ^ IT[1][S[(uint8_t(w[i*4+2] >> 16))]] ^ IT[2][S[uint8_t(w[i*4+2] >> 8)]] ^ IT[3][S[uint8_t(w[i*4+2])]]; \
-		w[i*4+3] = IT[0][S[uint8_t(w[i*4+3] >> 24)]] ^ IT[1][S[(uint8_t(w[i*4+3] >> 16))]] ^ IT[2][S[uint8_t(w[i*4+3] >> 8)]] ^ IT[3][S[uint8_t(w[i*4+3])]];
+		w[i*4] = IT[0][S[(unsigned char)(w[i*4] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*4] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*4] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*4])]]; \
+		w[i*4+1] = IT[0][S[(unsigned char)(w[i*4+1] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*4+1] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*4+1] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*4+1])]]; \
+		w[i*4+2] = IT[0][S[(unsigned char)(w[i*4+2] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*4+2] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*4+2] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*4+2])]]; \
+		w[i*4+3] = IT[0][S[(unsigned char)(w[i*4+3] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*4+3] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*4+3] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*4+3])]];
 
 #define ROUND(r) \
-		t0 = W_[r*4 + 0] ^ T[0][uint8_t(s0 >> 24)] ^ T[1][uint8_t(s1 >> 16)] ^ T[2][uint8_t(s2 >> 8)] ^ T[3][uint8_t(s3)];\
-		t1 = W_[r*4 + 1] ^ T[0][uint8_t(s1 >> 24)] ^ T[1][uint8_t(s2 >> 16)] ^ T[2][uint8_t(s3 >> 8)] ^ T[3][uint8_t(s0)];\
-		t2 = W_[r*4 + 2] ^ T[0][uint8_t(s2 >> 24)] ^ T[1][uint8_t(s3 >> 16)] ^ T[2][uint8_t(s0 >> 8)] ^ T[3][uint8_t(s1)];\
-		t3 = W_[r*4 + 3] ^ T[0][uint8_t(s3 >> 24)] ^ T[1][uint8_t(s0 >> 16)] ^ T[2][uint8_t(s1 >> 8)] ^ T[3][uint8_t(s2)];\
+		t0 = W_[r*4 + 0] ^ T[0][(unsigned char)(s0 >> 24)] ^ T[1][(unsigned char)(s1 >> 16)] ^ T[2][(unsigned char)(s2 >> 8)] ^ T[3][(unsigned char)(s3)];\
+		t1 = W_[r*4 + 1] ^ T[0][(unsigned char)(s1 >> 24)] ^ T[1][(unsigned char)(s2 >> 16)] ^ T[2][(unsigned char)(s3 >> 8)] ^ T[3][(unsigned char)(s0)];\
+		t2 = W_[r*4 + 2] ^ T[0][(unsigned char)(s2 >> 24)] ^ T[1][(unsigned char)(s3 >> 16)] ^ T[2][(unsigned char)(s0 >> 8)] ^ T[3][(unsigned char)(s1)];\
+		t3 = W_[r*4 + 3] ^ T[0][(unsigned char)(s3 >> 24)] ^ T[1][(unsigned char)(s0 >> 16)] ^ T[2][(unsigned char)(s1 >> 8)] ^ T[3][(unsigned char)(s2)];\
 		s0 = t0;\
 		s1 = t1;\
 		s2 = t2;\
@@ -364,10 +364,10 @@ namespace cppcrypto
 	*(uint32_t*)(out + 12) = swap_uint32(s3);
 
 #define IROUND(r) \
-	t0 = W_[r*4 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s3 >> 16)] ^ IT[2][uint8_t(s2 >> 8)] ^ IT[3][uint8_t(s1)]; \
-	t1 = W_[r*4 + 1] ^ IT[0][uint8_t(s1 >> 24)] ^ IT[1][uint8_t(s0 >> 16)] ^ IT[2][uint8_t(s3 >> 8)] ^ IT[3][uint8_t(s2)]; \
-	t2 = W_[r*4 + 2] ^ IT[0][uint8_t(s2 >> 24)] ^ IT[1][uint8_t(s1 >> 16)] ^ IT[2][uint8_t(s0 >> 8)] ^ IT[3][uint8_t(s3)]; \
-	t3 = W_[r*4 + 3] ^ IT[0][uint8_t(s3 >> 24)] ^ IT[1][uint8_t(s2 >> 16)] ^ IT[2][uint8_t(s1 >> 8)] ^ IT[3][uint8_t(s0)]; \
+	t0 = W_[r*4 + 0] ^ IT[0][(unsigned char)(s0 >> 24)] ^ IT[1][(unsigned char)(s3 >> 16)] ^ IT[2][(unsigned char)(s2 >> 8)] ^ IT[3][(unsigned char)(s1)]; \
+	t1 = W_[r*4 + 1] ^ IT[0][(unsigned char)(s1 >> 24)] ^ IT[1][(unsigned char)(s0 >> 16)] ^ IT[2][(unsigned char)(s3 >> 8)] ^ IT[3][(unsigned char)(s2)]; \
+	t2 = W_[r*4 + 2] ^ IT[0][(unsigned char)(s2 >> 24)] ^ IT[1][(unsigned char)(s1 >> 16)] ^ IT[2][(unsigned char)(s0 >> 8)] ^ IT[3][(unsigned char)(s3)]; \
+	t3 = W_[r*4 + 3] ^ IT[0][(unsigned char)(s3 >> 24)] ^ IT[1][(unsigned char)(s2 >> 16)] ^ IT[2][(unsigned char)(s1 >> 8)] ^ IT[3][(unsigned char)(s0)]; \
 	s0 = t0;\
 	s1 = t1;\
 	s2 = t2;\
@@ -404,7 +404,7 @@ namespace cppcrypto
 	uint32_t t0, t1, t2, t3;
 
 
-	bool rijndael128_128::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael128_128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -415,7 +415,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; i < 10; i++) {
 			uint32_t temp = w[3];
-			w[4] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[4] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[5] = w[1] ^ w[4];
 			w[6] = w[2] ^ w[5];
@@ -438,7 +438,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_128::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_128::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -446,7 +446,7 @@ namespace cppcrypto
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); LROUND(10);
 	}
 
-	void rijndael128_128::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_128::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -482,7 +482,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael128_192::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael128_192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -493,7 +493,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
 			uint32_t temp = w[5];
-			w[6] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[6] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[7] = w[1] ^ w[6];
 			w[8] = w[2] ^ w[7];
@@ -524,7 +524,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_192::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_192::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -532,7 +532,7 @@ namespace cppcrypto
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); ROUND(10); ROUND(11); LROUND(12);
 	}
 
-	void rijndael128_192::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_192::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -567,7 +567,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael128_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael128_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -577,7 +577,7 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
-			w[8] = w[0] ^ (uint32_t(S[uint8_t(w[7] >> 24)])) ^ (uint32_t(S[uint8_t(w[7])]) << 8) ^ (uint32_t(S[uint8_t(w[7] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[7] >> 16)]) << 24)
+			w[8] = w[0] ^ (uint32_t(S[(unsigned char)(w[7] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[7])]) << 8) ^ (uint32_t(S[(unsigned char)(w[7] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[7] >> 16)]) << 24)
 				^ RC[i];
 			w[9] = w[1] ^ w[8];
 			w[10] = w[2] ^ w[9];
@@ -587,7 +587,7 @@ namespace cppcrypto
 				break;
 
 			uint32_t temp = w[11];
-			w[12] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[12] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[13] = w[5] ^ w[12];
 			w[14] = w[6] ^ w[13];
 			w[15] = w[7] ^ w[14];
@@ -609,7 +609,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -617,7 +617,7 @@ namespace cppcrypto
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); ROUND(10); ROUND(11); ROUND(12); ROUND(13); LROUND(14);
 	}
 
-	void rijndael128_256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -652,7 +652,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael128_224::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael128_224::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -662,14 +662,14 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 7; i++) {
-			w[7] = w[0] ^ (uint32_t(S[uint8_t(w[6] >> 24)])) ^ (uint32_t(S[uint8_t(w[6])]) << 8) ^ (uint32_t(S[uint8_t(w[6] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[6] >> 16)]) << 24)
+			w[7] = w[0] ^ (uint32_t(S[(unsigned char)(w[6] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[6])]) << 8) ^ (uint32_t(S[(unsigned char)(w[6] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[6] >> 16)]) << 24)
 				^ RC[i];
 			w[8] = w[1] ^ w[7];
 			w[9] = w[2] ^ w[8];
 			w[10] = w[3] ^ w[9];
 
 			uint32_t temp = w[10];
-			w[11] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[11] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[12] = w[5] ^ w[11];
 			w[13] = w[6] ^ w[12];
 			w += 7;
@@ -690,7 +690,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_224::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_224::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -698,7 +698,7 @@ namespace cppcrypto
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); ROUND(10); ROUND(11); ROUND(12); LROUND(13);
 	}
 
-	void rijndael128_224::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_224::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -733,7 +733,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael128_160::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael128_160::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -744,7 +744,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
 			uint32_t temp = w[4];
-			w[5] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[5] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[6] = w[1] ^ w[5];
 			w[7] = w[2] ^ w[6];
@@ -773,7 +773,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael128_160::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_160::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -781,7 +781,7 @@ namespace cppcrypto
 		FROUND(); ROUND(1); ROUND(2); ROUND(3); ROUND(4); ROUND(5); ROUND(6); ROUND(7); ROUND(8); ROUND(9); ROUND(10); LROUND(11);
 	}
 
-	void rijndael128_160::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael128_160::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -817,24 +817,24 @@ namespace cppcrypto
 	}
 
 #define KEYIMC256(i) \
-		w[i*8] = IT[0][S[uint8_t(w[i*8] >> 24)]] ^ IT[1][S[(uint8_t(w[i*8] >> 16))]] ^ IT[2][S[uint8_t(w[i*8] >> 8)]] ^ IT[3][S[uint8_t(w[i*8])]]; \
-		w[i*8+1] = IT[0][S[uint8_t(w[i*8+1] >> 24)]] ^ IT[1][S[(uint8_t(w[i*8+1] >> 16))]] ^ IT[2][S[uint8_t(w[i*8+1] >> 8)]] ^ IT[3][S[uint8_t(w[i*8+1])]]; \
-		w[i*8+2] = IT[0][S[uint8_t(w[i*8+2] >> 24)]] ^ IT[1][S[(uint8_t(w[i*8+2] >> 16))]] ^ IT[2][S[uint8_t(w[i*8+2] >> 8)]] ^ IT[3][S[uint8_t(w[i*8+2])]]; \
-		w[i*8+3] = IT[0][S[uint8_t(w[i*8+3] >> 24)]] ^ IT[1][S[(uint8_t(w[i*8+3] >> 16))]] ^ IT[2][S[uint8_t(w[i*8+3] >> 8)]] ^ IT[3][S[uint8_t(w[i*8+3])]]; \
-		w[i*8+4] = IT[0][S[uint8_t(w[i*8+4] >> 24)]] ^ IT[1][S[(uint8_t(w[i*8+4] >> 16))]] ^ IT[2][S[uint8_t(w[i*8+4] >> 8)]] ^ IT[3][S[uint8_t(w[i*8+4])]]; \
-		w[i*8+5] = IT[0][S[uint8_t(w[i*8+5] >> 24)]] ^ IT[1][S[(uint8_t(w[i*8+5] >> 16))]] ^ IT[2][S[uint8_t(w[i*8+5] >> 8)]] ^ IT[3][S[uint8_t(w[i*8+5])]]; \
-		w[i*8+6] = IT[0][S[uint8_t(w[i*8+6] >> 24)]] ^ IT[1][S[(uint8_t(w[i*8+6] >> 16))]] ^ IT[2][S[uint8_t(w[i*8+6] >> 8)]] ^ IT[3][S[uint8_t(w[i*8+6])]]; \
-		w[i*8+7] = IT[0][S[uint8_t(w[i*8+7] >> 24)]] ^ IT[1][S[(uint8_t(w[i*8+7] >> 16))]] ^ IT[2][S[uint8_t(w[i*8+7] >> 8)]] ^ IT[3][S[uint8_t(w[i*8+7])]];
+		w[i*8] = IT[0][S[(unsigned char)(w[i*8] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*8] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*8] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*8])]]; \
+		w[i*8+1] = IT[0][S[(unsigned char)(w[i*8+1] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*8+1] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*8+1] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*8+1])]]; \
+		w[i*8+2] = IT[0][S[(unsigned char)(w[i*8+2] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*8+2] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*8+2] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*8+2])]]; \
+		w[i*8+3] = IT[0][S[(unsigned char)(w[i*8+3] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*8+3] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*8+3] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*8+3])]]; \
+		w[i*8+4] = IT[0][S[(unsigned char)(w[i*8+4] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*8+4] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*8+4] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*8+4])]]; \
+		w[i*8+5] = IT[0][S[(unsigned char)(w[i*8+5] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*8+5] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*8+5] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*8+5])]]; \
+		w[i*8+6] = IT[0][S[(unsigned char)(w[i*8+6] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*8+6] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*8+6] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*8+6])]]; \
+		w[i*8+7] = IT[0][S[(unsigned char)(w[i*8+7] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*8+7] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*8+7] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*8+7])]];
 
 #define ROUND256(r) \
-		t0 = W_[r*8 + 0] ^ T[0][uint8_t(s0 >> 24)] ^ T[1][uint8_t(s1 >> 16)] ^ T[2][uint8_t(s3 >> 8)] ^ T[3][uint8_t(s4)];\
-		t1 = W_[r*8 + 1] ^ T[0][uint8_t(s1 >> 24)] ^ T[1][uint8_t(s2 >> 16)] ^ T[2][uint8_t(s4 >> 8)] ^ T[3][uint8_t(s5)];\
-		t2 = W_[r*8 + 2] ^ T[0][uint8_t(s2 >> 24)] ^ T[1][uint8_t(s3 >> 16)] ^ T[2][uint8_t(s5 >> 8)] ^ T[3][uint8_t(s6)];\
-		t3 = W_[r*8 + 3] ^ T[0][uint8_t(s3 >> 24)] ^ T[1][uint8_t(s4 >> 16)] ^ T[2][uint8_t(s6 >> 8)] ^ T[3][uint8_t(s7)];\
-		t4 = W_[r*8 + 4] ^ T[0][uint8_t(s4 >> 24)] ^ T[1][uint8_t(s5 >> 16)] ^ T[2][uint8_t(s7 >> 8)] ^ T[3][uint8_t(s0)];\
-		t5 = W_[r*8 + 5] ^ T[0][uint8_t(s5 >> 24)] ^ T[1][uint8_t(s6 >> 16)] ^ T[2][uint8_t(s0 >> 8)] ^ T[3][uint8_t(s1)];\
-		t6 = W_[r*8 + 6] ^ T[0][uint8_t(s6 >> 24)] ^ T[1][uint8_t(s7 >> 16)] ^ T[2][uint8_t(s1 >> 8)] ^ T[3][uint8_t(s2)];\
-		t7 = W_[r*8 + 7] ^ T[0][uint8_t(s7 >> 24)] ^ T[1][uint8_t(s0 >> 16)] ^ T[2][uint8_t(s2 >> 8)] ^ T[3][uint8_t(s3)];\
+		t0 = W_[r*8 + 0] ^ T[0][(unsigned char)(s0 >> 24)] ^ T[1][(unsigned char)(s1 >> 16)] ^ T[2][(unsigned char)(s3 >> 8)] ^ T[3][(unsigned char)(s4)];\
+		t1 = W_[r*8 + 1] ^ T[0][(unsigned char)(s1 >> 24)] ^ T[1][(unsigned char)(s2 >> 16)] ^ T[2][(unsigned char)(s4 >> 8)] ^ T[3][(unsigned char)(s5)];\
+		t2 = W_[r*8 + 2] ^ T[0][(unsigned char)(s2 >> 24)] ^ T[1][(unsigned char)(s3 >> 16)] ^ T[2][(unsigned char)(s5 >> 8)] ^ T[3][(unsigned char)(s6)];\
+		t3 = W_[r*8 + 3] ^ T[0][(unsigned char)(s3 >> 24)] ^ T[1][(unsigned char)(s4 >> 16)] ^ T[2][(unsigned char)(s6 >> 8)] ^ T[3][(unsigned char)(s7)];\
+		t4 = W_[r*8 + 4] ^ T[0][(unsigned char)(s4 >> 24)] ^ T[1][(unsigned char)(s5 >> 16)] ^ T[2][(unsigned char)(s7 >> 8)] ^ T[3][(unsigned char)(s0)];\
+		t5 = W_[r*8 + 5] ^ T[0][(unsigned char)(s5 >> 24)] ^ T[1][(unsigned char)(s6 >> 16)] ^ T[2][(unsigned char)(s0 >> 8)] ^ T[3][(unsigned char)(s1)];\
+		t6 = W_[r*8 + 6] ^ T[0][(unsigned char)(s6 >> 24)] ^ T[1][(unsigned char)(s7 >> 16)] ^ T[2][(unsigned char)(s1 >> 8)] ^ T[3][(unsigned char)(s2)];\
+		t7 = W_[r*8 + 7] ^ T[0][(unsigned char)(s7 >> 24)] ^ T[1][(unsigned char)(s0 >> 16)] ^ T[2][(unsigned char)(s2 >> 8)] ^ T[3][(unsigned char)(s3)];\
 		s0 = t0;\
 		s1 = t1;\
 		s2 = t2;\
@@ -863,14 +863,14 @@ namespace cppcrypto
 	*(uint32_t*)(out + 28) = swap_uint32(s7);
 
 #define IROUND256(r) \
-	t0 = W_[r*8 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s7 >> 16)] ^ IT[2][uint8_t(s5 >> 8)] ^ IT[3][uint8_t(s4)]; \
-	t1 = W_[r*8 + 1] ^ IT[0][uint8_t(s1 >> 24)] ^ IT[1][uint8_t(s0 >> 16)] ^ IT[2][uint8_t(s6 >> 8)] ^ IT[3][uint8_t(s5)]; \
-	t2 = W_[r*8 + 2] ^ IT[0][uint8_t(s2 >> 24)] ^ IT[1][uint8_t(s1 >> 16)] ^ IT[2][uint8_t(s7 >> 8)] ^ IT[3][uint8_t(s6)]; \
-	t3 = W_[r*8 + 3] ^ IT[0][uint8_t(s3 >> 24)] ^ IT[1][uint8_t(s2 >> 16)] ^ IT[2][uint8_t(s0 >> 8)] ^ IT[3][uint8_t(s7)]; \
-	t4 = W_[r*8 + 4] ^ IT[0][uint8_t(s4 >> 24)] ^ IT[1][uint8_t(s3 >> 16)] ^ IT[2][uint8_t(s1 >> 8)] ^ IT[3][uint8_t(s0)]; \
-	t5 = W_[r*8 + 5] ^ IT[0][uint8_t(s5 >> 24)] ^ IT[1][uint8_t(s4 >> 16)] ^ IT[2][uint8_t(s2 >> 8)] ^ IT[3][uint8_t(s1)]; \
-	t6 = W_[r*8 + 6] ^ IT[0][uint8_t(s6 >> 24)] ^ IT[1][uint8_t(s5 >> 16)] ^ IT[2][uint8_t(s3 >> 8)] ^ IT[3][uint8_t(s2)]; \
-	t7 = W_[r*8 + 7] ^ IT[0][uint8_t(s7 >> 24)] ^ IT[1][uint8_t(s6 >> 16)] ^ IT[2][uint8_t(s4 >> 8)] ^ IT[3][uint8_t(s3)]; \
+	t0 = W_[r*8 + 0] ^ IT[0][(unsigned char)(s0 >> 24)] ^ IT[1][(unsigned char)(s7 >> 16)] ^ IT[2][(unsigned char)(s5 >> 8)] ^ IT[3][(unsigned char)(s4)]; \
+	t1 = W_[r*8 + 1] ^ IT[0][(unsigned char)(s1 >> 24)] ^ IT[1][(unsigned char)(s0 >> 16)] ^ IT[2][(unsigned char)(s6 >> 8)] ^ IT[3][(unsigned char)(s5)]; \
+	t2 = W_[r*8 + 2] ^ IT[0][(unsigned char)(s2 >> 24)] ^ IT[1][(unsigned char)(s1 >> 16)] ^ IT[2][(unsigned char)(s7 >> 8)] ^ IT[3][(unsigned char)(s6)]; \
+	t3 = W_[r*8 + 3] ^ IT[0][(unsigned char)(s3 >> 24)] ^ IT[1][(unsigned char)(s2 >> 16)] ^ IT[2][(unsigned char)(s0 >> 8)] ^ IT[3][(unsigned char)(s7)]; \
+	t4 = W_[r*8 + 4] ^ IT[0][(unsigned char)(s4 >> 24)] ^ IT[1][(unsigned char)(s3 >> 16)] ^ IT[2][(unsigned char)(s1 >> 8)] ^ IT[3][(unsigned char)(s0)]; \
+	t5 = W_[r*8 + 5] ^ IT[0][(unsigned char)(s5 >> 24)] ^ IT[1][(unsigned char)(s4 >> 16)] ^ IT[2][(unsigned char)(s2 >> 8)] ^ IT[3][(unsigned char)(s1)]; \
+	t6 = W_[r*8 + 6] ^ IT[0][(unsigned char)(s6 >> 24)] ^ IT[1][(unsigned char)(s5 >> 16)] ^ IT[2][(unsigned char)(s3 >> 8)] ^ IT[3][(unsigned char)(s2)]; \
+	t7 = W_[r*8 + 7] ^ IT[0][(unsigned char)(s7 >> 24)] ^ IT[1][(unsigned char)(s6 >> 16)] ^ IT[2][(unsigned char)(s4 >> 8)] ^ IT[3][(unsigned char)(s3)]; \
 	s0 = t0;\
 	s1 = t1;\
 	s2 = t2;\
@@ -930,7 +930,7 @@ namespace cppcrypto
 		std::swap(w[i + 7], w[8 * Nr + 7 - i]); \
 		}
 
-	bool rijndael256_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael256_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -940,13 +940,13 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 14; i++) {
-			w[8] = w[0] ^ (uint32_t(S[uint8_t(w[7] >> 24)])) ^ (uint32_t(S[uint8_t(w[7])]) << 8) ^ (uint32_t(S[uint8_t(w[7] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[7] >> 16)]) << 24)
+			w[8] = w[0] ^ (uint32_t(S[(unsigned char)(w[7] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[7])]) << 8) ^ (uint32_t(S[(unsigned char)(w[7] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[7] >> 16)]) << 24)
 				^ RC[i];
 			w[9] = w[1] ^ w[8];
 			w[10] = w[2] ^ w[9];
 			w[11] = w[3] ^ w[10];
 
-			w[12] = w[4] ^ (uint32_t(S[uint8_t(w[11])])) ^ (uint32_t(S[uint8_t(w[11] >> 8)]) << 8) ^ (uint32_t(S[uint8_t(w[11] >> 16)]) << 16) ^ (uint32_t(S[uint8_t(w[11] >> 24)]) << 24);
+			w[12] = w[4] ^ (uint32_t(S[(unsigned char)(w[11])])) ^ (uint32_t(S[(unsigned char)(w[11] >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(w[11] >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(w[11] >> 24)]) << 24);
 			w[13] = w[5] ^ w[12];
 			w[14] = w[6] ^ w[13];
 			w[15] = w[7] ^ w[14];
@@ -970,7 +970,7 @@ namespace cppcrypto
 
 	namespace detail
 	{
-		void rijndael256::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael256::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			if (impl_)
 				return impl_->encrypt_block(in, out);
@@ -978,7 +978,7 @@ namespace cppcrypto
 			FROUND256(); ROUND256(1); ROUND256(2); ROUND256(3); ROUND256(4); ROUND256(5); ROUND256(6); ROUND256(7); ROUND256(8); ROUND256(9); ROUND256(10); ROUND256(11); ROUND256(12); ROUND256(13); LROUND256(14);
 		}
 
-		void rijndael256::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael256::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			if (impl_)
 				return impl_->decrypt_block(in, out);
@@ -1019,7 +1019,7 @@ namespace cppcrypto
 #endif
 	}
 
-	bool rijndael256_128::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael256_128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1030,7 +1030,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; i < 29; i++) {
 			uint32_t temp = w[3];
-			w[4] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[4] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[5] = w[1] ^ w[4];
 			w[6] = w[2] ^ w[5];
@@ -1065,7 +1065,7 @@ namespace cppcrypto
 #endif
 	}
 
-	bool rijndael256_224::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael256_224::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1075,7 +1075,7 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
-			w[7] = w[0] ^ (uint32_t(S[uint8_t(w[6] >> 24)])) ^ (uint32_t(S[uint8_t(w[6])]) << 8) ^ (uint32_t(S[uint8_t(w[6] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[6] >> 16)]) << 24)
+			w[7] = w[0] ^ (uint32_t(S[(unsigned char)(w[6] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[6])]) << 8) ^ (uint32_t(S[(unsigned char)(w[6] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[6] >> 16)]) << 24)
 				^ RC[i];
 
 			if (i == 16)
@@ -1086,7 +1086,7 @@ namespace cppcrypto
 			w[10] = w[3] ^ w[9];
 
 			uint32_t temp = w[10];
-			w[11] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[11] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[12] = w[5] ^ w[11];
 			w[13] = w[6] ^ w[12];
 			w += 7;
@@ -1119,7 +1119,7 @@ namespace cppcrypto
 #endif
 	}
 
-	bool rijndael256_160::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael256_160::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1130,7 +1130,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; i < 23; i++) {
 			uint32_t temp = w[4];
-			w[5] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[5] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[6] = w[1] ^ w[5];
 			w[7] = w[2] ^ w[6];
@@ -1166,7 +1166,7 @@ namespace cppcrypto
 #endif
 	}
 
-	bool rijndael256_192::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael256_192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1177,7 +1177,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; i < 19; i++) {
 			uint32_t temp = w[5];
-			w[6] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[6] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[7] = w[1] ^ w[6];
 			w[8] = w[2] ^ w[7];
@@ -1215,20 +1215,20 @@ namespace cppcrypto
 	}
 
 #define KEYIMC192(i) \
-		w[i*6] = IT[0][S[uint8_t(w[i*6] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6] >> 16))]] ^ IT[2][S[uint8_t(w[i*6] >> 8)]] ^ IT[3][S[uint8_t(w[i*6])]]; \
-		w[i*6+1] = IT[0][S[uint8_t(w[i*6+1] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+1] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+1] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+1])]]; \
-		w[i*6+2] = IT[0][S[uint8_t(w[i*6+2] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+2] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+2] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+2])]]; \
-		w[i*6+3] = IT[0][S[uint8_t(w[i*6+3] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+3] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+3] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+3])]]; \
-		w[i*6+4] = IT[0][S[uint8_t(w[i*6+4] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+4] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+4] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+4])]]; \
-		w[i*6+5] = IT[0][S[uint8_t(w[i*6+5] >> 24)]] ^ IT[1][S[(uint8_t(w[i*6+5] >> 16))]] ^ IT[2][S[uint8_t(w[i*6+5] >> 8)]] ^ IT[3][S[uint8_t(w[i*6+5])]];
+		w[i*6] = IT[0][S[(unsigned char)(w[i*6] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*6] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*6] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*6])]]; \
+		w[i*6+1] = IT[0][S[(unsigned char)(w[i*6+1] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*6+1] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*6+1] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*6+1])]]; \
+		w[i*6+2] = IT[0][S[(unsigned char)(w[i*6+2] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*6+2] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*6+2] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*6+2])]]; \
+		w[i*6+3] = IT[0][S[(unsigned char)(w[i*6+3] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*6+3] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*6+3] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*6+3])]]; \
+		w[i*6+4] = IT[0][S[(unsigned char)(w[i*6+4] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*6+4] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*6+4] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*6+4])]]; \
+		w[i*6+5] = IT[0][S[(unsigned char)(w[i*6+5] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*6+5] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*6+5] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*6+5])]];
 
 #define ROUND192(r) \
-		t0 = W_[r*6 + 0] ^ T[0][uint8_t(s0 >> 24)] ^ T[1][uint8_t(s1 >> 16)] ^ T[2][uint8_t(s2 >> 8)] ^ T[3][uint8_t(s3)];\
-		t1 = W_[r*6 + 1] ^ T[0][uint8_t(s1 >> 24)] ^ T[1][uint8_t(s2 >> 16)] ^ T[2][uint8_t(s3 >> 8)] ^ T[3][uint8_t(s4)];\
-		t2 = W_[r*6 + 2] ^ T[0][uint8_t(s2 >> 24)] ^ T[1][uint8_t(s3 >> 16)] ^ T[2][uint8_t(s4 >> 8)] ^ T[3][uint8_t(s5)];\
-		t3 = W_[r*6 + 3] ^ T[0][uint8_t(s3 >> 24)] ^ T[1][uint8_t(s4 >> 16)] ^ T[2][uint8_t(s5 >> 8)] ^ T[3][uint8_t(s0)];\
-		t4 = W_[r*6 + 4] ^ T[0][uint8_t(s4 >> 24)] ^ T[1][uint8_t(s5 >> 16)] ^ T[2][uint8_t(s0 >> 8)] ^ T[3][uint8_t(s1)];\
-		t5 = W_[r*6 + 5] ^ T[0][uint8_t(s5 >> 24)] ^ T[1][uint8_t(s0 >> 16)] ^ T[2][uint8_t(s1 >> 8)] ^ T[3][uint8_t(s2)];\
+		t0 = W_[r*6 + 0] ^ T[0][(unsigned char)(s0 >> 24)] ^ T[1][(unsigned char)(s1 >> 16)] ^ T[2][(unsigned char)(s2 >> 8)] ^ T[3][(unsigned char)(s3)];\
+		t1 = W_[r*6 + 1] ^ T[0][(unsigned char)(s1 >> 24)] ^ T[1][(unsigned char)(s2 >> 16)] ^ T[2][(unsigned char)(s3 >> 8)] ^ T[3][(unsigned char)(s4)];\
+		t2 = W_[r*6 + 2] ^ T[0][(unsigned char)(s2 >> 24)] ^ T[1][(unsigned char)(s3 >> 16)] ^ T[2][(unsigned char)(s4 >> 8)] ^ T[3][(unsigned char)(s5)];\
+		t3 = W_[r*6 + 3] ^ T[0][(unsigned char)(s3 >> 24)] ^ T[1][(unsigned char)(s4 >> 16)] ^ T[2][(unsigned char)(s5 >> 8)] ^ T[3][(unsigned char)(s0)];\
+		t4 = W_[r*6 + 4] ^ T[0][(unsigned char)(s4 >> 24)] ^ T[1][(unsigned char)(s5 >> 16)] ^ T[2][(unsigned char)(s0 >> 8)] ^ T[3][(unsigned char)(s1)];\
+		t5 = W_[r*6 + 5] ^ T[0][(unsigned char)(s5 >> 24)] ^ T[1][(unsigned char)(s0 >> 16)] ^ T[2][(unsigned char)(s1 >> 8)] ^ T[3][(unsigned char)(s2)];\
 		s0 = t0;\
 		s1 = t1;\
 		s2 = t2;\
@@ -1251,12 +1251,12 @@ namespace cppcrypto
 	*(uint32_t*)(out + 20) = swap_uint32(s5);
 
 #define IROUND192(r) \
-	t0 = W_[r*6 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s5 >> 16)] ^ IT[2][uint8_t(s4 >> 8)] ^ IT[3][uint8_t(s3)]; \
-	t1 = W_[r*6 + 1] ^ IT[0][uint8_t(s1 >> 24)] ^ IT[1][uint8_t(s0 >> 16)] ^ IT[2][uint8_t(s5 >> 8)] ^ IT[3][uint8_t(s4)]; \
-	t2 = W_[r*6 + 2] ^ IT[0][uint8_t(s2 >> 24)] ^ IT[1][uint8_t(s1 >> 16)] ^ IT[2][uint8_t(s0 >> 8)] ^ IT[3][uint8_t(s5)]; \
-	t3 = W_[r*6 + 3] ^ IT[0][uint8_t(s3 >> 24)] ^ IT[1][uint8_t(s2 >> 16)] ^ IT[2][uint8_t(s1 >> 8)] ^ IT[3][uint8_t(s0)]; \
-	t4 = W_[r*6 + 4] ^ IT[0][uint8_t(s4 >> 24)] ^ IT[1][uint8_t(s3 >> 16)] ^ IT[2][uint8_t(s2 >> 8)] ^ IT[3][uint8_t(s1)]; \
-	t5 = W_[r*6 + 5] ^ IT[0][uint8_t(s5 >> 24)] ^ IT[1][uint8_t(s4 >> 16)] ^ IT[2][uint8_t(s3 >> 8)] ^ IT[3][uint8_t(s2)]; \
+	t0 = W_[r*6 + 0] ^ IT[0][(unsigned char)(s0 >> 24)] ^ IT[1][(unsigned char)(s5 >> 16)] ^ IT[2][(unsigned char)(s4 >> 8)] ^ IT[3][(unsigned char)(s3)]; \
+	t1 = W_[r*6 + 1] ^ IT[0][(unsigned char)(s1 >> 24)] ^ IT[1][(unsigned char)(s0 >> 16)] ^ IT[2][(unsigned char)(s5 >> 8)] ^ IT[3][(unsigned char)(s4)]; \
+	t2 = W_[r*6 + 2] ^ IT[0][(unsigned char)(s2 >> 24)] ^ IT[1][(unsigned char)(s1 >> 16)] ^ IT[2][(unsigned char)(s0 >> 8)] ^ IT[3][(unsigned char)(s5)]; \
+	t3 = W_[r*6 + 3] ^ IT[0][(unsigned char)(s3 >> 24)] ^ IT[1][(unsigned char)(s2 >> 16)] ^ IT[2][(unsigned char)(s1 >> 8)] ^ IT[3][(unsigned char)(s0)]; \
+	t4 = W_[r*6 + 4] ^ IT[0][(unsigned char)(s4 >> 24)] ^ IT[1][(unsigned char)(s3 >> 16)] ^ IT[2][(unsigned char)(s2 >> 8)] ^ IT[3][(unsigned char)(s1)]; \
+	t5 = W_[r*6 + 5] ^ IT[0][(unsigned char)(s5 >> 24)] ^ IT[1][(unsigned char)(s4 >> 16)] ^ IT[2][(unsigned char)(s3 >> 8)] ^ IT[3][(unsigned char)(s2)]; \
 	s0 = t0;\
 	s1 = t1;\
 	s2 = t2;\
@@ -1304,7 +1304,7 @@ namespace cppcrypto
 		std::swap(w[i + 5], w[6 * Nr + 5 - i]); \
 			}
 
-	bool rijndael192_128::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael192_128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1315,7 +1315,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; i < 19; i++) {
 			uint32_t temp = w[3];
-			w[4] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[4] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[5] = w[1] ^ w[4];
 
@@ -1342,7 +1342,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_128::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_128::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -1350,7 +1350,7 @@ namespace cppcrypto
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
 	}
 
-	void rijndael192_128::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_128::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -1387,7 +1387,7 @@ namespace cppcrypto
 	}
 
 
-	bool rijndael192_160::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael192_160::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1398,7 +1398,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
 			uint32_t temp = w[4];
-			w[5] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[5] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[6] = w[1] ^ w[5];
 			w[7] = w[2] ^ w[6];
@@ -1426,7 +1426,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_160::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_160::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -1434,7 +1434,7 @@ namespace cppcrypto
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
 	}
 
-	void rijndael192_160::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_160::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -1472,7 +1472,7 @@ namespace cppcrypto
 	}
 
 
-	bool rijndael192_192::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael192_192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1483,7 +1483,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; i < 12; i++) {
 			uint32_t temp = w[5];
-			w[6] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[6] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[7] = w[1] ^ w[6];
 			w[8] = w[2] ^ w[7];
@@ -1508,7 +1508,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_192::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_192::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -1516,7 +1516,7 @@ namespace cppcrypto
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); LROUND192(12);
 	}
 
-	void rijndael192_192::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_192::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -1553,7 +1553,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael192_224::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael192_224::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1563,14 +1563,14 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 11; i++) {
-			w[7] = w[0] ^ (uint32_t(S[uint8_t(w[6] >> 24)])) ^ (uint32_t(S[uint8_t(w[6])]) << 8) ^ (uint32_t(S[uint8_t(w[6] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[6] >> 16)]) << 24)
+			w[7] = w[0] ^ (uint32_t(S[(unsigned char)(w[6] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[6])]) << 8) ^ (uint32_t(S[(unsigned char)(w[6] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[6] >> 16)]) << 24)
 				^ RC[i];
 			w[8] = w[1] ^ w[7];
 			w[9] = w[2] ^ w[8];
 			w[10] = w[3] ^ w[9];
 
 			uint32_t temp = w[10];
-			w[11] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[11] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[12] = w[5] ^ w[11];
 			w[13] = w[6] ^ w[12];
 			w += 7;
@@ -1591,7 +1591,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_224::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_224::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -1599,7 +1599,7 @@ namespace cppcrypto
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); ROUND192(12); LROUND192(13);
 	}
 
-	void rijndael192_224::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_224::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -1635,7 +1635,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael192_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael192_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1645,7 +1645,7 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
-			w[8] = w[0] ^ (uint32_t(S[uint8_t(w[7] >> 24)])) ^ (uint32_t(S[uint8_t(w[7])]) << 8) ^ (uint32_t(S[uint8_t(w[7] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[7] >> 16)]) << 24)
+			w[8] = w[0] ^ (uint32_t(S[(unsigned char)(w[7] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[7])]) << 8) ^ (uint32_t(S[(unsigned char)(w[7] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[7] >> 16)]) << 24)
 				^ RC[i];
 			w[9] = w[1] ^ w[8];
 
@@ -1656,7 +1656,7 @@ namespace cppcrypto
 			w[11] = w[3] ^ w[10];
 
 			uint32_t temp = w[11];
-			w[12] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[12] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[13] = w[5] ^ w[12];
 			w[14] = w[6] ^ w[13];
 			w[15] = w[7] ^ w[14];
@@ -1678,7 +1678,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael192_256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -1686,7 +1686,7 @@ namespace cppcrypto
 		FROUND192(); ROUND192(1); ROUND192(2); ROUND192(3); ROUND192(4); ROUND192(5); ROUND192(6); ROUND192(7); ROUND192(8); ROUND192(9); ROUND192(10); ROUND192(11); ROUND192(12); ROUND192(13); LROUND192(14);
 	}
 
-	void rijndael192_256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael192_256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -1723,18 +1723,18 @@ namespace cppcrypto
 	}
 
 #define KEYIMC160(i) \
-		w[i*5] = IT[0][S[uint8_t(w[i*5] >> 24)]] ^ IT[1][S[(uint8_t(w[i*5] >> 16))]] ^ IT[2][S[uint8_t(w[i*5] >> 8)]] ^ IT[3][S[uint8_t(w[i*5])]]; \
-		w[i*5+1] = IT[0][S[uint8_t(w[i*5+1] >> 24)]] ^ IT[1][S[(uint8_t(w[i*5+1] >> 16))]] ^ IT[2][S[uint8_t(w[i*5+1] >> 8)]] ^ IT[3][S[uint8_t(w[i*5+1])]]; \
-		w[i*5+2] = IT[0][S[uint8_t(w[i*5+2] >> 24)]] ^ IT[1][S[(uint8_t(w[i*5+2] >> 16))]] ^ IT[2][S[uint8_t(w[i*5+2] >> 8)]] ^ IT[3][S[uint8_t(w[i*5+2])]]; \
-		w[i*5+3] = IT[0][S[uint8_t(w[i*5+3] >> 24)]] ^ IT[1][S[(uint8_t(w[i*5+3] >> 16))]] ^ IT[2][S[uint8_t(w[i*5+3] >> 8)]] ^ IT[3][S[uint8_t(w[i*5+3])]]; \
-		w[i*5+4] = IT[0][S[uint8_t(w[i*5+4] >> 24)]] ^ IT[1][S[(uint8_t(w[i*5+4] >> 16))]] ^ IT[2][S[uint8_t(w[i*5+4] >> 8)]] ^ IT[3][S[uint8_t(w[i*5+4])]];
+		w[i*5] = IT[0][S[(unsigned char)(w[i*5] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*5] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*5] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*5])]]; \
+		w[i*5+1] = IT[0][S[(unsigned char)(w[i*5+1] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*5+1] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*5+1] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*5+1])]]; \
+		w[i*5+2] = IT[0][S[(unsigned char)(w[i*5+2] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*5+2] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*5+2] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*5+2])]]; \
+		w[i*5+3] = IT[0][S[(unsigned char)(w[i*5+3] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*5+3] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*5+3] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*5+3])]]; \
+		w[i*5+4] = IT[0][S[(unsigned char)(w[i*5+4] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*5+4] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*5+4] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*5+4])]];
 
 #define ROUND160(r) \
-		t0 = W_[r*5 + 0] ^ T[0][uint8_t(s0 >> 24)] ^ T[1][uint8_t(s1 >> 16)] ^ T[2][uint8_t(s2 >> 8)] ^ T[3][uint8_t(s3)];\
-		t1 = W_[r*5 + 1] ^ T[0][uint8_t(s1 >> 24)] ^ T[1][uint8_t(s2 >> 16)] ^ T[2][uint8_t(s3 >> 8)] ^ T[3][uint8_t(s4)];\
-		t2 = W_[r*5 + 2] ^ T[0][uint8_t(s2 >> 24)] ^ T[1][uint8_t(s3 >> 16)] ^ T[2][uint8_t(s4 >> 8)] ^ T[3][uint8_t(s0)];\
-		t3 = W_[r*5 + 3] ^ T[0][uint8_t(s3 >> 24)] ^ T[1][uint8_t(s4 >> 16)] ^ T[2][uint8_t(s0 >> 8)] ^ T[3][uint8_t(s1)];\
-		t4 = W_[r*5 + 4] ^ T[0][uint8_t(s4 >> 24)] ^ T[1][uint8_t(s0 >> 16)] ^ T[2][uint8_t(s1 >> 8)] ^ T[3][uint8_t(s2)];\
+		t0 = W_[r*5 + 0] ^ T[0][(unsigned char)(s0 >> 24)] ^ T[1][(unsigned char)(s1 >> 16)] ^ T[2][(unsigned char)(s2 >> 8)] ^ T[3][(unsigned char)(s3)];\
+		t1 = W_[r*5 + 1] ^ T[0][(unsigned char)(s1 >> 24)] ^ T[1][(unsigned char)(s2 >> 16)] ^ T[2][(unsigned char)(s3 >> 8)] ^ T[3][(unsigned char)(s4)];\
+		t2 = W_[r*5 + 2] ^ T[0][(unsigned char)(s2 >> 24)] ^ T[1][(unsigned char)(s3 >> 16)] ^ T[2][(unsigned char)(s4 >> 8)] ^ T[3][(unsigned char)(s0)];\
+		t3 = W_[r*5 + 3] ^ T[0][(unsigned char)(s3 >> 24)] ^ T[1][(unsigned char)(s4 >> 16)] ^ T[2][(unsigned char)(s0 >> 8)] ^ T[3][(unsigned char)(s1)];\
+		t4 = W_[r*5 + 4] ^ T[0][(unsigned char)(s4 >> 24)] ^ T[1][(unsigned char)(s0 >> 16)] ^ T[2][(unsigned char)(s1 >> 8)] ^ T[3][(unsigned char)(s2)];\
 		s0 = t0;\
 		s1 = t1;\
 		s2 = t2;\
@@ -1754,11 +1754,11 @@ namespace cppcrypto
 	*(uint32_t*)(out + 16) = swap_uint32(s4);
 
 #define IROUND160(r) \
-	t0 = W_[r*5 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s4 >> 16)] ^ IT[2][uint8_t(s3 >> 8)] ^ IT[3][uint8_t(s2)]; \
-	t1 = W_[r*5 + 1] ^ IT[0][uint8_t(s1 >> 24)] ^ IT[1][uint8_t(s0 >> 16)] ^ IT[2][uint8_t(s4 >> 8)] ^ IT[3][uint8_t(s3)]; \
-	t2 = W_[r*5 + 2] ^ IT[0][uint8_t(s2 >> 24)] ^ IT[1][uint8_t(s1 >> 16)] ^ IT[2][uint8_t(s0 >> 8)] ^ IT[3][uint8_t(s4)]; \
-	t3 = W_[r*5 + 3] ^ IT[0][uint8_t(s3 >> 24)] ^ IT[1][uint8_t(s2 >> 16)] ^ IT[2][uint8_t(s1 >> 8)] ^ IT[3][uint8_t(s0)]; \
-	t4 = W_[r*5 + 4] ^ IT[0][uint8_t(s4 >> 24)] ^ IT[1][uint8_t(s3 >> 16)] ^ IT[2][uint8_t(s2 >> 8)] ^ IT[3][uint8_t(s1)]; \
+	t0 = W_[r*5 + 0] ^ IT[0][(unsigned char)(s0 >> 24)] ^ IT[1][(unsigned char)(s4 >> 16)] ^ IT[2][(unsigned char)(s3 >> 8)] ^ IT[3][(unsigned char)(s2)]; \
+	t1 = W_[r*5 + 1] ^ IT[0][(unsigned char)(s1 >> 24)] ^ IT[1][(unsigned char)(s0 >> 16)] ^ IT[2][(unsigned char)(s4 >> 8)] ^ IT[3][(unsigned char)(s3)]; \
+	t2 = W_[r*5 + 2] ^ IT[0][(unsigned char)(s2 >> 24)] ^ IT[1][(unsigned char)(s1 >> 16)] ^ IT[2][(unsigned char)(s0 >> 8)] ^ IT[3][(unsigned char)(s4)]; \
+	t3 = W_[r*5 + 3] ^ IT[0][(unsigned char)(s3 >> 24)] ^ IT[1][(unsigned char)(s2 >> 16)] ^ IT[2][(unsigned char)(s1 >> 8)] ^ IT[3][(unsigned char)(s0)]; \
+	t4 = W_[r*5 + 4] ^ IT[0][(unsigned char)(s4 >> 24)] ^ IT[1][(unsigned char)(s3 >> 16)] ^ IT[2][(unsigned char)(s2 >> 8)] ^ IT[3][(unsigned char)(s1)]; \
 	s0 = t0;\
 	s1 = t1;\
 	s2 = t2;\
@@ -1800,7 +1800,7 @@ namespace cppcrypto
 		std::swap(w[i + 4], w[5 * Nr + 4 - i]); \
 				}
 
-	bool rijndael160_128::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael160_128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1811,7 +1811,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; i < 14; i++) {
 			uint32_t temp = w[3];
-			w[4] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[4] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[5] = w[1] ^ w[4];
 			w[6] = w[2] ^ w[5];
@@ -1834,7 +1834,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael160_128::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_128::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -1842,7 +1842,7 @@ namespace cppcrypto
 		FROUND160(); ROUND160(1); ROUND160(2); ROUND160(3); ROUND160(4); ROUND160(5); ROUND160(6); ROUND160(7); ROUND160(8); ROUND160(9); ROUND160(10); LROUND160(11);
 	}
 
-	void rijndael160_128::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_128::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -1878,7 +1878,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael160_160::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael160_160::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1889,7 +1889,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; i < 11; i++) {
 			uint32_t temp = w[4];
-			w[5] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[5] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[6] = w[1] ^ w[5];
 			w[7] = w[2] ^ w[6];
@@ -1913,7 +1913,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael160_160::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_160::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -1921,7 +1921,7 @@ namespace cppcrypto
 		FROUND160(); ROUND160(1); ROUND160(2); ROUND160(3); ROUND160(4); ROUND160(5); ROUND160(6); ROUND160(7); ROUND160(8); ROUND160(9); ROUND160(10); LROUND160(11);
 	}
 
-	void rijndael160_160::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_160::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -1957,7 +1957,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael160_192::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael160_192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -1968,7 +1968,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
 			uint32_t temp = w[5];
-			w[6] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[6] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[7] = w[1] ^ w[6];
 			w[8] = w[2] ^ w[7];
@@ -1995,7 +1995,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael160_192::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_192::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -2003,7 +2003,7 @@ namespace cppcrypto
 		FROUND160(); ROUND160(1); ROUND160(2); ROUND160(3); ROUND160(4); ROUND160(5); ROUND160(6); ROUND160(7); ROUND160(8); ROUND160(9); ROUND160(10); ROUND160(11); LROUND160(12);
 	}
 
-	void rijndael160_192::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_192::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -2039,7 +2039,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael160_224::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael160_224::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -2049,14 +2049,14 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 9; i++) {
-			w[7] = w[0] ^ (uint32_t(S[uint8_t(w[6] >> 24)])) ^ (uint32_t(S[uint8_t(w[6])]) << 8) ^ (uint32_t(S[uint8_t(w[6] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[6] >> 16)]) << 24)
+			w[7] = w[0] ^ (uint32_t(S[(unsigned char)(w[6] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[6])]) << 8) ^ (uint32_t(S[(unsigned char)(w[6] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[6] >> 16)]) << 24)
 				^ RC[i];
 			w[8] = w[1] ^ w[7];
 			w[9] = w[2] ^ w[8];
 			w[10] = w[3] ^ w[9];
 
 			uint32_t temp = w[10];
-			w[11] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[11] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[12] = w[5] ^ w[11];
 			w[13] = w[6] ^ w[12];
 			w += 7;
@@ -2077,7 +2077,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael160_224::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_224::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -2085,7 +2085,7 @@ namespace cppcrypto
 		FROUND160(); ROUND160(1); ROUND160(2); ROUND160(3); ROUND160(4); ROUND160(5); ROUND160(6); ROUND160(7); ROUND160(8); ROUND160(9); ROUND160(10); ROUND160(11); ROUND160(12); LROUND160(13);
 	}
 
-	void rijndael160_224::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_224::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -2121,7 +2121,7 @@ namespace cppcrypto
 		zero_memory(W_, W_.bytes());
 	}
 
-	bool rijndael160_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael160_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -2131,7 +2131,7 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
-			w[8] = w[0] ^ (uint32_t(S[uint8_t(w[7] >> 24)])) ^ (uint32_t(S[uint8_t(w[7])]) << 8) ^ (uint32_t(S[uint8_t(w[7] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[7] >> 16)]) << 24)
+			w[8] = w[0] ^ (uint32_t(S[(unsigned char)(w[7] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[7])]) << 8) ^ (uint32_t(S[(unsigned char)(w[7] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[7] >> 16)]) << 24)
 				^ RC[i];
 			w[9] = w[1] ^ w[8];
 			w[10] = w[2] ^ w[9];
@@ -2142,7 +2142,7 @@ namespace cppcrypto
 			w[11] = w[3] ^ w[10];
 
 			uint32_t temp = w[11];
-			w[12] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[12] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[13] = w[5] ^ w[12];
 			w[14] = w[6] ^ w[13];
 			w[15] = w[7] ^ w[14];
@@ -2164,7 +2164,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	void rijndael160_256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -2172,7 +2172,7 @@ namespace cppcrypto
 		FROUND160(); ROUND160(1); ROUND160(2); ROUND160(3); ROUND160(4); ROUND160(5); ROUND160(6); ROUND160(7); ROUND160(8); ROUND160(9); ROUND160(10); ROUND160(11); ROUND160(12); ROUND160(13); LROUND160(14);
 	}
 
-	void rijndael160_256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael160_256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);
@@ -2209,22 +2209,22 @@ namespace cppcrypto
 	}
 
 #define KEYIMC224(i) \
-		w[i*7] = IT[0][S[uint8_t(w[i*7] >> 24)]] ^ IT[1][S[(uint8_t(w[i*7] >> 16))]] ^ IT[2][S[uint8_t(w[i*7] >> 8)]] ^ IT[3][S[uint8_t(w[i*7])]]; \
-		w[i*7+1] = IT[0][S[uint8_t(w[i*7+1] >> 24)]] ^ IT[1][S[(uint8_t(w[i*7+1] >> 16))]] ^ IT[2][S[uint8_t(w[i*7+1] >> 8)]] ^ IT[3][S[uint8_t(w[i*7+1])]]; \
-		w[i*7+2] = IT[0][S[uint8_t(w[i*7+2] >> 24)]] ^ IT[1][S[(uint8_t(w[i*7+2] >> 16))]] ^ IT[2][S[uint8_t(w[i*7+2] >> 8)]] ^ IT[3][S[uint8_t(w[i*7+2])]]; \
-		w[i*7+3] = IT[0][S[uint8_t(w[i*7+3] >> 24)]] ^ IT[1][S[(uint8_t(w[i*7+3] >> 16))]] ^ IT[2][S[uint8_t(w[i*7+3] >> 8)]] ^ IT[3][S[uint8_t(w[i*7+3])]]; \
-		w[i*7+4] = IT[0][S[uint8_t(w[i*7+4] >> 24)]] ^ IT[1][S[(uint8_t(w[i*7+4] >> 16))]] ^ IT[2][S[uint8_t(w[i*7+4] >> 8)]] ^ IT[3][S[uint8_t(w[i*7+4])]]; \
-		w[i*7+5] = IT[0][S[uint8_t(w[i*7+5] >> 24)]] ^ IT[1][S[(uint8_t(w[i*7+5] >> 16))]] ^ IT[2][S[uint8_t(w[i*7+5] >> 8)]] ^ IT[3][S[uint8_t(w[i*7+5])]]; \
-		w[i*7+6] = IT[0][S[uint8_t(w[i*7+6] >> 24)]] ^ IT[1][S[(uint8_t(w[i*7+6] >> 16))]] ^ IT[2][S[uint8_t(w[i*7+6] >> 8)]] ^ IT[3][S[uint8_t(w[i*7+6])]];
+		w[i*7] = IT[0][S[(unsigned char)(w[i*7] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*7] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*7] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*7])]]; \
+		w[i*7+1] = IT[0][S[(unsigned char)(w[i*7+1] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*7+1] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*7+1] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*7+1])]]; \
+		w[i*7+2] = IT[0][S[(unsigned char)(w[i*7+2] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*7+2] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*7+2] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*7+2])]]; \
+		w[i*7+3] = IT[0][S[(unsigned char)(w[i*7+3] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*7+3] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*7+3] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*7+3])]]; \
+		w[i*7+4] = IT[0][S[(unsigned char)(w[i*7+4] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*7+4] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*7+4] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*7+4])]]; \
+		w[i*7+5] = IT[0][S[(unsigned char)(w[i*7+5] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*7+5] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*7+5] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*7+5])]]; \
+		w[i*7+6] = IT[0][S[(unsigned char)(w[i*7+6] >> 24)]] ^ IT[1][S[((unsigned char)(w[i*7+6] >> 16))]] ^ IT[2][S[(unsigned char)(w[i*7+6] >> 8)]] ^ IT[3][S[(unsigned char)(w[i*7+6])]];
 
 #define ROUND224(r) \
-		t0 = W_[r*7 + 0] ^ T[0][uint8_t(s0 >> 24)] ^ T[1][uint8_t(s1 >> 16)] ^ T[2][uint8_t(s2 >> 8)] ^ T[3][uint8_t(s4)];\
-		t1 = W_[r*7 + 1] ^ T[0][uint8_t(s1 >> 24)] ^ T[1][uint8_t(s2 >> 16)] ^ T[2][uint8_t(s3 >> 8)] ^ T[3][uint8_t(s5)];\
-		t2 = W_[r*7 + 2] ^ T[0][uint8_t(s2 >> 24)] ^ T[1][uint8_t(s3 >> 16)] ^ T[2][uint8_t(s4 >> 8)] ^ T[3][uint8_t(s6)];\
-		t3 = W_[r*7 + 3] ^ T[0][uint8_t(s3 >> 24)] ^ T[1][uint8_t(s4 >> 16)] ^ T[2][uint8_t(s5 >> 8)] ^ T[3][uint8_t(s0)];\
-		t4 = W_[r*7 + 4] ^ T[0][uint8_t(s4 >> 24)] ^ T[1][uint8_t(s5 >> 16)] ^ T[2][uint8_t(s6 >> 8)] ^ T[3][uint8_t(s1)];\
-		t5 = W_[r*7 + 5] ^ T[0][uint8_t(s5 >> 24)] ^ T[1][uint8_t(s6 >> 16)] ^ T[2][uint8_t(s0 >> 8)] ^ T[3][uint8_t(s2)];\
-		t6 = W_[r*7 + 6] ^ T[0][uint8_t(s6 >> 24)] ^ T[1][uint8_t(s0 >> 16)] ^ T[2][uint8_t(s1 >> 8)] ^ T[3][uint8_t(s3)];\
+		t0 = W_[r*7 + 0] ^ T[0][(unsigned char)(s0 >> 24)] ^ T[1][(unsigned char)(s1 >> 16)] ^ T[2][(unsigned char)(s2 >> 8)] ^ T[3][(unsigned char)(s4)];\
+		t1 = W_[r*7 + 1] ^ T[0][(unsigned char)(s1 >> 24)] ^ T[1][(unsigned char)(s2 >> 16)] ^ T[2][(unsigned char)(s3 >> 8)] ^ T[3][(unsigned char)(s5)];\
+		t2 = W_[r*7 + 2] ^ T[0][(unsigned char)(s2 >> 24)] ^ T[1][(unsigned char)(s3 >> 16)] ^ T[2][(unsigned char)(s4 >> 8)] ^ T[3][(unsigned char)(s6)];\
+		t3 = W_[r*7 + 3] ^ T[0][(unsigned char)(s3 >> 24)] ^ T[1][(unsigned char)(s4 >> 16)] ^ T[2][(unsigned char)(s5 >> 8)] ^ T[3][(unsigned char)(s0)];\
+		t4 = W_[r*7 + 4] ^ T[0][(unsigned char)(s4 >> 24)] ^ T[1][(unsigned char)(s5 >> 16)] ^ T[2][(unsigned char)(s6 >> 8)] ^ T[3][(unsigned char)(s1)];\
+		t5 = W_[r*7 + 5] ^ T[0][(unsigned char)(s5 >> 24)] ^ T[1][(unsigned char)(s6 >> 16)] ^ T[2][(unsigned char)(s0 >> 8)] ^ T[3][(unsigned char)(s2)];\
+		t6 = W_[r*7 + 6] ^ T[0][(unsigned char)(s6 >> 24)] ^ T[1][(unsigned char)(s0 >> 16)] ^ T[2][(unsigned char)(s1 >> 8)] ^ T[3][(unsigned char)(s3)];\
 		s0 = t0;\
 		s1 = t1;\
 		s2 = t2;\
@@ -2250,13 +2250,13 @@ namespace cppcrypto
 	*(uint32_t*)(out + 24) = swap_uint32(s6);
 
 #define IROUND224(r) \
-	t0 = W_[r*7 + 0] ^ IT[0][uint8_t(s0 >> 24)] ^ IT[1][uint8_t(s6 >> 16)] ^ IT[2][uint8_t(s5 >> 8)] ^ IT[3][uint8_t(s3)]; \
-	t1 = W_[r*7 + 1] ^ IT[0][uint8_t(s1 >> 24)] ^ IT[1][uint8_t(s0 >> 16)] ^ IT[2][uint8_t(s6 >> 8)] ^ IT[3][uint8_t(s4)]; \
-	t2 = W_[r*7 + 2] ^ IT[0][uint8_t(s2 >> 24)] ^ IT[1][uint8_t(s1 >> 16)] ^ IT[2][uint8_t(s0 >> 8)] ^ IT[3][uint8_t(s5)]; \
-	t3 = W_[r*7 + 3] ^ IT[0][uint8_t(s3 >> 24)] ^ IT[1][uint8_t(s2 >> 16)] ^ IT[2][uint8_t(s1 >> 8)] ^ IT[3][uint8_t(s6)]; \
-	t4 = W_[r*7 + 4] ^ IT[0][uint8_t(s4 >> 24)] ^ IT[1][uint8_t(s3 >> 16)] ^ IT[2][uint8_t(s2 >> 8)] ^ IT[3][uint8_t(s0)]; \
-	t5 = W_[r*7 + 5] ^ IT[0][uint8_t(s5 >> 24)] ^ IT[1][uint8_t(s4 >> 16)] ^ IT[2][uint8_t(s3 >> 8)] ^ IT[3][uint8_t(s1)]; \
-	t6 = W_[r*7 + 6] ^ IT[0][uint8_t(s6 >> 24)] ^ IT[1][uint8_t(s5 >> 16)] ^ IT[2][uint8_t(s4 >> 8)] ^ IT[3][uint8_t(s2)]; \
+	t0 = W_[r*7 + 0] ^ IT[0][(unsigned char)(s0 >> 24)] ^ IT[1][(unsigned char)(s6 >> 16)] ^ IT[2][(unsigned char)(s5 >> 8)] ^ IT[3][(unsigned char)(s3)]; \
+	t1 = W_[r*7 + 1] ^ IT[0][(unsigned char)(s1 >> 24)] ^ IT[1][(unsigned char)(s0 >> 16)] ^ IT[2][(unsigned char)(s6 >> 8)] ^ IT[3][(unsigned char)(s4)]; \
+	t2 = W_[r*7 + 2] ^ IT[0][(unsigned char)(s2 >> 24)] ^ IT[1][(unsigned char)(s1 >> 16)] ^ IT[2][(unsigned char)(s0 >> 8)] ^ IT[3][(unsigned char)(s5)]; \
+	t3 = W_[r*7 + 3] ^ IT[0][(unsigned char)(s3 >> 24)] ^ IT[1][(unsigned char)(s2 >> 16)] ^ IT[2][(unsigned char)(s1 >> 8)] ^ IT[3][(unsigned char)(s6)]; \
+	t4 = W_[r*7 + 4] ^ IT[0][(unsigned char)(s4 >> 24)] ^ IT[1][(unsigned char)(s3 >> 16)] ^ IT[2][(unsigned char)(s2 >> 8)] ^ IT[3][(unsigned char)(s0)]; \
+	t5 = W_[r*7 + 5] ^ IT[0][(unsigned char)(s5 >> 24)] ^ IT[1][(unsigned char)(s4 >> 16)] ^ IT[2][(unsigned char)(s3 >> 8)] ^ IT[3][(unsigned char)(s1)]; \
+	t6 = W_[r*7 + 6] ^ IT[0][(unsigned char)(s6 >> 24)] ^ IT[1][(unsigned char)(s5 >> 16)] ^ IT[2][(unsigned char)(s4 >> 8)] ^ IT[3][(unsigned char)(s2)]; \
 	s0 = t0;\
 	s1 = t1;\
 	s2 = t2;\
@@ -2310,7 +2310,7 @@ namespace cppcrypto
 		std::swap(w[i + 6], w[7 * Nr + 6 - i]); \
 			}
 
-	bool rijndael224_128::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael224_128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -2321,7 +2321,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0; ; i++) {
 			uint32_t temp = w[3];
-			w[4] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[4] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[5] = w[1] ^ w[4];
 			if (i == 23)
@@ -2346,7 +2346,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	bool rijndael224_160::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael224_160::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -2357,7 +2357,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
 			uint32_t temp = w[4];
-			w[5] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[5] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[6] = w[1] ^ w[5];
 			w[7] = w[2] ^ w[6];
@@ -2385,7 +2385,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	bool rijndael224_192::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael224_192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -2396,7 +2396,7 @@ namespace cppcrypto
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
 			uint32_t temp = w[5];
-			w[6] = w[0] ^ (uint32_t(S[uint8_t(temp >> 24)])) ^ (uint32_t(S[uint8_t(temp)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 24)
+			w[6] = w[0] ^ (uint32_t(S[(unsigned char)(temp >> 24)])) ^ (uint32_t(S[(unsigned char)(temp)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 24)
 				^ RC[i];
 			w[7] = w[1] ^ w[6];
 
@@ -2425,7 +2425,7 @@ namespace cppcrypto
 		return true;
 	}
 
-	bool rijndael224_224::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael224_224::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -2435,14 +2435,14 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0; i < 13; i++) {
-			w[7] = w[0] ^ (uint32_t(S[uint8_t(w[6] >> 24)])) ^ (uint32_t(S[uint8_t(w[6])]) << 8) ^ (uint32_t(S[uint8_t(w[6] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[6] >> 16)]) << 24)
+			w[7] = w[0] ^ (uint32_t(S[(unsigned char)(w[6] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[6])]) << 8) ^ (uint32_t(S[(unsigned char)(w[6] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[6] >> 16)]) << 24)
 				^ RC[i];
 			w[8] = w[1] ^ w[7];
 			w[9] = w[2] ^ w[8];
 			w[10] = w[3] ^ w[9];
 
 			uint32_t temp = w[10];
-			w[11] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[11] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[12] = w[5] ^ w[11];
 			w[13] = w[6] ^ w[12];
 			w += 7;
@@ -2471,7 +2471,7 @@ namespace cppcrypto
 		{
 		}
 
-		void rijndael224::encrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael224::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			if (impl_)
 				return impl_->encrypt_block(in, out);
@@ -2479,7 +2479,7 @@ namespace cppcrypto
 			FROUND224(); ROUND224(1); ROUND224(2); ROUND224(3); ROUND224(4); ROUND224(5); ROUND224(6); ROUND224(7); ROUND224(8); ROUND224(9); ROUND224(10); ROUND224(11); ROUND224(12); LROUND224(13);
 		}
 
-		void rijndael224::decrypt_block(const uint8_t* in, uint8_t* out)
+		void rijndael224::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			if (impl_)
 				return impl_->decrypt_block(in, out);
@@ -2547,7 +2547,7 @@ namespace cppcrypto
 #endif
 	}
 
-	bool rijndael224_256::init(const uint8_t* key, block_cipher::direction direction)
+	bool rijndael224_256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		if (impl_)
 			return impl_->init(key, direction);
@@ -2557,7 +2557,7 @@ namespace cppcrypto
 
 		uint32_t* w = W_;
 		for (int i = 0;; i++) {
-			w[8] = w[0] ^ (uint32_t(S[uint8_t(w[7] >> 24)])) ^ (uint32_t(S[uint8_t(w[7])]) << 8) ^ (uint32_t(S[uint8_t(w[7] >> 8)]) << 16) ^ (uint32_t(S[uint8_t(w[7] >> 16)]) << 24)
+			w[8] = w[0] ^ (uint32_t(S[(unsigned char)(w[7] >> 24)])) ^ (uint32_t(S[(unsigned char)(w[7])]) << 8) ^ (uint32_t(S[(unsigned char)(w[7] >> 8)]) << 16) ^ (uint32_t(S[(unsigned char)(w[7] >> 16)]) << 24)
 				^ RC[i];
 
 			if (i == 12)
@@ -2568,7 +2568,7 @@ namespace cppcrypto
 			w[11] = w[3] ^ w[10];
 
 			uint32_t temp = w[11];
-			w[12] = w[4] ^ (uint32_t(S[uint8_t(temp)])) ^ (uint32_t(S[uint8_t(temp >> 8)]) << 8) ^ (uint32_t(S[uint8_t(temp >> 16)]) << 16) ^ (uint32_t(S[uint8_t(temp >> 24)]) << 24);
+			w[12] = w[4] ^ (uint32_t(S[(unsigned char)(temp)])) ^ (uint32_t(S[(unsigned char)(temp >> 8)]) << 8) ^ (uint32_t(S[(unsigned char)(temp >> 16)]) << 16) ^ (uint32_t(S[(unsigned char)(temp >> 24)]) << 24);
 			w[13] = w[5] ^ w[12];
 			w[14] = w[6] ^ w[13];
 			w[15] = w[7] ^ w[14];
@@ -2602,7 +2602,7 @@ namespace cppcrypto
 #endif
 	}
 
-	void rijndael224_256::encrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael224_256::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->encrypt_block(in, out);
@@ -2610,7 +2610,7 @@ namespace cppcrypto
 		FROUND224(); ROUND224(1); ROUND224(2); ROUND224(3); ROUND224(4); ROUND224(5); ROUND224(6); ROUND224(7); ROUND224(8); ROUND224(9); ROUND224(10); ROUND224(11); ROUND224(12); ROUND224(13); LROUND224(14);
 	}
 
-	void rijndael224_256::decrypt_block(const uint8_t* in, uint8_t* out)
+	void rijndael224_256::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		if (impl_)
 			return impl_->decrypt_block(in, out);

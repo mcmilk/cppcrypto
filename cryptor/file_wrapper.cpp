@@ -11,7 +11,7 @@
 
 using namespace std;
 
-bool gen_random_bytes(uint8_t* buffer, size_t buflen);
+bool gen_random_bytes(unsigned char* buffer, size_t buflen);
 
 file_wrapper::file_wrapper(const wstring& filename) 
 	: file(filename), success(false)
@@ -22,7 +22,7 @@ file_wrapper::file_wrapper(const wstring& filename)
 	if (is_directory())
 		throw runtime_error("Input file is a directory");
 
-	uint8_t buf[64];
+	unsigned char buf[64];
 	gen_random_bytes(buf, sizeof(buf));
 	wostringstream wstr;
 	for (size_t i = 0; i < sizeof(buf); i++)
@@ -42,12 +42,12 @@ file_wrapper::~file_wrapper()
 		_wremove(tmpfile.c_str()); 
 }
 
-void file_wrapper::read(uint8_t* buf, size_t len)
+void file_wrapper::read(unsigned char* buf, size_t len)
 {
 	ifile.read((char*)buf, len);
 }
 
-void file_wrapper::write(const uint8_t* buf, size_t len)
+void file_wrapper::write(const unsigned char* buf, size_t len)
 {
 	ofile.write((const char*)buf, len);
 }

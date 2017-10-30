@@ -16,7 +16,7 @@ and released into public domain.
 
 namespace cppcrypto
 {
-	static const uint8_t S[256] = {
+	static const unsigned char S[256] = {
 		252, 238, 221, 17, 207, 110, 49, 22, 251, 196, 250, 218, 35, 197, 4, 77, 233, 119, 240, 219, 147, 46, 153, 186, 23, 54, 241, 187, 20, 205, 95, 193,
 		249, 24, 101, 90, 226, 92, 239, 33, 129, 28, 60, 66, 139, 1, 142, 79, 5, 132, 2, 174, 227, 106, 143, 160, 6, 11, 237, 152, 127, 212, 211, 31,
 		235, 52, 44, 81, 234, 200, 72, 171, 242, 42, 104, 162, 253, 58, 206, 204, 181, 112, 14, 86, 8, 12, 118, 18, 191, 114, 19, 71, 156, 183, 93, 135,
@@ -27,7 +27,7 @@ namespace cppcrypto
 		32, 113, 103, 164, 45, 43, 9, 91, 203, 155, 37, 208, 190, 229, 108, 82, 89, 166, 116, 210, 230, 244, 180, 192, 209, 102, 175, 194, 57, 75, 99, 182
 	};
 
-	static const uint8_t IS[256] = {
+	static const unsigned char IS[256] = {
 		165, 45, 50, 143, 14, 48, 56, 192, 84, 230, 158, 57, 85, 126, 82, 145, 100, 3, 87, 90, 28, 96, 7, 24, 33, 114, 168, 209, 41, 198, 164, 63,
 		224, 39, 141, 12, 130, 234, 174, 180, 154, 99, 73, 229, 66, 228, 21, 183, 200, 6, 112, 157, 65, 117, 25, 201, 170, 252, 77, 191, 42, 115, 132, 213,
 		195, 175, 43, 134, 167, 177, 178, 91, 70, 211, 159, 253, 212, 15, 156, 47, 155, 67, 239, 217, 121, 182, 83, 127, 193, 240, 35, 231, 37, 94, 181, 30,
@@ -2137,35 +2137,35 @@ namespace cppcrypto
 
 	static inline void LS(uint64_t x1, uint64_t x2, uint64_t& t1, uint64_t& t2)
 	{
-		t1 = T[0][uint8_t(x1)][0] ^ T[1][uint8_t(x1 >> 8)][0] ^ T[2][uint8_t(x1 >> 16)][0] ^ T[3][uint8_t(x1 >> 24)][0] ^ T[4][uint8_t(x1 >> 32)][0] ^ T[5][uint8_t(x1 >> 40)][0] ^
-			T[6][uint8_t(x1 >> 48)][0] ^ T[7][uint8_t(x1 >> 56)][0] ^ T[8][uint8_t(x2)][0] ^ T[9][uint8_t(x2 >> 8)][0] ^ T[10][uint8_t(x2 >> 16)][0] ^ T[11][uint8_t(x2 >> 24)][0] ^
-			T[12][uint8_t(x2 >> 32)][0] ^ T[13][uint8_t(x2 >> 40)][0] ^ T[14][uint8_t(x2 >> 48)][0] ^ T[15][uint8_t(x2 >> 56)][0];
-		t2 = T[0][uint8_t(x1)][1] ^ T[1][uint8_t(x1 >> 8)][1] ^ T[2][uint8_t(x1 >> 16)][1] ^ T[3][uint8_t(x1 >> 24)][1] ^ T[4][uint8_t(x1 >> 32)][1] ^ T[5][uint8_t(x1 >> 40)][1] ^
-			T[6][uint8_t(x1 >> 48)][1] ^ T[7][uint8_t(x1 >> 56)][1] ^ T[8][uint8_t(x2)][1] ^ T[9][uint8_t(x2 >> 8)][1] ^ T[10][uint8_t(x2 >> 16)][1] ^ T[11][uint8_t(x2 >> 24)][1] ^
-			T[12][uint8_t(x2 >> 32)][1] ^ T[13][uint8_t(x2 >> 40)][1] ^ T[14][uint8_t(x2 >> 48)][1] ^ T[15][uint8_t(x2 >> 56)][1];
+		t1 = T[0][(unsigned char)(x1)][0] ^ T[1][(unsigned char)(x1 >> 8)][0] ^ T[2][(unsigned char)(x1 >> 16)][0] ^ T[3][(unsigned char)(x1 >> 24)][0] ^ T[4][(unsigned char)(x1 >> 32)][0] ^ T[5][(unsigned char)(x1 >> 40)][0] ^
+			T[6][(unsigned char)(x1 >> 48)][0] ^ T[7][(unsigned char)(x1 >> 56)][0] ^ T[8][(unsigned char)(x2)][0] ^ T[9][(unsigned char)(x2 >> 8)][0] ^ T[10][(unsigned char)(x2 >> 16)][0] ^ T[11][(unsigned char)(x2 >> 24)][0] ^
+			T[12][(unsigned char)(x2 >> 32)][0] ^ T[13][(unsigned char)(x2 >> 40)][0] ^ T[14][(unsigned char)(x2 >> 48)][0] ^ T[15][(unsigned char)(x2 >> 56)][0];
+		t2 = T[0][(unsigned char)(x1)][1] ^ T[1][(unsigned char)(x1 >> 8)][1] ^ T[2][(unsigned char)(x1 >> 16)][1] ^ T[3][(unsigned char)(x1 >> 24)][1] ^ T[4][(unsigned char)(x1 >> 32)][1] ^ T[5][(unsigned char)(x1 >> 40)][1] ^
+			T[6][(unsigned char)(x1 >> 48)][1] ^ T[7][(unsigned char)(x1 >> 56)][1] ^ T[8][(unsigned char)(x2)][1] ^ T[9][(unsigned char)(x2 >> 8)][1] ^ T[10][(unsigned char)(x2 >> 16)][1] ^ T[11][(unsigned char)(x2 >> 24)][1] ^
+			T[12][(unsigned char)(x2 >> 32)][1] ^ T[13][(unsigned char)(x2 >> 40)][1] ^ T[14][(unsigned char)(x2 >> 48)][1] ^ T[15][(unsigned char)(x2 >> 56)][1];
 	}
 
 	static inline void ILS(uint64_t x1, uint64_t x2, uint64_t& t1, uint64_t& t2)
 	{
-		t1 = IT[0][uint8_t(x1)][0] ^ IT[1][uint8_t(x1 >> 8)][0] ^ IT[2][uint8_t(x1 >> 16)][0] ^ IT[3][uint8_t(x1 >> 24)][0] ^ IT[4][uint8_t(x1 >> 32)][0] ^ IT[5][uint8_t(x1 >> 40)][0] ^
-			IT[6][uint8_t(x1 >> 48)][0] ^ IT[7][uint8_t(x1 >> 56)][0] ^ IT[8][uint8_t(x2)][0] ^ IT[9][uint8_t(x2 >> 8)][0] ^ IT[10][uint8_t(x2 >> 16)][0] ^ IT[11][uint8_t(x2 >> 24)][0] ^
-			IT[12][uint8_t(x2 >> 32)][0] ^ IT[13][uint8_t(x2 >> 40)][0] ^ IT[14][uint8_t(x2 >> 48)][0] ^ IT[15][uint8_t(x2 >> 56)][0];
-		t2 = IT[0][uint8_t(x1)][1] ^ IT[1][uint8_t(x1 >> 8)][1] ^ IT[2][uint8_t(x1 >> 16)][1] ^ IT[3][uint8_t(x1 >> 24)][1] ^ IT[4][uint8_t(x1 >> 32)][1] ^ IT[5][uint8_t(x1 >> 40)][1] ^
-			IT[6][uint8_t(x1 >> 48)][1] ^ IT[7][uint8_t(x1 >> 56)][1] ^ IT[8][uint8_t(x2)][1] ^ IT[9][uint8_t(x2 >> 8)][1] ^ IT[10][uint8_t(x2 >> 16)][1] ^ IT[11][uint8_t(x2 >> 24)][1] ^
-			IT[12][uint8_t(x2 >> 32)][1] ^ IT[13][uint8_t(x2 >> 40)][1] ^ IT[14][uint8_t(x2 >> 48)][1] ^ IT[15][uint8_t(x2 >> 56)][1];
+		t1 = IT[0][(unsigned char)(x1)][0] ^ IT[1][(unsigned char)(x1 >> 8)][0] ^ IT[2][(unsigned char)(x1 >> 16)][0] ^ IT[3][(unsigned char)(x1 >> 24)][0] ^ IT[4][(unsigned char)(x1 >> 32)][0] ^ IT[5][(unsigned char)(x1 >> 40)][0] ^
+			IT[6][(unsigned char)(x1 >> 48)][0] ^ IT[7][(unsigned char)(x1 >> 56)][0] ^ IT[8][(unsigned char)(x2)][0] ^ IT[9][(unsigned char)(x2 >> 8)][0] ^ IT[10][(unsigned char)(x2 >> 16)][0] ^ IT[11][(unsigned char)(x2 >> 24)][0] ^
+			IT[12][(unsigned char)(x2 >> 32)][0] ^ IT[13][(unsigned char)(x2 >> 40)][0] ^ IT[14][(unsigned char)(x2 >> 48)][0] ^ IT[15][(unsigned char)(x2 >> 56)][0];
+		t2 = IT[0][(unsigned char)(x1)][1] ^ IT[1][(unsigned char)(x1 >> 8)][1] ^ IT[2][(unsigned char)(x1 >> 16)][1] ^ IT[3][(unsigned char)(x1 >> 24)][1] ^ IT[4][(unsigned char)(x1 >> 32)][1] ^ IT[5][(unsigned char)(x1 >> 40)][1] ^
+			IT[6][(unsigned char)(x1 >> 48)][1] ^ IT[7][(unsigned char)(x1 >> 56)][1] ^ IT[8][(unsigned char)(x2)][1] ^ IT[9][(unsigned char)(x2 >> 8)][1] ^ IT[10][(unsigned char)(x2 >> 16)][1] ^ IT[11][(unsigned char)(x2 >> 24)][1] ^
+			IT[12][(unsigned char)(x2 >> 32)][1] ^ IT[13][(unsigned char)(x2 >> 40)][1] ^ IT[14][(unsigned char)(x2 >> 48)][1] ^ IT[15][(unsigned char)(x2 >> 56)][1];
 	}
 
 	static inline void ILSS(uint64_t x1, uint64_t x2, uint64_t& t1, uint64_t& t2)
 	{
-		t1 = IT[0][S[uint8_t(x1)]][0] ^ IT[1][S[uint8_t(x1 >> 8)]][0] ^ IT[2][S[uint8_t(x1 >> 16)]][0] ^ IT[3][S[uint8_t(x1 >> 24)]][0] ^ IT[4][S[uint8_t(x1 >> 32)]][0] ^ IT[5][S[uint8_t(x1 >> 40)]][0] ^
-			IT[6][S[uint8_t(x1 >> 48)]][0] ^ IT[7][S[uint8_t(x1 >> 56)]][0] ^ IT[8][S[uint8_t(x2)]][0] ^ IT[9][S[uint8_t(x2 >> 8)]][0] ^ IT[10][S[uint8_t(x2 >> 16)]][0] ^ IT[11][S[uint8_t(x2 >> 24)]][0] ^
-			IT[12][S[uint8_t(x2 >> 32)]][0] ^ IT[13][S[uint8_t(x2 >> 40)]][0] ^ IT[14][S[uint8_t(x2 >> 48)]][0] ^ IT[15][S[uint8_t(x2 >> 56)]][0];
-		t2 = IT[0][S[uint8_t(x1)]][1] ^ IT[1][S[uint8_t(x1 >> 8)]][1] ^ IT[2][S[uint8_t(x1 >> 16)]][1] ^ IT[3][S[uint8_t(x1 >> 24)]][1] ^ IT[4][S[uint8_t(x1 >> 32)]][1] ^ IT[5][S[uint8_t(x1 >> 40)]][1] ^
-			IT[6][S[uint8_t(x1 >> 48)]][1] ^ IT[7][S[uint8_t(x1 >> 56)]][1] ^ IT[8][S[uint8_t(x2)]][1] ^ IT[9][S[uint8_t(x2 >> 8)]][1] ^ IT[10][S[uint8_t(x2 >> 16)]][1] ^ IT[11][S[uint8_t(x2 >> 24)]][1] ^
-			IT[12][S[uint8_t(x2 >> 32)]][1] ^ IT[13][S[uint8_t(x2 >> 40)]][1] ^ IT[14][S[uint8_t(x2 >> 48)]][1] ^ IT[15][S[uint8_t(x2 >> 56)]][1];
+		t1 = IT[0][S[(unsigned char)(x1)]][0] ^ IT[1][S[(unsigned char)(x1 >> 8)]][0] ^ IT[2][S[(unsigned char)(x1 >> 16)]][0] ^ IT[3][S[(unsigned char)(x1 >> 24)]][0] ^ IT[4][S[(unsigned char)(x1 >> 32)]][0] ^ IT[5][S[(unsigned char)(x1 >> 40)]][0] ^
+			IT[6][S[(unsigned char)(x1 >> 48)]][0] ^ IT[7][S[(unsigned char)(x1 >> 56)]][0] ^ IT[8][S[(unsigned char)(x2)]][0] ^ IT[9][S[(unsigned char)(x2 >> 8)]][0] ^ IT[10][S[(unsigned char)(x2 >> 16)]][0] ^ IT[11][S[(unsigned char)(x2 >> 24)]][0] ^
+			IT[12][S[(unsigned char)(x2 >> 32)]][0] ^ IT[13][S[(unsigned char)(x2 >> 40)]][0] ^ IT[14][S[(unsigned char)(x2 >> 48)]][0] ^ IT[15][S[(unsigned char)(x2 >> 56)]][0];
+		t2 = IT[0][S[(unsigned char)(x1)]][1] ^ IT[1][S[(unsigned char)(x1 >> 8)]][1] ^ IT[2][S[(unsigned char)(x1 >> 16)]][1] ^ IT[3][S[(unsigned char)(x1 >> 24)]][1] ^ IT[4][S[(unsigned char)(x1 >> 32)]][1] ^ IT[5][S[(unsigned char)(x1 >> 40)]][1] ^
+			IT[6][S[(unsigned char)(x1 >> 48)]][1] ^ IT[7][S[(unsigned char)(x1 >> 56)]][1] ^ IT[8][S[(unsigned char)(x2)]][1] ^ IT[9][S[(unsigned char)(x2 >> 8)]][1] ^ IT[10][S[(unsigned char)(x2 >> 16)]][1] ^ IT[11][S[(unsigned char)(x2 >> 24)]][1] ^
+			IT[12][S[(unsigned char)(x2 >> 32)]][1] ^ IT[13][S[(unsigned char)(x2 >> 40)]][1] ^ IT[14][S[(unsigned char)(x2 >> 48)]][1] ^ IT[15][S[(unsigned char)(x2 >> 56)]][1];
 	}
 
-	static inline void ISI(uint8_t* val)
+	static inline void ISI(unsigned char* val)
 	{
 		val[0] = IS[val[0]];
 		val[1] = IS[val[1]];
@@ -2208,7 +2208,7 @@ namespace cppcrypto
 		}
 	}
 
-	bool kuznyechik::init(const uint8_t* key, block_cipher::direction direction)
+	bool kuznyechik::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint64_t k00 = *(const uint64_t*)key;
 		uint64_t k01 = *(((const uint64_t*)key) + 1);
@@ -2257,7 +2257,7 @@ namespace cppcrypto
 		return true; 
 	}
 
-	void kuznyechik::encrypt_block(const uint8_t* in, uint8_t* out)
+	void kuznyechik::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x1 = *(const uint64_t*)in;
 		uint64_t x2 = *(((const uint64_t*)in)+1);
@@ -2295,7 +2295,7 @@ namespace cppcrypto
 		*(((uint64_t*)out) + 1) = t2;
 	}
 
-	void kuznyechik::decrypt_block(const uint8_t* in, uint8_t* out)
+	void kuznyechik::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
 		uint64_t x1 = *(const uint64_t*)in;
 		uint64_t x2 = *(((const uint64_t*)in) + 1);
@@ -2328,8 +2328,8 @@ namespace cppcrypto
 		ILS(x1, x2, t1, t2);
 		t1 ^= rk[1][0];
 		t2 ^= rk[1][1];
-		ISI((uint8_t*)&t1);
-		ISI((uint8_t*)&t2);
+		ISI((unsigned char*)&t1);
+		ISI((unsigned char*)&t2);
 		t1 ^= rk[0][0];
 		t2 ^= rk[0][1];
 		*(uint64_t*)out = t1;
@@ -2338,9 +2338,9 @@ namespace cppcrypto
 
 
 #if 0
-	static inline uint8_t mul_gf(uint8_t x, uint8_t y, uint16_t p) {
-		uint8_t r = 0;
-		uint8_t hbit = 0;
+	static inline unsigned char mul_gf(unsigned char x, unsigned char y, uint16_t p) {
+		unsigned char r = 0;
+		unsigned char hbit = 0;
 		while (y) {
 			if (y & 1)
 				r ^= x;
@@ -2353,36 +2353,36 @@ namespace cppcrypto
 		return r;
 	}
 
-	static inline uint8_t l(uint8_t* a)
+	static inline unsigned char l(unsigned char* a)
 	{
 		return a[15] ^ mul_gf(a[14], 148, 0x1c3) ^ mul_gf(a[13], 32, 0x1c3) ^ mul_gf(a[12], 133, 0x1c3) ^ mul_gf(a[11], 16, 0x1c3)
 			^ mul_gf(a[10], 194, 0x1c3) ^ mul_gf(a[9], 192, 0x1c3) ^ a[8] ^ mul_gf(a[7], 251, 0x1c3) ^ a[6] ^ mul_gf(a[5], 192, 0x1c3)
 			^ mul_gf(a[4], 194, 0x1c3) ^ mul_gf(a[3], 16, 0x1c3) ^ mul_gf(a[2], 133, 0x1c3) ^ mul_gf(a[1], 32, 0x1c3) ^ mul_gf(a[0], 148, 0x1c3);
 	}
 
-	static inline void R(uint8_t* val)
+	static inline void R(unsigned char* val)
 	{
-		uint8_t x = l(val);
+		unsigned char x = l(val);
 		memmove(val + 1, val, 15);
 		val[0] = x;
 	}
 
-	static inline void L(uint8_t* val)
+	static inline void L(unsigned char* val)
 	{
 		for (int i = 0; i < 16; i++)
 			R(val);
 	}
 
-	static inline void IR(uint8_t* val)
+	static inline void IR(unsigned char* val)
 	{
-		uint8_t x = val[0];
+		unsigned char x = val[0];
 		memmove(val, val + 1, 15);
 		val[15] = x;
 		x = l(val);
 		val[15] = x;
 	}
 
-	static inline void IL(uint8_t* val)
+	static inline void IL(unsigned char* val)
 	{
 		for (int i = 0; i < 16; i++)
 			IR(val);
@@ -2394,14 +2394,14 @@ namespace cppcrypto
 		union
 		{
 			uint64_t ll[2];
-			uint8_t cc[16];
+			unsigned char cc[16];
 		} v;
 		for (int i = 0; i < 16; i++)
 		{
 			printf("\t{\n\t\t");
 			for (int j = 0; j < 256; j++)
 			{
-				uint8_t s = S[j];
+				unsigned char s = S[j];
 				v.ll[0] = v.ll[1] = 0;
 				v.cc[i] = s;
 				L(v.cc);
@@ -2427,7 +2427,7 @@ namespace cppcrypto
 			printf("\t{\n\t\t");
 			for (int j = 0; j < 256; j++)
 			{
-				uint8_t s = IS[j];
+				unsigned char s = IS[j];
 				v.ll[0] = v.ll[1] = 0;
 				v.cc[i] = s;
 				IL(v.cc);

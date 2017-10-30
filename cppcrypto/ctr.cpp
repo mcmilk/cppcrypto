@@ -14,7 +14,7 @@ and released into public domain.
 namespace cppcrypto
 {
 
-	static inline void xor_block_256(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	static inline void xor_block_256(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
 		//#define USE_AVX
 #ifdef USE_AVX
@@ -45,7 +45,7 @@ namespace cppcrypto
 
 	}
 
-	static inline void xor_block_128(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	static inline void xor_block_128(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
 		if (cpu_info::sse2())
 		{
@@ -61,7 +61,7 @@ namespace cppcrypto
 
 	}
 
-	static inline void xor_block_128n(const uint8_t* in, const uint8_t* prev, uint8_t* out, size_t n)
+	static inline void xor_block_128n(const unsigned char* in, const unsigned char* prev, unsigned char* out, size_t n)
 	{
 		if (cpu_info::sse2())
 		{
@@ -79,7 +79,7 @@ namespace cppcrypto
 
 	}
 
-	static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	static inline void xor_block_512(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
 #ifdef USE_AVX
 		if (cpu_info::avx())
@@ -124,8 +124,8 @@ namespace cppcrypto
 	ctr::ctr(const block_cipher& cipher)
 		: block_(0), iv_(0), pos(0), nb_(cipher.blocksize() / 8), cipher_(cipher.clone())
 	{
-		block_ = new uint8_t[nb_];
-		iv_ = new uint8_t[nb_];
+		block_ = new unsigned char[nb_];
+		iv_ = new unsigned char[nb_];
 	}
 
 	ctr::~ctr()
@@ -142,7 +142,7 @@ namespace cppcrypto
 		cipher_->clear();
 	}
 
-	void ctr::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void ctr::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		assert(keylen == cipher_->keysize() / 8);
 		assert(ivlen <= nb_);
@@ -152,7 +152,7 @@ namespace cppcrypto
 		pos = 0;
 	}
 
-	static inline void incrementCounter(uint8_t* ctr, size_t nb, uint8_t* block, block_cipher* cipher)
+	static inline void incrementCounter(unsigned char* ctr, size_t nb, unsigned char* block, block_cipher* cipher)
 	{
 		cipher->encrypt_block(ctr, block);
 		bool carry = true;
@@ -160,7 +160,7 @@ namespace cppcrypto
 			carry = !++ctr[i];
 	}
 
-	void ctr::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void ctr::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		size_t i = 0;
 		size_t nb = nb_;
@@ -210,7 +210,7 @@ namespace cppcrypto
 		}
 	}
 
-	void ctr::decrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void ctr::decrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		encrypt(in, len, out);
 	}

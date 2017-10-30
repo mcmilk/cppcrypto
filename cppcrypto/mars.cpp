@@ -150,9 +150,9 @@ namespace cppcrypto
 
 	static inline void forward_mix(int i, uint32_t& x0, uint32_t& x1, uint32_t& x2, uint32_t& x3)
 	{
-		x1 = (x1 ^ S[uint8_t(x0)]) + S[256 + uint8_t(x0 >> 8)];
-		x2 += S[uint8_t(x0 >> 16)];
-		x3 ^= S[256 + uint8_t(x0 >> 24)];
+		x1 = (x1 ^ S[(unsigned char)(x0)]) + S[256 + (unsigned char)(x0 >> 8)];
+		x2 += S[(unsigned char)(x0 >> 16)];
+		x3 ^= S[256 + (unsigned char)(x0 >> 24)];
 		x0 = rotater32(x0, 24);
 		if (i == 0 || i == 4)
 			x0 = x0 + x3;
@@ -206,9 +206,9 @@ namespace cppcrypto
 			x0 = x0 - x3;
 		else if (i == 3 || i == 7)
 			x0 = x0 - x1;
-		x1 = x1 ^ S[256 + uint8_t(x0)];
-		x2 = x2 - S[uint8_t(x0 >> 24)];
-		x3 = (x3 - S[256 + uint8_t(x0 >> 16)]) ^ S[uint8_t(x0 >> 8)];
+		x1 = x1 ^ S[256 + (unsigned char)(x0)];
+		x2 = x2 - S[(unsigned char)(x0 >> 24)];
+		x3 = (x3 - S[256 + (unsigned char)(x0 >> 16)]) ^ S[(unsigned char)(x0 >> 8)];
 		x0 = rotatel32(x0, 24);
 	}
 
@@ -224,7 +224,7 @@ namespace cppcrypto
 			zero_memory(rk, sizeof(rk));
 		}
 
-		void mars::encrypt_block(const uint8_t* in, uint8_t* out)
+		void mars::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			uint32_t x0, x1, x2, x3;
 			x0 = *(((const uint32_t*)in) + 0) + rk[0];
@@ -281,7 +281,7 @@ namespace cppcrypto
 			*(((uint32_t*)out) + 3) = x3 - rk[39];
 		}
 
-		void mars::decrypt_block(const uint8_t* in, uint8_t* out)
+		void mars::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			uint32_t x0, x1, x2, x3;
 			x0 = *(((const uint32_t*)in) + 0) + rk[36];
@@ -338,7 +338,7 @@ namespace cppcrypto
 		}
 	}
 
-	bool mars448::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars448::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 448 / 8);
@@ -346,7 +346,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars192::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars192::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 192 / 8);
@@ -355,7 +355,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars256::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars256::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 256 / 8);
@@ -364,7 +364,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars320::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars320::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 320 / 8);
@@ -373,7 +373,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars128::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars128::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 128 / 8);
@@ -382,7 +382,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars160::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars160::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 160 / 8);
@@ -391,7 +391,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars224::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars224::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 224 / 8);
@@ -400,7 +400,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars288::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars288::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 288 / 8);
@@ -409,7 +409,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars352::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars352::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 352 / 8);
@@ -418,7 +418,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars384::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars384::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 384 / 8);
@@ -427,7 +427,7 @@ namespace cppcrypto
 		return do_init(T, rk);
 	}
 
-	bool mars416::init(const uint8_t* key, block_cipher::direction direction)
+	bool mars416::init(const unsigned char* key, block_cipher::direction direction)
 	{
 		uint32_t T[15];
 		memcpy(&T, key, 416 / 8);

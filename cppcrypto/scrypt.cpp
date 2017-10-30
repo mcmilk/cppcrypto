@@ -15,7 +15,7 @@ and released into public domain.
 
 extern "C"
 {
-	void crypto_scrypt_smix_sse2(uint8_t *, size_t, uint64_t, void *, void *);
+	void crypto_scrypt_smix_sse2(unsigned char *, size_t, uint64_t, void *, void *);
 }
 
 namespace cppcrypto
@@ -64,7 +64,7 @@ namespace cppcrypto
 			out[i] = x[i] + in[i];
 	}
 
-	static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	static inline void xor_block_512(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
 #ifdef USE_AVX
 		if (cpu_info::avx())
@@ -106,7 +106,7 @@ namespace cppcrypto
 
 	}
 
-	static inline void xor_block_512r(const uint8_t* in, const uint8_t* prev, uint8_t* out, size_t r)
+	static inline void xor_block_512r(const unsigned char* in, const unsigned char* prev, unsigned char* out, size_t r)
 	{
 		for (size_t i = 0; i < r; i++)
 		{
@@ -124,10 +124,10 @@ namespace cppcrypto
 		memcpy(X, B + last*16, 64);
 		for (size_t i = 0; i <= last; i+=2)
 		{
-			xor_block_512((uint8_t*)X, (uint8_t*)(&B[i * 16]), (uint8_t*)X);
+			xor_block_512((unsigned char*)X, (unsigned char*)(&B[i * 16]), (unsigned char*)X);
 			salsa20_8_core(X, X);
 			memcpy(Y + i * 16/2, X, 64);
-			xor_block_512((uint8_t*)X, (uint8_t*)(&B[(i+1) * 16]), (uint8_t*)X);
+			xor_block_512((unsigned char*)X, (unsigned char*)(&B[(i+1) * 16]), (unsigned char*)X);
 			salsa20_8_core(X, X);
 			memcpy(Y + r * 16 + i * 16 / 2, X, 64);
 		}
@@ -139,7 +139,7 @@ namespace cppcrypto
 		return ((const uint64_t*)B)[offset];
 	}
 
-	static inline void smix(uint8_t* B, size_t r, size_t N)
+	static inline void smix(unsigned char* B, size_t r, size_t N)
 	{
 		size_t bsbytes = 128 * r;
 		size_t bs = bsbytes / 4;
@@ -163,7 +163,7 @@ namespace cppcrypto
 			for (size_t i = 0; i < N; i++)
 			{
 				size_t j = integerify(X, r) % N;
-				xor_block_512r((uint8_t*)X, (uint8_t*)&V[j*bs], (uint8_t*)X, bsbytes / 64);
+				xor_block_512r((unsigned char*)X, (unsigned char*)&V[j*bs], (unsigned char*)X, bsbytes / 64);
 				blockmix(X, r, Y);
 				std::swap(X, Y);
 			}
@@ -172,9 +172,9 @@ namespace cppcrypto
 		aligned_deallocate(X);
 	}
 
-	void scrypt(hmac& hmac, const uint8_t* salt, size_t salt_len, size_t N, size_t r, size_t p, uint8_t* dk, size_t dklen)
+	void scrypt(hmac& hmac, const unsigned char* salt, size_t salt_len, size_t N, size_t r, size_t p, unsigned char* dk, size_t dklen)
 	{
-		uint8_t* B = new uint8_t[p * 128 * r];
+		unsigned char* B = new unsigned char[p * 128 * r];
 		pbkdf2(hmac, salt, salt_len, 1, B, p * 128 * r);
 
 #ifdef NO_CPP11_THREADS
@@ -195,7 +195,7 @@ namespace cppcrypto
 	}
 
 #if 0
-	static inline void hex2array(const std::string& hex, uint8_t* array)
+	static inline void hex2array(const std::string& hex, unsigned char* array)
 	{
 		const char* pos = hex.c_str();
 		for (size_t count = 0; count < hex.size() / 2; count++) {
@@ -206,7 +206,7 @@ namespace cppcrypto
 
 	void scrypttest()
 	{
-		uint8_t in1[512], in2[512], res[512];
+		unsigned char in1[512], in2[512], res[512];
 		hex2array("7e879a214f3ec9867ca940e641718f26baee555b8c61c1b50df846116dcd3b1dee24f319df9b3d8514121e4b5ac5aa3276021d2909c74829edebc68db8b8c25e", in1);
 		hex2array("a41f859c6608cc993b81cacb020cef05044b2181a2fd337dfd7b1c6396682f29b4393168e3c9e6bcfe6bc5b7a06d96bae424cc102c91745c24ad673dc7618f81", in2);
 		salsa20_8_core((uint32_t*)in1, (uint32_t*)res);
@@ -234,7 +234,7 @@ namespace cppcrypto
 		printf("\n");
 
 		hex2array("77d6576238657b203b19ca42c18a0497f16b4844e3074ae8dfdffa3fede21442fcd0069ded0948f8326a753a0fc81f17e8d3e0fb2e0d3628cf35e20c38d18906", in2);
-		scrypt(hmac(sha256(), ""), (const uint8_t*)"", 0, 16, 1, 1, res, 64);
+		scrypt(hmac(sha256(), ""), (const unsigned char*)"", 0, 16, 1, 1, res, 64);
 		printf("scrypt(1) - ");
 		for (int i = 0; i < 64; i++)
 			printf("%02x", res[i]);
@@ -242,7 +242,7 @@ namespace cppcrypto
 		printf("\n");
 
 		hex2array("fdbabe1c9d3472007856e7190d01e9fe7c6ad7cbc8237830e77376634b3731622eaf30d92e22a3886ff109279d9830dac727afb94a83ee6d8360cbdfa2cc0640", in2);
-		scrypt(hmac(sha256(), "password"), (const uint8_t*)"NaCl", 4, 1024, 8, 16, res, 64);
+		scrypt(hmac(sha256(), "password"), (const unsigned char*)"NaCl", 4, 1024, 8, 16, res, 64);
 		printf("scrypt(2) - ");
 		for (int i = 0; i < 64; i++)
 			printf("%02x", res[i]);
@@ -250,7 +250,7 @@ namespace cppcrypto
 		printf("\n");
 
 		hex2array("7023bdcb3afd7348461c06cd81fd38ebfda8fbba904f8e3ea9b543f6545da1f2d5432955613f0fcf62d49705242a9af9e61e85dc0d651e40dfcf017b45575887", in2);
-		scrypt(hmac(sha256(), "pleaseletmein"), (const uint8_t*)"SodiumChloride", 14, 16384, 8, 1, res, 64);
+		scrypt(hmac(sha256(), "pleaseletmein"), (const unsigned char*)"SodiumChloride", 14, 16384, 8, 1, res, 64);
 		printf("scrypt(3) - ");
 		for (int i = 0; i < 64; i++)
 			printf("%02x", res[i]);
@@ -258,7 +258,7 @@ namespace cppcrypto
 		printf("\n");
 
 		hex2array("2101cb9b6a511aaeaddbbe09cf70f881ec568d574a2ffd4dabe5ee9820adaa478e56fd8f4ba5d09ffa1c6d927c40f4c337304049e8a952fbcbf45c6fa77a41a4", in2);
-		scrypt(hmac(sha256(), "pleaseletmein"), (const uint8_t*)"SodiumChloride", 14, 1048576, 8, 1, res, 64);
+		scrypt(hmac(sha256(), "pleaseletmein"), (const unsigned char*)"SodiumChloride", 14, 1048576, 8, 1, res, 64);
 		printf("scrypt(4) - ");
 		for (int i = 0; i < 64; i++)
 			printf("%02x", res[i]);

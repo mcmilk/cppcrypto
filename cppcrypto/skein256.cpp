@@ -12,13 +12,13 @@ and released into public domain.
 //#define CPPCRYPTO_DEBUG
 
 #ifndef _M_X64
-void Skein_256_Process_Block_mmx(uint64_t* T, uint64_t* X, const uint8_t *blkPtr, size_t blkCnt, size_t byteCntAdd);
+void Skein_256_Process_Block_mmx(uint64_t* T, uint64_t* X, const unsigned char *blkPtr, size_t blkCnt, size_t byteCntAdd);
 #endif
 
 namespace cppcrypto
 {
 
-void skein256::update(const uint8_t* data, size_t len)
+void skein256::update(const unsigned char* data, size_t len)
 {
 	if (pos && pos + len > 32)
 	{
@@ -173,7 +173,7 @@ void skein256::transform(void* mp, uint64_t num_blks, size_t reallen)
 
 }
 
-void skein256::final(uint8_t* hash)
+void skein256::final(unsigned char* hash)
 {
 	tweak[1] |= 1ULL << 63; // last block
 	if (pos < 32)
@@ -223,7 +223,7 @@ skein256::skein256(size_t hashsize)
 #ifndef _M_X64
 #ifndef __clang__ // MMX code is very slow on clang compiles for some reason
 	if (cpu_info::mmx())
-		transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { Skein_256_Process_Block_mmx(tweak, H, (uint8_t*)m, static_cast<size_t>(num_blks), reallen); };
+		transfunc = [this](void* m, uint64_t num_blks, size_t reallen) { Skein_256_Process_Block_mmx(tweak, H, (unsigned char*)m, static_cast<size_t>(num_blks), reallen); };
 	else
 #endif
 #endif

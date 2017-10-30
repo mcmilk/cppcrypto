@@ -16,7 +16,7 @@ namespace cppcrypto
 	{
 	public:
 		virtual size_t tweaksize() const = 0;
-		virtual void set_tweak(const uint8_t* tweak) = 0;
+		virtual void set_tweak(const unsigned char* tweak) = 0;
 	};
 
 	class threefish512_512 : public tweakable_block_cipher
@@ -30,10 +30,10 @@ namespace cppcrypto
 		threefish512_512* clone() const override { return new threefish512_512; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void set_tweak(const uint8_t* tweak) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void set_tweak(const unsigned char* tweak) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint64_t keys[9];
@@ -52,10 +52,10 @@ namespace cppcrypto
 		threefish1024_1024* clone() const override { return new threefish1024_1024; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void set_tweak(const uint8_t* tweak) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void set_tweak(const unsigned char* tweak) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint64_t keys[17];
@@ -74,10 +74,10 @@ namespace cppcrypto
 		threefish256_256* clone() const override { return new threefish256_256; }
 		void clear() override;
 
-		bool init(const uint8_t* key, block_cipher::direction direction) override;
-		void set_tweak(const uint8_t* tweak) override;
-		void encrypt_block(const uint8_t* in, uint8_t* out) override;
-		void decrypt_block(const uint8_t* in, uint8_t* out) override;
+		bool init(const unsigned char* key, block_cipher::direction direction) override;
+		void set_tweak(const unsigned char* tweak) override;
+		void encrypt_block(const unsigned char* in, unsigned char* out) override;
+		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 	private:
 		uint64_t keys[5];

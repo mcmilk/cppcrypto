@@ -20,7 +20,7 @@ and released into public domain.
 
 namespace cppcrypto
 {
-	static inline void xor_block_512(const uint8_t* in, const uint8_t* prev, uint8_t* out)
+	static inline void xor_block_512(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
 #ifdef USE_AVX
 		if (cpu_info::avx())
@@ -79,7 +79,7 @@ namespace cppcrypto
 
 	static inline uint32_t h1(uint32_t x, uint32_t* Q)
 	{
-		return Q[uint8_t(x)] + Q[256 + uint8_t(x >> 8)] + Q[512 + uint8_t(x >> 16)] + Q[768 + uint8_t(x >> 24)];
+		return Q[(unsigned char)(x)] + Q[256 + (unsigned char)(x >> 8)] + Q[512 + (unsigned char)(x >> 16)] + Q[768 + (unsigned char)(x >> 24)];
 	}
 
 	static inline void P32(uint32_t* P, uint32_t* Q, uint32_t* X, uint32_t i, const uint32_t x)
@@ -200,14 +200,14 @@ namespace cppcrypto
 		zero_memory(Y, sizeof(Y));
 	}
 
-	void hc256::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void hc256::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		size_t i = 0;
 		if (pos)
 		{
 			while (pos < len && pos < 64)
 			{
-				out[i] = in[i] ^ ((uint8_t*)block_)[pos++];
+				out[i] = in[i] ^ ((unsigned char*)block_)[pos++];
 				++i;
 			}
 			len -= i;
@@ -219,23 +219,23 @@ namespace cppcrypto
 			generate_block(P, Q, X, Y, block_, words);
 			if (len >= 64)
 			{
-				xor_block_512(in + i, (uint8_t*)block_, out + i);
+				xor_block_512(in + i, (unsigned char*)block_, out + i);
 				i += 64;
 			}
 			else
 			{
 				for (; pos < len; pos++, i++)
-					out[i] = in[i] ^ ((uint8_t*)block_)[pos];
+					out[i] = in[i] ^ ((unsigned char*)block_)[pos];
 			}
 		}
 	}
 
-	void hc256::decrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void hc256::decrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		return encrypt(in, len, out);
 	}
 
-	void hc256::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void hc256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		assert(keylen == keysize() / 8);
 		assert(ivlen == 32);
@@ -295,7 +295,7 @@ namespace cppcrypto
 
 	static inline uint32_t h1_128(uint32_t x, uint32_t* Q)
 	{
-		return Q[uint8_t(x)] + Q[256 + uint8_t(x >> 16)];
+		return Q[(unsigned char)(x)] + Q[256 + (unsigned char)(x >> 16)];
 	}
 
 	static inline void P32_128_P(uint32_t* P, uint32_t* Q, uint32_t* X, uint32_t i, const uint32_t x)
@@ -464,7 +464,7 @@ namespace cppcrypto
 		}
 	}
 
-	void hc128::init(const uint8_t* key, size_t keylen, const uint8_t* iv, size_t ivlen)
+	void hc128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		assert(keylen == keysize() / 8);
 		assert(ivlen == 16);
@@ -531,14 +531,14 @@ namespace cppcrypto
 		zero_memory(Y, sizeof(Y));
 	}
 
-	void hc128::encrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void hc128::encrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		size_t i = 0;
 		if (pos)
 		{
 			while (pos < len && pos < 64)
 			{
-				out[i] = in[i] ^ ((uint8_t*)block_)[pos++];
+				out[i] = in[i] ^ ((unsigned char*)block_)[pos++];
 				++i;
 			}
 			len -= i;
@@ -550,18 +550,18 @@ namespace cppcrypto
 			generate_block_128(P, Q, X, Y, block_, words);
 			if (len >= 64)
 			{
-				xor_block_512(in + i, (uint8_t*)block_, out + i);
+				xor_block_512(in + i, (unsigned char*)block_, out + i);
 				i += 64;
 			}
 			else
 			{
 				for (; pos < len; pos++, i++)
-					out[i] = in[i] ^ ((uint8_t*)block_)[pos];
+					out[i] = in[i] ^ ((unsigned char*)block_)[pos];
 			}
 		}
 	}
 
-	void hc128::decrypt(const uint8_t* in, size_t len, uint8_t* out)
+	void hc128::decrypt(const unsigned char* in, size_t len, unsigned char* out)
 	{
 		return encrypt(in, len, out);
 	}
