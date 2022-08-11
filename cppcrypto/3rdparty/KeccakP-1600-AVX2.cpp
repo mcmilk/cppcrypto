@@ -17,6 +17,7 @@ http://creativecommons.org/publicdomain/zero/1.0/
 #include <string.h>
 #include <stdint.h>
 #include "align.h"
+#include <iostream>
 
 #ifdef _MSC_VER
 #pragma warning(disable:4752)
@@ -51,8 +52,7 @@ typedef long long           INT64;
 
 #ifndef _M_X64
 #ifdef _MSC_VER
-#if _MSC_VER < 1900
-__inline __m256i _mm256_setr_epi64x(int64_t a, int64_t b, int64_t c, int64_t d)
+__inline __m256i fixed_mm256_setr_epi64x(int64_t a, int64_t b, int64_t c, int64_t d)
 {
 	union {
 		int64_t q[4];
@@ -61,11 +61,12 @@ __inline __m256i _mm256_setr_epi64x(int64_t a, int64_t b, int64_t c, int64_t d)
 	u.q[0] = a; u.q[1] = b; u.q[2] = c; u.q[3] = d;
 	return _mm256_setr_epi32(u.r[0], u.r[1], u.r[2], u.r[3], u.r[4], u.r[5], u.r[6], u.r[7]);
 }
-__inline __m256i _mm256_set1_epi64x(int64_t a)
+__inline __m256i fixed_mm256_set1_epi64x(int64_t a)
 {
 	return _mm256_setr_epi64x(a, a, a, a);
 }
-#endif
+#define _mm256_setr_epi64x fixed_mm256_setr_epi64x
+#define _mm256_set1_epi64x fixed_mm256_set1_epi64x
 #endif
 #endif
 

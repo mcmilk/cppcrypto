@@ -38,6 +38,7 @@ namespace cppcrypto
 	{
 		if (impl_)
 			return impl_->update(data, len);
+
 		size_t r = rate / 8;
 		if (pos && pos + len >= r)
 		{
@@ -166,18 +167,20 @@ namespace cppcrypto
 	}
 
 	sha3::sha3(size_t hashsize)
-		: m(nullptr), hs(hashsize), impl_(nullptr)
+		: m(nullptr), hs(hashsize)
 	{
 		validate_hash_size(hashsize, {224, 256, 384, 512});
 
 		rate = 1600U - hs * 2;
 
 #ifndef NO_OPTIMIZED_VERSIONS
+//#ifdef _M_X64
 		if (cpu_info::avx2())
-			impl_ = new detail::sha3_impl_avx2;
+			impl_.create<detail::sha3_impl_avx2>();
 		else if (cpu_info::ssse3())
-			impl_ = new detail::sha3_impl_ssse3;
+			impl_.create<detail::sha3_impl_ssse3>();
 		else
+//#endif
 #endif
 			m = new unsigned char[rate / 8];
 	}
@@ -186,7 +189,6 @@ namespace cppcrypto
 	{
 		clear();
 		delete[] m;
-		delete impl_;
 	}
 
 	void sha3::clear()

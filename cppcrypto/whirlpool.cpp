@@ -15,6 +15,8 @@ extern "C"
 {
 #ifndef _M_X64
 	void whirlpool_compress_asm(unsigned char state[64], const unsigned char block[64]);
+#else
+	void wbob_pi(uint8_t* s512, uint8_t* ll);
 #endif
 }
 
@@ -668,6 +670,25 @@ namespace cppcrypto
 #ifndef _M_X64
 		if (cpu_info::sse2())
 			transfunc = [this](void* mp, uint64_t num_blks) { for (uint64_t b = 0; b < num_blks; b++) whirlpool_compress_asm((unsigned char*)h.get(), ((const unsigned char*)mp)+b*64); };
+		else
+#else
+		if (cpu_info::ssse3())
+		{
+			transfunc = [this](void* mp, uint64_t num_blks)
+			{
+				for (uint64_t b = 0; b < num_blks; b++)
+				{
+					union { uint8_t ch[64]; unsigned long long ll[8]; } K, state;
+					for (int i = 0; i < 8; i++)
+						state.ll[i] = (K.ll[i] = h[i]) ^ ((unsigned long long*)mp)[i];
+					wbob_pi(K.ch, state.ch);
+					for (int i = 0; i < 8; i++)
+						h[i] ^= state.ll[i] ^ ((unsigned long long*)mp)[i];
+					mp = ((unsigned long long*)mp) + 8;
+				}
+			};
+
+		}
 		else
 #endif
 #endif

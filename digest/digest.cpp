@@ -1109,6 +1109,12 @@ int wmain(int argc, wchar_t* argv[])
 
 	hashes.emplace(make_pair(_T("shake128/256"), unique_ptr<crypto_hash>(new shake128(256))));
 	hashes.emplace(make_pair(_T("shake256/512"), unique_ptr<crypto_hash>(new shake256(512))));
+	hashes.emplace(make_pair(_T("esch/256"), unique_ptr<crypto_hash>(new esch(256))));
+	hashes.emplace(make_pair(_T("esch/384"), unique_ptr<crypto_hash>(new esch(384))));
+	hashes.emplace(make_pair(_T("echo/224"), unique_ptr<crypto_hash>(new echo(224))));
+	hashes.emplace(make_pair(_T("echo/256"), unique_ptr<crypto_hash>(new echo(256))));
+	hashes.emplace(make_pair(_T("echo/384"), unique_ptr<crypto_hash>(new echo(384))));
+	hashes.emplace(make_pair(_T("echo/512"), unique_ptr<crypto_hash>(new echo(512))));
 
 	// additional variants for test vector testing
 	map<wstring, unique_ptr<crypto_hash>> test_hashes;
@@ -1158,18 +1164,20 @@ int wmain(int argc, wchar_t* argv[])
 			// maybe it's hash
 			auto hashit2 = hashes.find(hash);
 			if (hashit2 == hashes.end())
-				hashit2 = test_hashes.find(hash);
-			if (hashit2 == hashes.end() || hashit2 == test_hashes.end())
 			{
-				// maybe it's a stream cipher
-				auto hashit3 = stream_ciphers.find(hash);
-				if (hashit3 == stream_ciphers.end())
+				hashit2 = test_hashes.find(hash);
+				if (hashit2 == test_hashes.end())
 				{
-					wcerr << _T("Unknown algorithm: ") << hash << endl;
-					return 2;
+					// maybe it's a stream cipher
+					auto hashit3 = stream_ciphers.find(hash);
+					if (hashit3 == stream_ciphers.end())
+					{
+						wcerr << _T("Unknown algorithm: ") << hash << endl;
+						return 2;
+					}
+					test_vector(hash, hashit3->second.get(), argv[3]);
+					return 0;
 				}
-				test_vector(hash, hashit3->second.get(), argv[3]);
-				return 0;
 			}
 			test_vector(hash, hashit2->second.get(), argv[3]);
 			return 0;

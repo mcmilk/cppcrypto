@@ -35,8 +35,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
@@ -276,6 +276,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="3rdparty\align.h" />
     <ClInclude Include="3rdparty\blake2b-load-sse2.h" />
     <ClInclude Include="3rdparty\blake2b-load-sse41.h" />
     <ClInclude Include="3rdparty\blake2b-round.h" />
@@ -288,15 +289,23 @@
     <ClInclude Include="3rdparty\gost3411-2012-sse2.h" />
     <ClInclude Include="3rdparty\KeccakHash.h" />
     <ClInclude Include="3rdparty\KeccakP-1600-AVX2.h" />
+    <ClInclude Include="3rdparty\KeccakP-1600-SnP.h" />
+    <ClInclude Include="3rdparty\KeccakSponge-common.h" />
     <ClInclude Include="3rdparty\KeccakSpongeWidth1600.h" />
     <ClInclude Include="3rdparty\salsa20_u1.h" />
     <ClInclude Include="3rdparty\salsa20_u4.h" />
+    <ClInclude Include="3rdparty\SnP-documentation.h" />
+    <ClInclude Include="3rdparty\SnP-Relaned.h" />
     <ClInclude Include="argon2.h" />
     <ClInclude Include="aria.h" />
     <ClInclude Include="blake2.h" />
     <ClInclude Include="camellia.h" />
     <ClInclude Include="cast6.h" />
     <ClInclude Include="chacha.h" />
+    <ClInclude Include="echo-impl.h" />
+    <ClInclude Include="echo.h" />
+    <ClInclude Include="esch-impl.h" />
+    <ClInclude Include="esch.h" />
     <ClInclude Include="hc.h" />
     <ClInclude Include="jh-impl.h" />
     <ClInclude Include="jh.h" />
@@ -359,6 +368,7 @@
     <ClCompile Include="3rdparty\blake2s.c" />
     <ClCompile Include="3rdparty\chacha-xmm.c" />
     <ClCompile Include="3rdparty\crypto_scrypt_smix_sse2.c" />
+    <ClCompile Include="3rdparty\echo-impl-aesni.cpp" />
     <ClCompile Include="3rdparty\gost3411-2012-sse2.c">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -370,12 +380,16 @@
     <ClCompile Include="3rdparty\poly1305-impl-sse2.cpp" />
     <ClCompile Include="3rdparty\salsa20-xmm6int.c" />
     <ClCompile Include="3rdparty\sha3_impl_avx2.cpp" />
+    <ClCompile Include="3rdparty\wbob_pissse3.c" />
     <ClCompile Include="argon2.cpp" />
     <ClCompile Include="aria.cpp" />
     <ClCompile Include="blake2.cpp" />
     <ClCompile Include="camellia.cpp" />
     <ClCompile Include="cast6.cpp" />
     <ClCompile Include="chacha.cpp" />
+    <ClCompile Include="echo.cpp" />
+    <ClCompile Include="esch-impl-avx2.cpp" />
+    <ClCompile Include="esch.cpp" />
     <ClCompile Include="hc.cpp" />
     <ClCompile Include="jh.cpp" />
     <ClCompile Include="3rdparty\KeccakF-1600-opt64.c" />
@@ -449,6 +463,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">true</ExcludedFromBuild>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WIN64</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WIN64</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN64</PreprocessorDefinitions>
     </YASM>
     <YASM Include="3rdparty\poly1305-32.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -487,6 +504,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">true</ExcludedFromBuild>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</Preprocessor>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">1</Preprocessor>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">1</Preprocessor>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release|x64'">1</Preprocessor>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release|x64'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1</Preprocessor>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</Preprocessor>
     </YASM>
     <YASM Include="3rdparty\sha1_ssse3.asm">
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN_ABI</Defines>
@@ -495,6 +521,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">true</ExcludedFromBuild>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WIN_ABI</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WIN_ABI</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN_ABI</PreprocessorDefinitions>
     </YASM>
     <YASM Include="3rdparty\sha256_avx1.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -530,6 +559,13 @@
       <PreProc Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</PreProc>
       <Parser Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</Parser>
       <Parser Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">1</Preprocessor>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">1</Preprocessor>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release|x64'">1</Preprocessor>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1</Preprocessor>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</Preprocessor>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</Preprocessor>
     </YASM>
     <YASM Include="3rdparty\sha512_avx.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -538,6 +574,9 @@
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WINABI</Defines>
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WINABI</Defines>
       <Defines Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WINABI</Defines>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WINABI</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WINABI</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WINABI</PreprocessorDefinitions>
     </YASM>
     <YASM Include="3rdparty\sha512_avx2_rorx.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -546,6 +585,9 @@
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WINABI</Defines>
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WINABI</Defines>
       <Defines Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WINABI</Defines>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WINABI</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WINABI</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WINABI</PreprocessorDefinitions>
     </YASM>
     <YASM Include="3rdparty\sha512_sse4.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -554,6 +596,9 @@
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WINABI</Defines>
       <Defines Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WINABI</Defines>
       <Defines Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WINABI</Defines>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">WINABI</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">WINABI</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WINABI</PreprocessorDefinitions>
     </YASM>
     <YASM Include="3rdparty\whirlpool-nayuki.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -565,11 +610,21 @@
       <PreProc Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</PreProc>
       <Parser Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</Parser>
       <Parser Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">1</Preprocessor>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">1</Preprocessor>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release|x64'">1</Preprocessor>
+      <Parser Condition="'$(Configuration)|$(Platform)'=='Release|x64'">1</Parser>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">1</Preprocessor>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'">1</Preprocessor>
+      <Preprocessor Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">1</Preprocessor>
     </YASM>
   </ItemGroup>
   <ItemGroup>
     <None Include="3rdparty\KeccakF-1600-simd128.macros" />
     <None Include="3rdparty\KeccakF-1600-unrolling.macros" />
+    <None Include="3rdparty\KeccakSponge.inc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -88,6 +88,12 @@ digest -tv blake2s/128 ./hash/blake2s_128.txt
 digest -tv blake2s/160 ./hash/blake2s_160.txt
 digest -tv blake2s/224 ./hash/blake2s_224.txt
 digest -tv blake2s/256 ./hash/blake2s_256.txt
+digest -tv echo/224 ./hash/echo224.txt
+digest -tv echo/256 ./hash/echo256.txt
+digest -tv echo/384 ./hash/echo384.txt
+digest -tv echo/512 ./hash/echo512.txt
+digest -tv esch/256 ./hash/esch256.txt
+digest -tv esch/384 ./hash/esch384.txt
 digest -tv groestl/224 ./hash/groestl224.txt
 digest -tv groestl/256 ./hash/groestl256.txt
 digest -tv groestl/384 ./hash/groestl384.txt

@@ -51,7 +51,6 @@ namespace cppcrypto
 		{
 			std::swap(state, other.state);
 			return *this;
-			return *this;
 		}
 
 	}

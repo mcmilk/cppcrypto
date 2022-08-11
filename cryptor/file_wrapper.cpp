@@ -38,8 +38,14 @@ file_wrapper::file_wrapper(const wstring& filename)
 
 file_wrapper::~file_wrapper() 
 { 
-	if (!success) 
-		_wremove(tmpfile.c_str()); 
+	if (!success)
+	{
+		if (ifile.is_open())
+			ifile.close();
+		if (ofile.is_open())
+			ofile.close();
+		_wremove(tmpfile.c_str());
+	}
 }
 
 void file_wrapper::read(unsigned char* buf, size_t len)
@@ -85,7 +91,7 @@ bool file_wrapper::is_directory() const
 	std::wstring spath(file);
 	struct _stat64 st_stat;
 
-	spath.erase(spath.find_last_not_of(_T("/\\") + 1));
+	spath.erase(spath.find_last_not_of(_T("/\\")) + 1);
 
 	if (spath.length() > 1 && *spath.rbegin() == _T(':'))
 		spath += _T('/');

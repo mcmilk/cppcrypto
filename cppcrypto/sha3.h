@@ -9,6 +9,7 @@ and released into public domain.
 #include "crypto_hash.h"
 #include <functional>
 #include "sha3-impl.h"
+#include "alignedarray.h"
 
 namespace cppcrypto
 {
@@ -35,7 +36,7 @@ namespace cppcrypto
 		size_t pos;
 		size_t hs;
 		size_t rate;
-		detail::sha3_impl* impl_;
+		aligned_impl_ptr<detail::sha3_impl, 32> impl_;
 	};
 
 	class shake256 : public sha3

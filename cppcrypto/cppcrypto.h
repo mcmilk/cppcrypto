@@ -41,5 +41,7 @@
 #include "poly1305.h"
 #include "simon.h"
 #include "speck.h"
+#include "esch.h"
+#include "echo.h"
 
 #endif

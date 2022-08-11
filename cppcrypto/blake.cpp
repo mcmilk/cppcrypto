@@ -8,6 +8,7 @@ and released into public domain.
 #include "blake.h"
 #include <memory.h>
 #include <functional>
+#include <stdexcept>
 
 //#define CPPCRYPTO_DEBUG
 //#define NO_OPTIMIZED_VERSIONS

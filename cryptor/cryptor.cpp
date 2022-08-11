@@ -18,7 +18,7 @@ This code is released under Simplified BSD License (see license.txt).
 #include "compatibility.h"
 #include "file_wrapper.h"
 
-#define CPPCRYPTO_DEBUG
+//#define CPPCRYPTO_DEBUG
 
 using namespace std;
 using namespace cppcrypto;
@@ -83,18 +83,20 @@ bool gen_random_bytes(unsigned char* buffer, size_t buflen)
 }
 
 // Encrypt a file using specified cipher and hash function (for HMAC)
-void encrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
+void encrypt_file(cbc* cipher, crypto_hash* hash, wstring filename, std::string& pwd)
 {
 	file_wrapper file(filename);
 	long long fileSize = file.file_size();
 
 	// Ask user for password
-	enable_tty_echo(false);
-	string pwd;
-	wcout << _T("Password: ");
-	getline(cin, pwd);
-	enable_tty_echo(true);
-	wcout << endl;
+	while (pwd.empty())
+	{
+		enable_tty_echo(false);
+		wcout << _T("Password: ");
+		getline(cin, pwd);
+		enable_tty_echo(true);
+		wcout << endl;
+	}
 
 	// Generate salt and initialization vector
 	unsigned char salt[32];
@@ -105,7 +107,6 @@ void encrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	// Generate encryption and HMAC keys (in one wide array)
 	unsigned char pwdhash[160];
 	argon2d(pwd.c_str(), static_cast<uint32_t>(pwd.length()), salt, static_cast<uint32_t>(sizeof(salt)), 4, 4096, 1000, pwdhash, static_cast<uint32_t>(sizeof(pwdhash)));
-	zero_memory(&pwd[0], pwd.length());
 
 #ifdef CPPCRYPTO_DEBUG
 	wcout << _T("Password length is: ") << pwd.length() << _T(" bytes.") << endl;
@@ -168,7 +169,7 @@ void encrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 }
 
 // Encrypt a file using specified cipher and hash function (for HMAC)
-void decrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
+void decrypt_file(cbc* cipher, crypto_hash* hash, wstring filename, std::string& pwd)
 {
 	file_wrapper file(filename);
 	long long fileSize = file.file_size();
@@ -195,17 +196,18 @@ void decrypt_file(cbc* cipher, crypto_hash* hash, wstring filename)
 	read += cipher->ivsize() / 8;
 
 	// Ask user for a password
-	enable_tty_echo(false);
-	string pwd;
-	cout << "Password: ";
-	getline(cin, pwd);
-	enable_tty_echo(true);
-	cout << endl;
+	while (pwd.empty())
+	{
+		enable_tty_echo(false);
+		cout << "Password: ";
+		getline(cin, pwd);
+		enable_tty_echo(true);
+		cout << endl;
+	}
 
 	// Generate encryption and HMAC keys (in one wide array)
 	unsigned char pwdhash[160];
 	argon2d(pwd.c_str(), static_cast<uint32_t>(pwd.length()), salt, static_cast<uint32_t>(sizeof(salt)), 4, 4096, 1000, pwdhash, static_cast<uint32_t>(sizeof(pwdhash)));
-	zero_memory(&pwd[0], pwd.length());
 
 #ifdef CPPCRYPTO_DEBUG
 	cout << "Password length is: " << pwd.length() << " bytes." << endl;
@@ -280,13 +282,14 @@ int wmain(int argc, wchar_t* argv[])
 	cbc cbc(cipher);
 	groestl hash(256);
 	int error_count = 0;
+	string pwd;
 	for (int n = 2; n < argc; ++n)
 	{
 		try {
 			if (!decoding)
-				encrypt_file(&cbc, &hash, argv[n]);
+				encrypt_file(&cbc, &hash, argv[n], pwd);
 			else
-				decrypt_file(&cbc, &hash, argv[n]);
+				decrypt_file(&cbc, &hash, argv[n], pwd);
 		}
 		catch (std::exception& ex) {
 			wcerr << argv[n] << _T(": ");
@@ -294,6 +297,8 @@ int wmain(int argc, wchar_t* argv[])
 			++error_count;
 		}
 	}
+	if (!pwd.empty())
+		zero_memory(&pwd[0], pwd.length());
 
 	return error_count;
 }

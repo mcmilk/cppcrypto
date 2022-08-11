@@ -144,7 +144,8 @@ OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1
       jh-impl-sse.o streebog.o gost3411-2012-sse41.o sm3.o md5.o serpent.o cast6.o camellia.o kalyna.o \
       aria.o kuznyechik.o sm4.o mars.o blake2.o blake2b.o blake2s.o threefish.o scrypt.o crypto_scrypt_smix_sse2.o \
       argon2.o thread_pool.o salsa20.o salsa20-xmm6int.o hc.o chacha.o chacha-xmm.o poly1305.o poly1305-impl-sse2.o \
-      simon.o speck.o KeccakP-1600-AVX2.o KeccakSpongeWidth1600.o KeccakHash.o sha3_impl_avx2.o
+      simon.o speck.o KeccakP-1600-AVX2.o KeccakSpongeWidth1600.o KeccakHash.o sha3_impl_avx2.o esch.o echo.o \
+      echo-impl-aesni.o wbob_pissse3.o esch-impl-avx2.o
 
 OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha1-nayuki.o serpent-waite.o poly1305-32.o
 OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o \
@@ -297,4 +298,13 @@ poly1305-64.o: 3rdparty/poly1305-64.asm
 
 poly1305-impl-sse2.o: 3rdparty/poly1305-impl-sse2.cpp
 	$(CXX) -c $(CXXFLAGS) 3rdparty/poly1305-impl-sse2.cpp
+
+wbob_pissse3.o: 3rdparty/wbob_pissse3.c
+	$(CC) -c $(CFLAGS) $(ARCHSSSE3) 3rdparty/wbob_pissse3.c
+
+echo-impl-aesni.o: 3rdparty/echo-impl-aesni.cpp
+	$(CC) -c $(CFLAGS) $(ARCHAES) 3rdparty/echo-impl-aesni.cpp
+
+esch-impl-avx2.o: esch-impl-avx2.cpp
+	$(CC) -c $(CFLAGS) $(ARCHAVX2) esch-impl-avx2.cpp
 

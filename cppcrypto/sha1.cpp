@@ -10,6 +10,7 @@ and released into public domain.
 #include <functional>
 
 //#define CPPCRYPTO_DEBUG
+//#define NO_OPTIMIZED_VERSIONS
 
 extern "C"
 {

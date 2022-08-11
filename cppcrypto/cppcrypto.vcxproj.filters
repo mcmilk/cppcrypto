@@ -246,6 +246,33 @@
     <ClInclude Include="sha3-impl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="3rdparty\align.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakP-1600-SnP.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\KeccakSponge-common.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\SnP-Relaned.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="3rdparty\SnP-documentation.h">
+      <Filter>3rdparty</Filter>
+    </ClInclude>
+    <ClInclude Include="echo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="esch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="echo-impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="esch-impl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cpuinfo.cpp">
@@ -458,6 +485,21 @@
     <ClCompile Include="3rdparty\sha3_impl_avx2.cpp">
       <Filter>3rdparty</Filter>
     </ClCompile>
+    <ClCompile Include="echo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\wbob_pissse3.c">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="esch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="3rdparty\echo-impl-aesni.cpp">
+      <Filter>3rdparty</Filter>
+    </ClCompile>
+    <ClCompile Include="esch-impl-avx2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <YASM Include="3rdparty\sha256_avx1.asm">
@@ -511,6 +553,9 @@
       <Filter>3rdparty</Filter>
     </None>
     <None Include="3rdparty\KeccakF-1600-unrolling.macros">
+      <Filter>3rdparty</Filter>
+    </None>
+    <None Include="3rdparty\KeccakSponge.inc">
       <Filter>3rdparty</Filter>
     </None>
   </ItemGroup>
