@@ -145,7 +145,7 @@ OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1
       aria.o kuznyechik.o sm4.o mars.o blake2.o blake2b.o blake2s.o threefish.o scrypt.o crypto_scrypt_smix_sse2.o \
       argon2.o thread_pool.o salsa20.o salsa20-xmm6int.o hc.o chacha.o chacha-xmm.o poly1305.o poly1305-impl-sse2.o \
       simon.o speck.o KeccakP-1600-AVX2.o KeccakSpongeWidth1600.o KeccakHash.o sha3_impl_avx2.o esch.o echo.o \
-      echo-impl-aesni.o wbob_pissse3.o esch-impl-avx2.o
+      echo-impl-aesni.o wbob_pissse3.o esch-impl-avx2.o ctr-sse41.o
 
 OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha1-nayuki.o serpent-waite.o poly1305-32.o
 OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o \
@@ -307,4 +307,7 @@ echo-impl-aesni.o: 3rdparty/echo-impl-aesni.cpp
 
 esch-impl-avx2.o: esch-impl-avx2.cpp
 	$(CC) -c $(CFLAGS) $(ARCHAVX2) esch-impl-avx2.cpp
+
+ctr-sse41.o: ctr-sse41.cpp
+	$(CXX) -c $(CXXFLAGS) $(ARCHSSE41) ctr-sse41.cpp
 

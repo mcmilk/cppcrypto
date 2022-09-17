@@ -360,6 +360,7 @@
     <ClInclude Include="twofish.h" />
     <ClInclude Include="whirlpool.h" />
     <ClInclude Include="ctr.h" />
+    <ClInclude Include="ctr-sse41.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="3rdparty\blake256-sse2.c" />
@@ -411,6 +412,7 @@
     <ClCompile Include="3rdparty\groestl-impl-aesni.cpp" />
     <ClCompile Include="3rdparty\groestl-impl-ssse3.cpp" />
     <ClCompile Include="ctr.cpp" />
+    <ClCompile Include="ctr-sse41.cpp" />
     <ClCompile Include="groestl.cpp" />
     <ClCompile Include="hmac.cpp" />
     <ClCompile Include="kalyna.cpp" />

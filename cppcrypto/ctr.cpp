@@ -9,14 +9,19 @@ and released into public domain.
 #include <memory.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>
+#include <smmintrin.h>
 #include "portability.h"
+#include "ctr-sse41.h"
+#include <limits>
+
+//#define USE_AVX
+//#include "immintrin.h"
 
 namespace cppcrypto
 {
 
 	static inline void xor_block_256(const unsigned char* in, const unsigned char* prev, unsigned char* out)
 	{
-		//#define USE_AVX
 #ifdef USE_AVX
 		if (cpu_info::avx())
 		{
@@ -122,10 +127,11 @@ namespace cppcrypto
 	}
 
 	ctr::ctr(const block_cipher& cipher)
-		: block_(0), iv_(0), pos(0), nb_(cipher.blocksize() / 8), cipher_(cipher.clone())
+		: block_(0), iv_(0), pos(0), nb_(cipher.blocksize() / 8), counter(0), cipher_(cipher.clone())
 	{
-		block_ = new unsigned char[nb_];
-		iv_ = new unsigned char[nb_];
+		memset(ctrs, 0, sizeof(ctrs));
+		block_ = new unsigned char[nb_ * 8];
+		iv_ = new unsigned char[nb_ * 8];
 	}
 
 	ctr::~ctr()
@@ -137,9 +143,16 @@ namespace cppcrypto
 
 	void ctr::clear()
 	{
-		zero_memory(block_, nb_);
-		zero_memory(iv_, nb_);
+		zero_memory(block_, nb_ * 8);
+		zero_memory(iv_, nb_ * 8);
 		cipher_->clear();
+	}
+
+	static inline void init_counter(unsigned char* iv, size_t nb, uint32_t** ctrs, uint32_t& counter)
+	{
+		for (size_t i = 1; i < 8; i++)
+			memcpy(iv + nb * i, iv, nb);
+		counter = swap_uint32(*ctrs[0]);
 	}
 
 	void ctr::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
@@ -149,15 +162,83 @@ namespace cppcrypto
 		cipher_->init(key, block_cipher::encryption); // always encryption in CTR
 		memcpy(iv_, iv, ivlen);
 		memset(iv_ + ivlen, 0, nb_ - ivlen);
+		for (size_t i = 0; i < 8; i++)
+			ctrs[i] = reinterpret_cast<uint32_t*>(iv_ + nb_ * i + nb_ - sizeof(uint32_t));
+
+		init_counter(iv_, nb_, ctrs, counter);
 		pos = 0;
 	}
 
-	static inline void incrementCounter(unsigned char* ctr, size_t nb, unsigned char* block, block_cipher* cipher)
+	static inline void increment_counter_with_overflow(unsigned char* ctr, size_t nb, uint32_t** ctrs, uint32_t& counter)
 	{
-		cipher->encrypt_block(ctr, block);
 		bool carry = true;
 		for (size_t i = nb - 1; i < nb && carry; i--)
 			carry = !++ctr[i];
+	}
+
+	static inline void increment_counter(unsigned char* ctr, size_t nb, uint32_t** ctrs, uint32_t& counter)
+	{
+		if (counter == std::numeric_limits<uint32_t>::max())
+		{
+			increment_counter_with_overflow(ctr, nb, ctrs, counter);
+			init_counter(ctr, nb, ctrs, counter);
+			return;
+		}
+
+		*ctrs[0] = swap_uint32(++counter);
+	}
+
+	static inline void increment_and_encrypt(unsigned char* ctr, size_t nb, uint32_t** ctrs, uint32_t& counter, unsigned char* block, block_cipher* cipher)
+	{
+		cipher->encrypt_block(ctr, block);
+		increment_counter(ctr, nb, ctrs, counter);
+	}
+
+	static inline void increment_and_encrypt8(unsigned char* ctr, size_t nb, uint32_t** ctrs, uint32_t& counter, unsigned char* block, block_cipher* cipher)
+	{
+		if (cpu_info::sse41() && nb == 16)
+			return detail::increment_and_encrypt8_block128(ctr, nb, ctrs, counter, block, cipher);
+
+		uint32_t myctr = counter;
+		*ctrs[1] = swap_uint32(++myctr);
+		*ctrs[2] = swap_uint32(++myctr);
+		*ctrs[3] = swap_uint32(++myctr);
+		*ctrs[4] = swap_uint32(++myctr);
+		*ctrs[5] = swap_uint32(++myctr);
+		*ctrs[6] = swap_uint32(++myctr);
+		*ctrs[7] = swap_uint32(++myctr);
+		cipher->encrypt_blocks(ctr, block, 8);
+		*ctrs[0] = swap_uint32(++myctr);
+		counter = myctr;
+	}
+
+	static inline void xor_block(size_t nb, const unsigned char* in, size_t& i, unsigned char* out, const unsigned char* block)
+	{
+		size_t bi = 0;
+
+		while (nb >= 512 / 8)
+		{
+			xor_block_512(in + i, block + bi, out + i);
+			i += 512 / 8;
+			nb -= 512 / 8;
+			bi += 512 / 8;
+		}
+		while (nb >= 256 / 8)
+		{
+			xor_block_256(in + i, block + bi, out + i);
+			i += 256 / 8;
+			nb -= 256 / 8;
+			bi += 256 / 8;
+		}
+		while (nb >= 128 / 8)
+		{
+			xor_block_128(in + i, block + bi, out + i);
+			i += 128 / 8;
+			nb -= 128 / 8;
+			bi += 128 / 8;
+		}
+		for (unsigned int j = 0; j < nb; j++, i++)
+			out[i] = in[i] ^ block[j + bi];
 	}
 
 	void ctr::encrypt(const unsigned char* in, size_t len, unsigned char* out)
@@ -175,38 +256,24 @@ namespace cppcrypto
 		}
 		if (len)
 			pos = 0;
+		size_t nb8 = nb * 8;
 		for (; len; len -= std::min(nb, len))
 		{
-			incrementCounter(iv_, nb, block_, cipher_.get());
-			if (len >= nb)
+			while (len > nb8 && counter < std::numeric_limits<uint32_t>::max() - 8)
 			{
-				if (nb == 128 / 8)
-				{
-					xor_block_128(in + i, block_, out + i);
-					i += nb;
-				}
-				else if (nb == 256 / 8)
-				{
-					xor_block_256(in + i, block_, out + i);
-					i += nb;
-				}
-				else if (nb == 512 / 8)
-				{
-					xor_block_512(in + i, block_, out + i);
-					i += nb;
-				}
-				else if (nb > 128 / 8 && nb < 256 / 8)
-				{
-					xor_block_128n(in + i, block_, out + i, nb);
-					i += nb;
-				}
-				else
-					for (unsigned int j = 0; j < nb; j++, i++)
-						out[i] = in[i] ^ block_[j];
+				increment_and_encrypt8(iv_, nb_, ctrs, counter, block_, cipher_.get());
+				xor_block(nb8, in, i, out, block_);
+				len -= nb8;
 			}
-			else
-				for (; pos < len; pos++)
-					out[i] = in[i] ^ block_[pos];
+			if (len)
+			{
+				increment_and_encrypt(iv_, nb_, ctrs, counter, block_, cipher_.get());
+				if (len >= nb)
+					xor_block(nb, in, i, out, block_);
+				else
+					for (; pos < len; pos++, i++)
+						out[i] = in[i] ^ block_[pos];
+			}
 		}
 	}
 

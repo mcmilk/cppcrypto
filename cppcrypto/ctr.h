@@ -38,6 +38,8 @@ namespace cppcrypto
 		unsigned char* iv_;
 		size_t pos;
 		size_t nb_;
+		uint32_t* ctrs[8];
+		uint32_t counter;
 		std::unique_ptr<block_cipher> cipher_;
 	};
 }

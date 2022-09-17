@@ -454,6 +454,54 @@ namespace cppcrypto
 		FROUND(); IROUND(1); IROUND(2); IROUND(3); IROUND(4); IROUND(5); IROUND(6); IROUND(7); IROUND(8); IROUND(9); ILROUND(10);
 	}
 
+	void rijndael128_128::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael128_160::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael128_192::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael128_224::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael128_256::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void detail::rijndael256::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
 	rijndael128_128::rijndael128_128()
 		: impl_(0)
 	{
