@@ -89,6 +89,8 @@ namespace cppcrypto
 		uint32_t rem = outlen % 64;
 		if (!rem)
 			rem = 64;
+		if (rem <= 32)
+			rem += 32;
 		uint32_t vnum = (outlen - rem) / 32;
 		unsigned char* inb = buf1;
 		unsigned char* outb = buf2;
@@ -215,11 +217,11 @@ namespace cppcrypto
 #endif
 	}
 
-	static inline void calc_lanes(uint32_t iteration, uint32_t slice, unsigned char* B, uint32_t p, uint32_t q, uint32_t s, detail::thread_pool& tp, uint32_t y, uint32_t tt, uint32_t mt, argon2_version version)
+	static inline void calc_lanes(uint32_t iteration, uint32_t slice, unsigned char* B, uint32_t p, uint32_t q, uint32_t s, detail::thread_pool& tp, uint32_t y, uint32_t tt, uint32_t mt)
 	{
 		uint32_t firstcol = slice * s;
 		uint32_t startcol = firstcol + (iteration || slice ? 0 : 2);
-		bool xor_output = iteration && version != argon2_version::version12;
+		bool xor_output = !!iteration;
 
 #ifdef NO_CPP11_THREADS
 #pragma omp parallel for
@@ -286,13 +288,13 @@ namespace cppcrypto
 		tp.wait_for_all();
 	}
 
-	static inline void argon2(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen, uint32_t y,
-		unsigned char* data, uint32_t datalen, unsigned char* secret, uint32_t secretlen, argon2_version version)
+	static inline void argon2impl(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen, uint32_t y,
+		const unsigned char* data, uint32_t datalen, const unsigned char* secret, uint32_t secretlen)
 	{
 		unsigned char h0[64];
 		blake2b ih(512);
 		ih.init();
-		uint32_t v = static_cast<uint32_t>(version);
+		uint32_t v = 0x13;
 		ih.update(reinterpret_cast<const unsigned char*>(&p), sizeof(p));
 		ih.update(reinterpret_cast<const unsigned char*>(&dklen), sizeof(dklen));
 		ih.update(reinterpret_cast<const unsigned char*>(&m), sizeof(m));
@@ -325,7 +327,7 @@ namespace cppcrypto
 		{
 			for (uint32_t slice = 0; slice < 4; slice++)
 			{
-				calc_lanes(iteration, slice, B, p, q, s, tp, y, t, msize, version);
+				calc_lanes(iteration, slice, B, p, q, s, tp, y, t, msize);
 			}
 #ifdef CPPCRYPTO_DEBUG
 			printf("after iteration %d:\n", iteration);
@@ -368,23 +370,46 @@ namespace cppcrypto
 		delete[] B;
 	}
 
-	void argon2d(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
-		unsigned char* data, uint32_t datalen, unsigned char* secret, uint32_t secretlen, argon2_version version)
+	argon2::argon2(type type, uint32_t parallelism_degree, uint32_t memory_cost, uint32_t time_cost) 
+		: argon2_type(type), p(parallelism_degree), m(memory_cost), t(time_cost)
 	{
-		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 0, data, datalen, secret, secretlen, version);
 	}
 
-	void argon2i(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
-		unsigned char* data, uint32_t datalen, unsigned char* secret, uint32_t secretlen, argon2_version version)
-	{
-		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 1, data, datalen, secret, secretlen, version);
+	void argon2::set_parallelism_degree(uint32_t parallelism_degree)
+	{ 
+		p = parallelism_degree; 
 	}
 
-	void argon2id(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
-		unsigned char* data, uint32_t datalen, unsigned char* secret, uint32_t secretlen, argon2_version version)
+	void argon2::set_memory_cost(uint32_t memory_cost)
 	{
-		return argon2(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, 2, data, datalen, secret, secretlen, version);
+		m = memory_cost; 
 	}
 
+	void argon2::set_time_cost(uint32_t time_cost)
+	{
+		t = time_cost; 
+	}
+
+	void argon2::derive_key(const unsigned char* ikm, size_t ikm_len, const unsigned char* random_data, size_t random_data_len, unsigned char* dk, size_t dklen) const
+	{
+		return derive_key(reinterpret_cast<const char*>(ikm), static_cast<uint32_t>(ikm_len), random_data, static_cast<uint32_t>(random_data_len),
+			dk, static_cast<uint32_t>(dklen));
+	}
+
+	void argon2::derive_key(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, unsigned char* dk, uint32_t dklen,
+		const unsigned char* data, uint32_t datalen, const unsigned char* secret, uint32_t secretlen) const
+	{
+		return argon2impl(password, pwd_len, salt, salt_len, p, m, t, dk, dklen, static_cast<uint32_t>(argon2_type), data, datalen, secret, secretlen);
+	}
+
+	argon2* argon2::clone() const
+	{
+		return new argon2(argon2_type, 4, 4096, 1000);
+	}
+
+	void argon2::clear()
+	{
+		// no secret data to clear at this stage
+	}
 }
 

@@ -107,7 +107,7 @@ else
 endif
 
 
-OBJS= perftimer.o digest.o
+OBJS= digest.o
 
 all: digest
 

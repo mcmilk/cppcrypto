@@ -11,10 +11,11 @@ and released into public domain.
 #include <vector>
 #include <ostream>
 #include "stream_cipher.h"
+#include "seekable.h"
 
 namespace cppcrypto
 {
-	class salsa20_256 : public stream_cipher
+	class salsa20_256 : public stream_cipher, public seekable
 	{
 	public:
 		salsa20_256();
@@ -30,9 +31,16 @@ namespace cppcrypto
 		size_t ivsize() const override { return 64; }
 
 	protected:
+		virtual size_t max_nonce_bytes_for_aead() const override { return 12; }
+
+		void seek(uint64_t pos) override;
+
+		void do_seek(uint64_t pos, int r);
+
 		uint32_t block_[16];
 		uint32_t input_[16];
 		size_t pos;
+		uint32_t input9_;
 	};
 
 	class salsa20_128 : public salsa20_256
@@ -52,6 +60,9 @@ namespace cppcrypto
 		xsalsa20_256* clone() const override { return new xsalsa20_256; }
 		size_t keysize() const override { return 256; }
 		size_t ivsize() const override { return 192; }
+
+	protected:
+		virtual size_t max_nonce_bytes_for_aead() const override { return ivsize() / 8; }
 	};
 
 	class xsalsa20_128 : public xsalsa20_256
@@ -69,6 +80,9 @@ namespace cppcrypto
 		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		salsa20_12_256* clone() const override { return new salsa20_12_256; }
+
+	protected:
+		void seek(uint64_t pos) override;
 	};
 
 	class salsa20_12_128 : public salsa20_128
@@ -77,6 +91,9 @@ namespace cppcrypto
 		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
 		salsa20_12_128* clone() const override { return new salsa20_12_128; }
+
+	protected:
+		void seek(uint64_t pos) override;
 	};
 
 	class xsalsa20_12_256 : public salsa20_12_256
@@ -87,6 +104,9 @@ namespace cppcrypto
 		xsalsa20_12_256* clone() const override { return new xsalsa20_12_256; }
 		size_t keysize() const override { return 256; }
 		size_t ivsize() const override { return 192; }
+
+	protected:
+		virtual size_t max_nonce_bytes_for_aead() const override { return ivsize() / 8; }
 	};
 
 	class xsalsa20_12_128 : public xsalsa20_12_256

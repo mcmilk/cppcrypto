@@ -167,35 +167,32 @@ namespace cppcrypto
 	}
 
 	sha3::sha3(size_t hashsize)
-		: m(nullptr), hs(hashsize)
+		: hs(hashsize)
 	{
-		validate_hash_size(hashsize, {224, 256, 384, 512});
+		validate_hash_size(hashsize, { 224, 256, 384, 512 });
+		memset(m, 0, sizeof(m));
 
 		rate = 1600U - hs * 2;
 
 #ifndef NO_OPTIMIZED_VERSIONS
-//#ifdef _M_X64
+		//#ifdef _M_X64
 		if (cpu_info::avx2())
 			impl_.create<detail::sha3_impl_avx2>();
 		else if (cpu_info::ssse3())
 			impl_.create<detail::sha3_impl_ssse3>();
-		else
-//#endif
+		//#endif
 #endif
-			m = new unsigned char[rate / 8];
 	}
 
 	sha3::~sha3()
 	{
 		clear();
-		delete[] m;
 	}
 
 	void sha3::clear()
 	{
 		zero_memory(A, sizeof(A));
-		if (m)
-			zero_memory(m, rate / 8);
+		zero_memory(m, rate / 8);
 	}
 
 	shake128::shake128(size_t hashsize, const std::string& function_name, const std::string& customization)
@@ -204,12 +201,6 @@ namespace cppcrypto
 		validate_hash_size(hashsize, SIZE_MAX);
 		hs = 128;
 		rate = 1600U - 128 * 2;
-		if (m)
-		{
-			delete[] m;
-			m = new unsigned char[rate / 8];
-		}
-
 	}
 
 	shake256::shake256(size_t hashsize, const std::string& function_name, const std::string& customization)

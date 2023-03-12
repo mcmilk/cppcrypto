@@ -27,9 +27,15 @@ namespace cppcrypto
 		virtual void encrypt(const unsigned char* in, size_t len, unsigned char* out) = 0;
 		virtual void decrypt(const unsigned char* in, size_t len, unsigned char* out) = 0;
 
+	protected:
+		virtual size_t max_nonce_bytes_for_aead() const { return ivsize() / 8; }
+
 	private:
 		stream_cipher(const stream_cipher&) = delete;
 		void operator=(const stream_cipher&) = delete;
+
+		friend class aead_etm;
+		friend class aead_ietf_chacha_poly;
 	};
 
 }

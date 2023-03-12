@@ -17,10 +17,13 @@ namespace cppcrypto
 
 const cpu_info::cpu_info_impl cpu_info::impl_;
 
-
-using namespace std;
 cpu_info::cpu_info_impl::cpu_info_impl()
 	: ecx1_{ 0 }, edx1_{ 0 }, ebx7_{ 0 }, ecx7_{ 0 }, ecx81_{ 0 }, edx81_{ 0 }
+{
+	enable();
+}
+
+void cpu_info::cpu_info_impl::enable()
 {
 #ifdef _MSC_VER
 	std::array<int, 4> cpui;
@@ -74,8 +77,18 @@ cpu_info::cpu_info_impl::cpu_info_impl()
 		ecx81_ = cpui[2];
 		edx81_ = cpui[3];
 	}
+}
 
-};
+
+void cpu_info::cpu_info_impl::disable()
+{
+	ecx1_.reset();
+	edx1_.reset();
+	ebx7_.reset();
+	ecx7_.reset();
+	ecx81_.reset();
+	edx81_.reset();
+}
 
 
 

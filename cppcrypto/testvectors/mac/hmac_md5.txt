@@ -1,0 +1,76 @@
+
+test_case =     1
+KEY = 0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b
+key_len =       16
+data =          "Hi There"
+MSG = 4869205468657265
+data_len =      8
+TAG = 9294727a3638bb1c13f48ef8158bfc9d
+
+test_case =     2
+KEY = 4a656665
+key_len =       4
+data =          "what do ya want for nothing?"
+MSG = 7768617420646f2079612077616e7420666f72206e6f7468696e673f
+data_len =      28
+TAG = 750c783e6ab0b503eaa86e310a5db738
+
+test_case =     3
+KEY = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+key_len         16
+MSG = dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+data_len =      50
+TAG = 56be34521d144c88dbb8c733f0e8b3f6
+
+test_case =     4
+KEY = 0102030405060708090a0b0c0d0e0f10111213141516171819
+key_len         25
+MSG = cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd
+data_len =      50
+TAG = 697eaf0aca3a3aea3a75164746ffaa79
+
+test_case =     5
+KEY = 0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c
+key_len =       16
+data =          "Test With Truncation"
+MSG = 546573742057697468205472756e636174696f6e
+data_len =      20
+TAG = 56461ef2342edc00f9bab995690efd4c
+TAG = 56461ef2342edc00f9bab995
+
+test_case =     6
+KEY = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+key_len =       80
+data =          "Test Using Larger Than Block-Size Key - Hash Key First"
+MSG = 54657374205573696e67204c6172676572205468616e20426c6f636b2d53697a65204b6579202d2048617368204b6579204669727374
+data_len =      54
+TAG = 6b1ab7fe4bd7bf8f0b62e6ce61b9d0cd
+
+test_case =     7
+KEY = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+key_len =       80
+data =          "Test Using Larger Than Block-Size Key and Larger
+                Than One Block-Size Data"
+MSG = 54657374205573696e67204c6172676572205468616e20426c6f636b2d53697a65204b657920616e64204c6172676572205468616e204f6e6520426c6f636b2d53697a652044617461
+data_len =      73
+TAG = 6f630fad67cda0ee1fb1f562db3aa53e
+
+# Additional tests from Botan
+
+KEY = 0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B
+MSG = 4869205468657265
+TAG = 9294727A3638BB1C13F48EF8158BFC9D
+
+KEY = 0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C0C
+MSG = 546573742057697468205472756E636174696F6E
+TAG = 56461EF2342EDC00F9BAB995690EFD4C
+
+KEY = 8FB6AB01840023EC453ECDEC73DC1B66
+MSG = 54657374205573696E67204C6172676572205468616E20426C6F636B2D53697A65204B6579202D2048617368204B6579204669727374
+TAG = 6B1AB7FE4BD7BF8F0B62E6CE61B9D0CD
+
+KEY = 8FB6AB01840023EC453ECDEC73DC1B66
+MSG = 54657374205573696E67204C6172676572205468616E20426C6F636B2D53697A65204B657920616E64204C6172676572205468616E204F6E6520426C6F636B2D53697A652044617461
+TAG = 6F630FAD67CDA0EE1FB1F562DB3AA53E
+
+

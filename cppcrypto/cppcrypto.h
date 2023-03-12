@@ -43,5 +43,17 @@
 #include "speck.h"
 #include "esch.h"
 #include "echo.h"
+#include "random_bytes.h"
+#include "aead_etm.h"
+#include "aead_ocb.h"
+#include "hkdf.h"
+#include "aead_gcm.h"
+#include "aead_ietf_chacha_poly.h"
+#include "streaming_aead.h"
+#include "schwaemm.h"
+
+#ifdef _MSC_VER
+#pragma comment( lib, "bcrypt" )
+#endif
 
 #endif

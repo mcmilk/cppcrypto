@@ -5,7 +5,7 @@ and released into public domain.
 
 #include "ctr.h"
 #include "cpuinfo.h"
-#include <assert.h>
+#include <stdexcept>
 #include <memory.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>
@@ -61,24 +61,6 @@ namespace cppcrypto
 		}
 		else {
 			for (int i = 0; i < 16; i++)
-				out[i] = in[i] ^ prev[i];
-		}
-
-	}
-
-	static inline void xor_block_128n(const unsigned char* in, const unsigned char* prev, unsigned char* out, size_t n)
-	{
-		if (cpu_info::sse2())
-		{
-			__m128i b = _mm_loadu_si128((const __m128i*) in);
-			__m128i p = _mm_loadu_si128((const __m128i*) prev);
-
-			_mm_storeu_si128((__m128i*) out, _mm_xor_si128(b, p));
-			for (size_t i = 16; i < n; i++)
-				out[i] = in[i] ^ prev[i];
-		}
-		else {
-			for (size_t i = 0; i < n; i++)
 				out[i] = in[i] ^ prev[i];
 		}
 
@@ -157,8 +139,10 @@ namespace cppcrypto
 
 	void ctr::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
-		assert(keylen == cipher_->keysize() / 8);
-		assert(ivlen <= nb_);
+		if (keylen != cipher_->keysize() / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen > nb_)
+			throw std::runtime_error("invalid iv size");
 		cipher_->init(key, block_cipher::encryption); // always encryption in CTR
 		memcpy(iv_, iv, ivlen);
 		memset(iv_ + ivlen, 0, nb_ - ivlen);
@@ -247,7 +231,7 @@ namespace cppcrypto
 		size_t nb = nb_;
 		if (pos)
 		{
-			while (pos < len && pos < nb)
+			while (i < len && pos < nb)
 			{
 				out[i] = in[i] ^ block_[pos++];
 				++i;

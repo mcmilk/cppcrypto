@@ -172,24 +172,55 @@ namespace cppcrypto
 		aligned_deallocate(X);
 	}
 
-	void scrypt(hmac& hmac, const unsigned char* salt, size_t salt_len, size_t N, size_t r, size_t p, unsigned char* dk, size_t dklen)
+	scrypt::scrypt(const crypto_hash& hash, size_t N, size_t r, size_t p)
+		: hash_(hash.clone()), N_(N), r_(r), p_(p)
 	{
-		unsigned char* B = new unsigned char[p * 128 * r];
-		pbkdf2(hmac, salt, salt_len, 1, B, p * 128 * r);
+	}
+
+	void scrypt::set_N(size_t N)
+	{
+		N_ = N;
+	}
+
+	void scrypt::set_r(size_t r)
+	{
+		r_ = r;
+	}
+
+	void scrypt::set_p(size_t p)
+	{
+		p_ = p;
+	}
+
+	scrypt* scrypt::clone() const
+	{
+		return new scrypt(*hash_, N_, r_, p_);
+	}
+
+	void scrypt::clear()
+	{
+		// nothing to clear at this point
+	}
+
+	void scrypt::derive_key(const unsigned char* password, size_t pwd_len, const unsigned char* salt, size_t salt_len, unsigned char* dk, size_t dklen) const
+	{
+		unsigned char* B = new unsigned char[p_ * 128 * r_];
+		pbkdf2 pbkdf(*hash_, 1);
+		pbkdf.derive_key(password, pwd_len, salt, salt_len, B, p_ * 128 * r_);
 
 #ifdef NO_CPP11_THREADS
 #pragma omp parallel for
 		for (int i = 0; i < p; i++)
 			smix(B + i * 128 * r, r, N);
 #else
-		detail::thread_pool tp(p);
+		detail::thread_pool tp(p_);
 
-		for (size_t i = 0; i < p; i++)
-			tp.run_async([=] { smix(B + i * 128 * r, r, N); });
+		for (size_t i = 0; i < p_; i++)
+			tp.run_async([=] { smix(B + i * 128 * r_, r_, N_); });
 
 		tp.wait_for_all();
 #endif
-		pbkdf2(hmac, B, p * 128 * r, 1, dk, dklen);
+		pbkdf.derive_key(password, pwd_len, B, p_ * 128 * r_, dk, dklen);
 
 		delete[] B;
 	}

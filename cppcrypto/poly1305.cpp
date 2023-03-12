@@ -5,7 +5,7 @@ and released into public domain.
 
 #include "poly1305.h"
 #include <memory.h>
-#include <assert.h>
+#include <stdexcept>
 #include "portability.h"
 #include "cpuinfo.h"
 #include <iostream>
@@ -14,19 +14,20 @@ and released into public domain.
 
 namespace cppcrypto
 {
-	poly1305::poly1305(const std::string& key)
+	poly1305::poly1305()
 	{
-		construct(reinterpret_cast<const unsigned char*>(&key[0]), key.length());
+#ifndef NO_OPTIMIZED_VERSIONS
+#ifdef _M_X64
+		if (cpu_info::sse2())
+			impl_.create<detail::poly1305_impl_sse2>();
+#endif
+#endif
 	}
 
-	poly1305::poly1305(const unsigned char* key, size_t keylen)
+	void poly1305::init(const unsigned char* key, size_t keylen)
 	{
-		construct(key, keylen);
-	}
-
-	void poly1305::construct(const unsigned char* key, size_t keylen)
-	{
-		assert(keylen == 32);
+		if (keylen != 32)
+			throw std::runtime_error("invalid key size");
 
 		memcpy(key_, key, 32);
 		memcpy(r_, key, 16);
@@ -39,9 +40,21 @@ namespace cppcrypto
 		r_[12] &= 0xfc;
 		r_[16] = 0;
 
-#ifndef NO_OPTIMIZED_VERSIONS
-		if (cpu_info::sse2())
-			impl_.create<detail::poly1305_impl_sse2>();
+		if (impl_)
+			impl_->init(key_);
+		pos = 0;
+		memset(accumulator_, 0, accumulator_.bytes());
+
+#ifdef CPPCRYPTO_DEBUG
+		printf("r: ");
+		for (int i = 0; i < 17; i++)
+			printf("%02x", r[16 - i]);
+		printf("\n");
+
+		printf("s: ");
+		for (int i = 0; i < 16; i++)
+			printf("%02x", s[15 - i]);
+		printf("\n");
 #endif
 	}
 
@@ -69,16 +82,16 @@ namespace cppcrypto
 		}
 	}
 
-	static inline void multiply(unsigned char* accumulator, unsigned char* r, unsigned long* th)
+	static inline void multiply(unsigned char* accumulator, unsigned char* r, uint32_t* th)
 	{
 		for (int i = 0; i < 17; i++)
 		{
 			uint32_t u = 0;
 			for (int j = 0; j <= i; j++)
-				u += (unsigned short)accumulator[j] * r[i - j];
+				u += (uint16_t)accumulator[j] * r[i - j];
 			for (int j = i + 1; j < 17; j++)
 			{
-				unsigned long v = (unsigned short)accumulator[j] * r[i + 17 - j];
+				uint32_t v = (uint16_t)accumulator[j] * r[i + 17 - j];
 				v = ((v << 8) + (v << 6)); /* v *= (5 << 6); */
 				u += v;
 			}
@@ -86,9 +99,9 @@ namespace cppcrypto
 		}
 	}
 
-	static inline void reduce(unsigned char* h, unsigned long* hr)
+	static inline void reduce(unsigned char* h, uint32_t* hr)
 	{
-		unsigned long u = 0;
+		uint32_t u = 0;
 		for (int i = 0; i < 16; i++)
 		{
 			u += hr[i];
@@ -130,7 +143,7 @@ namespace cppcrypto
 		for (size_t blk = 0; blk < num_blks; blk++)
 		{
 			unsigned char M[17];
-			unsigned long th[17];
+			uint32_t th[17];
 			memcpy(M, mp, 17);
 			if (!incomplete)
 				M[16] = 1;
@@ -205,27 +218,7 @@ namespace cppcrypto
 		pos += len;
 	}
 
-	void poly1305::init()
-	{
-		if (impl_)
-			impl_->init(key_);
-		pos = 0;
-		memset(accumulator_, 0, accumulator_.bytes());
-
-#ifdef CPPCRYPTO_DEBUG
-		printf("r: ");
-		for (int i = 0; i < 17; i++)
-			printf("%02x", r[16-i]);
-		printf("\n");
-
-		printf("s: ");
-		for (int i = 0; i < 16; i++)
-			printf("%02x", s[15 - i]);
-		printf("\n");
-#endif
-	};
-
-	void poly1305::final(unsigned char* hash)
+	void poly1305::do_final(unsigned char* hash)
 	{
 		if (impl_)
 			return impl_->finish(&m_[0], pos, hash);
@@ -244,7 +237,9 @@ namespace cppcrypto
 
 	poly1305* poly1305::clone() const
 	{
-		return new poly1305(key_.get(), 32);
+		poly1305* poly = new poly1305();
+		poly->init(key_.get(), 32);
+		return poly;
 	}
 
 	void poly1305::clear()

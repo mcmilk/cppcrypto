@@ -37,6 +37,14 @@ namespace cppcrypto
 		void operator=(const block_cipher&) = delete;
 	};
 
+	class tweakable_block_cipher : public block_cipher
+	{
+	public:
+		virtual size_t tweaksize() const = 0;
+		virtual void set_tweak(const unsigned char* tweak) = 0;
+	};
+
+
 }
 
 #endif

@@ -5,7 +5,7 @@ and released into public domain.
 
 #include "salsa20.h"
 #include "cpuinfo.h"
-#include <assert.h>
+#include <stdexcept>
 #include <memory.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>
@@ -112,7 +112,7 @@ namespace cppcrypto
 	}
 
 	salsa20_256::salsa20_256()
-		: pos(0)
+		: pos(0), input9_(0)
 	{
 	}
 
@@ -125,6 +125,8 @@ namespace cppcrypto
 	{
 		zero_memory(block_, sizeof(block_));
 		zero_memory(input_, sizeof(input_));
+		input9_ = 0;
+		pos = 0;
 	}
 
 	static inline void incrementSalsaCounter(uint32_t* input, uint32_t* block, int r)
@@ -139,7 +141,7 @@ namespace cppcrypto
 		size_t i = 0;
 		if (pos)
 		{
-			while (pos < len && pos < 64)
+			while (i < len && pos < 64)
 			{
 				out[i] = in[i] ^ ((unsigned char*)block)[pos++];
 				++i;
@@ -201,20 +203,39 @@ namespace cppcrypto
 			input[tr[i]] = tmp[i];
 	}
 
+	static inline void transform_input_for_nonsse(uint32_t* input)
+	{
+		uint32_t tmp[16];
+		memcpy(tmp, input, sizeof(tmp));
+
+		static const int tr[16] = { 0, 5, 10, 15, 12, 1, 6, 11, 8, 13, 2, 7, 4, 9, 14, 3 };
+		for (int i = 0; i < 16; i++)
+			input[i] = tmp[tr[i]];
+	}
+
 	void salsa20_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
-		assert(keylen == keysize() / 8);
-		assert(ivlen == 8);
+		if (keylen != keysize() / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 8 && ivlen != 12)
+			throw std::runtime_error("invalid iv size");
 
 		memcpy(input_ + 1, key, 16);
-		memcpy(input_ + 6, iv, ivlen);
 		input_[0] = 0x61707865;
 		input_[15] = 0x6B206574;
 		input_[8] = 0;
 		input_[9] = 0;
+		if (ivlen == 12)
+		{
+			memcpy(input_ + 9, iv, 4);
+			iv += 4;
+			ivlen -= 4;
+		}
+		memcpy(input_ + 6, iv, ivlen);
 		memcpy(input_ + 11, key + 16, 16);
 		input_[5] = 0x3320646E;
 		input_[10] = 0x79622D32;
+		input9_ = input_[9];
 		pos = 0;
 
 #ifndef NO_OPTIMIZED_VERSIONS
@@ -225,18 +246,27 @@ namespace cppcrypto
 
 	void salsa20_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
-		assert(keylen == keysize() / 8);
-		assert(ivlen == 8);
+		if (keylen != keysize() / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 8 && ivlen != 12)
+			throw std::runtime_error("invalid iv size");
 
 		memcpy(input_ + 1, key, 16);
-		memcpy(input_ + 6, iv, ivlen);
 		input_[0] = 0x61707865;
 		input_[15] = 0x6B206574;
 		input_[8] = 0;
 		input_[9] = 0;
+		if (ivlen == 12)
+		{
+			memcpy(input_ + 9, iv, 4);
+			iv += 4;
+			ivlen -= 4;
+		}
+		memcpy(input_ + 6, iv, ivlen);
 		memcpy(input_ + 11, key, 16);
 		input_[5] = 0x3120646E;
 		input_[10] = 0x79622D36;
+		input9_ = input_[9];
 
 		pos = 0;
 
@@ -263,8 +293,10 @@ namespace cppcrypto
 
 	static inline void do_xsalsa20_128_init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
 	{
-		assert(keylen == 128 / 8);
-		assert(ivlen == 24);
+		if (keylen != 128 / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 24)
+			throw std::runtime_error("invalid iv size");
 
 		uint32_t tmp[8];
 		memcpy(input + 1, key, 16);
@@ -292,8 +324,10 @@ namespace cppcrypto
 
 	static inline void do_xsalsa20_256_init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
 	{
-		assert(keylen == 256 / 8);
-		assert(ivlen == 24);
+		if (keylen != 256 / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 24)
+			throw std::runtime_error("invalid iv size");
 
 		uint32_t tmp[8];
 		memcpy(input + 1, key, 16);
@@ -322,11 +356,13 @@ namespace cppcrypto
 	void xsalsa20_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xsalsa20_256_init(key, keylen, iv, ivlen, 10, input_, pos);
+		input9_ = input_[9];
 	}
 
 	void xsalsa20_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xsalsa20_128_init(key, keylen, iv, ivlen, 10, input_, pos);
+		input9_ = input_[9];
 	}
 
 	void salsa20_12_256::encrypt(const unsigned char* in, size_t len, unsigned char* out)
@@ -342,12 +378,47 @@ namespace cppcrypto
 	void xsalsa20_12_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xsalsa20_256_init(key, keylen, iv, ivlen, 6, input_, pos);
+		input9_ = input_[9];
 	}
 
 	void xsalsa20_12_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xsalsa20_128_init(key, keylen, iv, ivlen, 6, input_, pos);
+		input9_ = input_[9];
 	}
 
+	void salsa20_12_256::seek(uint64_t len)
+	{
+		do_seek(len, 6);
+	}
+
+	void salsa20_12_128::seek(uint64_t len)
+	{
+		do_seek(len, 6);
+	}
+
+	void salsa20_256::seek(uint64_t len)
+	{
+		do_seek(len, 10);
+	}
+
+	void salsa20_256::do_seek(uint64_t len, int r)
+	{
+		uint64_t block = len / 64;
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::sse2())
+			transform_input_for_nonsse(input_);
+#endif
+		uint64_t overflow = static_cast<uint64_t>(UINT32_MAX) + 1;
+		input_[9] = input9_ + static_cast<uint32_t>(block / overflow);
+		input_[8] = static_cast<uint32_t>(block % overflow);
+		pos = static_cast<size_t>(len % 64);
+		if (pos)
+			incrementSalsaCounter(input_, block_, r);
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::sse2())
+			transform_input_for_sse(input_);
+#endif
+	}
 
 }

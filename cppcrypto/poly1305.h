@@ -9,29 +9,27 @@ and released into public domain.
 #include <stdint.h>
 #include <string>
 #include <memory>
-#include "crypto_hash.h"
+#include "crypto_mac.h"
 #include "poly1305-impl.h"
 
 namespace cppcrypto
 {
 
-	class poly1305 : public crypto_hash
+	class poly1305 : public crypto_mac
 	{
 	public:
-		poly1305(const unsigned char* key, size_t keylen);
-		poly1305(const std::string& key);
+		poly1305();
 		virtual ~poly1305();
 
-		void init() override;
+		void init(const unsigned char* key, size_t keylen) override;
 		void update(const unsigned char* data, size_t len) override;
-		void final(unsigned char* hash) override;
+		void do_final(unsigned char* hash) override;
 
-		size_t keysize() const { return 256; }
+		size_t keysize() const override { return 256; }
 		size_t hashsize() const override { return 128; }
 		size_t blocksize() const override { return 128; }
 		poly1305* clone() const override;
 		void clear() override;
-
 	private:
 		poly1305(const poly1305&) = delete;
 		void operator=(const poly1305&) = delete;

@@ -9,24 +9,25 @@ and released into public domain.
 #include <stdint.h>
 #include <string>
 #include <memory>
+#include "crypto_mac.h"
 #include "crypto_hash.h"
 
 namespace cppcrypto
 {
 
-	class hmac : public crypto_hash
+	class hmac : public crypto_mac
 	{
 	public:
-		hmac(const crypto_hash& hash, const unsigned char* key, size_t keylen);
-		hmac(const crypto_hash& hash, const std::string& key);
+		hmac(const crypto_hash& hash);
 		virtual ~hmac();
 
-		void init() override;
+		void init(const unsigned char* key, size_t keylen) override;
 		void update(const unsigned char* data, size_t len) override;
-		void final(unsigned char* hash) override;
+		void do_final(unsigned char* hash) override;
 
 		size_t hashsize() const override { return hash_->hashsize(); }
-		size_t blocksize() const override { return hash_->blocksize(); }
+		size_t keysize() const override { return keylen_ * 8; }
+		size_t blocksize() const override;
 		hmac* clone() const override;
 		void clear() override;
 
@@ -35,11 +36,11 @@ namespace cppcrypto
 		void operator=(const hmac&) = delete;
 		void construct(const unsigned char* key, size_t keylen);
 
-		unsigned char* ipad_;
-		unsigned char* opad_;
 		std::unique_ptr<crypto_hash> hash_;
+		std::basic_string<unsigned char> ipad_;
+		std::basic_string<unsigned char> opad_;
+		size_t keylen_;
 	};
-
 }
 
 #endif

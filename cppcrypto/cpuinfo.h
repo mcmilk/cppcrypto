@@ -21,17 +21,20 @@ public:
 	static bool avx() { return impl_.ecx1_[28]; }
 	static bool avx2() { return impl_.ebx7_[5]; }
 	static bool bmi2() { return impl_.ebx7_[8]; }
+	static bool bmi1() { return impl_.ebx7_[3]; }
 	static bool ssse3() { return impl_.ecx1_[9]; }
 	static bool aesni() { return impl_.ecx1_[25]; }
 	static bool mmx() { return impl_.edx1_[23]; }
-
-
+	static bool pclmulqdq() { return impl_.ecx1_[1]; }
 
 private:
 	class cpu_info_impl
 	{
 	public:
 		cpu_info_impl();
+
+		void enable();
+		void disable();
 
 		std::bitset<32> ecx1_;
 		std::bitset<32> edx1_;

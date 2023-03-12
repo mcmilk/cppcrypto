@@ -11,6 +11,7 @@ and released into public domain.
 
 #ifdef _MSC_VER
 #include <Windows.h>
+#include <intrin.h>
 #define swap_uint64 _byteswap_uint64
 #define swap_uint32 _byteswap_ulong
 #define swap_uint16 _byteswap_ushort
@@ -23,6 +24,31 @@ and released into public domain.
 #define FASTCALL __fastcall
 #define CPPCRYPTO_STATIC_ALIGN(x) __declspec(align(x))
 #define zero_memory(a, b) SecureZeroMemory(a, b)
+
+#ifdef _M_X64
+static inline uint32_t count_trailing_zeroes(uint64_t value)
+{
+	unsigned long trailing_zero = 0;
+    _BitScanForward64(&trailing_zero, value);
+	return static_cast<uint32_t>(trailing_zero);
+}
+#else
+#define NO_COUNT_TRAILING_ZEROES 1
+static inline __m128i _mm_insert_epi64(__m128i a, int64_t b, const int ndx)
+{
+	if (!ndx)
+	{
+		a = _mm_insert_epi32(a, static_cast<int>(b), 0);
+		a = _mm_insert_epi32(a, static_cast<int>(b >> 32), 1);
+	}
+	else
+	{
+		a = _mm_insert_epi32(a, static_cast<int>(b), 2);
+		a = _mm_insert_epi32(a, static_cast<int>(b >> 32), 3);
+	}
+	return a;
+}
+#endif
 
 #ifdef CPPCRYPTODLL_EXPORT
 #define CPPCRYPTOAPI __declspec(dllexport) 
@@ -55,10 +81,12 @@ static inline uint64_t swap_uint64(uint64_t val)
 	((val & 0x000000000000ff00ull) << 40) |
 	((val & 0x00000000000000ffull) << 56));
 }
+#define NO_COUNT_TRAILING_ZEROES 1
 #else
 #define swap_uint64 __builtin_bswap64
 #define swap_uint32 __builtin_bswap32
 #define swap_uint16 __builtin_bswap16
+#define count_trailing_zeroes __builtin_ctzll
 #endif
 #define FASTCALL
 #define CPPCRYPTOAPI
@@ -122,8 +150,61 @@ static inline void zero_memory(void *v, size_t n) {
 }
 #endif
 
-
 #endif
+
+#ifdef NO_COUNT_TRAILING_ZEROES
+static inline uint32_t count_trailing_zeroes(uint64_t v)
+{
+	if (v & 0x1)
+		return 0;
+	uint32_t res = 1;
+	if ((v & 0xffffffff) == 0)
+	{
+		v >>= 32;
+		res += 32;
+	}
+	if ((v & 0xffff) == 0)
+	{
+		v >>= 16;
+		res += 16;
+	}
+	if ((v & 0xff) == 0)
+	{
+		v >>= 8;
+		res += 8;
+	}
+	if ((v & 0xf) == 0)
+	{
+		v >>= 4;
+		res += 4;
+	}
+	if ((v & 0x3) == 0)
+	{
+		v >>= 2;
+		res += 2;
+	}
+	res -= v & 0x1;
+	return res;
+}
+#endif
+
+namespace cppcrypto
+{
+    static inline uint16_t byteswap(uint16_t val)
+    {
+        return swap_uint16(val);
+    }
+
+    static inline uint32_t byteswap(uint32_t val)
+    {
+        return swap_uint32(val);
+    }
+
+    static inline uint64_t byteswap(uint64_t val)
+    {
+        return swap_uint64(val);
+    }
+}
 
 #endif
 

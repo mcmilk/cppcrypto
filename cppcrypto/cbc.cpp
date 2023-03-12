@@ -391,9 +391,12 @@ void cbc::decrypt_final(unsigned char* out, size_t& resultlen)
 	{
 		resultlen = nb_ - padding;
 		memcpy(out, block_, resultlen);
+		for (size_t r = resultlen; r < nb_; r++)
+			if (block_[r] != padding)
+				throw std::runtime_error("invalid padding");
 	}
 	else
-		resultlen = 0;
+		throw std::runtime_error("invalid padding");
 }
 
 void cbc::encrypt_update(const unsigned char* in, size_t len, std::ostream& out)
@@ -446,9 +449,12 @@ void cbc::encrypt_update(const unsigned char* in, size_t len, std::vector<unsign
 {
 	auto oldsize = out.size();
 	out.resize(oldsize + ((pos + len) / nb_) * nb_);
-	size_t resultlen;
-	encrypt_update(in, len, &out[oldsize], resultlen);
-	assert(resultlen == out.size() - oldsize);
+	if (len)
+	{
+		size_t resultlen;
+		encrypt_update(in, len, !out.empty() ? &out[oldsize] : nullptr, resultlen);
+		assert(resultlen == out.size() - oldsize);
+	}
 }
 
 void cbc::encrypt_final(std::vector<unsigned char>& out)
@@ -463,9 +469,10 @@ void cbc::encrypt_final(std::vector<unsigned char>& out)
 void cbc::decrypt_update(const unsigned char* in, size_t len, std::vector<unsigned char>& out)
 {
 	auto oldsize = out.size();
-	out.resize(oldsize + ((pos + len - 1) / nb_) * nb_);
+	if (len)
+		out.resize(oldsize + ((pos + len - 1) / nb_) * nb_);
 	size_t resultlen;
-	decrypt_update(in, len, &out[oldsize], resultlen);
+	decrypt_update(in, len, !out.empty() ? &out[oldsize] : nullptr, resultlen);
 	assert(resultlen == out.size() - oldsize);
 }
 

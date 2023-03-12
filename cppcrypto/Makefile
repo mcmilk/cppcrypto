@@ -8,7 +8,7 @@ VERSION=.0
 SOSUFFIX = .so
 SOVERSION=$(SOSUFFIX)$(VERSION)
 LIBPREFIX = lib
-YASM64FLAGS = -DLINUX
+YASM64FLAGS = -DLINUX -DLINUX32E
 LDEXTRALIBS = -lm -lc
 
 ifeq ($(UNAME),Darwin)
@@ -91,7 +91,7 @@ SOVERSION=$(VERSION)$(SOSUFFIX)
 CC=gcc
 CXX=g++
 LIBPREFIX = cyg
-YASM64FLAGS = -DWINABI -DWIN_ABI -DWIN64
+YASM64FLAGS = -DWINABI -DWIN_ABI -DWIN64 -DWIN32E
 LDFLAGS=-Wl,--out-implib=libcppcrypto.dll.a -Wl,--export-all-symbols -Wl,--enable-auto-import 
 endif
 
@@ -125,11 +125,13 @@ ARCHSSSE3=-xarch=ssse3
 ARCHSSE41=-xarch=sse4_1
 ARCHAES=-xarch=aes
 ARCHAVX2=-xarch=avx2
+ARCHPCLMUL=
 else
 ARCHSSSE3=-mssse3
 ARCHSSE41=-msse4.1
 ARCHAES=-msse4.1 -maes
 ARCHAVX2=-maes -mavx2
+ARCHPCLMUL=-mpclmul
 endif
 
 cc-name = $(shell $(CC) -v 2>&1 | grep -q "clang version" && echo clang || echo gcc)
@@ -145,10 +147,13 @@ OBJS= blake.o groestl.o cpuinfo.o sha256.o sha512.o skein256.o skein512.o skein1
       aria.o kuznyechik.o sm4.o mars.o blake2.o blake2b.o blake2s.o threefish.o scrypt.o crypto_scrypt_smix_sse2.o \
       argon2.o thread_pool.o salsa20.o salsa20-xmm6int.o hc.o chacha.o chacha-xmm.o poly1305.o poly1305-impl-sse2.o \
       simon.o speck.o KeccakP-1600-AVX2.o KeccakSpongeWidth1600.o KeccakHash.o sha3_impl_avx2.o esch.o echo.o \
-      echo-impl-aesni.o wbob_pissse3.o esch-impl-avx2.o ctr-sse41.o
+      echo-impl-aesni.o wbob_pissse3.o esch-impl-avx2.o ctr-sse41.o aead.o aead_etm.o aead_ocb.o crypto_mac.o \
+      random_bytes.o sm4-impl-aesni.o serpent-impl-avx2.o hkdf.o stream_cipher.o aead_ietf_chacha_poly.o \
+      aead_gcm.o streaming_aead.o crypto_kdf.o aesenc-int.o gcm_impl.o rc6ref.o schwaemm.o schwaemm_impl.o \
+      schwaemm_impl_avx2.o
 
 OBJS32 = skein512mmx.o sha512-nayuki.o whirlpool-nayuki.o sha1-nayuki.o serpent-waite.o poly1305-32.o
-OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha512_avx2_rorx.o \
+OBJS64 = b256avxs.o sha256_sse4.o sha512_sse4.o sha256_avx2_rorx2.o sha256_avx2_rorx8.o sha512_avx2_rorx.o \
          sha1_ssse3.o gost3411-2012-sse2.o poly1305-64.o
 
 ifdef INLINE_AS
@@ -209,6 +214,9 @@ sha256_sse4.o: 3rdparty/sha256_sse4.asm
 sha256_avx2_rorx2.o: 3rdparty/sha256_avx2_rorx2.asm
 	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o sha256_avx2_rorx2.o 3rdparty/sha256_avx2_rorx2.asm
 
+sha256_avx2_rorx8.o: 3rdparty/sha256_avx2_rorx8.asm
+	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o sha256_avx2_rorx8.o 3rdparty/sha256_avx2_rorx8.asm
+
 sha512_sse4.o: 3rdparty/sha512_sse4.asm
 	yasm -f $(OBJ64FORMAT) $(YASM64FLAGS) -o sha512_sse4.o 3rdparty/sha512_sse4.asm
 
@@ -229,6 +237,12 @@ rijndael-impl-aesni.o: rijndael-impl-aesni.cpp
 
 rijndael-impl-aesni-avx2.o: rijndael-impl-aesni-avx2.cpp
 	$(CXX) -c $(CXXFLAGS) $(ARCHAVX2) rijndael-impl-aesni-avx2.cpp
+
+sm4-impl-aesni.o: 3rdparty/sm4-impl-aesni.cpp
+	$(CXX) -c $(CXXFLAGS) $(ARCHAES) 3rdparty/sm4-impl-aesni.cpp
+
+serpent-impl-avx2.o: serpent-impl-avx2.cpp
+	$(CXX) -c $(CXXFLAGS) $(ARCHAVX2) serpent-impl-avx2.cpp
 
 skein512mmx.o: 3rdparty/skein512mmx.cpp
 	$(CXX) -c $(CXXFLAGS) 3rdparty/skein512mmx.cpp
@@ -310,4 +324,13 @@ esch-impl-avx2.o: esch-impl-avx2.cpp
 
 ctr-sse41.o: ctr-sse41.cpp
 	$(CXX) -c $(CXXFLAGS) $(ARCHSSE41) ctr-sse41.cpp
+
+aesenc-int.o: 3rdparty/aesenc-int.cpp
+	$(CC) -c $(CFLAGS) $(ARCHAES) $(ARCHPCLMUL) 3rdparty/aesenc-int.cpp
+
+rc6ref.o: 3rdparty/rc6ref.cpp
+	$(CXX) -c $(CXXFLAGS) 3rdparty/rc6ref.cpp
+
+schwaemm_impl_avx2.o: schwaemm_impl_avx2.cpp
+	$(CXX) -c $(CFLAGS) $(ARCHAVX2) schwaemm_impl_avx2.cpp
 

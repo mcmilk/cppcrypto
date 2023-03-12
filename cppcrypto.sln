@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.33403.129
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppcrypto", "cppcrypto\cppcrypto.vcxproj", "{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}"
 EndProject
@@ -11,6 +11,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "digest", "digest\digest.vcx
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cryptor", "cryptor\cryptor.vcxproj", "{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5} = {8978C0F5-41B2-4455-8D7A-63ACA8B063C5}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cppcryptotest", "cppcryptotest\cppcryptotest.vcxproj", "{D9535071-7DF0-473C-80F2-EF8B954A39E6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{8978C0F5-41B2-4455-8D7A-63ACA8B063C5} = {8978C0F5-41B2-4455-8D7A-63ACA8B063C5}
 	EndProjectSection
@@ -61,8 +66,23 @@ Global
 		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release|win32.Build.0 = Release|Win32
 		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release|x64.ActiveCfg = Release|x64
 		{3DC0837E-C77C-4FB5-98DB-DBC08B789BB9}.Release|x64.Build.0 = Release|x64
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Debug|win32.ActiveCfg = Debug|Win32
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Debug|win32.Build.0 = Debug|Win32
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Debug|x64.ActiveCfg = Debug|x64
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Debug|x64.Build.0 = Debug|x64
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Release - MT|win32.ActiveCfg = Release - MT|Win32
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Release - MT|win32.Build.0 = Release - MT|Win32
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Release - MT|x64.ActiveCfg = Release - MT|x64
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Release - MT|x64.Build.0 = Release - MT|x64
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Release|win32.ActiveCfg = Release|Win32
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Release|win32.Build.0 = Release|Win32
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Release|x64.ActiveCfg = Release|x64
+		{D9535071-7DF0-473C-80F2-EF8B954A39E6}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ECCC8315-ADFF-4FA7-9B90-E31CC7B3C3B0}
 	EndGlobalSection
 EndGlobal

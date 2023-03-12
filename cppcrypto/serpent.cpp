@@ -12,6 +12,7 @@ and released into public domain.
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include "cpuinfo.h"
 
 #ifdef _MSC_VER
 #define inline __forceinline
@@ -29,7 +30,14 @@ extern "C"
 namespace cppcrypto
 {
 	serpent256::serpent256()
+		  : impl_(0)
 	{
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::avx2())
+		{
+			impl_ = new detail::serpent_impl_avx2;
+		}
+#endif
 	}
 
 	serpent192::serpent192()
@@ -43,6 +51,8 @@ namespace cppcrypto
 	serpent256::~serpent256()
 	{
 		clear();
+		if (impl_)
+			delete impl_;
 	}
 
 	void serpent256::clear()
@@ -514,16 +524,6 @@ namespace cppcrypto
 
 	bool serpent256::init(const unsigned char* key, block_cipher::direction direction)
 	{
-#ifdef SERPENT_AS_TNEPRES
-		W[7] = swap_uint32(*(((const uint32_t*)key) + 0));
-		W[6] = swap_uint32(*(((const uint32_t*)key) + 1));
-		W[5] = swap_uint32(*(((const uint32_t*)key) + 2));
-		W[4] = swap_uint32(*(((const uint32_t*)key) + 3));
-		W[3] = swap_uint32(*(((const uint32_t*)key) + 4));
-		W[2] = swap_uint32(*(((const uint32_t*)key) + 5));
-		W[1] = swap_uint32(*(((const uint32_t*)key) + 6));
-		W[0] = swap_uint32(*(((const uint32_t*)key) + 7));
-#else
 		W[0] = *(((const uint32_t*)key) + 0);
 		W[1] = *(((const uint32_t*)key) + 1);
 		W[2] = *(((const uint32_t*)key) + 2);
@@ -532,7 +532,6 @@ namespace cppcrypto
 		W[5] = *(((const uint32_t*)key) + 5);
 		W[6] = *(((const uint32_t*)key) + 6);
 		W[7] = *(((const uint32_t*)key) + 7);
-#endif
 
 		return do_init();
 	}
@@ -586,6 +585,8 @@ namespace cppcrypto
 		for (int i = 0; i < 140; i++)
 			printf("W[%d] = %04x\n", i, W[i]);
 #endif
+		if (impl_)
+			impl_->init(W);
 
 		return true;
 	}
@@ -611,17 +612,6 @@ namespace cppcrypto
 		uint32_t x[4];
 #ifndef _M_X64
 #ifndef NO_OPTIMIZED_VERSIONS
-#ifdef SERPENT_AS_TNEPRES
-		x[0] = swap_uint32(*(((const uint32_t*)in) + 0));
-		x[1] = swap_uint32(*(((const uint32_t*)in) + 1));
-		x[2] = swap_uint32(*(((const uint32_t*)in) + 2));
-		x[3] = swap_uint32(*(((const uint32_t*)in) + 3));
-		serpentEncrypt(x, &W[8]);
-		*(((uint32_t*)out) + 0) = swap_uint32(x[0]);
-		*(((uint32_t*)out) + 1) = swap_uint32(x[1]);
-		*(((uint32_t*)out) + 2) = swap_uint32(x[2]);
-		*(((uint32_t*)out) + 3) = swap_uint32(x[3]);
-#else
 		x[3] = (*(((const uint32_t*)in) + 0));
 		x[2] = (*(((const uint32_t*)in) + 1));
 		x[1] = (*(((const uint32_t*)in) + 2));
@@ -631,21 +621,13 @@ namespace cppcrypto
 		*(((uint32_t*)out) + 1) = (x[2]);
 		*(((uint32_t*)out) + 2) = (x[1]);
 		*(((uint32_t*)out) + 3) = (x[0]);
-#endif
 		return;
 #endif
 #endif
-#ifdef SERPENT_AS_TNEPRES
-		x[3] = swap_uint32(*(((const uint32_t*)in) + 0));
-		x[2] = swap_uint32(*(((const uint32_t*)in) + 1));
-		x[1] = swap_uint32(*(((const uint32_t*)in) + 2));
-		x[0] = swap_uint32(*(((const uint32_t*)in) + 3));
-#else
 		x[0] = *(((const uint32_t*)in) + 0);
 		x[1] = *(((const uint32_t*)in) + 1);
 		x[2] = *(((const uint32_t*)in) + 2);
 		x[3] = *(((const uint32_t*)in) + 3);
-#endif
 
 #ifdef CPPCRYPTO_DEBUG
 		printf("my serpent:\n");
@@ -672,17 +654,10 @@ namespace cppcrypto
 		printf("round 32: %04x %04x %04x %04x\n", x[0], x[1], x[2], x[3]);
 #endif
 
-#ifdef SERPENT_AS_TNEPRES
-		*(((uint32_t*)out) + 0) = swap_uint32(x[3]);
-		*(((uint32_t*)out) + 1) = swap_uint32(x[2]);
-		*(((uint32_t*)out) + 2) = swap_uint32(x[1]);
-		*(((uint32_t*)out) + 3) = swap_uint32(x[0]);
-#else
 		*(((uint32_t*)out) + 0) = x[0];
 		*(((uint32_t*)out) + 1) = x[1];
 		*(((uint32_t*)out) + 2) = x[2];
 		*(((uint32_t*)out) + 3) = x[3];
-#endif
 
 #ifdef CPPCRYPTO_DEBUG
 		for (int i = 0; i < 128 / 8; i++)
@@ -696,42 +671,23 @@ namespace cppcrypto
 		uint32_t x[4];
 #ifndef _M_X64
 #ifndef NO_OPTIMIZED_VERSIONS
-#ifdef SERPENT_AS_TNEPRES
-		x[0] = swap_uint32(*(((const uint32_t*)in) + 0));
-		x[1] = swap_uint32(*(((const uint32_t*)in) + 1));
-		x[2] = swap_uint32(*(((const uint32_t*)in) + 2));
-		x[3] = swap_uint32(*(((const uint32_t*)in) + 3));
-		serpentDecrypt(x, &W[8]);
-		*(((uint32_t*)out) + 0) = swap_uint32(x[0]);
-		*(((uint32_t*)out) + 1) = swap_uint32(x[1]);
-		*(((uint32_t*)out) + 2) = swap_uint32(x[2]);
-		*(((uint32_t*)out) + 3) = swap_uint32(x[3]);
-#else
 		x[3] = *(((const uint32_t*)in) + 0);
 		x[2] = *(((const uint32_t*)in) + 1);
 		x[1] = *(((const uint32_t*)in) + 2);
 		x[0] = *(((const uint32_t*)in) + 3);
-		serpentDecrypt(x, &W[8]); 
+		serpentDecrypt(x, &W[8]);
 		*(((uint32_t*)out) + 0) = (x[3]);
 		*(((uint32_t*)out) + 1) = (x[2]);
 		*(((uint32_t*)out) + 2) = (x[1]);
 		*(((uint32_t*)out) + 3) = (x[0]);
-#endif
 		return;
 #endif
 #endif
 
-#ifdef SERPENT_AS_TNEPRES
-		x[3] = swap_uint32(*(((const uint32_t*)in) + 0));
-		x[2] = swap_uint32(*(((const uint32_t*)in) + 1));
-		x[1] = swap_uint32(*(((const uint32_t*)in) + 2));
-		x[0] = swap_uint32(*(((const uint32_t*)in) + 3));
-#else
 		x[0] = *(((const uint32_t*)in) + 0);
 		x[1] = *(((const uint32_t*)in) + 1);
 		x[2] = *(((const uint32_t*)in) + 2);
 		x[3] = *(((const uint32_t*)in) + 3);
-#endif
 
 #ifdef CPPCRYPTO_DEBUG
 		printf("my serpent decrypt:\n");
@@ -758,32 +714,18 @@ namespace cppcrypto
 		IR(14, isbox6); IR(13, isbox5); IR(12, isbox4); IR(11, isbox3); IR(10, isbox2); IR(9, isbox1); IR(8, isbox0); IR(7, isbox7);
 		IR(6, isbox6); IR(5, isbox5); IR(4, isbox4); IR(3, isbox3); IR(2, isbox2); IR(1, isbox1); IR(0, isbox0);
 
-#ifdef SERPENT_AS_TNEPRES
-		*(((uint32_t*)out) + 0) = swap_uint32(x[3]);
-		*(((uint32_t*)out) + 1) = swap_uint32(x[2]);
-		*(((uint32_t*)out) + 2) = swap_uint32(x[1]);
-		*(((uint32_t*)out) + 3) = swap_uint32(x[0]);
-#else
 		*(((uint32_t*)out) + 0) = x[0];
 		*(((uint32_t*)out) + 1) = x[1];
 		*(((uint32_t*)out) + 2) = x[2];
 		*(((uint32_t*)out) + 3) = x[3];
-#endif
 	}
 
 	bool serpent128::init(const unsigned char* key, block_cipher::direction direction)
 	{
-#ifdef SERPENT_AS_TNEPRES
-		W[3] = swap_uint32(*(((const uint32_t*)key) + 0));
-		W[2] = swap_uint32(*(((const uint32_t*)key) + 1));
-		W[1] = swap_uint32(*(((const uint32_t*)key) + 2));
-		W[0] = swap_uint32(*(((const uint32_t*)key) + 3));
-#else
 		W[0] = *(((const uint32_t*)key) + 0);
 		W[1] = *(((const uint32_t*)key) + 1);
 		W[2] = *(((const uint32_t*)key) + 2);
 		W[3] = *(((const uint32_t*)key) + 3);
-#endif
 		W[4] = 0x01;
 		W[5] = 0;
 		W[6] = 0;
@@ -794,25 +736,33 @@ namespace cppcrypto
 
 	bool serpent192::init(const unsigned char* key, block_cipher::direction direction)
 	{
-#ifdef SERPENT_AS_TNEPRES
-		W[5] = swap_uint32(*(((const uint32_t*)key) + 0));
-		W[4] = swap_uint32(*(((const uint32_t*)key) + 1));
-		W[3] = swap_uint32(*(((const uint32_t*)key) + 2));
-		W[2] = swap_uint32(*(((const uint32_t*)key) + 3));
-		W[1] = swap_uint32(*(((const uint32_t*)key) + 4));
-		W[0] = swap_uint32(*(((const uint32_t*)key) + 5));
-#else
 		W[0] = *(((const uint32_t*)key) + 0);
 		W[1] = *(((const uint32_t*)key) + 1);
 		W[2] = *(((const uint32_t*)key) + 2);
 		W[3] = *(((const uint32_t*)key) + 3);
 		W[4] = *(((const uint32_t*)key) + 4);
 		W[5] = *(((const uint32_t*)key) + 5);
-#endif
 		W[6] = 0x01;
 		W[7] = 0;
 
 		return do_init();
 	}
+
+	void serpent256::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n, W, *this);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void serpent256::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n, W, *this);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
 
 }

@@ -11,14 +11,6 @@ and released into public domain.
 
 namespace cppcrypto
 {
-
-	class tweakable_block_cipher : public block_cipher
-	{
-	public:
-		virtual size_t tweaksize() const = 0;
-		virtual void set_tweak(const unsigned char* tweak) = 0;
-	};
-
 	class threefish512_512 : public tweakable_block_cipher
 	{
 	public:

@@ -5,7 +5,7 @@ and released into public domain.
 
 #include "chacha.h"
 #include "cpuinfo.h"
-#include <assert.h>
+#include <stdexcept>
 #include <memory.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>
@@ -151,7 +151,7 @@ namespace cppcrypto
 	}
 
 	chacha20_256::chacha20_256()
-		: pos(0)
+		: pos(0), input13_(0)
 	{
 	}
 
@@ -164,6 +164,8 @@ namespace cppcrypto
 	{
 		zero_memory(block_, sizeof(block_));
 		zero_memory(input_, sizeof(input_));
+		input13_ = 0;
+		pos = 0;
 	}
 
 	static inline void incrementSalsaCounter(uint32_t* input, uint32_t* block, int r)
@@ -178,7 +180,7 @@ namespace cppcrypto
 		size_t i = 0;
 		if (pos)
 		{
-			while (pos < len && pos < 64)
+			while (i < len && pos < 64)
 			{
 				out[i] = in[i] ^ ((unsigned char*)block)[pos++];
 				++i;
@@ -233,8 +235,10 @@ namespace cppcrypto
 
 	void chacha20_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
-		assert(keylen == keysize() / 8);
-		assert(ivlen == 8 || ivlen == 12);
+		if (keylen != keysize() / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 8 && ivlen != 12)
+			throw std::runtime_error("invalid iv size");
 
 		input_[12] = 0;
 		input_[13] = 0;
@@ -244,13 +248,16 @@ namespace cppcrypto
 		input_[1] = 0x3320646E;
 		input_[2] = 0x79622D32;
 		input_[3] = 0x6B206574;
+		input13_ = input_[13];
 		pos = 0;
 	}
 
 	void chacha20_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
-		assert(keylen == keysize() / 8);
-		assert(ivlen == 8 || ivlen == 12);
+		if (keylen != keysize() / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 8 && ivlen != 12)
+			throw std::runtime_error("invalid iv size");
 
 		input_[12] = 0;
 		input_[13] = 0;
@@ -261,6 +268,7 @@ namespace cppcrypto
 		input_[1] = 0x3120646E;
 		input_[2] = 0x79622D36;
 		input_[3] = 0x6B206574;
+		input13_ = input_[13];
 
 		pos = 0;
 	}
@@ -282,8 +290,10 @@ namespace cppcrypto
 
 	static inline void do_xchacha_128_init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
 	{
-		assert(keylen == 128 / 8);
-		assert(ivlen == 24);
+		if (keylen != 128 / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 24)
+			throw std::runtime_error("invalid iv size");
 
 		uint32_t tmp[8];
 		memcpy(input + 4, key, 16);
@@ -305,8 +315,10 @@ namespace cppcrypto
 
 	static inline void do_xchacha_256_init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen, int r, uint32_t* input, size_t& pos)
 	{
-		assert(keylen == 256 / 8);
-		assert(ivlen == 24);
+		if (keylen != 256 / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 24)
+			throw std::runtime_error("invalid iv size");
 
 		uint32_t tmp[8];
 		memcpy(input + 4, key, 32);
@@ -328,11 +340,13 @@ namespace cppcrypto
 	void xchacha20_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xchacha_256_init(key, keylen, iv, ivlen, 10, input_, pos);
+		input13_ = input_[13];
 	}
 
 	void xchacha20_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xchacha_128_init(key, keylen, iv, ivlen, 10, input_, pos);
+		input13_ = input_[13];
 	}
 
 	void chacha12_256::encrypt(const unsigned char* in, size_t len, unsigned char* out)
@@ -348,11 +362,39 @@ namespace cppcrypto
 	void xchacha12_256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xchacha_256_init(key, keylen, iv, ivlen, 6, input_, pos);
+		input13_ = input_[13];
 	}
 
 	void xchacha12_128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
 		do_xchacha_128_init(key, keylen, iv, ivlen, 6, input_, pos);
+		input13_ = input_[13];
+	}
+
+	void chacha12_256::seek(uint64_t len)
+	{
+		do_seek(len, 6);
+	}
+
+	void chacha12_128::seek(uint64_t len)
+	{
+		do_seek(len, 6);
+	}
+
+	void chacha20_256::seek(uint64_t len)
+	{
+		do_seek(len, 10);
+	}
+
+	void chacha20_256::do_seek(uint64_t len, int r)
+	{
+		uint64_t block = len / 64;
+		uint64_t overflow = static_cast<uint64_t>(UINT32_MAX) + 1;
+		input_[13] = input13_ + static_cast<uint32_t>(block / overflow);
+		input_[12] = static_cast<uint32_t>(block % overflow);
+		pos = static_cast<size_t>(len % 64);
+		if (pos)
+			incrementSalsaCounter(input_, block_, r);
 	}
 
 }

@@ -454,6 +454,46 @@ namespace cppcrypto
 		FROUND(); IROUND(1); IROUND(2); IROUND(3); IROUND(4); IROUND(5); IROUND(6); IROUND(7); IROUND(8); IROUND(9); ILROUND(10);
 	}
 
+	void rijndael128_128::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael128_160::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael128_192::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael128_224::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael128_256::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
 	void rijndael128_128::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
 	{
 		if (impl_)
@@ -500,6 +540,206 @@ namespace cppcrypto
 			return impl_->encrypt_blocks(in, out, n);
 
 		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void detail::rijndael256::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void detail::rijndael224::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void detail::rijndael224::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael224_256::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael224_256::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_128::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_160::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_192::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_224::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_256::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_128::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_160::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_192::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_224::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael160_256::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_128::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_160::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_192::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_224::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_256::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_128::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_160::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_192::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_224::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
+	}
+
+	void rijndael192_256::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
 	}
 
 	rijndael128_128::rijndael128_128()

@@ -30,6 +30,7 @@ namespace cppcrypto
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 44, 64> W_;
@@ -52,6 +53,7 @@ namespace cppcrypto
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 48, 64> W_;
@@ -74,6 +76,7 @@ namespace cppcrypto
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 52, 64> W_;
@@ -96,6 +99,7 @@ namespace cppcrypto
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 56, 64> W_;
@@ -118,6 +122,7 @@ namespace cppcrypto
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 60, 64> W_;
@@ -139,6 +144,7 @@ namespace cppcrypto
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
 			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 		protected:
 			aligned_pod_array<uint32_t, 120, 64> W_;
@@ -215,6 +221,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 78, 64> W_;
@@ -235,6 +243,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 78, 64> W_;
@@ -256,6 +266,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 78, 64> W_;
@@ -276,6 +288,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 84, 64> W_;
@@ -296,6 +310,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 90, 64> W_;
@@ -316,6 +332,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 60, 64> W_;
@@ -336,6 +354,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 60, 64> W_;
@@ -356,6 +376,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 65, 64> W_;
@@ -376,6 +398,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 70, 64> W_;
@@ -396,6 +420,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 75, 64> W_;
@@ -416,6 +442,8 @@ namespace cppcrypto
 
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 		protected:
 			aligned_pod_array<uint32_t, 98, 64> W_;
@@ -477,6 +505,8 @@ namespace cppcrypto
 		bool init(const unsigned char* key, block_cipher::direction direction) override;
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 
 	private:
 		aligned_pod_array<uint32_t, 105, 64> W_;

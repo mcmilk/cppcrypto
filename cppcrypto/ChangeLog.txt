@@ -1,3 +1,9 @@
+2023-03-12 cppcrypto-0.20
+
+New AEAD modes: aead_etm, gcm, ocb, ietf_chacha_poly, schwaemm.
+Streaming AEAD mode.
+Removed support for Solaris.
+
 2022-09-17 cppcrypto-0.19
 
 Improved performance of CTR mode.

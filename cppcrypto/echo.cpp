@@ -398,7 +398,7 @@ echo::echo(size_t hashsize, const unsigned char* salt, size_t saltlen)
 	if (salt)
 		memcpy(this->salt.get(), salt, saltlen);
 	else
-    	memset(this->salt.get(), 0, this->salt.bytes());
+		memset(this->salt.get(), 0, this->salt.bytes());
 
 #ifndef NO_OPTIMIZED_VERSIONS
 	if (cpu_info::aesni())

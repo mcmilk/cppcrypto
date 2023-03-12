@@ -16,6 +16,7 @@ extern "C"
 {
 	void sha256_sse4(void *input_data, uint32_t digest[8], uint64_t num_blks);
 	void sha256_rorx(void *input_data, uint32_t digest[8], uint64_t num_blks);
+	void sha256_rorx_x8ms(void *input_data, uint32_t digest[8], uint64_t num_blks);
 #ifndef _MSC_VER
 }
 #endif
@@ -46,10 +47,19 @@ namespace cppcrypto
 		if (cpu_info::avx2() && cpu_info::bmi2())
 			transfunc = [this](void* m, uint64_t num_blks)
 		{
+			unsigned char* mp = static_cast<unsigned char*>(m);
+			if (num_blks > 8)
+			{
+				uint64_t blks = num_blks / 8;
+				uint64_t rounded = blks * 8;
+				sha256_rorx_x8ms(mp, H, rounded);
+				num_blks -= rounded;
+				mp += rounded * blocksize() / 8;
+			}
 			if (num_blks > 1)
-				sha256_rorx(m, H, num_blks);
+				sha256_rorx(mp, H, num_blks);
 			else
-				sha256_sse4(m, H, num_blks);
+				sha256_sse4(mp, H, num_blks);
 		};
 		else 
 		if (cpu_info::sse41())
@@ -264,7 +274,7 @@ __attribute__ ((aligned (16)))
 		{
 			H[i] = swap_uint32(H[i]);
 		}
-		memcpy(hash, H, 32);
+		memcpy(hash, H, hashsize()/8);
 	}
 
 

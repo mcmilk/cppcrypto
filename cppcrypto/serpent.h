@@ -8,6 +8,7 @@ and released into public domain.
 
 #include <stdint.h>
 #include "block_cipher.h"
+#include "serpent-impl.h"
 
 namespace cppcrypto
 {
@@ -27,9 +28,13 @@ namespace cppcrypto
 		void encrypt_block(const unsigned char* in, unsigned char* out) override;
 		void decrypt_block(const unsigned char* in, unsigned char* out) override;
 
+		void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+		void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+
 	protected:
 		bool do_init();
 
+		detail::serpent_impl* impl_;
 		uint32_t W[140];
 	};
 

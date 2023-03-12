@@ -5,7 +5,7 @@ and released into public domain.
 
 #include "hc.h"
 #include "cpuinfo.h"
-#include <assert.h>
+#include <stdexcept>
 #include <memory.h>
 #include <xmmintrin.h>
 #include <emmintrin.h>
@@ -53,9 +53,9 @@ namespace cppcrypto
 
 				_mm_storeu_si128((__m128i*) (out + 32), _mm_xor_si128(b1, p1));
 				_mm_storeu_si128((__m128i*) (out + 48), _mm_xor_si128(b2, p2));
-
 			}
-			else {
+			else
+			{
 				for (int i = 0; i < 64; i++)
 					out[i] = in[i] ^ prev[i];
 			}
@@ -205,7 +205,7 @@ namespace cppcrypto
 		size_t i = 0;
 		if (pos)
 		{
-			while (pos < len && pos < 64)
+			while (i < len && pos < 64)
 			{
 				out[i] = in[i] ^ ((unsigned char*)block_)[pos++];
 				++i;
@@ -237,8 +237,10 @@ namespace cppcrypto
 
 	void hc256::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
-		assert(keylen == keysize() / 8);
-		assert(ivlen == 32);
+		if (keylen != keysize() / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 32)
+			throw std::runtime_error("invalid iv size");
 
 		uint32_t W[2560];
 		W[0] = *(uint32_t*)key;
@@ -466,8 +468,10 @@ namespace cppcrypto
 
 	void hc128::init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen)
 	{
-		assert(keylen == keysize() / 8);
-		assert(ivlen == 16);
+		if (keylen != keysize() / 8)
+			throw std::runtime_error("invalid key size");
+		if (ivlen != 16)
+			throw std::runtime_error("invalid iv size");
 
 		uint32_t W[1280];
 		W[0] = *(uint32_t*)key;
@@ -536,7 +540,7 @@ namespace cppcrypto
 		size_t i = 0;
 		if (pos)
 		{
-			while (pos < len && pos < 64)
+			while (i < len && pos < 64)
 			{
 				out[i] = in[i] ^ ((unsigned char*)block_)[pos++];
 				++i;

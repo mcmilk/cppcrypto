@@ -26,7 +26,7 @@ namespace cppcrypto
 
 		size_t hashsize() const override { return hs; }
 		size_t blocksize() const override { return 1024; }
-		sha512* clone() const override { return new sha512; }
+		sha512* clone() const override { return new sha512(hs); }
 		void clear() override;
 
 	protected:

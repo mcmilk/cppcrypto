@@ -96,6 +96,9 @@ namespace cppcrypto
 		void create();
 		void destroy();
 
+		template<typename RT, typename P>
+		void create(const P& p);
+
 		operator T*() { return t; }
 		T* get() { return t; }
 		const T* get() const { return t; }
@@ -121,6 +124,14 @@ namespace cppcrypto
 	{
 		void* p = aligned_allocate(sizeof(RT), A);
 		t = new (p)RT;
+	}
+
+	template<typename T, size_t A>
+	template<typename RT, typename P>
+	void aligned_impl_ptr<T, A>::create(const P& param)
+	{
+		void* p = aligned_allocate(sizeof(RT), A);
+		t = new (p)RT(param);
 	}
 
 	template<typename T, size_t A>

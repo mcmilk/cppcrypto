@@ -7,6 +7,7 @@ and released into public domain.
 #include <memory.h>
 #include <algorithm>
 #include "portability.h"
+#include "cpuinfo.h"
 
 #ifdef _MSC_VER
 #define inline __forceinline
@@ -53,6 +54,17 @@ namespace cppcrypto
 		return x0 ^ T(x1 ^ x2 ^ x3 ^ rk);
 	}
 
+	sm4::sm4()
+	{
+#ifndef NO_OPTIMIZED_VERSIONS
+		if (cpu_info::sse41() && cpu_info::aesni())
+		{
+			impl_.create<detail::sm4_impl_aesni>();
+		}
+#endif
+	}
+
+
 	sm4::~sm4()
 	{
 		clear();
@@ -65,6 +77,9 @@ namespace cppcrypto
 
 	bool sm4::init(const unsigned char* key, block_cipher::direction direction)
 	{
+		if (impl_)
+			return impl_->init(key, direction);
+
 		uint32_t k0 = swap_uint32(*(uint32_t*)key) ^ 0xa3b1bac6;
 		uint32_t k1 = swap_uint32(*(((uint32_t*)key) + 1)) ^ 0x56aa3350;
 		uint32_t k2 = swap_uint32(*(((uint32_t*)key) + 2)) ^ 0x677d9197;
@@ -116,6 +131,9 @@ namespace cppcrypto
 
 	void sm4::encrypt_block(const unsigned char* in, unsigned char* out)
 	{
+		if (impl_)
+			return impl_->encrypt_block(in, out);
+
 		uint32_t x0 = swap_uint32(*(uint32_t*)in);
 		uint32_t x1 = swap_uint32(*(((uint32_t*)in) + 1));
 		uint32_t x2 = swap_uint32(*(((uint32_t*)in) + 2));
@@ -161,7 +179,26 @@ namespace cppcrypto
 
 	void sm4::decrypt_block(const unsigned char* in, unsigned char* out)
 	{
+		if (impl_)
+			return impl_->decrypt_block(in, out);
+
 		return encrypt_block(in, out);
+	}
+
+	void sm4::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->encrypt_blocks(in, out, n);
+
+		return block_cipher::encrypt_blocks(in, out, n);
+	}
+
+	void sm4::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+	{
+		if (impl_)
+			return impl_->decrypt_blocks(in, out, n);
+
+		return block_cipher::decrypt_blocks(in, out, n);
 	}
 
 }

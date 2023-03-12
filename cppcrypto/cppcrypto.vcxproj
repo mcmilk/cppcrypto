@@ -30,45 +30,46 @@
     <ProjectGuid>{8978C0F5-41B2-4455-8D7A-63ACA8B063C5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>cppcrypto</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - MT|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - MT|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -296,17 +297,28 @@
     <ClInclude Include="3rdparty\salsa20_u4.h" />
     <ClInclude Include="3rdparty\SnP-documentation.h" />
     <ClInclude Include="3rdparty\SnP-Relaned.h" />
+    <ClInclude Include="aead.h" />
+    <ClInclude Include="aead_etm.h" />
+    <ClInclude Include="aead_gcm.h" />
+    <ClInclude Include="aead_ietf_chacha_poly.h" />
+    <ClInclude Include="aead_ocb.h" />
     <ClInclude Include="argon2.h" />
     <ClInclude Include="aria.h" />
     <ClInclude Include="blake2.h" />
     <ClInclude Include="camellia.h" />
     <ClInclude Include="cast6.h" />
     <ClInclude Include="chacha.h" />
+    <ClInclude Include="crypto_kdf.h" />
+    <ClInclude Include="crypto_mac.h" />
+    <ClInclude Include="ctr-sse41.h" />
     <ClInclude Include="echo-impl.h" />
     <ClInclude Include="echo.h" />
     <ClInclude Include="esch-impl.h" />
     <ClInclude Include="esch.h" />
+    <ClInclude Include="functions.h" />
+    <ClInclude Include="gcm_impl.h" />
     <ClInclude Include="hc.h" />
+    <ClInclude Include="hkdf.h" />
     <ClInclude Include="jh-impl.h" />
     <ClInclude Include="jh.h" />
     <ClInclude Include="alignedarray.h" />
@@ -331,15 +343,22 @@
     <ClInclude Include="kuznyechik.h" />
     <ClInclude Include="mars.h" />
     <ClInclude Include="md5.h" />
+    <ClInclude Include="ocb_impl.h" />
     <ClInclude Include="pbkdf2.h" />
     <ClInclude Include="poly1305-impl.h" />
     <ClInclude Include="poly1305.h" />
     <ClInclude Include="portability.h" />
+    <ClInclude Include="random_bytes.h" />
     <ClInclude Include="rijndael-impl-aesni-common.h" />
     <ClInclude Include="rijndael-impl.h" />
     <ClInclude Include="rijndael.h" />
     <ClInclude Include="salsa20.h" />
+    <ClInclude Include="schwaemm.h" />
+    <ClInclude Include="schwaemm_impl.h" />
+    <ClInclude Include="schwaemm_impl_avx2.h" />
     <ClInclude Include="scrypt.h" />
+    <ClInclude Include="seekable.h" />
+    <ClInclude Include="serpent-impl.h" />
     <ClInclude Include="serpent.h" />
     <ClInclude Include="sha1.h" />
     <ClInclude Include="sha256.h" />
@@ -351,6 +370,7 @@
     <ClInclude Include="skein256.h" />
     <ClInclude Include="skein512.h" />
     <ClInclude Include="sm3.h" />
+    <ClInclude Include="sm4-impl.h" />
     <ClInclude Include="sm4.h" />
     <ClInclude Include="speck.h" />
     <ClInclude Include="stream_cipher.h" />
@@ -360,9 +380,9 @@
     <ClInclude Include="twofish.h" />
     <ClInclude Include="whirlpool.h" />
     <ClInclude Include="ctr.h" />
-    <ClInclude Include="ctr-sse41.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="3rdparty\aesenc-int.cpp" />
     <ClCompile Include="3rdparty\blake256-sse2.c" />
     <ClCompile Include="3rdparty\blake256-sse41.c" />
     <ClCompile Include="3rdparty\blake2b.c" />
@@ -379,19 +399,31 @@
     <ClCompile Include="3rdparty\KeccakP-1600-AVX2.cpp" />
     <ClCompile Include="3rdparty\KeccakSpongeWidth1600.c" />
     <ClCompile Include="3rdparty\poly1305-impl-sse2.cpp" />
+    <ClCompile Include="3rdparty\rc6ref.cpp" />
     <ClCompile Include="3rdparty\salsa20-xmm6int.c" />
     <ClCompile Include="3rdparty\sha3_impl_avx2.cpp" />
+    <ClCompile Include="3rdparty\sm4-impl-aesni.cpp" />
     <ClCompile Include="3rdparty\wbob_pissse3.c" />
+    <ClCompile Include="aead.cpp" />
+    <ClCompile Include="aead_etm.cpp" />
+    <ClCompile Include="aead_gcm.cpp" />
+    <ClCompile Include="aead_ietf_chacha_poly.cpp" />
+    <ClCompile Include="aead_ocb.cpp" />
     <ClCompile Include="argon2.cpp" />
     <ClCompile Include="aria.cpp" />
     <ClCompile Include="blake2.cpp" />
     <ClCompile Include="camellia.cpp" />
     <ClCompile Include="cast6.cpp" />
     <ClCompile Include="chacha.cpp" />
+    <ClCompile Include="crypto_kdf.cpp" />
+    <ClCompile Include="crypto_mac.cpp" />
+    <ClCompile Include="ctr-sse41.cpp" />
     <ClCompile Include="echo.cpp" />
     <ClCompile Include="esch-impl-avx2.cpp" />
     <ClCompile Include="esch.cpp" />
+    <ClCompile Include="gcm_impl.cpp" />
     <ClCompile Include="hc.cpp" />
+    <ClCompile Include="hkdf.cpp" />
     <ClCompile Include="jh.cpp" />
     <ClCompile Include="3rdparty\KeccakF-1600-opt64.c" />
     <ClCompile Include="3rdparty\KeccakSponge.c" />
@@ -412,7 +444,6 @@
     <ClCompile Include="3rdparty\groestl-impl-aesni.cpp" />
     <ClCompile Include="3rdparty\groestl-impl-ssse3.cpp" />
     <ClCompile Include="ctr.cpp" />
-    <ClCompile Include="ctr-sse41.cpp" />
     <ClCompile Include="groestl.cpp" />
     <ClCompile Include="hmac.cpp" />
     <ClCompile Include="kalyna.cpp" />
@@ -422,11 +453,16 @@
     <ClCompile Include="md5.cpp" />
     <ClCompile Include="pbkdf2.cpp" />
     <ClCompile Include="poly1305.cpp" />
+    <ClCompile Include="random_bytes.cpp" />
     <ClCompile Include="rijndael-impl-aesni-avx2.cpp" />
     <ClCompile Include="rijndael-impl-aesni.cpp" />
     <ClCompile Include="rijndael.cpp" />
     <ClCompile Include="salsa20.cpp" />
+    <ClCompile Include="schwaemm.cpp" />
+    <ClCompile Include="schwaemm_impl.cpp" />
+    <ClCompile Include="schwaemm_impl_avx2.cpp" />
     <ClCompile Include="scrypt.cpp" />
+    <ClCompile Include="serpent-impl-avx2.cpp" />
     <ClCompile Include="serpent.cpp" />
     <ClCompile Include="sha1.cpp" />
     <ClCompile Include="sha256.cpp" />
@@ -444,6 +480,8 @@
     <ClCompile Include="sm3.cpp" />
     <ClCompile Include="sm4.cpp" />
     <ClCompile Include="speck.cpp" />
+    <ClCompile Include="streaming_aead.cpp" />
+    <ClCompile Include="stream_cipher.cpp" />
     <ClCompile Include="streebog.cpp" />
     <ClCompile Include="thread_pool.cpp" />
     <ClCompile Include="threefish.cpp" />

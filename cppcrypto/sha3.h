@@ -32,7 +32,7 @@ namespace cppcrypto
 		void transform(void* m, uint64_t num_blks);
 
 		uint64_t A[25];
-		unsigned char* m;
+		unsigned char m[168];
 		size_t pos;
 		size_t hs;
 		size_t rate;
@@ -48,7 +48,7 @@ namespace cppcrypto
 
 		size_t hashsize() const override { return size; }
 		shake256* clone() const override { return new shake256(size, N, S); }
-	private:
+	protected:
 		size_t size;
 		std::string N;
 		std::string S;
@@ -58,6 +58,8 @@ namespace cppcrypto
 	{
 	public:
 		shake128(size_t hashsize = 256, const std::string& function_name = "", const std::string& customization = "");
+
+		shake128* clone() const override { return new shake128(size, N, S); }
 	};
 
 }

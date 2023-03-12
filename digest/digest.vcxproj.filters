@@ -32,8 +32,5 @@
     <ClCompile Include="digest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="perftimer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

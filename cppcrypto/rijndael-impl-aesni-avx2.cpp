@@ -882,12 +882,7 @@ namespace cppcrypto
 			__m128i PRESHUFFLE_MASK1 = _mm_set_epi32(0x0f0e0d0c, 0x070a0908, 0x03020504, 0x0b060100);
 			__m128i POSTSHUFFLE_MASK2 = _mm_set_epi32(0x03808080, 0x80028080, 0x80800180, 0x80808000);
 
-#ifdef _MSC_VER
-			__declspec(align(32))
-#else
-			__attribute__((aligned(32)))
-#endif
-				unsigned char buf[32];
+			alignas(32) unsigned char buf[32];
 			memset(buf, 0, sizeof(buf));
 			memcpy(buf, in, 160 / 8);
 			data1 = _mm_load_si128(&((__m128i*)buf)[0]);
@@ -957,6 +952,125 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
+		static inline void rijndael160_encrypt_blocks(const unsigned char* in, unsigned char* out, int r, __m128i* rk, size_t n)
+		{
+			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x00000000, 0x00000000, 0x00000000, 0x80808000);
+			__m128i PRESHUFFLE_MASK1 = _mm_set_epi32(0x0f0e0d0c, 0x070a0908, 0x03020504, 0x0b060100);
+			__m128i POSTSHUFFLE_MASK2 = _mm_set_epi32(0x03808080, 0x80028080, 0x80800180, 0x80808000);
+
+			size_t x8 = n / 4;
+			alignas(32) unsigned char buf[32 * 8];
+			memset(buf, 0, sizeof(buf));
+
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i tmp1, tmp2;
+				__m128i data1_0, data2_0;
+				__m128i data1_1, data2_1;
+				__m128i data1_2, data2_2;
+				__m128i data1_3, data2_3;
+				memcpy(buf, in, 160 / 8);
+				memcpy(buf + 32, in + 20, 160 / 8);
+				memcpy(buf + 32 * 2, in + 20 * 2, 160 / 8);
+				memcpy(buf + 32 * 3, in + 20 * 3, 160 / 8);
+				data1_0 = _mm_load_si128(&((__m128i*)buf)[0]);
+				data2_0 = _mm_load_si128(&((__m128i*)buf)[1]);
+				data1_1 = _mm_load_si128(&((__m128i*)buf)[2]);
+				data2_1 = _mm_load_si128(&((__m128i*)buf)[3]);
+				data1_2 = _mm_load_si128(&((__m128i*)buf)[4]);
+				data2_2 = _mm_load_si128(&((__m128i*)buf)[5]);
+				data1_3 = _mm_load_si128(&((__m128i*)buf)[6]);
+				data2_3 = _mm_load_si128(&((__m128i*)buf)[7]);
+
+				__m128i key1, key2;
+				data1_0 = _mm_xor_si128(data1_0, rk[0]);
+				data2_0 = _mm_xor_si128(data2_0, rk[1]);
+				data1_1 = _mm_xor_si128(data1_1, rk[0]);
+				data2_1 = _mm_xor_si128(data2_1, rk[1]);
+				data1_2 = _mm_xor_si128(data1_2, rk[0]);
+				data2_2 = _mm_xor_si128(data2_2, rk[1]);
+				data1_3 = _mm_xor_si128(data1_3, rk[0]);
+				data2_3 = _mm_xor_si128(data2_3, rk[1]);
+
+				int idx = 1, j;
+				for (j = 1; j < r; j++)
+				{
+					rijndael160_ks(j, key1, key2, rk, idx);
+
+					data1_0 = _mm_shuffle_epi8(data1_0, PRESHUFFLE_MASK1);
+					data1_1 = _mm_shuffle_epi8(data1_1, PRESHUFFLE_MASK1);
+					data1_2 = _mm_shuffle_epi8(data1_2, PRESHUFFLE_MASK1);
+					data1_3 = _mm_shuffle_epi8(data1_3, PRESHUFFLE_MASK1);
+
+					tmp1 = _mm_blendv_epi8(data1_0, data2_0, VEC_BLEND_MASK);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_0, data1_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_0 = _mm_aesenc_si128(tmp1, key1);
+					data2_0 = _mm_aesenc_si128(tmp2, key2);
+					tmp1 = _mm_blendv_epi8(data1_1, data2_1, VEC_BLEND_MASK);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_1, data1_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_1 = _mm_aesenc_si128(tmp1, key1);
+					data2_1 = _mm_aesenc_si128(tmp2, key2);
+					tmp1 = _mm_blendv_epi8(data1_2, data2_2, VEC_BLEND_MASK);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_2, data1_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_2 = _mm_aesenc_si128(tmp1, key1);
+					data2_2 = _mm_aesenc_si128(tmp2, key2);
+					tmp1 = _mm_blendv_epi8(data1_3, data2_3, VEC_BLEND_MASK);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_3, data1_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_3 = _mm_aesenc_si128(tmp1, key1);
+					data2_3 = _mm_aesenc_si128(tmp2, key2);
+				}
+
+				rijndael160_ks(j, key1, key2, rk, idx);
+
+				data1_0 = _mm_shuffle_epi8(data1_0, PRESHUFFLE_MASK1);
+				data1_1 = _mm_shuffle_epi8(data1_1, PRESHUFFLE_MASK1);
+				data1_2 = _mm_shuffle_epi8(data1_2, PRESHUFFLE_MASK1);
+				data1_3 = _mm_shuffle_epi8(data1_3, PRESHUFFLE_MASK1);
+
+				tmp1 = _mm_blendv_epi8(data1_0, data2_0, VEC_BLEND_MASK);
+				tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_0, data1_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_0 = _mm_aesenclast_si128(tmp1, key1);
+				data2_0 = _mm_aesenclast_si128(tmp2, key2);
+				tmp1 = _mm_blendv_epi8(data1_1, data2_1, VEC_BLEND_MASK);
+				tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_1, data1_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_1 = _mm_aesenclast_si128(tmp1, key1);
+				data2_1 = _mm_aesenclast_si128(tmp2, key2);
+				tmp1 = _mm_blendv_epi8(data1_2, data2_2, VEC_BLEND_MASK);
+				tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_2, data1_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_2 = _mm_aesenclast_si128(tmp1, key1);
+				data2_2 = _mm_aesenclast_si128(tmp2, key2);
+				tmp1 = _mm_blendv_epi8(data1_3, data2_3, VEC_BLEND_MASK);
+				tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_3, data1_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_3 = _mm_aesenclast_si128(tmp1, key1);
+				data2_3 = _mm_aesenclast_si128(tmp2, key2);
+
+				_mm_store_si128(&((__m128i*)buf)[0], data1_0);
+				_mm_store_si128(&((__m128i*)buf)[1], data2_0);
+				_mm_store_si128(&((__m128i*)buf)[2], data1_1);
+				_mm_store_si128(&((__m128i*)buf)[3], data2_1);
+				_mm_store_si128(&((__m128i*)buf)[4], data1_2);
+				_mm_store_si128(&((__m128i*)buf)[5], data2_2);
+				_mm_store_si128(&((__m128i*)buf)[6], data1_3);
+				_mm_store_si128(&((__m128i*)buf)[7], data2_3);
+				memcpy(out, buf, 160 / 8);
+				memcpy(out + 20, buf + 32, 160 / 8);
+				memcpy(out + 20 * 2, buf + 32 * 2, 160 / 8);
+				memcpy(out + 20 * 3, buf + 32 * 3, 160 / 8);
+
+				in += 20 * 4;
+				out += 20 * 4;
+			}
+			n -= x8 * 4;
+			zero_memory(buf, sizeof(buf));
+
+			for (size_t i = 0; i < n; i++)
+			{
+				rijndael160_encrypt_block(in, out, r, rk);
+				in += 20;
+				out += 20;
+			}
+		}
+
 		static inline void rijndael160_decrypt_block(const unsigned char* in, unsigned char* out, int r, __m128i* rk)
 		{
 			__m128i tmp1, tmp2, data1, data2;
@@ -964,12 +1078,7 @@ namespace cppcrypto
 			__m128i PRESHUFFLE_MASK2 = _mm_set_epi32(0x80800180, 0x80028080, 0x03808080, 0x80808000);
 			__m128i POSTSHUFFLE_MASK1 = _mm_set_epi32(0x070a0d0c, 0x0f0e0908, 0x0b060504, 0x03020100);
 
-#ifdef _MSC_VER
-			__declspec(align(32))
-#else
-			__attribute__((aligned(32)))
-#endif
-				unsigned char buf[32];
+			alignas(32) unsigned char buf[32];
 			memset(buf, 0, sizeof(buf));
 			memcpy(buf, in, 160 / 8);
 			data1 = _mm_load_si128(&((__m128i*)buf)[0]);
@@ -1005,6 +1114,125 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
+		static inline void rijndael160_decrypt_blocks(const unsigned char* in, unsigned char* out, int r, __m128i* rk, size_t n)
+		{
+			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x00008000, 0x00800000, 0x80000000, 0x00000000);
+			__m128i PRESHUFFLE_MASK2 = _mm_set_epi32(0x80800180, 0x80028080, 0x03808080, 0x80808000);
+			__m128i POSTSHUFFLE_MASK1 = _mm_set_epi32(0x070a0d0c, 0x0f0e0908, 0x0b060504, 0x03020100);
+
+			size_t x8 = n / 4;
+			alignas(32) unsigned char buf[32 * 8];
+			memset(buf, 0, sizeof(buf));
+
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i tmp1, tmp2;
+				__m128i data1_0, data2_0;
+				__m128i data1_1, data2_1;
+				__m128i data1_2, data2_2;
+				__m128i data1_3, data2_3;
+				memcpy(buf, in, 160 / 8);
+				memcpy(buf + 32, in + 20, 160 / 8);
+				memcpy(buf + 32 * 2, in + 20 * 2, 160 / 8);
+				memcpy(buf + 32 * 3, in + 20 * 3, 160 / 8);
+				data1_0 = _mm_load_si128(&((__m128i*)buf)[0]);
+				data2_0 = _mm_load_si128(&((__m128i*)buf)[1]);
+				data1_1 = _mm_load_si128(&((__m128i*)buf)[2]);
+				data2_1 = _mm_load_si128(&((__m128i*)buf)[3]);
+				data1_2 = _mm_load_si128(&((__m128i*)buf)[4]);
+				data2_2 = _mm_load_si128(&((__m128i*)buf)[5]);
+				data1_3 = _mm_load_si128(&((__m128i*)buf)[6]);
+				data2_3 = _mm_load_si128(&((__m128i*)buf)[7]);
+
+				__m128i key1, key2;
+				data1_0 = _mm_xor_si128(data1_0, rk[0]);
+				data2_0 = _mm_xor_si128(data2_0, rk[1]);
+				data1_1 = _mm_xor_si128(data1_1, rk[0]);
+				data2_1 = _mm_xor_si128(data2_1, rk[1]);
+				data1_2 = _mm_xor_si128(data1_2, rk[0]);
+				data2_2 = _mm_xor_si128(data2_2, rk[1]);
+				data1_3 = _mm_xor_si128(data1_3, rk[0]);
+				data2_3 = _mm_xor_si128(data2_3, rk[1]);
+
+				int idx = 1, j;
+				for (j = 1; j < r; j++)
+				{
+					rijndael160_ks(j, key1, key2, rk, idx);
+
+					data2_0 = _mm_shuffle_epi8(data2_0, PRESHUFFLE_MASK2);
+					data2_1 = _mm_shuffle_epi8(data2_1, PRESHUFFLE_MASK2);
+					data2_2 = _mm_shuffle_epi8(data2_2, PRESHUFFLE_MASK2);
+					data2_3 = _mm_shuffle_epi8(data2_3, PRESHUFFLE_MASK2);
+
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_0, data2_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+					tmp2 = _mm_blendv_epi8(data2_0, data1_0, VEC_BLEND_MASK);
+					data1_0 = _mm_aesdec_si128(tmp1, key1);
+					data2_0 = _mm_aesdec_si128(tmp2, key2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_1, data2_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+					tmp2 = _mm_blendv_epi8(data2_1, data1_1, VEC_BLEND_MASK);
+					data1_1 = _mm_aesdec_si128(tmp1, key1);
+					data2_1 = _mm_aesdec_si128(tmp2, key2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_2, data2_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+					tmp2 = _mm_blendv_epi8(data2_2, data1_2, VEC_BLEND_MASK);
+					data1_2 = _mm_aesdec_si128(tmp1, key1);
+					data2_2 = _mm_aesdec_si128(tmp2, key2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_3, data2_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+					tmp2 = _mm_blendv_epi8(data2_3, data1_3, VEC_BLEND_MASK);
+					data1_3 = _mm_aesdec_si128(tmp1, key1);
+					data2_3 = _mm_aesdec_si128(tmp2, key2);
+				}
+
+				rijndael160_ks(j, key1, key2, rk, idx);
+
+				data2_0 = _mm_shuffle_epi8(data2_0, PRESHUFFLE_MASK2);
+				data2_1 = _mm_shuffle_epi8(data2_1, PRESHUFFLE_MASK2);
+				data2_2 = _mm_shuffle_epi8(data2_2, PRESHUFFLE_MASK2);
+				data2_3 = _mm_shuffle_epi8(data2_3, PRESHUFFLE_MASK2);
+
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_0, data2_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+				tmp2 = _mm_blendv_epi8(data2_0, data1_0, VEC_BLEND_MASK);
+				data1_0 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_0 = _mm_aesdeclast_si128(tmp2, key2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_1, data2_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+				tmp2 = _mm_blendv_epi8(data2_1, data1_1, VEC_BLEND_MASK);
+				data1_1 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_1 = _mm_aesdeclast_si128(tmp2, key2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_2, data2_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+				tmp2 = _mm_blendv_epi8(data2_2, data1_2, VEC_BLEND_MASK);
+				data1_2 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_2 = _mm_aesdeclast_si128(tmp2, key2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_3, data2_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+				tmp2 = _mm_blendv_epi8(data2_3, data1_3, VEC_BLEND_MASK);
+				data1_3 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_3 = _mm_aesdeclast_si128(tmp2, key2);
+
+				_mm_store_si128(&((__m128i*)buf)[0], data1_0);
+				_mm_store_si128(&((__m128i*)buf)[1], data2_0);
+				_mm_store_si128(&((__m128i*)buf)[2], data1_1);
+				_mm_store_si128(&((__m128i*)buf)[3], data2_1);
+				_mm_store_si128(&((__m128i*)buf)[4], data1_2);
+				_mm_store_si128(&((__m128i*)buf)[5], data2_2);
+				_mm_store_si128(&((__m128i*)buf)[6], data1_3);
+				_mm_store_si128(&((__m128i*)buf)[7], data2_3);
+				memcpy(out, buf, 160 / 8);
+				memcpy(out + 20, buf + 32, 160 / 8);
+				memcpy(out + 20 * 2, buf + 32 * 2, 160 / 8);
+				memcpy(out + 20 * 3, buf + 32 * 3, 160 / 8);
+
+				in += 20 * 4;
+				out += 20 * 4;
+			}
+			n -= x8 * 4;
+			zero_memory(buf, sizeof(buf));
+
+			for (size_t i = 0; i < n; i++)
+			{
+				rijndael160_decrypt_block(in, out, r, rk);
+				in += 20;
+				out += 20;
+			}
+		}
+
 		void rijndael160_128_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_encrypt_block(in, out, 11, rk);
@@ -1013,6 +1241,16 @@ namespace cppcrypto
 		void rijndael160_128_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 11, rk);
+		}
+
+		void rijndael160_128_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_encrypt_blocks(in, out, 11, rk, n);
+		}
+
+		void rijndael160_128_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_decrypt_blocks(in, out, 11, rk, n);
 		}
 
 		bool rijndael160_128_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
@@ -1088,20 +1326,39 @@ namespace cppcrypto
 			return rijndael160_encrypt_block(in, out, 11, rk);
 		}
 
+		void rijndael160_160_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_encrypt_blocks(in, out, 11, rk, n);
+		}
+
 		void rijndael160_160_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 11, rk);
 		}
 
+		void rijndael160_160_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_decrypt_blocks(in, out, 11, rk, n);
+		}
 
 		void rijndael160_192_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_encrypt_block(in, out, 12, rk);
 		}
 
+		void rijndael160_192_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_encrypt_blocks(in, out, 12, rk, n);
+		}
+
 		void rijndael160_192_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 12, rk);
+		}
+
+		void rijndael160_192_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_decrypt_blocks(in, out, 12, rk, n);
 		}
 
 		bool rijndael160_192_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
@@ -1182,6 +1439,16 @@ namespace cppcrypto
 			return rijndael160_encrypt_block(in, out, 13, rk);
 		}
 
+		void rijndael160_224_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_encrypt_blocks(in, out, 13, rk, n);
+		}
+
+		void rijndael160_224_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_decrypt_blocks(in, out, 13, rk, n);
+		}
+
 		void rijndael160_224_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_decrypt_block(in, out, 13, rk);
@@ -1190,6 +1457,16 @@ namespace cppcrypto
 		void rijndael160_256_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael160_encrypt_block(in, out, 14, rk);
+		}
+
+		void rijndael160_256_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_encrypt_blocks(in, out, 14, rk, n);
+		}
+
+		void rijndael160_256_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael160_decrypt_blocks(in, out, 14, rk, n);
 		}
 
 		void rijndael160_256_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
@@ -1304,12 +1581,7 @@ namespace cppcrypto
 			__m128i SHUFFLE_MASK1 = _mm_set_epi32(0x030e0d0c, 0x0f0a0908, 0x0b060504, 0x07020100);
 			__m128i POSTSHUFFLE_MASK2 = _mm_set_epi32(0x03020180, 0x800a0908, 0x0b800504, 0x07068000);
 
-#ifdef _MSC_VER
-			__declspec(align(32))
-#else
-			__attribute__((aligned(32)))
-#endif
-				unsigned char buf[32];
+			alignas(32) unsigned char buf[32];
 			memset(buf, 0, sizeof(buf));
 			memcpy(buf, in, 224 / 8);
 			data1 = _mm_load_si128(&((__m128i*)buf)[0]);
@@ -1381,6 +1653,155 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
+		static inline void rijndael224_encrypt_blocks(const unsigned char* in, unsigned char* out, int r, __m128i* rk, size_t n)
+		{
+			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x00000000, 0x80000000, 0x80800000, 0x80808000);
+			__m128i SHUFFLE_MASK1 = _mm_set_epi32(0x030e0d0c, 0x0f0a0908, 0x0b060504, 0x07020100);
+			__m128i POSTSHUFFLE_MASK2 = _mm_set_epi32(0x03020180, 0x800a0908, 0x0b800504, 0x07068000);
+
+			size_t x8 = n / 4;
+			alignas(32) unsigned char buf[32 * 4];
+			memset(buf, 0, sizeof(buf));
+
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i data1_0, data2_0;
+				__m128i data1_1, data2_1;
+				__m128i data1_2, data2_2;
+				__m128i data1_3, data2_3;
+
+				memcpy(buf, in, 224 / 8);
+				memcpy(buf + 32, in + 28, 224 / 8);
+				memcpy(buf + 32 * 2, in + 28 * 2, 224 / 8);
+				memcpy(buf + 32 * 3, in + 28 * 3, 224 / 8);
+				data1_0 = _mm_load_si128(&((__m128i*)buf)[0]);
+				data2_0 = _mm_load_si128(&((__m128i*)buf)[1]);
+				data1_1 = _mm_load_si128(&((__m128i*)buf)[2]);
+				data2_1 = _mm_load_si128(&((__m128i*)buf)[3]);
+				data1_2 = _mm_load_si128(&((__m128i*)buf)[4]);
+				data2_2 = _mm_load_si128(&((__m128i*)buf)[5]);
+				data1_3 = _mm_load_si128(&((__m128i*)buf)[6]);
+				data2_3 = _mm_load_si128(&((__m128i*)buf)[7]);
+#ifdef CPPCRYPTO_DEBUG
+				printf("initial data1: 0x%016I64x %016I64x\n", data1.m128i_i64[1], data1.m128i_i64[0]);
+				printf("initial data2: 0x%016I64x %016I64x\n", data2.m128i_i64[1], data2.m128i_i64[0]);
+#endif
+
+				__m128i key1, key2, tmp1, tmp2;
+				data1_0 = _mm_xor_si128(data1_0, rk[0]);
+				data2_0 = _mm_xor_si128(data2_0, rk[1]);
+				data1_1 = _mm_xor_si128(data1_1, rk[0]);
+				data2_1 = _mm_xor_si128(data2_1, rk[1]);
+				data1_2 = _mm_xor_si128(data1_2, rk[0]);
+				data2_2 = _mm_xor_si128(data2_2, rk[1]);
+				data1_3 = _mm_xor_si128(data1_3, rk[0]);
+				data2_3 = _mm_xor_si128(data2_3, rk[1]);
+#ifdef CPPCRYPTO_DEBUG
+				printf("round 0 key1: 0x%016I64x %016I64x\n", rk[0].m128i_i64[1], rk[0].m128i_i64[0]);
+				printf("round 0 key2: 0x%016I64x %016I64x\n", rk[1].m128i_i64[1], rk[1].m128i_i64[0]);
+
+				printf("round 0 data1: 0x%016I64x %016I64x\n", data1.m128i_i64[1], data1.m128i_i64[0]);
+				printf("round 0 data2: 0x%016I64x %016I64x\n", data2.m128i_i64[1], data2.m128i_i64[0]);
+#endif
+
+
+				int idx = 1, j;
+				for (j = 1; j < r; j++)
+				{
+					rijndael224_ks(j, key1, key2, rk, idx);
+
+#ifdef CPPCRYPTO_DEBUG
+					printf("round %d key1: 0x%016I64x %016I64x\n", j, key1.m128i_i64[1], key1.m128i_i64[0]);
+					printf("round %d key2: 0x%016I64x %016I64x\n", j, key2.m128i_i64[1], key2.m128i_i64[0]);
+#endif
+
+					data1_0 = _mm_shuffle_epi8(data1_0, SHUFFLE_MASK1);
+					data1_1 = _mm_shuffle_epi8(data1_1, SHUFFLE_MASK1);
+					data1_2 = _mm_shuffle_epi8(data1_2, SHUFFLE_MASK1);
+					data1_3 = _mm_shuffle_epi8(data1_3, SHUFFLE_MASK1);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_0, data2_0, VEC_BLEND_MASK), SHUFFLE_MASK1);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_0, data1_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_0 = _mm_aesenc_si128(tmp1, key1);
+					data2_0 = _mm_aesenc_si128(tmp2, key2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_1, data2_1, VEC_BLEND_MASK), SHUFFLE_MASK1);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_1, data1_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_1 = _mm_aesenc_si128(tmp1, key1);
+					data2_1 = _mm_aesenc_si128(tmp2, key2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_2, data2_2, VEC_BLEND_MASK), SHUFFLE_MASK1);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_2, data1_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_2 = _mm_aesenc_si128(tmp1, key1);
+					data2_2 = _mm_aesenc_si128(tmp2, key2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_3, data2_3, VEC_BLEND_MASK), SHUFFLE_MASK1);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_3, data1_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_3 = _mm_aesenc_si128(tmp1, key1);
+					data2_3 = _mm_aesenc_si128(tmp2, key2);
+
+#ifdef CPPCRYPTO_DEBUG
+					printf("round %d data1: 0x%016I64x %016I64x\n", j, data1.m128i_i64[1], data1.m128i_i64[0]);
+					printf("round %d data2: 0x%016I64x %016I64x\n", j, data2.m128i_i64[1], data2.m128i_i64[0]);
+#endif
+
+				}
+
+				rijndael224_ks(j, key1, key2, rk, idx);
+#ifdef CPPCRYPTO_DEBUG
+				printf("last round key1: 0x%016I64x %016I64x\n", key1.m128i_i64[1], key1.m128i_i64[0]);
+				printf("last round key2: 0x%016I64x %016I64x\n", key2.m128i_i64[1], key2.m128i_i64[0]);
+#endif
+
+				data1_0 = _mm_shuffle_epi8(data1_0, SHUFFLE_MASK1);
+				data1_1 = _mm_shuffle_epi8(data1_1, SHUFFLE_MASK1);
+				data1_2 = _mm_shuffle_epi8(data1_2, SHUFFLE_MASK1);
+				data1_3 = _mm_shuffle_epi8(data1_3, SHUFFLE_MASK1);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_0, data2_0, VEC_BLEND_MASK), SHUFFLE_MASK1);
+				tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_0, data1_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_0 = _mm_aesenclast_si128(tmp1, key1);
+				data2_0 = _mm_aesenclast_si128(tmp2, key2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_1, data2_1, VEC_BLEND_MASK), SHUFFLE_MASK1);
+				tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_1, data1_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_1 = _mm_aesenclast_si128(tmp1, key1);
+				data2_1 = _mm_aesenclast_si128(tmp2, key2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_2, data2_2, VEC_BLEND_MASK), SHUFFLE_MASK1);
+				tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_2, data1_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_2 = _mm_aesenclast_si128(tmp1, key1);
+				data2_2 = _mm_aesenclast_si128(tmp2, key2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_3, data2_3, VEC_BLEND_MASK), SHUFFLE_MASK1);
+				tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_3, data1_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_3 = _mm_aesenclast_si128(tmp1, key1);
+				data2_3 = _mm_aesenclast_si128(tmp2, key2);
+
+#ifdef CPPCRYPTO_DEBUG
+				printf("last round data1: 0x%016I64x %016I64x\n", tmp1.m128i_i64[1], tmp1.m128i_i64[0]);
+				printf("last round data2: 0x%016I64x %016I64x\n", tmp2.m128i_i64[1], tmp2.m128i_i64[0]);
+#endif
+
+				_mm_store_si128(&((__m128i*)buf)[0], data1_0);
+				_mm_store_si128(&((__m128i*)buf)[1], data2_0);
+				_mm_store_si128(&((__m128i*)buf)[2], data1_1);
+				_mm_store_si128(&((__m128i*)buf)[3], data2_1);
+				_mm_store_si128(&((__m128i*)buf)[4], data1_2);
+				_mm_store_si128(&((__m128i*)buf)[5], data2_2);
+				_mm_store_si128(&((__m128i*)buf)[6], data1_3);
+				_mm_store_si128(&((__m128i*)buf)[7], data2_3);
+				memcpy(out, buf, 224 / 8);
+				memcpy(out + 28, buf + 32, 224 / 8);
+				memcpy(out + 28 * 2, buf + 32 * 2, 224 / 8);
+				memcpy(out + 28 * 3, buf + 32 * 3, 224 / 8);
+
+				in += 28 * 4;
+				out += 28 * 4;
+			}
+			n -= x8 * 4;
+			zero_memory(buf, sizeof(buf));
+
+			for (size_t i = 0; i < n; i++)
+			{
+				rijndael224_encrypt_block(in, out, r, rk);
+				in += 28;
+				out += 28;
+			}
+		}
+
 		static inline void rijndael224_decrypt_block(const unsigned char* in, unsigned char* out, int r, __m128i* rk)
 		{
 			__m128i tmp1, tmp2, data1, data2;
@@ -1388,12 +1809,7 @@ namespace cppcrypto
 			__m128i SHUFFLE_MASK1 = _mm_set_epi32(0x0b0e0d0c, 0x070a0908, 0x03060504, 0x0f020100);
 			__m128i PRESHUFFLE_MASK2 = _mm_set_epi32(0x0b0a0980, 0x07068008, 0x03800504, 0x80020100);
 
-#ifdef _MSC_VER
-			__declspec(align(32))
-#else
-			__attribute__((aligned(32)))
-#endif
-				unsigned char buf[32];
+			alignas(32) unsigned char buf[32];
 			memset(buf, 0, sizeof(buf));
 			memcpy(buf, in, 224 / 8);
 			data1 = _mm_load_si128(&((__m128i*)buf)[0]);
@@ -1432,14 +1848,165 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
+		static inline void rijndael224_decrypt_blocks(const unsigned char* in, unsigned char* out, int r, __m128i* rk, size_t n)
+		{
+			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x80808000, 0x80800000, 0x80000000, 0x00000000);
+			__m128i SHUFFLE_MASK1 = _mm_set_epi32(0x0b0e0d0c, 0x070a0908, 0x03060504, 0x0f020100);
+			__m128i PRESHUFFLE_MASK2 = _mm_set_epi32(0x0b0a0980, 0x07068008, 0x03800504, 0x80020100);
+
+			size_t x8 = n / 4;
+			alignas(32) unsigned char buf[32 * 4];
+			memset(buf, 0, sizeof(buf));
+
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i data1_0, data2_0;
+				__m128i data1_1, data2_1;
+				__m128i data1_2, data2_2;
+				__m128i data1_3, data2_3;
+
+				memcpy(buf, in, 224 / 8);
+				memcpy(buf + 32, in + 28, 224 / 8);
+				memcpy(buf + 32 * 2, in + 28 * 2, 224 / 8);
+				memcpy(buf + 32 * 3, in + 28 * 3, 224 / 8);
+				data1_0 = _mm_load_si128(&((__m128i*)buf)[0]);
+				data2_0 = _mm_load_si128(&((__m128i*)buf)[1]);
+				data1_1 = _mm_load_si128(&((__m128i*)buf)[2]);
+				data2_1 = _mm_load_si128(&((__m128i*)buf)[3]);
+				data1_2 = _mm_load_si128(&((__m128i*)buf)[4]);
+				data2_2 = _mm_load_si128(&((__m128i*)buf)[5]);
+				data1_3 = _mm_load_si128(&((__m128i*)buf)[6]);
+				data2_3 = _mm_load_si128(&((__m128i*)buf)[7]);
+
+				__m128i key1, key2, tmp1, tmp2;
+				data1_0 = _mm_xor_si128(data1_0, rk[0]);
+				data2_0 = _mm_xor_si128(data2_0, rk[1]);
+				data1_1 = _mm_xor_si128(data1_1, rk[0]);
+				data2_1 = _mm_xor_si128(data2_1, rk[1]);
+				data1_2 = _mm_xor_si128(data1_2, rk[0]);
+				data2_2 = _mm_xor_si128(data2_2, rk[1]);
+				data1_3 = _mm_xor_si128(data1_3, rk[0]);
+				data2_3 = _mm_xor_si128(data2_3, rk[1]);
+
+				int idx = 1, j;
+				for (j = 1; j < r; j++)
+				{
+					rijndael224_ks(j, key1, key2, rk, idx);
+
+					data1_0 = _mm_shuffle_epi8(data1_0, SHUFFLE_MASK1);
+					data2_0 = _mm_shuffle_epi8(data2_0, PRESHUFFLE_MASK2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_0, data2_0, VEC_BLEND_MASK), SHUFFLE_MASK1);
+					tmp2 = _mm_blendv_epi8(data2_0, data1_0, VEC_BLEND_MASK);
+					data1_0 = _mm_aesdec_si128(tmp1, key1);
+					data2_0 = _mm_aesdec_si128(tmp2, key2);
+
+					data1_1 = _mm_shuffle_epi8(data1_1, SHUFFLE_MASK1);
+					data2_1 = _mm_shuffle_epi8(data2_1, PRESHUFFLE_MASK2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_1, data2_1, VEC_BLEND_MASK), SHUFFLE_MASK1);
+					tmp2 = _mm_blendv_epi8(data2_1, data1_1, VEC_BLEND_MASK);
+					data1_1 = _mm_aesdec_si128(tmp1, key1);
+					data2_1 = _mm_aesdec_si128(tmp2, key2);
+
+					data1_2 = _mm_shuffle_epi8(data1_2, SHUFFLE_MASK1);
+					data2_2 = _mm_shuffle_epi8(data2_2, PRESHUFFLE_MASK2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_2, data2_2, VEC_BLEND_MASK), SHUFFLE_MASK1);
+					tmp2 = _mm_blendv_epi8(data2_2, data1_2, VEC_BLEND_MASK);
+					data1_2 = _mm_aesdec_si128(tmp1, key1);
+					data2_2 = _mm_aesdec_si128(tmp2, key2);
+
+					data1_3 = _mm_shuffle_epi8(data1_3, SHUFFLE_MASK1);
+					data2_3 = _mm_shuffle_epi8(data2_3, PRESHUFFLE_MASK2);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_3, data2_3, VEC_BLEND_MASK), SHUFFLE_MASK1);
+					tmp2 = _mm_blendv_epi8(data2_3, data1_3, VEC_BLEND_MASK);
+					data1_3 = _mm_aesdec_si128(tmp1, key1);
+					data2_3 = _mm_aesdec_si128(tmp2, key2);
+				}
+
+				rijndael224_ks(j, key1, key2, rk, idx);
+
+				data1_0 = _mm_shuffle_epi8(data1_0, SHUFFLE_MASK1);
+				data2_0 = _mm_shuffle_epi8(data2_0, PRESHUFFLE_MASK2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_0, data2_0, VEC_BLEND_MASK), SHUFFLE_MASK1);
+				tmp2 = _mm_blendv_epi8(data2_0, data1_0, VEC_BLEND_MASK);
+				data1_0 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_0 = _mm_aesdeclast_si128(tmp2, key2);
+
+				data1_1 = _mm_shuffle_epi8(data1_1, SHUFFLE_MASK1);
+				data2_1 = _mm_shuffle_epi8(data2_1, PRESHUFFLE_MASK2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_1, data2_1, VEC_BLEND_MASK), SHUFFLE_MASK1);
+				tmp2 = _mm_blendv_epi8(data2_1, data1_1, VEC_BLEND_MASK);
+				data1_1 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_1 = _mm_aesdeclast_si128(tmp2, key2);
+
+				data1_2 = _mm_shuffle_epi8(data1_2, SHUFFLE_MASK1);
+				data2_2 = _mm_shuffle_epi8(data2_2, PRESHUFFLE_MASK2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_2, data2_2, VEC_BLEND_MASK), SHUFFLE_MASK1);
+				tmp2 = _mm_blendv_epi8(data2_2, data1_2, VEC_BLEND_MASK);
+				data1_2 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_2 = _mm_aesdeclast_si128(tmp2, key2);
+
+				data1_3 = _mm_shuffle_epi8(data1_3, SHUFFLE_MASK1);
+				data2_3 = _mm_shuffle_epi8(data2_3, PRESHUFFLE_MASK2);
+				tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_3, data2_3, VEC_BLEND_MASK), SHUFFLE_MASK1);
+				tmp2 = _mm_blendv_epi8(data2_3, data1_3, VEC_BLEND_MASK);
+				data1_3 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_3 = _mm_aesdeclast_si128(tmp2, key2);
+
+				_mm_store_si128(&((__m128i*)buf)[0], data1_0);
+				_mm_store_si128(&((__m128i*)buf)[1], data2_0);
+				_mm_store_si128(&((__m128i*)buf)[2], data1_1);
+				_mm_store_si128(&((__m128i*)buf)[3], data2_1);
+				_mm_store_si128(&((__m128i*)buf)[4], data1_2);
+				_mm_store_si128(&((__m128i*)buf)[5], data2_2);
+				_mm_store_si128(&((__m128i*)buf)[6], data1_3);
+				_mm_store_si128(&((__m128i*)buf)[7], data2_3);
+				memcpy(out, buf, 224 / 8);
+				memcpy(out + 28, buf + 32, 224 / 8);
+				memcpy(out + 28 * 2, buf + 32 * 2, 224 / 8);
+				memcpy(out + 28 * 3, buf + 32 * 3, 224 / 8);
+
+				in += 28 * 4;
+				out += 28 * 4;
+			}
+			n -= x8 * 4;
+			zero_memory(buf, sizeof(buf));
+
+			for (size_t i = 0; i < n; i++)
+			{
+				rijndael224_decrypt_block(in, out, r, rk);
+				in += 28;
+				out += 28;
+			}
+		}
+
 		void rijndael224_128_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael224_encrypt_block(in, out, 13, rk);
 		}
 
+		void rijndael224_128_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael224_encrypt_blocks(in, out, 13, rk, n);
+		}
+
 		void rijndael224_128_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael224_decrypt_block(in, out, 13, rk);
+		}
+
+		void rijndael224_128_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael224_decrypt_blocks(in, out, 13, rk, n);
+		}
+
+		void rijndael224_256_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael224_encrypt_blocks(in, out, 14, rk, n);
+		}
+
+		void rijndael224_256_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael224_decrypt_blocks(in, out, 14, rk, n);
 		}
 
 		void rijndael224_256_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)

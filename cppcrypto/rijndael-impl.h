@@ -22,7 +22,8 @@ namespace cppcrypto
 			virtual void encrypt_block(const unsigned char* in, unsigned char* out) = 0;
 			virtual void decrypt_block(const unsigned char* in, unsigned char* out) = 0;
 
-			virtual void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) {}
+			virtual void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) = 0;
+			virtual void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) = 0;
 
 		};
 
@@ -36,6 +37,7 @@ namespace cppcrypto
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael128_160_impl_aesni : public rijndael_impl
@@ -48,6 +50,7 @@ namespace cppcrypto
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael128_192_impl_aesni : public rijndael_impl
@@ -60,6 +63,7 @@ namespace cppcrypto
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael128_224_impl_aesni : public rijndael_impl
@@ -72,6 +76,7 @@ namespace cppcrypto
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael128_256_impl_aesni : public rijndael_impl
@@ -84,6 +89,7 @@ namespace cppcrypto
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael256_256_impl_aesni : public rijndael_impl
@@ -96,6 +102,7 @@ namespace cppcrypto
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
 			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael256_128_impl_aesni : public rijndael256_256_impl_aesni
@@ -131,6 +138,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael192_160_impl_aesni : public rijndael192_128_impl_aesni
@@ -154,6 +163,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael192_256_impl_aesni : public rijndael_impl
@@ -165,6 +176,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael160_128_impl_aesni : public rijndael_impl
@@ -176,6 +189,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael160_160_impl_aesni : public rijndael_impl
@@ -187,6 +202,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael160_192_impl_aesni : public rijndael_impl
@@ -198,6 +215,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael160_224_impl_aesni : public rijndael_impl
@@ -209,6 +228,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael160_256_impl_aesni : public rijndael_impl
@@ -220,6 +241,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael224_128_impl_aesni : public rijndael_impl
@@ -231,6 +254,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 		class rijndael224_160_impl_aesni : public rijndael224_128_impl_aesni
@@ -260,6 +285,8 @@ namespace cppcrypto
 			bool init(const unsigned char* key, block_cipher::direction direction) override;
 			void encrypt_block(const unsigned char* in, unsigned char* out) override;
 			void decrypt_block(const unsigned char* in, unsigned char* out) override;
+			void encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
+			void decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n) override;
 		};
 
 

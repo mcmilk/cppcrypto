@@ -11,8 +11,6 @@
 
 using namespace std;
 
-bool gen_random_bytes(unsigned char* buffer, size_t buflen);
-
 file_wrapper::file_wrapper(const wstring& filename) 
 	: file(filename), success(false)
 {
@@ -23,7 +21,7 @@ file_wrapper::file_wrapper(const wstring& filename)
 		throw runtime_error("Input file is a directory");
 
 	unsigned char buf[64];
-	gen_random_bytes(buf, sizeof(buf));
+	cppcrypto::gen_random_bytes(buf, sizeof(buf));
 	wostringstream wstr;
 	for (size_t i = 0; i < sizeof(buf); i++)
 		wstr << setfill(_T('0')) << setw(2) << hex << (unsigned int)buf[i];

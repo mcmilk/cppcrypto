@@ -12,14 +12,6 @@ and released into public domain.
 
 //#define CPPCRYPTO_DEBUG
 
-void p128_hex_u8(const char* name, __m128i in) {
-	alignas(16) uint8_t v[16];
-	_mm_store_si128((__m128i*)v, in);
-	printf("%s: %02x %02x %02x %02x | %02x %02x %02x %02x | %02x %02x %02x %02x | %02x %02x %02x %02x\n",
-		name, v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7],
-		v[8], v[9], v[10], v[11], v[12], v[13], v[14], v[15]);
-}
-
 namespace cppcrypto
 {
 	namespace detail
@@ -173,6 +165,139 @@ namespace cppcrypto
 				xmm20 = _mm_aesenclast_si128(xmm20, rk[10]);
 				xmm21 = _mm_aesenclast_si128(xmm21, rk[10]);
 				xmm22 = _mm_aesenclast_si128(xmm22, rk[10]);
+
+				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
+				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
+				_mm_storeu_si128((__m128i*) (out + 2 * 16), xmm17);
+				_mm_storeu_si128((__m128i*) (out + 3 * 16), xmm18);
+				_mm_storeu_si128((__m128i*) (out + 4 * 16), xmm19);
+				_mm_storeu_si128((__m128i*) (out + 5 * 16), xmm20);
+				_mm_storeu_si128((__m128i*) (out + 6 * 16), xmm21);
+				_mm_storeu_si128((__m128i*) (out + 7 * 16), xmm22);
+				in += 16 * 8;
+				out += 16 * 8;
+			}
+			n -= x8 * 8;
+			for (size_t i = 0; i < n; i++)
+			{
+				encrypt_block(in, out);
+				in += 16;
+				out += 16;
+			}
+		}
+
+		void rijndael128_128_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			size_t x8 = n / 8;
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i xmm15 = _mm_loadu_si128((const __m128i*) (in + 0 * 16));
+				__m128i xmm16 = _mm_loadu_si128((const __m128i*) (in + 1 * 16));
+				__m128i xmm17 = _mm_loadu_si128((const __m128i*) (in + 2 * 16));
+				__m128i xmm18 = _mm_loadu_si128((const __m128i*) (in + 3 * 16));
+				__m128i xmm19 = _mm_loadu_si128((const __m128i*) (in + 4 * 16));
+				__m128i xmm20 = _mm_loadu_si128((const __m128i*) (in + 5 * 16));
+				__m128i xmm21 = _mm_loadu_si128((const __m128i*) (in + 6 * 16));
+				__m128i xmm22 = _mm_loadu_si128((const __m128i*) (in + 7 * 16));
+
+				xmm15 = _mm_xor_si128(xmm15, rk[0]);
+				xmm16 = _mm_xor_si128(xmm16, rk[0]);
+				xmm17 = _mm_xor_si128(xmm17, rk[0]);
+				xmm18 = _mm_xor_si128(xmm18, rk[0]);
+				xmm19 = _mm_xor_si128(xmm19, rk[0]);
+				xmm20 = _mm_xor_si128(xmm20, rk[0]);
+				xmm21 = _mm_xor_si128(xmm21, rk[0]);
+				xmm22 = _mm_xor_si128(xmm22, rk[0]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[1]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[1]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[1]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[1]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[1]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[1]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[1]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[1]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[2]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[2]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[2]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[2]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[2]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[2]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[2]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[2]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[3]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[3]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[3]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[3]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[3]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[3]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[3]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[3]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[4]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[4]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[4]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[4]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[4]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[4]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[4]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[4]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[5]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[5]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[5]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[5]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[5]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[5]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[5]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[5]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[6]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[6]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[6]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[6]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[6]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[6]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[6]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[6]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[7]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[7]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[7]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[7]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[7]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[7]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[7]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[7]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[8]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[8]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[8]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[8]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[8]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[8]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[8]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[8]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[9]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[9]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[9]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[9]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[9]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[9]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[9]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[9]);
+
+				xmm15 = _mm_aesdeclast_si128(xmm15, rk[10]);
+				xmm16 = _mm_aesdeclast_si128(xmm16, rk[10]);
+				xmm17 = _mm_aesdeclast_si128(xmm17, rk[10]);
+				xmm18 = _mm_aesdeclast_si128(xmm18, rk[10]);
+				xmm19 = _mm_aesdeclast_si128(xmm19, rk[10]);
+				xmm20 = _mm_aesdeclast_si128(xmm20, rk[10]);
+				xmm21 = _mm_aesdeclast_si128(xmm21, rk[10]);
+				xmm22 = _mm_aesdeclast_si128(xmm22, rk[10]);
 
 				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
 				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
@@ -351,6 +476,148 @@ namespace cppcrypto
 				xmm20 = _mm_aesenclast_si128(xmm20, rk[11]);
 				xmm21 = _mm_aesenclast_si128(xmm21, rk[11]);
 				xmm22 = _mm_aesenclast_si128(xmm22, rk[11]);
+
+				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
+				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
+				_mm_storeu_si128((__m128i*) (out + 2 * 16), xmm17);
+				_mm_storeu_si128((__m128i*) (out + 3 * 16), xmm18);
+				_mm_storeu_si128((__m128i*) (out + 4 * 16), xmm19);
+				_mm_storeu_si128((__m128i*) (out + 5 * 16), xmm20);
+				_mm_storeu_si128((__m128i*) (out + 6 * 16), xmm21);
+				_mm_storeu_si128((__m128i*) (out + 7 * 16), xmm22);
+				in += 16 * 8;
+				out += 16 * 8;
+			}
+			n -= x8 * 8;
+			for (size_t i = 0; i < n; i++)
+			{
+				encrypt_block(in, out);
+				in += 16;
+				out += 16;
+			}
+		}
+
+		void rijndael128_160_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			size_t x8 = n / 8;
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i xmm15 = _mm_loadu_si128((const __m128i*) (in + 0 * 16));
+				__m128i xmm16 = _mm_loadu_si128((const __m128i*) (in + 1 * 16));
+				__m128i xmm17 = _mm_loadu_si128((const __m128i*) (in + 2 * 16));
+				__m128i xmm18 = _mm_loadu_si128((const __m128i*) (in + 3 * 16));
+				__m128i xmm19 = _mm_loadu_si128((const __m128i*) (in + 4 * 16));
+				__m128i xmm20 = _mm_loadu_si128((const __m128i*) (in + 5 * 16));
+				__m128i xmm21 = _mm_loadu_si128((const __m128i*) (in + 6 * 16));
+				__m128i xmm22 = _mm_loadu_si128((const __m128i*) (in + 7 * 16));
+
+				xmm15 = _mm_xor_si128(xmm15, rk[0]);
+				xmm16 = _mm_xor_si128(xmm16, rk[0]);
+				xmm17 = _mm_xor_si128(xmm17, rk[0]);
+				xmm18 = _mm_xor_si128(xmm18, rk[0]);
+				xmm19 = _mm_xor_si128(xmm19, rk[0]);
+				xmm20 = _mm_xor_si128(xmm20, rk[0]);
+				xmm21 = _mm_xor_si128(xmm21, rk[0]);
+				xmm22 = _mm_xor_si128(xmm22, rk[0]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[1]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[1]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[1]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[1]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[1]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[1]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[1]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[1]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[2]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[2]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[2]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[2]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[2]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[2]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[2]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[2]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[3]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[3]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[3]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[3]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[3]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[3]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[3]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[3]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[4]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[4]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[4]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[4]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[4]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[4]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[4]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[4]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[5]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[5]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[5]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[5]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[5]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[5]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[5]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[5]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[6]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[6]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[6]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[6]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[6]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[6]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[6]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[6]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[7]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[7]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[7]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[7]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[7]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[7]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[7]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[7]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[8]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[8]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[8]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[8]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[8]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[8]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[8]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[8]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[9]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[9]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[9]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[9]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[9]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[9]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[9]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[9]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[10]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[10]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[10]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[10]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[10]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[10]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[10]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[10]);
+
+				xmm15 = _mm_aesdeclast_si128(xmm15, rk[11]);
+				xmm16 = _mm_aesdeclast_si128(xmm16, rk[11]);
+				xmm17 = _mm_aesdeclast_si128(xmm17, rk[11]);
+				xmm18 = _mm_aesdeclast_si128(xmm18, rk[11]);
+				xmm19 = _mm_aesdeclast_si128(xmm19, rk[11]);
+				xmm20 = _mm_aesdeclast_si128(xmm20, rk[11]);
+				xmm21 = _mm_aesdeclast_si128(xmm21, rk[11]);
+				xmm22 = _mm_aesdeclast_si128(xmm22, rk[11]);
 
 				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
 				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
@@ -591,6 +858,157 @@ namespace cppcrypto
 				xmm20 = _mm_aesenclast_si128(xmm20, rk[12]);
 				xmm21 = _mm_aesenclast_si128(xmm21, rk[12]);
 				xmm22 = _mm_aesenclast_si128(xmm22, rk[12]);
+
+				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
+				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
+				_mm_storeu_si128((__m128i*) (out + 2 * 16), xmm17);
+				_mm_storeu_si128((__m128i*) (out + 3 * 16), xmm18);
+				_mm_storeu_si128((__m128i*) (out + 4 * 16), xmm19);
+				_mm_storeu_si128((__m128i*) (out + 5 * 16), xmm20);
+				_mm_storeu_si128((__m128i*) (out + 6 * 16), xmm21);
+				_mm_storeu_si128((__m128i*) (out + 7 * 16), xmm22);
+				in += 16 * 8;
+				out += 16 * 8;
+			}
+			n -= x8 * 8;
+			for (size_t i = 0; i < n; i++)
+			{
+				encrypt_block(in, out);
+				in += 16;
+				out += 16;
+			}
+		}
+
+		void rijndael128_192_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			size_t x8 = n / 8;
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i xmm15 = _mm_loadu_si128((const __m128i*) (in + 0 * 16));
+				__m128i xmm16 = _mm_loadu_si128((const __m128i*) (in + 1 * 16));
+				__m128i xmm17 = _mm_loadu_si128((const __m128i*) (in + 2 * 16));
+				__m128i xmm18 = _mm_loadu_si128((const __m128i*) (in + 3 * 16));
+				__m128i xmm19 = _mm_loadu_si128((const __m128i*) (in + 4 * 16));
+				__m128i xmm20 = _mm_loadu_si128((const __m128i*) (in + 5 * 16));
+				__m128i xmm21 = _mm_loadu_si128((const __m128i*) (in + 6 * 16));
+				__m128i xmm22 = _mm_loadu_si128((const __m128i*) (in + 7 * 16));
+
+				xmm15 = _mm_xor_si128(xmm15, rk[0]);
+				xmm16 = _mm_xor_si128(xmm16, rk[0]);
+				xmm17 = _mm_xor_si128(xmm17, rk[0]);
+				xmm18 = _mm_xor_si128(xmm18, rk[0]);
+				xmm19 = _mm_xor_si128(xmm19, rk[0]);
+				xmm20 = _mm_xor_si128(xmm20, rk[0]);
+				xmm21 = _mm_xor_si128(xmm21, rk[0]);
+				xmm22 = _mm_xor_si128(xmm22, rk[0]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[1]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[1]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[1]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[1]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[1]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[1]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[1]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[1]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[2]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[2]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[2]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[2]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[2]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[2]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[2]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[2]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[3]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[3]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[3]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[3]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[3]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[3]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[3]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[3]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[4]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[4]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[4]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[4]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[4]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[4]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[4]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[4]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[5]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[5]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[5]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[5]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[5]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[5]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[5]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[5]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[6]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[6]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[6]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[6]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[6]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[6]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[6]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[6]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[7]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[7]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[7]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[7]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[7]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[7]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[7]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[7]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[8]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[8]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[8]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[8]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[8]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[8]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[8]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[8]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[9]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[9]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[9]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[9]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[9]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[9]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[9]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[9]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[10]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[10]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[10]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[10]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[10]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[10]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[10]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[10]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[11]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[11]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[11]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[11]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[11]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[11]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[11]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[11]);
+
+				xmm15 = _mm_aesdeclast_si128(xmm15, rk[12]);
+				xmm16 = _mm_aesdeclast_si128(xmm16, rk[12]);
+				xmm17 = _mm_aesdeclast_si128(xmm17, rk[12]);
+				xmm18 = _mm_aesdeclast_si128(xmm18, rk[12]);
+				xmm19 = _mm_aesdeclast_si128(xmm19, rk[12]);
+				xmm20 = _mm_aesdeclast_si128(xmm20, rk[12]);
+				xmm21 = _mm_aesdeclast_si128(xmm21, rk[12]);
+				xmm22 = _mm_aesdeclast_si128(xmm22, rk[12]);
 
 				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
 				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
@@ -868,6 +1286,175 @@ namespace cppcrypto
 			}
 		}
 
+		void rijndael128_256_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			size_t x8 = n / 8;
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i xmm15 = _mm_loadu_si128((const __m128i*) (in + 0 * 16));
+				__m128i xmm16 = _mm_loadu_si128((const __m128i*) (in + 1 * 16));
+				__m128i xmm17 = _mm_loadu_si128((const __m128i*) (in + 2 * 16));
+				__m128i xmm18 = _mm_loadu_si128((const __m128i*) (in + 3 * 16));
+				__m128i xmm19 = _mm_loadu_si128((const __m128i*) (in + 4 * 16));
+				__m128i xmm20 = _mm_loadu_si128((const __m128i*) (in + 5 * 16));
+				__m128i xmm21 = _mm_loadu_si128((const __m128i*) (in + 6 * 16));
+				__m128i xmm22 = _mm_loadu_si128((const __m128i*) (in + 7 * 16));
+
+				xmm15 = _mm_xor_si128(xmm15, rk[0]);
+				xmm16 = _mm_xor_si128(xmm16, rk[0]);
+				xmm17 = _mm_xor_si128(xmm17, rk[0]);
+				xmm18 = _mm_xor_si128(xmm18, rk[0]);
+				xmm19 = _mm_xor_si128(xmm19, rk[0]);
+				xmm20 = _mm_xor_si128(xmm20, rk[0]);
+				xmm21 = _mm_xor_si128(xmm21, rk[0]);
+				xmm22 = _mm_xor_si128(xmm22, rk[0]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[1]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[1]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[1]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[1]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[1]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[1]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[1]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[1]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[2]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[2]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[2]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[2]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[2]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[2]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[2]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[2]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[3]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[3]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[3]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[3]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[3]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[3]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[3]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[3]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[4]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[4]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[4]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[4]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[4]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[4]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[4]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[4]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[5]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[5]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[5]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[5]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[5]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[5]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[5]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[5]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[6]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[6]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[6]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[6]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[6]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[6]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[6]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[6]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[7]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[7]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[7]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[7]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[7]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[7]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[7]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[7]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[8]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[8]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[8]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[8]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[8]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[8]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[8]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[8]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[9]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[9]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[9]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[9]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[9]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[9]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[9]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[9]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[10]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[10]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[10]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[10]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[10]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[10]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[10]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[10]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[11]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[11]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[11]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[11]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[11]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[11]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[11]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[11]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[12]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[12]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[12]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[12]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[12]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[12]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[12]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[12]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[13]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[13]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[13]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[13]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[13]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[13]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[13]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[13]);
+
+				xmm15 = _mm_aesdeclast_si128(xmm15, rk[14]);
+				xmm16 = _mm_aesdeclast_si128(xmm16, rk[14]);
+				xmm17 = _mm_aesdeclast_si128(xmm17, rk[14]);
+				xmm18 = _mm_aesdeclast_si128(xmm18, rk[14]);
+				xmm19 = _mm_aesdeclast_si128(xmm19, rk[14]);
+				xmm20 = _mm_aesdeclast_si128(xmm20, rk[14]);
+				xmm21 = _mm_aesdeclast_si128(xmm21, rk[14]);
+				xmm22 = _mm_aesdeclast_si128(xmm22, rk[14]);
+
+				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
+				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
+				_mm_storeu_si128((__m128i*) (out + 2 * 16), xmm17);
+				_mm_storeu_si128((__m128i*) (out + 3 * 16), xmm18);
+				_mm_storeu_si128((__m128i*) (out + 4 * 16), xmm19);
+				_mm_storeu_si128((__m128i*) (out + 5 * 16), xmm20);
+				_mm_storeu_si128((__m128i*) (out + 6 * 16), xmm21);
+				_mm_storeu_si128((__m128i*) (out + 7 * 16), xmm22);
+				in += 16 * 8;
+				out += 16 * 8;
+			}
+			n -= x8 * 8;
+			for (size_t i = 0; i < n; i++)
+			{
+				encrypt_block(in, out);
+				in += 16;
+				out += 16;
+			}
+		}
+
 		void rijndael128_256_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			__m128i xmm15 = _mm_loadu_si128((const __m128i*) in);
@@ -1051,6 +1638,166 @@ namespace cppcrypto
 				xmm20 = _mm_aesenclast_si128(xmm20, rk[13]);
 				xmm21 = _mm_aesenclast_si128(xmm21, rk[13]);
 				xmm22 = _mm_aesenclast_si128(xmm22, rk[13]);
+
+				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
+				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
+				_mm_storeu_si128((__m128i*) (out + 2 * 16), xmm17);
+				_mm_storeu_si128((__m128i*) (out + 3 * 16), xmm18);
+				_mm_storeu_si128((__m128i*) (out + 4 * 16), xmm19);
+				_mm_storeu_si128((__m128i*) (out + 5 * 16), xmm20);
+				_mm_storeu_si128((__m128i*) (out + 6 * 16), xmm21);
+				_mm_storeu_si128((__m128i*) (out + 7 * 16), xmm22);
+				in += 16 * 8;
+				out += 16 * 8;
+			}
+			n -= x8 * 8;
+			for (size_t i = 0; i < n; i++)
+			{
+				encrypt_block(in, out);
+				in += 16;
+				out += 16;
+			}
+		}
+
+		void rijndael128_224_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			size_t x8 = n / 8;
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i xmm15 = _mm_loadu_si128((const __m128i*) (in + 0 * 16));
+				__m128i xmm16 = _mm_loadu_si128((const __m128i*) (in + 1 * 16));
+				__m128i xmm17 = _mm_loadu_si128((const __m128i*) (in + 2 * 16));
+				__m128i xmm18 = _mm_loadu_si128((const __m128i*) (in + 3 * 16));
+				__m128i xmm19 = _mm_loadu_si128((const __m128i*) (in + 4 * 16));
+				__m128i xmm20 = _mm_loadu_si128((const __m128i*) (in + 5 * 16));
+				__m128i xmm21 = _mm_loadu_si128((const __m128i*) (in + 6 * 16));
+				__m128i xmm22 = _mm_loadu_si128((const __m128i*) (in + 7 * 16));
+
+				xmm15 = _mm_xor_si128(xmm15, rk[0]);
+				xmm16 = _mm_xor_si128(xmm16, rk[0]);
+				xmm17 = _mm_xor_si128(xmm17, rk[0]);
+				xmm18 = _mm_xor_si128(xmm18, rk[0]);
+				xmm19 = _mm_xor_si128(xmm19, rk[0]);
+				xmm20 = _mm_xor_si128(xmm20, rk[0]);
+				xmm21 = _mm_xor_si128(xmm21, rk[0]);
+				xmm22 = _mm_xor_si128(xmm22, rk[0]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[1]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[1]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[1]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[1]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[1]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[1]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[1]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[1]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[2]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[2]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[2]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[2]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[2]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[2]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[2]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[2]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[3]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[3]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[3]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[3]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[3]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[3]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[3]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[3]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[4]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[4]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[4]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[4]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[4]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[4]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[4]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[4]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[5]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[5]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[5]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[5]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[5]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[5]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[5]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[5]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[6]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[6]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[6]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[6]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[6]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[6]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[6]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[6]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[7]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[7]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[7]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[7]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[7]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[7]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[7]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[7]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[8]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[8]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[8]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[8]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[8]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[8]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[8]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[8]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[9]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[9]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[9]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[9]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[9]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[9]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[9]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[9]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[10]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[10]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[10]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[10]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[10]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[10]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[10]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[10]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[11]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[11]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[11]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[11]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[11]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[11]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[11]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[11]);
+
+				xmm15 = _mm_aesdec_si128(xmm15, rk[12]);
+				xmm16 = _mm_aesdec_si128(xmm16, rk[12]);
+				xmm17 = _mm_aesdec_si128(xmm17, rk[12]);
+				xmm18 = _mm_aesdec_si128(xmm18, rk[12]);
+				xmm19 = _mm_aesdec_si128(xmm19, rk[12]);
+				xmm20 = _mm_aesdec_si128(xmm20, rk[12]);
+				xmm21 = _mm_aesdec_si128(xmm21, rk[12]);
+				xmm22 = _mm_aesdec_si128(xmm22, rk[12]);
+
+				xmm15 = _mm_aesdeclast_si128(xmm15, rk[13]);
+				xmm16 = _mm_aesdeclast_si128(xmm16, rk[13]);
+				xmm17 = _mm_aesdeclast_si128(xmm17, rk[13]);
+				xmm18 = _mm_aesdeclast_si128(xmm18, rk[13]);
+				xmm19 = _mm_aesdeclast_si128(xmm19, rk[13]);
+				xmm20 = _mm_aesdeclast_si128(xmm20, rk[13]);
+				xmm21 = _mm_aesdeclast_si128(xmm21, rk[13]);
+				xmm22 = _mm_aesdeclast_si128(xmm22, rk[13]);
 
 				_mm_storeu_si128((__m128i*) (out + 0 * 16), xmm15);
 				_mm_storeu_si128((__m128i*) (out + 1 * 16), xmm16);
@@ -1259,6 +2006,77 @@ namespace cppcrypto
 			tmp2 = _mm_aesenclast_si128(tmp2, rk[j * 2 + 1]);
 			_mm_storeu_si128(&((__m128i*)out)[0], tmp1);
 			_mm_storeu_si128(&((__m128i*)out)[1], tmp2);
+		}
+
+
+		void rijndael256_256_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			__m128i RIJNDAEL256_MASK_INV = _mm_set_epi32(0x0b0a0d0c, 0x07060908, 0x03020504, 0x0f0e0100);
+			__m128i BLEND_MASK_INV = _mm_set_epi32(0x80808000, 0x80800000, 0x80800000, 0x80000000);
+
+			size_t x8 = n / 4;
+			int j;
+
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i data1_0 = _mm_loadu_si128(&((__m128i*)in)[0]);
+				__m128i data2_0 = _mm_loadu_si128(&((__m128i*)in)[1]);
+				__m128i data1_1 = _mm_loadu_si128(&((__m128i*)in)[2]);
+				__m128i data2_1 = _mm_loadu_si128(&((__m128i*)in)[3]);
+				__m128i data1_2 = _mm_loadu_si128(&((__m128i*)in)[4]);
+				__m128i data2_2 = _mm_loadu_si128(&((__m128i*)in)[5]);
+				__m128i data1_3 = _mm_loadu_si128(&((__m128i*)in)[6]);
+				__m128i data2_3 = _mm_loadu_si128(&((__m128i*)in)[7]);
+
+				data1_0 = _mm_xor_si128(data1_0, rk[0]);
+				data1_1 = _mm_xor_si128(data1_1, rk[0]);
+				data1_2 = _mm_xor_si128(data1_2, rk[0]);
+				data1_3 = _mm_xor_si128(data1_3, rk[0]);
+				data2_0 = _mm_xor_si128(data2_0, rk[1]);
+				data2_1 = _mm_xor_si128(data2_1, rk[1]);
+				data2_2 = _mm_xor_si128(data2_2, rk[1]);
+				data2_3 = _mm_xor_si128(data2_3, rk[1]);
+
+				for (j = 1; j < 14; j++)
+				{
+					__m128i tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_0, data2_0, BLEND_MASK_INV), RIJNDAEL256_MASK_INV);
+					__m128i tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_0, data1_0, BLEND_MASK_INV), RIJNDAEL256_MASK_INV);
+					data1_0 = _mm_aesdec_si128(tmp1, rk[j * 2]);
+					data2_0 = _mm_aesdec_si128(tmp2, rk[j * 2 + 1]);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_1, data2_1, BLEND_MASK_INV), RIJNDAEL256_MASK_INV);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_1, data1_1, BLEND_MASK_INV), RIJNDAEL256_MASK_INV);
+					data1_1 = _mm_aesdec_si128(tmp1, rk[j * 2]);
+					data2_1 = _mm_aesdec_si128(tmp2, rk[j * 2 + 1]);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_2, data2_2, BLEND_MASK_INV), RIJNDAEL256_MASK_INV);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_2, data1_2, BLEND_MASK_INV), RIJNDAEL256_MASK_INV);
+					data1_2 = _mm_aesdec_si128(tmp1, rk[j * 2]);
+					data2_2 = _mm_aesdec_si128(tmp2, rk[j * 2 + 1]);
+					tmp1 = _mm_shuffle_epi8(_mm_blendv_epi8(data1_3, data2_3, BLEND_MASK_INV), RIJNDAEL256_MASK_INV);
+					tmp2 = _mm_shuffle_epi8(_mm_blendv_epi8(data2_3, data1_3, BLEND_MASK_INV), RIJNDAEL256_MASK_INV);
+					data1_3 = _mm_aesdec_si128(tmp1, rk[j * 2]);
+					data2_3 = _mm_aesdec_si128(tmp2, rk[j * 2 + 1]);
+				}
+
+				_mm_storeu_si128(&((__m128i*)out)[0], _mm_aesdeclast_si128(_mm_shuffle_epi8(_mm_blendv_epi8(data1_0, data2_0, BLEND_MASK_INV), RIJNDAEL256_MASK_INV), rk[j * 2 + 0]));
+				_mm_storeu_si128(&((__m128i*)out)[1], _mm_aesdeclast_si128(_mm_shuffle_epi8(_mm_blendv_epi8(data2_0, data1_0, BLEND_MASK_INV), RIJNDAEL256_MASK_INV), rk[j * 2 + 1]));
+				_mm_storeu_si128(&((__m128i*)out)[2], _mm_aesdeclast_si128(_mm_shuffle_epi8(_mm_blendv_epi8(data1_1, data2_1, BLEND_MASK_INV), RIJNDAEL256_MASK_INV), rk[j * 2 + 0]));
+				_mm_storeu_si128(&((__m128i*)out)[3], _mm_aesdeclast_si128(_mm_shuffle_epi8(_mm_blendv_epi8(data2_1, data1_1, BLEND_MASK_INV), RIJNDAEL256_MASK_INV), rk[j * 2 + 1]));
+				_mm_storeu_si128(&((__m128i*)out)[4], _mm_aesdeclast_si128(_mm_shuffle_epi8(_mm_blendv_epi8(data1_2, data2_2, BLEND_MASK_INV), RIJNDAEL256_MASK_INV), rk[j * 2 + 0]));
+				_mm_storeu_si128(&((__m128i*)out)[5], _mm_aesdeclast_si128(_mm_shuffle_epi8(_mm_blendv_epi8(data2_2, data1_2, BLEND_MASK_INV), RIJNDAEL256_MASK_INV), rk[j * 2 + 1]));
+				_mm_storeu_si128(&((__m128i*)out)[6], _mm_aesdeclast_si128(_mm_shuffle_epi8(_mm_blendv_epi8(data1_3, data2_3, BLEND_MASK_INV), RIJNDAEL256_MASK_INV), rk[j * 2 + 0]));
+				_mm_storeu_si128(&((__m128i*)out)[7], _mm_aesdeclast_si128(_mm_shuffle_epi8(_mm_blendv_epi8(data2_3, data1_3, BLEND_MASK_INV), RIJNDAEL256_MASK_INV), rk[j * 2 + 1]));
+
+				in += 32 * 4;
+				out += 32 * 4;
+			}
+			n -= x8 * 4;
+
+			for (size_t i = 0; i < n; i++)
+			{
+				encrypt_block(in, out);
+				in += 32;
+				out += 32;
+			}
 		}
 
 		void rijndael256_256_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
@@ -1600,6 +2418,289 @@ namespace cppcrypto
 			zero_memory(buf, sizeof(buf));
 		}
 
+		static inline void rijndael192_encrypt_blocks(const unsigned char* in, unsigned char* out, int r, __m128i* rk, size_t n)
+		{
+			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x00000000, 0x00000000, 0xffff0000, 0xffffff00);
+			__m128i PRESHUFFLE_MASK1 = _mm_set_epi32(0x0f0e0d0c, 0x030a0908, 0x0b060504, 0x07020100);
+			__m128i POSTSHUFFLE_MASK2 = _mm_set_epi32(0x03068080, 0x80020180, 0x80800504, 0x07808000);
+
+			size_t x8 = n / 4;
+			alignas(32) unsigned char buf[32 * 4];
+			memset(buf, 0, sizeof(buf));
+
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i data1_0, data2_0;
+				__m128i data1_1, data2_1;
+				__m128i data1_2, data2_2;
+				__m128i data1_3, data2_3;
+
+				memcpy(buf, in, 192 / 8);
+				memcpy(buf + 32, in + 24, 192 / 8);
+				memcpy(buf + 32 * 2, in + 24 * 2, 192 / 8);
+				memcpy(buf + 32 * 3, in + 24 * 3, 192 / 8);
+				data1_0 = _mm_load_si128(&((__m128i*)buf)[0]);
+				data2_0 = _mm_load_si128(&((__m128i*)buf)[1]);
+				data1_1 = _mm_load_si128(&((__m128i*)buf)[2]);
+				data2_1 = _mm_load_si128(&((__m128i*)buf)[3]);
+				data1_2 = _mm_load_si128(&((__m128i*)buf)[4]);
+				data2_2 = _mm_load_si128(&((__m128i*)buf)[5]);
+				data1_3 = _mm_load_si128(&((__m128i*)buf)[6]);
+				data2_3 = _mm_load_si128(&((__m128i*)buf)[7]);
+
+				__m128i key1, key2, tmp1, tmp2;
+				data1_0 = _mm_xor_si128(data1_0, rk[0]);
+				data2_0 = _mm_xor_si128(data2_0, rk[1]);
+				data1_1 = _mm_xor_si128(data1_1, rk[0]);
+				data2_1 = _mm_xor_si128(data2_1, rk[1]);
+				data1_2 = _mm_xor_si128(data1_2, rk[0]);
+				data2_2 = _mm_xor_si128(data2_2, rk[1]);
+				data1_3 = _mm_xor_si128(data1_3, rk[0]);
+				data2_3 = _mm_xor_si128(data2_3, rk[1]);
+				int idx = 1, j;
+				for (j = 1; j < r; j++)
+				{
+					if (j % 2)
+					{
+						key1 = mm_blend_shuffle_int64(rk[idx], rk[idx + 1], 3);
+						key2 = mm_blend_shuffle_int64(rk[idx + 1], rk[idx], 3);
+						idx += 2;
+					}
+					else
+					{
+						key1 = rk[idx++];
+						key2 = rk[idx];
+					}
+
+					data1_0 = _mm_shuffle_epi8(data1_0, PRESHUFFLE_MASK1);
+					tmp1 = mm_blend_i8(data1_0, data2_0, VEC_BLEND_MASK);
+					tmp2 = _mm_shuffle_epi8(mm_blend_i8(data2_0, data1_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_0 = _mm_aesenc_si128(tmp1, key1);
+					data2_0 = _mm_aesenc_si128(tmp2, key2);
+
+					data1_1 = _mm_shuffle_epi8(data1_1, PRESHUFFLE_MASK1);
+					tmp1 = mm_blend_i8(data1_1, data2_1, VEC_BLEND_MASK);
+					tmp2 = _mm_shuffle_epi8(mm_blend_i8(data2_1, data1_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_1 = _mm_aesenc_si128(tmp1, key1);
+					data2_1 = _mm_aesenc_si128(tmp2, key2);
+
+					data1_2 = _mm_shuffle_epi8(data1_2, PRESHUFFLE_MASK1);
+					tmp1 = mm_blend_i8(data1_2, data2_2, VEC_BLEND_MASK);
+					tmp2 = _mm_shuffle_epi8(mm_blend_i8(data2_2, data1_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_2 = _mm_aesenc_si128(tmp1, key1);
+					data2_2 = _mm_aesenc_si128(tmp2, key2);
+
+					data1_3 = _mm_shuffle_epi8(data1_3, PRESHUFFLE_MASK1);
+					tmp1 = mm_blend_i8(data1_3, data2_3, VEC_BLEND_MASK);
+					tmp2 = _mm_shuffle_epi8(mm_blend_i8(data2_3, data1_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+					data1_3 = _mm_aesenc_si128(tmp1, key1);
+					data2_3 = _mm_aesenc_si128(tmp2, key2);
+				}
+
+				if (j % 2)
+				{
+					key1 = mm_blend_shuffle_int64(rk[idx], rk[idx + 1], 3);
+					key2 = mm_blend_shuffle_int64(rk[idx + 1], rk[idx], 3);
+					idx += 2;
+				}
+				else
+				{
+					key1 = rk[idx++];
+					key2 = rk[idx];
+				}
+				data1_0 = _mm_shuffle_epi8(data1_0, PRESHUFFLE_MASK1);
+				tmp1 = mm_blend_i8(data1_0, data2_0, VEC_BLEND_MASK);
+				tmp2 = _mm_shuffle_epi8(mm_blend_i8(data2_0, data1_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_0 = _mm_aesenclast_si128(tmp1, key1);
+				data2_0 = _mm_aesenclast_si128(tmp2, key2);
+
+				data1_1 = _mm_shuffle_epi8(data1_1, PRESHUFFLE_MASK1);
+				tmp1 = mm_blend_i8(data1_1, data2_1, VEC_BLEND_MASK);
+				tmp2 = _mm_shuffle_epi8(mm_blend_i8(data2_1, data1_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_1 = _mm_aesenclast_si128(tmp1, key1);
+				data2_1 = _mm_aesenclast_si128(tmp2, key2);
+
+				data1_2 = _mm_shuffle_epi8(data1_2, PRESHUFFLE_MASK1);
+				tmp1 = mm_blend_i8(data1_2, data2_2, VEC_BLEND_MASK);
+				tmp2 = _mm_shuffle_epi8(mm_blend_i8(data2_2, data1_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_2 = _mm_aesenclast_si128(tmp1, key1);
+				data2_2 = _mm_aesenclast_si128(tmp2, key2);
+
+				data1_3 = _mm_shuffle_epi8(data1_3, PRESHUFFLE_MASK1);
+				tmp1 = mm_blend_i8(data1_3, data2_3, VEC_BLEND_MASK);
+				tmp2 = _mm_shuffle_epi8(mm_blend_i8(data2_3, data1_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK2);
+				data1_3 = _mm_aesenclast_si128(tmp1, key1);
+				data2_3 = _mm_aesenclast_si128(tmp2, key2);
+
+				_mm_store_si128(&((__m128i*)buf)[0], data1_0);
+				_mm_store_si128(&((__m128i*)buf)[1], data2_0);
+				_mm_store_si128(&((__m128i*)buf)[2], data1_1);
+				_mm_store_si128(&((__m128i*)buf)[3], data2_1);
+				_mm_store_si128(&((__m128i*)buf)[4], data1_2);
+				_mm_store_si128(&((__m128i*)buf)[5], data2_2);
+				_mm_store_si128(&((__m128i*)buf)[6], data1_3);
+				_mm_store_si128(&((__m128i*)buf)[7], data2_3);
+				memcpy(out, buf, 192 / 8);
+				memcpy(out + 24, buf + 32, 192 / 8);
+				memcpy(out + 24 * 2, buf + 32 * 2, 192 / 8);
+				memcpy(out + 24 * 3, buf + 32 * 3, 192 / 8);
+
+				in += 24 * 4;
+				out += 24 * 4;
+			}
+			n -= x8 * 4;
+			zero_memory(buf, sizeof(buf));
+
+			for (size_t i = 0; i < n; i++)
+			{
+				rijndael192_encrypt_block(in, out, r, rk);
+				in += 24;
+				out += 24;
+			}
+		}
+
+		static inline void rijndael192_decrypt_blocks(const unsigned char* in, unsigned char* out, int r, __m128i* rk, size_t n)
+		{
+			__m128i VEC_BLEND_MASK = _mm_set_epi32(0x00ffff00, 0xffff0000, 0xff000000, 0x00000000);
+			__m128i PRESHUFFLE_MASK2 = _mm_set_epi32(0x80060580, 0x03028080, 0x07808004, 0x80800100);
+			__m128i POSTSHUFFLE_MASK1 = _mm_set_epi32(0x070e0d0c, 0x0b0a0908, 0x0f060504, 0x03020100);
+
+			size_t x8 = n / 4;
+			alignas(32) unsigned char buf[32 * 4];
+			memset(buf, 0, sizeof(buf));
+
+			for (size_t i = 0; i < x8; i++)
+			{
+				__m128i data1_0, data2_0;
+				__m128i data1_1, data2_1;
+				__m128i data1_2, data2_2;
+				__m128i data1_3, data2_3;
+
+				memcpy(buf, in, 192 / 8);
+				memcpy(buf + 32, in + 24, 192 / 8);
+				memcpy(buf + 32 * 2, in + 24 * 2, 192 / 8);
+				memcpy(buf + 32 * 3, in + 24 * 3, 192 / 8);
+				data1_0 = _mm_load_si128(&((__m128i*)buf)[0]);
+				data2_0 = _mm_load_si128(&((__m128i*)buf)[1]);
+				data1_1 = _mm_load_si128(&((__m128i*)buf)[2]);
+				data2_1 = _mm_load_si128(&((__m128i*)buf)[3]);
+				data1_2 = _mm_load_si128(&((__m128i*)buf)[4]);
+				data2_2 = _mm_load_si128(&((__m128i*)buf)[5]);
+				data1_3 = _mm_load_si128(&((__m128i*)buf)[6]);
+				data2_3 = _mm_load_si128(&((__m128i*)buf)[7]);
+
+				__m128i key1, key2, tmp1, tmp2;
+				data1_0 = _mm_xor_si128(data1_0, rk[0]);
+				data2_0 = _mm_xor_si128(data2_0, rk[1]);
+				data1_1 = _mm_xor_si128(data1_1, rk[0]);
+				data2_1 = _mm_xor_si128(data2_1, rk[1]);
+				data1_2 = _mm_xor_si128(data1_2, rk[0]);
+				data2_2 = _mm_xor_si128(data2_2, rk[1]);
+				data1_3 = _mm_xor_si128(data1_3, rk[0]);
+				data2_3 = _mm_xor_si128(data2_3, rk[1]);
+				int idx = 1, j;
+				for (j = 1; j < r; j++)
+				{
+					if (j % 2)
+					{
+						key1 = mm_blend_shuffle_int64(rk[idx], rk[idx + 1], 3);
+						key2 = mm_blend_shuffle_int64(rk[idx + 1], rk[idx], 3);
+						idx += 2;
+					}
+					else
+					{
+						key1 = rk[idx++];
+						key2 = rk[idx];
+					}
+
+					data2_0 = _mm_shuffle_epi8(data2_0, PRESHUFFLE_MASK2);
+					tmp2 = mm_blend_i8(data2_0, data1_0, VEC_BLEND_MASK);
+					tmp1 = _mm_shuffle_epi8(mm_blend_i8(data1_0, data2_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+					data1_0 = _mm_aesdec_si128(tmp1, key1);
+					data2_0 = _mm_aesdec_si128(tmp2, key2);
+
+					data2_1 = _mm_shuffle_epi8(data2_1, PRESHUFFLE_MASK2);
+					tmp2 = mm_blend_i8(data2_1, data1_1, VEC_BLEND_MASK);
+					tmp1 = _mm_shuffle_epi8(mm_blend_i8(data1_1, data2_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+					data1_1 = _mm_aesdec_si128(tmp1, key1);
+					data2_1 = _mm_aesdec_si128(tmp2, key2);
+
+					data2_2 = _mm_shuffle_epi8(data2_2, PRESHUFFLE_MASK2);
+					tmp2 = mm_blend_i8(data2_2, data1_2, VEC_BLEND_MASK);
+					tmp1 = _mm_shuffle_epi8(mm_blend_i8(data1_2, data2_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+					data1_2 = _mm_aesdec_si128(tmp1, key1);
+					data2_2 = _mm_aesdec_si128(tmp2, key2);
+
+					data2_3 = _mm_shuffle_epi8(data2_3, PRESHUFFLE_MASK2);
+					tmp2 = mm_blend_i8(data2_3, data1_3, VEC_BLEND_MASK);
+					tmp1 = _mm_shuffle_epi8(mm_blend_i8(data1_3, data2_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+					data1_3 = _mm_aesdec_si128(tmp1, key1);
+					data2_3 = _mm_aesdec_si128(tmp2, key2);
+				}
+
+				if (j % 2)
+				{
+					key1 = mm_blend_shuffle_int64(rk[idx], rk[idx + 1], 3);
+					key2 = mm_blend_shuffle_int64(rk[idx + 1], rk[idx], 3);
+					idx += 2;
+				}
+				else
+				{
+					key1 = rk[idx++];
+					key2 = rk[idx];
+				}
+
+				data2_0 = _mm_shuffle_epi8(data2_0, PRESHUFFLE_MASK2);
+				tmp2 = mm_blend_i8(data2_0, data1_0, VEC_BLEND_MASK);
+				tmp1 = _mm_shuffle_epi8(mm_blend_i8(data1_0, data2_0, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+				data1_0 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_0 = _mm_aesdeclast_si128(tmp2, key2);
+
+				data2_1 = _mm_shuffle_epi8(data2_1, PRESHUFFLE_MASK2);
+				tmp2 = mm_blend_i8(data2_1, data1_1, VEC_BLEND_MASK);
+				tmp1 = _mm_shuffle_epi8(mm_blend_i8(data1_1, data2_1, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+				data1_1 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_1 = _mm_aesdeclast_si128(tmp2, key2);
+
+				data2_2 = _mm_shuffle_epi8(data2_2, PRESHUFFLE_MASK2);
+				tmp2 = mm_blend_i8(data2_2, data1_2, VEC_BLEND_MASK);
+				tmp1 = _mm_shuffle_epi8(mm_blend_i8(data1_2, data2_2, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+				data1_2 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_2 = _mm_aesdeclast_si128(tmp2, key2);
+
+				data2_3 = _mm_shuffle_epi8(data2_3, PRESHUFFLE_MASK2);
+				tmp2 = mm_blend_i8(data2_3, data1_3, VEC_BLEND_MASK);
+				tmp1 = _mm_shuffle_epi8(mm_blend_i8(data1_3, data2_3, VEC_BLEND_MASK), POSTSHUFFLE_MASK1);
+				data1_3 = _mm_aesdeclast_si128(tmp1, key1);
+				data2_3 = _mm_aesdeclast_si128(tmp2, key2);
+
+				_mm_store_si128(&((__m128i*)buf)[0], data1_0);
+				_mm_store_si128(&((__m128i*)buf)[1], data2_0);
+				_mm_store_si128(&((__m128i*)buf)[2], data1_1);
+				_mm_store_si128(&((__m128i*)buf)[3], data2_1);
+				_mm_store_si128(&((__m128i*)buf)[4], data1_2);
+				_mm_store_si128(&((__m128i*)buf)[5], data2_2);
+				_mm_store_si128(&((__m128i*)buf)[6], data1_3);
+				_mm_store_si128(&((__m128i*)buf)[7], data2_3);
+				memcpy(out, buf, 192 / 8);
+				memcpy(out + 24, buf + 32, 192 / 8);
+				memcpy(out + 24 * 2, buf + 32 * 2, 192 / 8);
+				memcpy(out + 24 * 3, buf + 32 * 3, 192 / 8);
+
+				in += 24 * 4;
+				out += 24 * 4;
+			}
+			n -= x8 * 4;
+			zero_memory(buf, sizeof(buf));
+
+			for (size_t i = 0; i < n; i++)
+			{
+				rijndael192_decrypt_block(in, out, r, rk);
+				in += 24;
+				out += 24;
+			}
+		}
+
 		void rijndael192_128_impl_aesni::encrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael192_encrypt_block(in, out, 12, rk);
@@ -1608,6 +2709,16 @@ namespace cppcrypto
 		void rijndael192_128_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael192_decrypt_block(in, out, 12, rk);
+		}
+
+		void rijndael192_128_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael192_encrypt_blocks(in, out, 12, rk, n);
+		}
+
+		void rijndael192_128_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael192_decrypt_blocks(in, out, 12, rk, n);
 		}
 
 		bool rijndael192_192_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
@@ -1681,6 +2792,16 @@ namespace cppcrypto
 			return rijndael192_decrypt_block(in, out, 14, rk);
 		}
 
+		void rijndael192_256_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael192_encrypt_blocks(in, out, 14, rk, n);
+		}
+
+		void rijndael192_256_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael192_decrypt_blocks(in, out, 14, rk, n);
+		}
+
 		bool rijndael192_256_impl_aesni::init(const unsigned char* key, block_cipher::direction direction)
 		{
 			__m128i temp1 = _mm_loadu_si128((__m128i*) key);
@@ -1745,6 +2866,16 @@ namespace cppcrypto
 		void rijndael192_224_impl_aesni::decrypt_block(const unsigned char* in, unsigned char* out)
 		{
 			return rijndael192_decrypt_block(in, out, 13, rk);
+		}
+
+		void rijndael192_224_impl_aesni::encrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael192_encrypt_blocks(in, out, 13, rk, n);
+		}
+
+		void rijndael192_224_impl_aesni::decrypt_blocks(const unsigned char* in, unsigned char* out, size_t n)
+		{
+			return rijndael192_decrypt_blocks(in, out, 13, rk, n);
 		}
 
 	}

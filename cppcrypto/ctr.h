@@ -21,15 +21,19 @@ namespace cppcrypto
 		ctr(const block_cipher& cipher);
 		virtual ~ctr();
 
-		void clear();
+		void clear() override;
 
-		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen);
-		void encrypt(const unsigned char* in, size_t len, unsigned char* out);
-		void decrypt(const unsigned char* in, size_t len, unsigned char* out);
+		void init(const unsigned char* key, size_t keylen, const unsigned char* iv, size_t ivlen) override;
+		void encrypt(const unsigned char* in, size_t len, unsigned char* out) override;
+		void decrypt(const unsigned char* in, size_t len, unsigned char* out) override;
 
-		size_t keysize() const { return cipher_->keysize(); }
-		size_t ivsize() const { return cipher_->blocksize(); }
-		stream_cipher* clone() const { return new ctr(*cipher_); }
+		size_t keysize() const override { return cipher_->keysize(); }
+		size_t ivsize() const override { return cipher_->blocksize(); }
+		stream_cipher* clone() const override { return new ctr(*cipher_); }
+
+	protected:
+		virtual size_t max_nonce_bytes_for_aead() const override { return ivsize() / 8 - 4; }
+
 	private:
 		ctr(const ctr&) = delete;
 		void operator=(const ctr&) = delete;

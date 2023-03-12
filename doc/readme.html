@@ -71,6 +71,13 @@ span.toc {
    margin-right: 20px;
    white-space: nowrap;
 }
+pre { white-space: pre-wrap; font-family: monospace; color: #000000; background-color: #ffffff; }
+body { color: #000000; background-color: #ffffff; }
+* { font-size: 1em; }
+.Statement { color: #af5f00; }
+.Constant { color: #c00000; }
+.Comment { color: #0000c0; }
+.Type { color: #008000; }
 </style>
 </head>
 <body>
@@ -83,15 +90,17 @@ span.toc {
 <span class="toc"><a href="#chem">5. Block cipher encryption modes</a></span>
 <span class="toc"><a href="#chsc">6. Stream cipher algorithms</a></span>
 <span class="toc"><a href="#chkdf">7. Key derivation functions</a></span>
-<span class="toc"><a href="#chdu">8. Digest utility</a></span>
-<span class="toc"><a href="#chcryptor">9. Cryptor utility</a></span>
-<span class="toc"><a href="#chpn">10. Portability notes</a></span>
-<span class="toc"><a href="#chdl">11. Download link</a></span>
+<span class="toc"><a href="#chaead">8. AEAD</a></span>
+<span class="toc"><a href="#chsaead">9. Streaming AEAD</a></span>
+<span class="toc"><a href="#chdu">10. Digest utility</a></span>
+<span class="toc"><a href="#chcryptor">11. Cryptor utility</a></span>
+<span class="toc"><a href="#chpn">12. Portability notes</a></span>
+<span class="toc"><a href="#chdl">13. Download link</a></span>
 </p>
 <h2 id="chintro">1. Introduction</h2>
 <p>cppcrypto is a small cross-platform BSD-licensed C++ library providing some cryptographic primitives. It has no external dependencies.</p>
 <p>The library thrives to be as fast as possible. CPU type is detected at runtime and the fastest implementation is selected dynamically.</p>
-<p><b>Supported compilers:</b> Visual C++ 2013 or later on Windows; gcc 5.1.1 or later, clang 3.4.1 or later on Linux, OS X, FreeBSD; Solaris Studio 12.4 or later on Solaris.
+<p><b>Supported compilers:</b> Visual C++ 2013 or later on Windows; gcc 5.1.1 or later, clang 3.4.1 or later on Linux, OS X, FreeBSD.
 <br><b>Supported architectures:</b> x86_64 and x86.</p>
 <p><a href="https://sourceforge.net/projects/cppcrypto/files">Download cppcrypto from sourceforge</a></p>
 <p>Full list of supported cryptographic primitives is described below.
@@ -204,6 +213,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
 <td class="descr"><b><a href="https://en.wikipedia.org/wiki/Whirlpool_%28cryptography%29">Whirlpool</a></b> hash function (recommended by NESSIE)</td><td>512</td>
 </tr>
 </table>
+<p>MD5 and SHA-1 algorithms are broken and should not be used for new applications. We do not recommend using Streebog because of possible back door in the algorithm. All other supported hash functions are unbroken and safe to use.</p>
 <h3>2.3. Usage example</h3>
 <p>The following snippet calculates BLAKE-256 hash of a string using a single function call:</p>
 <pre>
@@ -223,110 +233,37 @@ then call <code>update()</code> any number of times to add the next chunk of dat
     ...
     hasher.final(hash); // Now <i>hash</i> contains the hash
 </pre>
-<h3>2.4. Hashing performance</h3>
-<p>Performance of various hash algorithms on three different test systems is provided in the table below (in megabytes per second).
-<br>Note how 64-bit builds outperform 32-bit builds. For some algorithms 64-bit build is up to 5 times faster than 32-bit build on the same PC.
-<br>It's also an interesting comparison between gcc 5.2.1 and clang 3.7.0 optimizers. Some algorithms are faster when compiled by clang, while others are faster when compiled by gcc.
-</p>
-<table>
-<tr><th colspan="11" class="thh left top right bottom">Performance in megabytes per second (MB/s), higher number means faster<br><i>(measured by calculating a hash of a 130Kb file 100,000 times)</i></th></tr>
-<tr>
-<th class="left right" rowspan="2">Algorithm</th><th colspan="6" class="right">PC: Intel Xeon E5-1650 v3<br>(Haswell-EP)</th><th colspan="2" class="right">PC: Intel Core i7 930<br>(Nehalem)</th><th colspan="2" class="right">PC: Intel Core i3-3217U<br>(Ivy Bridge w/o AESNI)</th>
-</tr>
-<tr>
-<th colspan="2" class="right">OS: Win7 x64<br>Compiler: VC++2015</th><th colspan="2" class="right">OS: openSUSE (in VM)<br>Compiler: gcc 5.2.1</th><th colspan="2" class="right">OS: openSUSE (in VM)<br>Compiler: clang 3.7.0</th><th colspan="2" class="right">OS: Win7 x64<br>Compiler: VC++2015</th><th colspan="2" class="right">OS: Win7 x64<br>Compiler: VC++2015</th>
-</tr>
-<tr>
-</tr>
-<tr><th class="thsa">128-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-<tr><td class="algorithm">BLAKE2b/128</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
-<tr><td class="algorithm">BLAKE2s/128</td><td>554</td><td class="right">539</td><td>549</td><td class="right">542</td><td>554</td><td class="right">547</td><td>360</td><td class="right">205</td><td>274</td><td class="right">271</td></tr>
-<tr><td class="algorithm">MD5</td><td>528</td><td class="right">509</td><td>634</td><td class="right">627</td><td>472</td><td class="right">472</td><td>382</td><td class="right">352</td><td>262</td><td class="right">252</td></tr>
-<tr><td class="algorithm">Skein-256/128</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-512/128</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td>340</td><td class="right">181</td><td>231</td><td class="right">112</td></tr>
-<tr><th class="thsa">160-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-<tr><td class="algorithm">BLAKE2b/160</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
-<tr><td class="algorithm">BLAKE2s/160</td><td>554</td><td class="right">539</td><td>549</td><td class="right">542</td><td>554</td><td class="right">547</td><td>360</td><td class="right">205</td><td>274</td><td class="right">271</td></tr>
-<tr><td class="algorithm">Skein-256/160</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-512/160</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td>340</td><td class="right">181</td><td>231</td><td class="right">112</td></tr>
-<tr><td class="algorithm">SHA-1</td><td>789</td><td class="right">522</td><td>784</td><td class="right">512</td><td>784</td><td class="right">508</td><td>480</td><td class="right">392</td><td>361</td><td class="right">247</td></tr>
-<tr><th class="thsa">224-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-<tr><td class="algorithm">BLAKE-224</td><td>423</td><td class="best right">417</td><td>421</td><td class="right">392</td><td>427</td><td class="right">404</td><td>271</td><td class="right">151</td><td>208</td><td class="best right">204</td></tr>
-<tr><td class="algorithm">BLAKE2b/224</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
-<tr><td class="algorithm">BLAKE2s/224</td><td>554</td><td class="right">539</td><td>549</td><td class="right">542</td><td>554</td><td class="right">547</td><td>360</td><td class="right">205</td><td>274</td><td class="right">271</td></tr>
-<tr><td class="algorithm">Groestl-224</td><td>326</td><td class="right">270</td><td>279</td><td class="right">227</td><td>322</td><td class="right">229</td><td>112</td><td class="right">99</td><td>73</td><td class="right">71</td></tr>
-<tr><td class="algorithm">JH-224</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
-<tr><td class="algorithm">SHA-224</td><td>398</td><td class="right">293</td><td>382</td><td class="right">282</td><td>382</td><td class="right">282</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
-<tr><td class="algorithm">SHA-512/224</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-224</td><td>358</td><td class="right">322</td><td>358</td><td class="right">301</td><td>360</td><td class="right">293</td><td>174</td><td class="right">143</td><td>122</td><td class="right">109</td></tr>
-<tr><td class="algorithm">Skein-256/224</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-512/224</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
-
-<tr><th class="thsa">256-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-<tr><td class="algorithm">BLAKE-256</td><td>423</td><td class="best right">417</td><td>421</td><td class="right">392</td><td>427</td><td class="right">404</td><td>271</td><td class="right">151</td><td>208</td><td class="best right">204</td></tr>
-<tr><td class="algorithm">BLAKE2b/256</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
-<tr><td class="algorithm">BLAKE2s/256</td><td>554</td><td class="right">539</td><td>549</td><td class="right">542</td><td>554</td><td class="right">547</td><td>360</td><td class="right">205</td><td>274</td><td class="right">271</td></tr>
-<tr><td class="algorithm">Groestl-256</td><td>326</td><td class="right">270</td><td>279</td><td class="right">227</td><td>322</td><td class="right">229</td><td>112</td><td class="right">99</td><td>73</td><td class="right">71</td></tr>
-<tr><td class="algorithm">JH-256</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
-<tr><td class="algorithm">Kupyna-256</td><td>127</td><td class="right">54</td><td>111</td><td class="right">54</td><td>113</td><td class="right">79</td><td>77</td><td class="right">28</td><td>53</td><td class="right">25</td></tr>
-<tr><td class="algorithm">SHA-256</td><td>398</td><td class="right">293</td><td>382</td><td class="right">282</td><td>382</td><td class="right">282</td><td>202</td><td class="right">162</td><td>149</td><td class="right">127</td></tr>
-<tr><td class="algorithm">SHA-512/256</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-256</td><td>338</td><td class="right">304</td><td>340</td><td class="right">275</td><td>339</td><td class="right">276</td><td>164</td><td class="right">133</td><td>114</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-256/256</td><td>383</td><td class="right">210</td><td>400</td><td class="right">186</td><td>396</td><td class="right">125</td><td>261</td><td class="right">164</td><td>175</td><td class="right">103</td></tr>
-<tr><td class="algorithm">Skein-512/256</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="best right">181</td><td class="best">231</td><td class="right">112</td></tr>
-<tr><td class="algorithm">Skein-1024/256</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
-<tr><td class="algorithm">SM3</td><td>186</td><td class="right">140</td><td>166</td><td class="right">143</td><td>170</td><td class="right">148</td><td>117</td><td class="right">101</td><td>81</td><td class="right">70</td></tr>
-<tr><td class="algorithm">Streebog-256</td><td>112</td><td class="right">64</td><td>116</td><td class="right">64</td><td>113</td><td class="right">68</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
-
-<tr><th class="thsa">384-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-
-<tr><td class="algorithm">BLAKE-384</td><td>471</td><td class="best right">411</td><td>477</td><td class="right">421</td><td>540</td><td class="right">437</td><td class="best">340</td><td class="best right">217</td><td>227</td><td class="best right">202</td></tr>
-<tr><td class="algorithm">BLAKE2b/384</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
-<tr><td class="algorithm">Groestl-384</td><td>246</td><td class="right">197</td><td>220</td><td class="right">181</td><td>234</td><td class="right">182</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
-<tr><td class="algorithm">JH-384</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
-<tr><td class="algorithm">SHA-384</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-384</td><td>260</td><td class="right">233</td><td>260</td><td class="right">203</td><td>258</td><td class="right">211</td><td>126</td><td class="right">103</td><td>89</td><td class="right">79</td></tr>
-<tr><td class="algorithm">Skein-512/384</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
-<tr><td class="algorithm">Skein-1024/384</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
-
-<tr><th class="thsa">512-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-<tr><td class="algorithm">BLAKE-512</td><td>471</td><td class="best right">411</td><td>477</td><td class="right">421</td><td>540</td><td class="right">437</td><td class="best">340</td><td class="best right">217</td><td>227</td><td class="best right">202</td></tr>
-<tr><td class="algorithm">BLAKE2b/512</td><td>661</td><td class="right">543</td><td>651</td><td class="right">552</td><td>704</td><td class="right">605</td><td>490</td><td class="right">335</td><td>326</td><td class="right">262</td></tr>
-<tr><td class="algorithm">Groestl-512</td><td>246</td><td class="right">197</td><td>220</td><td class="right">181</td><td>234</td><td class="right">182</td><td>83</td><td class="right">73</td><td>54</td><td class="right">52</td></tr>
-<tr><td class="algorithm">JH-512</td><td>206</td><td class="right">146</td><td>198</td><td class="right">156</td><td>205</td><td class="right">138</td><td>132</td><td class="right">91</td><td>95</td><td class="right">71</td></tr>
-<tr><td class="algorithm">Kupyna-512</td><td>81</td><td class="right">43</td><td>84</td><td class="right">41</td><td>88</td><td class="right">59</td><td>49</td><td class="right">22</td><td>23</td><td class="right">20</td></tr>
-<tr><td class="algorithm">SHA-512</td><td class="best">552</td><td class="right">211</td><td>534</td><td class="right">203</td><td>532</td><td class="right">203</td><td>298</td><td class="right">155</td><td>214</td><td class="right">97</td></tr>
-<tr><td class="algorithm">SHA3-512</td><td>180</td><td class="right">162</td><td>180</td><td class="right">148</td><td>181</td><td class="right">147</td><td>81</td><td class="right">72</td><td>61</td><td class="right">49</td></tr>
-<tr><td class="algorithm">Skein-512/512</td><td>517</td><td class="right">234</td><td>570</td><td class="right">253</td><td>585</td><td class="right">118</td><td class="best">340</td><td class="right">181</td><td class="best">231</td><td class="right">112</td></tr>
-<tr><td class="algorithm">Skein-1024/512</td><td>406</td><td class="right">106</td><td>481</td><td class="right">93</td><td>479</td><td class="right">108</td><td>217</td><td class="right">63</td><td>144</td><td class="right">38</td></tr>
-<tr><td class="algorithm">Streebog-512</td><td>112</td><td class="right">64</td><td>116</td><td class="right">64</td><td>113</td><td class="right">68</td><td>69</td><td class="right">42</td><td>50</td><td class="right">32</td></tr>
-<tr><td class="algorithm">Whirlpool</td><td>150</td><td class="right">125</td><td>147</td><td class="right">122</td><td>162</td><td class="right">122</td><td>80</td><td class="right">89</td><td>61</td><td class="right">58</td></tr>
-
-<tr><th class="thsa">1024-bit digest</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th><th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-<tr><td class="algorithm bottom">Skein-1024/1024</td><td class="bottom">406</td><td class="bottom right">106</td><td class="bottom">481</td><td class="right bottom">93</td><td class="bottom">479</td><td class="right bottom">108</td><td class="bottom">217</td><td class="bottom right">63</td><td class="bottom">144</td><td class="bottom right">38</td></tr>
-
-</table>
-<p>You can run the hashing performance test on your own PC using the following command:</p>
-<pre>    digest test &lt;number_of_iterations&gt; &lt;filename_to_hash&gt;</pre>
 <h2 id="chmac">3. MAC algorithms</h2>
-<h3>3.1 HMAC</h3>
-<p>Class <code>hmac</code> is also derived from <code>crypto_hash</code> and implements the same interface. The only difference is that you need to pass a reference to a hash algorithm and a key in the constructor.
+<h3>3.1. Interface description</h3>
+<p>Class <code>crypto_mac</code> is similar to <code>crypto_hash</code>. The only difference is that you need to pass a key to the <code>init</code> method.
+<p>All MAC algorithms derive from <code>crypto_mac</code> class and implement its interface.</p>
 <pre>
-    hmac(const crypto_hash& hash, const unsigned char* key, size_t keylen);
+    class crypto_mac
+    {
+    public:
+        virtual void init(const unsigned char* key, size_t keylen) = 0;
+        virtual void update(const unsigned char* data, size_t len) = 0;
+        virtual void final(unsigned char* hash) = 0;
+
+        virtual size_t keysize() const = 0;
+        virtual size_t hashsize() const = 0;
+        virtual size_t blocksize() const = 0;
+
+        // Convenience functions
+        void mac_string(const unsigned char* key, size_t key_len, const unsigned char* data, size_t len, unsigned char* hash);
+        void mac_string(const char* key, size_t key_len, const unsigned char* data, size_t len, unsigned char* hash);
+        void mac_string(const char* key, size_t key_len, const char* data, size_t len, unsigned char* hash);
+        void mac_string(const std::string& key, const std::string& data, unsigned char* hash);
+    };
+</pre>
+<p>If you have a short message, you can calculate the MAC using a single <code>mac_string()</code> call.
+Otherwise, call <code>init()</code> to start hashing,
+then call <code>update()</code> any number of times to add the next chunk of data, and finally call <code>final()</code> to get the MAC.
+<br>The <code>hash</code> parameter should point to a buffer large enough to accept the MAC of correspondent size (length in bytes is <code>hashsize()/8</code>).</p>
+<h3>3.2 HMAC</h3>
+<p>Class <code>hmac</code> is derived from <code>crypto_mac</code>. To specify the underlying hash function, you need to pass a reference to the hash algorithm in the constructor.
+<pre>
+    hmac(const crypto_hash& hash);
 </pre>
 <p>The key can be of any length and you can use any of the supported hash algorithms to calculate HMAC. The following sample calculates HMAC-SHA-256 of a string &quot;The quick brown fox jumps over the lazy dog&quot; with key &quot;key&quot;:</p>
 <pre>
@@ -334,22 +271,18 @@ then call <code>update()</code> any number of times to add the next chunk of dat
     hmackey[0] = 'k';
     hmackey[1] = 'e';
     hmackey[2] = 'y';
-    hmac mac(sha256(), hmackey, sizeof(hmackey));
+    hmac mac(sha256());
     unsigned char result[32];
-    mac.hash_string("The quick brown fox jumps over the lazy dog", result);
+    mac.hash_string(hmackey, sizeof(hmackey), "The quick brown fox jumps over the lazy dog", result);
 </pre>
-<h3>3.2 Poly1305</h3>
-<p>Class <code>poly1305</code> is also derived from <code>crypto_hash</code> and implements the same interface. The only difference is that you need to pass a key in the constructor.
-<pre>
-    poly1305(const unsigned char* key, size_t keylen);
-</pre>
+<h3>3.3 Poly1305</h3>
+<p>Class <code>poly1305</code> is also derived from <code>crypto_mac</code> and implements its interface.
 <p>The key <b><i>must</i></b> have length 32 bytes (256 bits). The following sample calculates Poly1305 of a string &quot;The quick brown fox jumps over the lazy dog&quot; with key &quot;\x00\x01\x02...\x31&quot;:</p>
 <pre>
     unsigned char key[32];
     std::iota(key, key + 32, 0);
-    poly1305 poly(key, sizeof(key));
     unsigned char result[16];
-    poly.hash_string("The quick brown fox jumps over the lazy dog", result);
+    poly.hash_string(key, sizeof(key), "The quick brown fox jumps over the lazy dog", result);
 </pre>
 <h2 id="chbc">4. Block cipher algorithms</h2>
 <h3>4.1. Interface description</h3>
@@ -369,7 +302,7 @@ then call <code>update()</code> any number of times to add the next chunk of dat
     };
 </pre>
 <p>A low-level interface to the block cipher. To start encryption or decryption, call <code>init()</code> (<code>key</code> should point to a key of <code>keysize()/8</code> bytes), then call <code>encrypt_block()</code> or <code>decrypt_block()</code> to encrypt or decrypt a single block of <code>blocksize()/8</code> bytes.<br>
-In practice in most cases you probably want to use block ciphers in an encryption mode via <code>cbc</code> or <code>ctr</code> class described below.</p>
+In practice in most cases you probably want to use block ciphers in an encryption mode via <code>cbc</code> or <code>ctr</code> class described below, or in AEAD mode described in a separate section.</p>
 </html>
 <h3>4.2. Supported algorithms</h3>
 <p>Classes derived from <code>block_cipher</code>:</p>
@@ -437,7 +370,9 @@ In practice in most cases you probably want to use block ciphers in an encryptio
 <td class="descr"><b><a href="https://en.wikipedia.org/wiki/Twofish">Twofish</a></b> cipher (one of AES finalists)</td><td>128</td><td>128 / 192 / 256</td>
 </tr>
 </table>
+<p>All supported ciphers are unbroken and safe to use, although we do not recommend using Kuznyechik because of possible back door.</p>
 <h2 id="chem">5. Block cipher encryption modes</h2>
+<p>Authenticated encryption modes are described later in a separate section.</p>
 <h3>5.1. CBC mode</h3>
 <p>Class <code>cbc</code> implements the following interface:</p>
 <pre>
@@ -481,103 +416,6 @@ In practice in most cases you probably want to use block ciphers in an encryptio
 <p>CTR mode turns block cipher into a stream cipher, so no padding is needed in this mode and the size of the output buffer must be the same as the size of the input data.
 The length of the key in bytes should be equal to <code>keysize()/8</code> of the block cipher, and the length of the initialization vector (<code>iv</code>) in bytes should be equal to or smaller than <code>blocksize()/8</code> of the block cipher.
 Since all output is produced immediately, no finalization function is needed in this mode.</p>
-<h3>5.3. Encryption performance</h3>
-<table>
-<tr><th colspan="7" class="thh left top right">
-Performance in megabytes per second (MB/s), higher number means faster<br><i>(measured by encrypting a 130Kb file in CBC mode 100,000 times)</i>
-</th></tr>
-<tr>
-<th rowspan="3" class="left right top bottom">Algorithm</th><th colspan="6" class="left right top">PC: Intel Xeon E5-1650 v3</th>
-</tr>
-<tr>
-<th colspan="2" class="left right">OS: Win7 x64<br>Compiler: VC++2015</th>
-<th colspan="2" class="left right">OS: openSUSE (in VM)<br>Compiler: gcc 5.2.1</th>
-<th colspan="2" class="left right">OS: openSUSE (in VM)<br>Compiler: clang 3.7.0</th>
-</tr>
-<tr>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-<tr><td class="algorithm">Anubis-128</td><td class="top">225</td><td class="right top">138</td><td class="top">208</td><td class="right top">178</td><td class="top">198</td><td class="right top">169</td>
-<tr><td class="algorithm">Anubis-160</td><td>206</td><td class="right">128</td><td>195</td><td class="right">167</td><td>186</td><td class="right">156</td>
-<tr><td class="algorithm">Anubis-192</td><td>198</td><td class="right">119</td><td>196</td><td class="right">157</td><td>172</td><td class="right">145</td>
-<tr><td class="algorithm">Anubis-224</td><td>186</td><td class="right">112</td><td>186</td><td class="right">147</td><td>162</td><td class="right">137</td>
-<tr><td class="algorithm">Anubis-256</td><td>176</td><td class="right">105</td><td>175</td><td class="right">138</td><td>152</td><td class="right">128</td>
-<tr><td class="algorithm">Anubis-288</td><td>163</td><td class="right">100</td><td>166</td><td class="right">130</td><td>146</td><td class="right">121</td>
-<tr><td class="algorithm">Anubis-320</td><td>157</td><td class="right">94</td><td>158</td><td class="right">124</td><td>136</td><td class="right">115</td>
-<tr><td class="algorithm top">Aria-128</td><td class="top">135</td><td class="right top">113</td><td class="top">155</td><td class="right top">154</td><td class="top">150</td><td class="right top">153</td>
-<tr><td class="algorithm">Aria-192</td><td>116</td><td class="right">98</td><td>134</td><td class="right">133</td><td>129</td><td class="right">133</td>
-<tr><td class="algorithm">Aria-256</td><td>102</td><td class="right">86</td><td>119</td><td class="right">118</td><td>114</td><td class="right">117</td>
-<tr><td class="algorithm top">Camellia-128</td><td class="top">148</td><td class="right top">94</td><td class="top">153</td><td class="right top">130</td><td class="top">143</td><td class="right top">149</td>
-<tr><td class="algorithm">Camellia-192</td><td>113</td><td class="right">71</td><td>118</td><td class="right">99</td><td>108</td><td class="right">114</td>
-<tr><td class="algorithm">Camellia-256</td><td>113</td><td class="right">71</td><td>117</td><td class="right">99</td><td>108</td><td class="right">114</td>
-<tr><td class="algorithm top">CAST6-128</td><td class="top">109</td><td class="right top">99</td><td class="top">104</td><td class="right top">101</td><td class="top">102</td><td class="right top">94</td>
-<tr><td class="algorithm">CAST6-160</td><td>109</td><td class="right">99</td><td>104</td><td class="right">101</td><td>102</td><td class="right">94</td>
-<tr><td class="algorithm">CAST6-192</td><td>109</td><td class="right">99</td><td>104</td><td class="right">101</td><td>102</td><td class="right">94</td>
-<tr><td class="algorithm">CAST6-224</td><td>109</td><td class="right">99</td><td>104</td><td class="right">101</td><td>102</td><td class="right">94</td>
-<tr><td class="algorithm bottom">CAST6-256</td><td class="bottom">109</td><td class="right bottom">99</td><td>104</td><td class="right">101</td><td>102</td><td class="right">94</td>
-<tr><td class="algorithm top">Kalyna-128/128</td><td class="top">179</td><td class="right top">112</td><td class="top">236</td><td class="right top">130</td><td class="top">206</td><td class="right top">186</td>
-<tr><td class="algorithm">Kalyna-128/256</td><td>132</td><td class="right">82</td><td>175</td><td class="right">95</td><td>148</td><td class="right">137</td>
-<tr><td class="algorithm">Kalyna-256/256</td><td>177</td><td class="right">85</td><td>206</td><td class="right">88</td><td>167</td><td class="right">113</td>
-<tr><td class="algorithm">Kalyna-256/512</td><td>140</td><td class="right">67</td><td>135</td><td class="right">69</td><td>131</td><td class="right">89</td>
-<tr><td class="algorithm">Kalyna-512/512</td><td>155</td><td class="right">66</td><td>124</td><td class="right">71</td><td>119</td><td class="right">83</td>
-<tr><td class="algorithm top">Kuznyechik</td><td class="top">109</td><td class="right top">60</td><td class="top">113</td><td class="right top">68</td><td class="top">112</td><td class="right top">70</td>
-<tr><td class="algorithm top">Mars-128</td><td class="top">159</td><td class="right top">136</td><td class="top">154</td><td class="right top">154</td><td class="top">138</td><td class="right top">140</td>
-<tr><td class="algorithm">Mars-160</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-192</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-224</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-256</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-288</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-320</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-352</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-384</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-416</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm">Mars-448</td><td>159</td><td class="right">136</td><td>154</td><td class="right">154</td><td>138</td><td class="right">140</td>
-<tr><td class="algorithm top">Rijndael-128/128</td><td class="top">657</td><td class="right top">656</td><td class="top">633</td><td class="right top">632</td><td class="top">633</td><td class="right top">629</td>
-<tr><td class="algorithm">Rijndael-128/160</td><td>607</td><td class="right">607</td><td>589</td><td class="right">578</td><td>588</td><td class="right">579</td>
-<tr><td class="algorithm">Rijndael-128/192</td><td>564</td><td class="right">566</td><td>541</td><td class="right">544</td><td>545</td><td class="right">537</td>
-<tr><td class="algorithm">Rijndael-128/224</td><td>525</td><td class="right">527</td><td>505</td><td class="right">506</td><td>505</td><td class="right">502</td>
-<tr><td class="algorithm">Rijndael-128/256</td><td>493</td><td class="right">490</td><td>472</td><td class="right">474</td><td>476</td><td class="right">471</td>
-<tr><td class="algorithm top">Rijndael-160/128</td><td class="top">339</td><td class="right top">253</td><td class="top">315</td><td class="right top">290</td><td class="top">331</td><td class="right top">322</td>
-<tr><td class="algorithm">Rijndael-160/160</td><td>339</td><td class="right">254</td><td>315</td><td class="right">290</td><td>331</td><td class="right">322</td>
-<tr><td class="algorithm">Rijndael-160/192</td><td>318</td><td class="right">238</td><td>293</td><td class="right">272</td><td>310</td><td class="right">302</td>
-<tr><td class="algorithm">Rijndael-160/224</td><td>299</td><td class="right">223</td><td>276</td><td class="right">258</td><td>292</td><td class="right">286</td>
-<tr><td class="algorithm">Rijndael-160/256</td><td>282</td><td class="right">211</td><td>263</td><td class="right">245</td><td>275</td><td class="right">267</td>
-<tr><td class="algorithm top">Rijndael-192/128</td><td class="top">425</td><td class="right top">373</td><td class="top">361</td><td class="right top">327</td><td class="top">459</td><td class="right top">452</td>
-<tr><td class="algorithm">Rijndael-192/160</td><td>425</td><td class="right">373</td><td>355</td><td class="right">330</td><td>456</td><td class="right">457</td>
-<tr><td class="algorithm">Rijndael-192/192</td><td>425</td><td class="right">373</td><td>357</td><td class="right">327</td><td>457</td><td class="right">456</td>
-<tr><td class="algorithm">Rijndael-192/224</td><td>399</td><td class="right">352</td><td>333</td><td class="right">309</td><td>429</td><td class="right">426</td>
-<tr><td class="algorithm">Rijndael-192/256</td><td>378</td><td class="right">334</td><td>320</td><td class="right">295</td><td>402</td><td class="right">398</td>
-<tr><td class="algorithm top">Rijndael-224/128</td><td class="top">370</td><td class="right top">287</td><td class="top">332</td><td class="right top">306</td><td class="top">355</td><td class="right top">346</td>
-<tr><td class="algorithm">Rijndael-224/160</td><td>370</td><td class="right">287</td><td>332</td><td class="right">306</td><td>355</td><td class="right">346</td>
-<tr><td class="algorithm">Rijndael-224/192</td><td>370</td><td class="right">287</td><td>332</td><td class="right">306</td><td>355</td><td class="right">346</td>
-<tr><td class="algorithm">Rijndael-224/224</td><td>370</td><td class="right">287</td><td>334</td><td class="right">306</td><td>355</td><td class="right">346</td>
-<tr><td class="algorithm">Rijndael-224/256</td><td>349</td><td class="right">268</td><td>314</td><td class="right">290</td><td>334</td><td class="right">329</td>
-<tr><td class="algorithm top">Rijndael-256/128</td><td class="top">528</td><td class="right top">527</td><td class="top">501</td><td class="right top">501</td><td class="top">501</td><td class="right top">499</td>
-<tr><td class="algorithm">Rijndael-256/160</td><td>528</td><td class="right">527</td><td>501</td><td class="right">501</td><td>501</td><td class="right">499</td>
-<tr><td class="algorithm">Rijndael-256/192</td><td>528</td><td class="right">527</td><td>501</td><td class="right">501</td><td>501</td><td class="right">499</td>
-<tr><td class="algorithm">Rijndael-256/224</td><td>528</td><td class="right">527</td><td>501</td><td class="right">501</td><td>501</td><td class="right">499</td>
-<tr><td class="algorithm">Rijndael-256/256</td><td>528</td><td class="right">527</td><td>501</td><td class="right">501</td><td>501</td><td class="right">499</td>
-<tr><td class="algorithm top">Serpent-128</td><td class="top">84</td><td class="right top">96</td><td class="top">89</td><td class="right top">93</td><td class="top">90</td><td class="right top">93</td>
-<tr><td class="algorithm">Serpent-192</td><td>84</td><td class="right">96</td><td>89</td><td class="right">93</td><td>90</td><td class="right">93</td>
-<tr><td class="algorithm bottom">Serpent-256</td><td class="bottom">84</td><td class="right bottom">96</td><td>89</td><td class="right">93</td><td>90</td><td class="right">93</td>
-<tr><td class="algorithm top">Simon-128/128</td><td class="top">135</td><td class="right top">46</td><td class="top">136</td><td class="right top">43</td><td class="top">142</td><td class="right top">61</td>
-<tr><td class="algorithm">Simon-128/192</td><td>128</td><td class="right">53</td><td>134</td><td class="right">43</td><td>155</td><td class="right">65</td>
-<tr><td class="algorithm bottom">Simon-128/256</td><td class="bottom">128</td><td class="right bottom">44</td><td>130</td><td class="right">40</td><td>134</td><td class="right">58</td>
-<tr><td class="algorithm top">SM4</td><td class="top">77</td><td class="right top">75</td><td class="top">91</td><td class="right top">95</td><td class="top">75</td><td class="right top">80</td>
-<tr><td class="algorithm top">Speck-128/128</td><td class="top">423</td><td class="right top">199</td><td class="top">422</td><td class="right top">122</td><td class="top">427</td><td class="right top">206</td>
-<tr><td class="algorithm">Speck-128/192</td><td>416</td><td class="right">201</td><td>411</td><td class="right">120</td><td>414</td><td class="right">200</td>
-<tr><td class="algorithm bottom">Speck-128/256</td><td class="bottom">399</td><td class="right bottom">201</td><td>403</td><td class="right">115</td><td>406</td><td class="right">194</td>
-<tr><td class="algorithm top">Threefish-256/256</td><td class="top">334</td><td class="right top">115</td><td class="top">408</td><td class="right top">111</td><td class="top">396</td><td class="right top">137</td>
-<tr><td class="algorithm">Threefish-512/512</td><td>343</td><td class="right">118</td><td>620</td><td class="right">108</td><td>610</td><td class="right">129</td>
-<tr><td class="algorithm">Threefish-1024/1024</td><td>324</td><td class="right">104</td><td>359</td><td class="right">83</td><td>361</td><td class="right">100</td>
-<tr><td class="algorithm top">Twofish-128</td><td class="top">171</td><td class="right top">151</td><td class="top">171</td><td class="right top">164</td><td class="top">162</td><td class="right top">167</td>
-<tr><td class="algorithm">Twofish-192</td><td>171</td><td class="right">151</td><td>171</td><td class="right">164</td><td>162</td><td class="right">167</td>
-<tr><td class="algorithm bottom">Twofish-256</td><td class="bottom">171</td><td class="right bottom">151</td><td class="bottom">171</td><td class="right bottom">164</td><td class="bottom">162</td><td class="right bottom">167</td>
-</table>
-<p>You can run the block cipher encryption performance test on your own PC using the following command:</p>
-<pre>    digest bctest &lt;number_of_iterations&gt; &lt;filename_to_encrypt&gt;</pre>
 <h2 id="chsc">6. Stream cipher algorithms</h2>
 <h3>6.1. Interface description</h3>
 <p>All stream cipher algorithms derive from <code>stream_cipher</code> class and implement its interface.</p>
@@ -625,130 +463,474 @@ Performance in megabytes per second (MB/s), higher number means faster<br><i>(me
 </tr>
 </table>
 <p>You can also use any of the supported block ciphers like a stream cipher via <code>ctr</code> class, which implements the same <code>stream_cipher</code> interface.</p>
-<h3>6.3. Encryption performance</h3>
-<table>
-<tr><th colspan="7" class="thh left top right">
-Performance in megabytes per second (MB/s), higher number means faster<br><i>(measured by encrypting a 130Kb file 100,000 times)</i>
-</th></tr>
-<tr>
-<th rowspan="3" class="left right top bottom">Algorithm</th><th colspan="6" class="left right top">PC: Intel Xeon E5-1650 v3</th>
-</tr>
-<tr>
-<th colspan="2" class="left right">OS: Win7 x64<br>Compiler: VC++2015</th>
-<th colspan="2" class="left right">OS: openSUSE (in VM)<br>Compiler: gcc 5.2.1</th>
-<th colspan="2" class="left right">OS: openSUSE (in VM)<br>Compiler: clang 3.7.0</th>
-</tr>
-<tr>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-<th class="arch">64-bit build</th><th class="arch right">32-bit build</th>
-</tr>
-<tr><td class="algorithm top">ChaCha20-128</td><td class="top">1200</td><td class="right top">1050</td><td class="top">1286</td><td class="right top">995</td><td class="top">1340</td><td class="right top">1130</td>
-<tr><td class="algorithm">ChaCha20-256</td><td>1200</td><td class="right">1050</td><td>1286</td><td class="right">995</td><td>1340</td><td class="right">1130</td>
-<tr><td class="algorithm">ChaCha12-128</td><td>1920</td><td class="right">1595</td><td>2070</td><td class="right">1585</td><td>2140</td><td class="right">1795</td>
-<tr><td class="algorithm">ChaCha12-256</td><td>1920</td><td class="right">1595</td><td>2070</td><td class="right">1585</td><td>2140</td><td class="right">1795</td>
-<tr><td class="algorithm top">HC-128</td><td class="top">1750</td><td class="right top">1350</td><td class="top">1760</td><td class="right top">1550</td><td class="top">1810</td><td class="right top">1965</td>
-<tr><td class="algorithm">HC-256</td><td>1050</td><td class="right">825</td><td>1157</td><td class="right">965</td><td>1110</td><td class="right">1095</td>
-<tr><td class="algorithm top">Salsa20-128</td><td class="top">1150</td><td class="right top">855</td><td class="top">1100</td><td class="right top">900</td><td class="top">1170</td><td class="right top">1045</td>
-<tr><td class="algorithm">Salsa20-256</td><td>1150</td><td class="right">855</td><td>1100</td><td class="right">900</td><td>1170</td><td class="right">1045</td>
-<tr><td class="algorithm">Salsa20/12-128</td><td>1835</td><td class="right">1310</td><td>1750</td><td class="right">1410</td><td>1850</td><td class="right">1660</td>
-<tr><td class="algorithm">Salsa20/12-256</td><td>1835</td><td class="right">1310</td><td>1750</td><td class="right">1410</td><td>1850</td><td class="right">1660</td>
-<tr><td class="algorithm top">XChaCha20-128</td><td class="top">1200</td><td class="right top">1050</td><td class="top">1286</td><td class="right top">995</td><td class="top">1340</td><td class="right top">1130</td>
-<tr><td class="algorithm">XChaCha20-256</td><td>1200</td><td class="right">1050</td><td>1286</td><td class="right">995</td><td>1340</td><td class="right">1130</td>
-<tr><td class="algorithm">XChaCha12-128</td><td>1920</td><td class="right">1595</td><td>2070</td><td class="right">1585</td><td>2140</td><td class="right">1795</td>
-<tr><td class="algorithm bottom">XChaCha12-256</td><td class="bottom">1920</td><td class="right bottom">1595</td><td class="bottom">2070</td><td class="right bottom">1585</td><td class="bottom">2140</td><td class="right bottom">1795</td>
-<tr><td class="algorithm top">XSalsa20-128</td><td class="top">1150</td><td class="right top">855</td><td class="top">1100</td><td class="right top">900</td><td class="top">1170</td><td class="right top">1045</td>
-<tr><td class="algorithm">XSalsa20-256</td><td>1150</td><td class="right">855</td><td>1100</td><td class="right">900</td><td>1170</td><td class="right">1045</td>
-<tr><td class="algorithm">XSalsa20/12-128</td><td>1835</td><td class="right">1310</td><td>1750</td><td class="right">1410</td><td>1850</td><td class="right">1660</td>
-<tr><td class="algorithm bottom">XSalsa20/12-256</td><td class="bottom">1835</td><td class="right bottom">1310</td><td class="bottom">1750</td><td class="right bottom">1410</td><td class="bottom">1850</td><td class="right bottom">1660</td>
-</table>
-<p>You can run the stream cipher encryption performance test on your own PC using the following command:</p>
-<pre>    digest sctest &lt;number_of_iterations&gt; &lt;filename_to_encrypt&gt;</pre>
 <h2 id="chkdf">7. Key derivation functions</h2>
-<h3>7.1. PBKDF2</h3>
-<p>Function <a href="https://en.wikipedia.org/wiki/PBKDF2">pbkdf2</a> has the following prototype:</p>
+<p>You can use KDF functions to derive an encryption key from a password or other input key material (depending on the function).</p>
+<h3>7.1. Interface description</h3>
+<p>All KDF algorithms derive from <code>crypto_kdf</code> class and implement its interface.</p>
 <pre>
-    void pbkdf2(hmac& hmac, const unsigned char* salt, size_t salt_len, int iterations, unsigned char* dk, size_t dklen);
+    class crypto_kdf
+    {
+    public:
+	virtual void derive_key(const unsigned char* ikm, size_t ikm_len, const unsigned char* random_data, size_t random_data_len, unsigned char* dk, size_t dklen) = 0;
+
+	void gen_random_data_and_derive_key(const unsigned char* ikm, size_t ikm_len, size_t random_data_len, unsigned char* random_data, unsigned char* dk, size_t dklen);
+    };
 </pre>
-<p>You can use this function to derive an encryption key from a password. The password should be passed to the constructor of <code>hmac</code> object as the key.</p>
+<p>Method <code>gen_random_data_and_derive_key</code> will generate random salt of length <code>random_data_len</code> and write it to <code>random_data</code>.
+It will then derive a key of length <code>dklen</code> from the input key material <code>ikm</code> and write it to <code>dk</code>.</p>
+<p>Method <code>derive_key</code> does the same, except that it derives a key using random salt passed as a parameter instead of generating random salt internally.</p>
+<h3>7.2. PBKDF2</h3>
+<p><a href="https://en.wikipedia.org/wiki/PBKDF2">PBKDF2</a> is an old password-based key derivation function. Use it only if you need one for compatibility, otherwise prefer <code>scrypt</code> or <code>argon2</code>.</p>
 <p>The following snippet generates a 256-bit key from password "password" and salt "salt" using PBKDF2 algorithm with 100000 iterations of HMAC-SHA256:</p>
 <pre>
-    hmac hmac(sha256(), "password");
     unsigned char key[256 / 8];
-    pbkdf2(hmac, (const unsigned char*)"salt", 4, 100000, key, sizeof(key));
+    pbkdf2(sha256(), 100000).derive_key((const unsigned char*)"password", 8, (const unsigned char*)"salt", 4, key, sizeof(key));
 </pre>
-<h3>7.2. scrypt</h3>
+<h3>7.3. scrypt</h3>
 <p>Function <a href="https://en.wikipedia.org/wiki/Scrypt">scrypt</a> has the following prototype:</p>
 <pre>
-<i>    /*
-    scrypt key derivation function.
+    class scrypt : public crypto_kdf
+    {
+    public:
+        <i>/*
+           Scrypt key derivation function.
+           Parameters:
+           hash    Hash to use for HMAC (e.g. SHA-256).
+           N       CPU/Memory cost parameter, must be larger than 1, a power of 2 and less than 2^(16*r).
+           r       Block size factor parameter.
+           p       Parallelization parameter, a positive integer less than (2^30)/r.
+        */</i>
+        scrypt(const crypto_hash& hash, size_t N, size_t r, size_t p);
 
-    Input:
-    hmac    HMAC to use (e.g. HMAC-SHA-256). The password shall be passed to the constructor of hmac object.
-    salt    Salt.
-    N       CPU/Memory cost parameter, must be larger than 1, a power of 2 and less than 2<sup>16*r</sup>.
-    r       Block size factor parameter.
-    p       Parallelization parameter, a positive integer less than 2<sup>30</sup>/r.
-    dklen   Intended output length of the derived key; a positive integer less than or equal to (2<sup>32</sup> - 1) * 32.
+        <i>// Change CPU/Memory cost parameter, must be larger than 1, a power of 2 and less than 2^(16*r)</i>
+        void set_N(size_t N);
 
-    Output:
-    dk      Derived key, of length dklen bytes.
-    */</i>
+        <i>// Change Block size factor parameter.</i>
+        void set_r(size_t r);
 
-    void scrypt(hmac& hmac, const unsigned char* salt, size_t salt_len, size_t N, size_t r, size_t p, unsigned char* dk, size_t dklen);
+        // Change Parallelization parameter, a positive integer less than (2^30)/r.
+        void set_p(size_t p);
+
+        /*
+           Derive a key from a password.
+
+           Input:
+           password Passphrase.
+           salt     Salt.
+           dklen    Intended output length of the derived key, given in bytes.
+
+           Output:
+           dk       Derived key, of length dklen bytes.
+	*/
+        void derive_key(const unsigned char* password, size_t password_len, const unsigned char* salt, size_t salt_len, unsigned char* dk, size_t dklen) const override;
+	};
 </pre>
-<p>You can use this function to derive an encryption key from a password. The password should be passed to the constructor of <code>hmac</code> object as the key.</p>
+<p>You can use this function to derive an encryption key from a password.</p>
 <p>The following snippet generates a 256-bit key from password "password" and salt "salt" using scrypt with N=16384, r=8 and p=16 (which takes 0.10 seconds on Intel Xeon E5-1650 v3):</p>
 <pre>
-    hmac hmac(sha256(), "password");
     unsigned char key[256 / 8];
-    scrypt(hmac, (const unsigned char*)"salt", 4, 16384, 8, 16, key, sizeof(key));
+    scrypt(sha256(), 16384, 8, 16).derive_key((const unsigned char*)"password", 8, (const unsigned char*)"salt", 4, key, sizeof(key));
 </pre>
-<h3>7.3. Argon2</h3>
+<h3>7.4. Argon2</h3>
 <p><a href="https://en.wikipedia.org/wiki/Argon2">Argon2</a> is a winner of Password Hashing Competition and is the recommended function for hashing passwords.</p>
-<p>There are three versions of Argon2 function: <code>argon2i</code>, <code>argon2d</code> and <code>argon2id</code>. Argon2i is the safest against side-channel attacks, while Argon2d provides the highest resistance against GPU cracking attacks.</p>
-<pre><i>    /*
-    Argon2 key derivation function.
+<p>There are three versions of Argon2 function: <code>argon2i</code>, <code>argon2d</code> and <code>argon2id</code>. Argon2i is the safest against side-channel attacks, while Argon2d provides the highest resistance against GPU cracking attacks.
+If side-channel attachs are a concern, use Argon2i, otherwise, use Argon2d. If in doubt, use Argon2id.</p>
+<pre>
+    class argon2 : public crypto_kdf
+    {
+    public:
+        enum class type
+        {
+            argon2d = 0,
+            argon2i = 1,
+            argon2id = 2
+        };
 
-    Input:
-    password Passphrase.
-    salt     Salt.
-    p        A parallelism degree, which defines the number of parallel threads.
-    m        A memory cost, which defines the memory usage, given in kibibytes.
-    t        A time cost, which defines the amount of computation realized and therefore the execution time, given in number of iterations.
-    dklen    Intended output length of the derived key, given in bytes.
+        </i>/*
+           Argon2 key derivation function.
+           Parameters:
+           type     Argon2 variant (argon2i, argon2d or argon2id).
+           p        A parallelism degree, which defines the number of parallel threads.
+           m        A memory cost, which defines the memory usage, given in kibibytes.
+           t        A time cost, which defines the amount of computation realized and therefore the execution time, given in number of iterations.
+        */</i>
+        argon2(type type, uint32_t parallelism_degree = 4, uint32_t memory_cost = 4096, uint32_t time_cost = 1000);
 
-    Optional input:
-    data     Associated data which will affect the derived key.
-    secret   Secret value which will affect the derived key.
-    version  Version of the algorithm (argon2_version::version12 is supported for compatibility, for new development use the latest argon2_version::version13).
+        </i>// Change parallelism parameter (number of parallel threads).</i>
+        void set_parallelism_degree(uint32_t parallelism_degree);
 
-    Output:
-    dk       Derived key, of length dklen bytes.
-    */</i>
+        </i>// Change memory cost parameter (memory usage in kibibytes).</i>
+        void set_memory_cost(uint32_t memory_cost);
 
-    void argon2d(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len,
-                 uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
-                 unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0,
-                 argon2_version version = argon2_version::version13);
+        </i>// Change time cost parameter (number of iterations).</i>
+        void set_time_cost(uint32_t time_cost);
 
-    void argon2i(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len,
-                 uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
-                 unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0,
-                 argon2_version version = argon2_version::version13);
+        </i>/*
+           Derive a key from a password.
 
-    void argon2id(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len,
-                  uint32_t p, uint32_t m, uint32_t t, unsigned char* dk, uint32_t dklen,
-                  unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0,
-                  argon2_version version = argon2_version::version13);
+           Input:
+           password Passphrase.
+           salt     Salt.
+           dklen    Intended output length of the derived key, given in bytes.
+
+           Optional input:
+           data     Associated data which will affect the derived key.
+           secret   Secret value which will affect the derived key.
+
+           Output:
+           dk       Derived key, of length dklen bytes.
+        */</i>
+        void derive_key(const char* password, uint32_t pwd_len, const unsigned char* salt, uint32_t salt_len, unsigned char* dk, uint32_t dklen,
+                        unsigned char* data = nullptr, uint32_t datalen = 0, unsigned char* secret = nullptr, uint32_t secretlen = 0);
+
+    };
 </pre>
 <p>The following snippet generates a 256-bit key from password "password" and salt "salt" using <code>argon2i</code> function with p=4, m=4096 and t=1000 (which takes 0.68 seconds on Intel Xeon E5-1650 v3):</p>
 <pre>
     unsigned char key[256 / 8];
-    argon2i("password", 8, (const unsigned char*)"salt", 4, 4, 4096, 1000, key, sizeof(key));
+    argon2(argon2::type::argon2i, 4, 4096, 1000).derive_key("password", 8, (const unsigned char*)"salt", 4, key, sizeof(key));
 </pre>
 <p>Our implementation of Argon2 is faster than the optimized reference implementation, which needs 1.05 seconds to compute the same Argon2i hash on the same PC (both implementations were compiled by VC++ 2015 with /O2 optimization).</p>
-<h2 id="chdu">8. Digest utility</h2>
+<h3>7.5. HKDF</h3>
+<p><a href="https://en.wikipedia.org/wiki/HKDF">HKDF</a> is a key derivation function based on HMAC.</p>
+<p>It can be used to extract randomness from the source key material and/or expand the key into a larger output, for example, to create multiple keys from a single key.</p>
+<p>Note that HKDF is not suitable for generating keys from passwords. For that purpose, use password-based KDFs such as <code>argon2</code>.</p>
+<pre>
+class hkdf : public crypto_kdf
+{
+public:
+        hkdf(const crypto_hash& hash);
+
+        <i>/*
+           Extract pseudorandom key from source key material and optional extractor salt.
+
+           Input:
+           skm      Source key material (must not be a password).
+           xts      Extractor salt (optional).
+           prk_len  Length of the extracted key in bytes. Must be equal to hash size of the hash function.
+
+           Output:
+           prk      Extracted pseudo-random key.
+	*/</i>
+	void extract(const unsigned char* xts, size_t xts_len, const unsigned char* skm, size_t skm_len, unsigned char* prk, size_t prk_len);
+
+        <i>/*
+           Expand pseudorandom key into desired size.
+
+           Input:
+           prk      Pseudorandom key to be expanded.
+           ctxinfo  Context information.
+           okm_len  Length of the output keying material in bytes.
+
+           Output:
+           okm      Output keying material (expanded key).
+        */</i>
+        void expand(const unsigned char* prk, size_t prk_len, const unsigned char* ctxinfo, size_t ctxinfo_len, unsigned char* okm, size_t okm_len);
+
+        <i>/*
+           Extract pseudorandom key from source key material and optional extractor salt, then expand pseudorandom key into desired size.
+
+           Input:
+           skm      Source key material (must not be a password).
+           xts      Extractor salt (optional).
+           ctxinfo  Context information.
+           okm_len  Length of the output keying material in bytes.
+
+           Output:
+           okm      Output keying material (expanded key).
+        */</i>
+        void extract_and_expand(const unsigned char* xts, size_t xts_len, const unsigned char* ctxinfo, size_t ctxinfo_len, const unsigned char* skm, size_t skm_len, unsigned char* okm, size_t okm_len);
+
+        <i>/*
+           Derive key from the input key material and random data. Implements the crypto_kdf interface. The key will be derived via extract_and_expand.
+           This method does not allow to specify extractor salt, if it is needed, use extract_and_expand directly.
+
+           Input:
+           ikm         Input key material. Must not be a password. Will be used passed as a source key material to extract_and_expand.
+           random_data Random data. Will be passed as context information to extract_and_expand.
+           okm_len     Length of the derived key in in bytes.
+
+           Output:
+           dk          Derived key.
+        */</i>
+        virtual void derive_key(const unsigned char* ikm, size_t ikm_len, const unsigned char* random_data, size_t random_data_len, unsigned char* dk, size_t dklen) override;
+
+        <i>/*
+           Initial counter value for the Expand stage.
+           By default the initial counter value is 1, as specified in RFC 5869.
+           If compatibility with RFC the original paper is needed, it can be changed to 0.
+        */</i>
+        void set_initial_counter_value(uint8_t counter);
+};
+</pre>
+<h2 id="chaead">8. Authenticated encryption with associated data (AEAD)</h2>
+<h3>8.1. Interface description</h3>
+<p>All AEAD algorithms derive from <code>aead</code> class and implement its interface.</p>
+<pre>
+    class aead
+    {
+    public:
+	// key setup
+	virtual void set_key(const unsigned char* key, size_t keylen) = 0;
+
+	// encrypt
+	void encrypt(const unsigned char* plaintext, size_t plaintext_len, const unsigned char* associated_data, size_t associated_data_len, unsigned char* result, size_t result_buffer_len);
+	void encrypt_with_explicit_iv(const unsigned char* plaintext, size_t plaintext_len, const unsigned char* associated_data, size_t associated_data_len, const unsigned char* iv, size_t iv_len, unsigned char* result, size_t result_buffer_len);
+
+	// decrypt 
+	bool decrypt(const unsigned char* ciphertext, size_t ciphertext_len, const unsigned char* associated_data, size_t associated_data_len, unsigned char* result, size_t result_buffer_len);
+	bool decrypt_with_explicit_iv(const unsigned char* ciphertext, size_t ciphertext_len, const unsigned char* associated_data, size_t associated_data_len, const unsigned char* iv, size_t iv_len, unsigned char* result, size_t result_buffer_len);
+
+	// informational getters
+	virtual size_t key_bytes() const = 0;
+	virtual size_t iv_bytes() const = 0;
+	virtual size_t tag_bytes() const = 0;
+    };
+</pre>
+<p>To encrypt and tag plaintext, use <code>encrypt</code> function which will generate a random initializatio vector of required size and prepend it to the ciphertext. This is the recommended mode for most use cases. Buffer for the result must be preallocated in advance. Required buffer size for the result buffer is equal to the <code>plaintext_len</code> plus <code>tag_bytes()</code> plus <code>iv_bytes()</code>.</p>
+<p>If you need to use your own initialization vector, you can use <code>encrypt_with_explicit_iv</code> funtion. This function won't prepend initialization vector to the ciphertext, so the required buffer size for the result buffer is <code>plaintext_len</code> plus <code>tag_bytes()</code>.</p>
+<p>Required buffer size for <code>decrypt</code> function is <code>ciphertext_len</code> minus <code>tag_bytes()</code> minus <code>iv_bytes()</code>.</p>
+<p>Required buffer size for <code>decrypt_with_explicit_iv</code> function is <code>ciphertext_len</code> minus <code>tag_bytes()</code>.</p>
+<p>The key should be set before encryption or decryption via <code>set_key()</code> method.</p>
+
+<h3>8.2. Encrypt-then-MAC</h3>
+<p><a href="https://en.wikipedia.org/wiki/Authenticated_encryption#Encrypt-then-MAC">Encrypt-then-MAC (EtM)</a> is a universal AEAD mode which can be used to combine any block cipher in <code>ctr</code> encryption mode, or any stream cipher, with any MAC function to create a secure AEAD construction.</p>
+<p>This mode is implemented by <code>aead_etm</code> class. Cipher and MAC algorithms should be passed to the constructor. The size of the key passed to <code>set_key</code> function must be equal to the sum of cipher key size and MAC key size.</p>
+<p>Some examples:</p>
+<pre>
+	aead_etm etm1(ctr(rijndael128_256()), (hmac(sha256()))); <i>// AES-256-HMAC-SHA-256</i>
+	aead_etm etm2(ctr(rijndael128_128()), hmac(sha512(128))); <i>// AES-128-HMAC-SHA-512/128</i>
+	aead_etm etm3(ctr(rijndael160_224()), hmac(blake(224))); <i>// Rijndael-160-224-HMAC-BLAKE-224</i>
+	aead_etm etm4(ctr(serpent256()), hmac(groestl(256))); <i>// Serpent-256-HMAC-Grøstl-256</i>
+	aead_etm etm5(xsalsa20_256(), (poly1305())); <i>// XSalsa20/20-Poly1305</i>
+	aead_etm etm6(ctr(simon128_128()), (poly1305())); <i>// Simon-128-Poly1305</i>
+	aead_etm etm7(ctr(anubis256()), hmac(jh(256))); <i>// Anubis-256-HMAC-JH-256</i>
+	<i>// ...</i>
+	<i>// Any combination possible!</i>
+</pre>
+<p>In addition to the generic Encrypt-then-MAC AEAD, cppcrypto implements some specific AEAD modes described below.</p>
+<h3>8.3. GCM</h3>
+<p><a href="https://en.wikipedia.org/wiki/Galois/Counter_Mode">Galois-Counter Mode (GCM)</a> is an AEAD mode which can be used with any block cipher with block size of 128 bits.</p>
+<p>This mode is implemented by <code>aead_gcm</code> class. Block cipher should be passed to the constructor.</p>
+<p>Some examples:</p>
+<pre>
+	aead_gcm gcm1((rijndael128_256())); <i>// AES-256-GCM</i>
+	aead_gcm gcm2((serpent256())); <i>// Serpent-256-GCM</i>
+	aead_gcm gcm3((camellia192())); <i>// Camellia-192-GCM</i>
+	<i>// ...</i>
+</pre>
+<h3>8.4. OCB</h3>
+<p><a href="https://en.wikipedia.org/wiki/OCB_mode">Offset Codebook (OCB)</a> is an AEAD mode which can be used with any block cipher of any block size.</p>
+<p>This mode is implemented by <code>aead_ocb</code> class. Block cipher should be passed to the constructor.</p>
+<p>Some examples:</p>
+<pre>
+	aead_ocb ocb1((rijndael128_256())); <i>// AES-256-OCB-TAGLEN128</i>
+	aead_ocb ocb2((rijndael128_256()), 96); <i>// AES-256-OCB-TAGLEN96</i>
+	aead_ocb ocb3((serpent256())); <i>// Serpent-256-OCB-TAGLEN128</i>
+	aead_ocb ocb4((rijndael224_256())); <i>// Rijndael-224-256-OCB-TAGLEN224</i>
+	aead_ocb ocb5((threefish512_512())); <i>// Threefish-512-OCB-TAGLEN256</i>
+	<i>// ...</i>
+</pre>
+<h3>8.5. IETF-ChaCha-Poly</h3>
+<p><a href="https://en.wikipedia.org/wiki/ChaCha20-Poly1305">IETF-ChaCha-Poly1305</a> is an AEAD mode which combines <code>chacha20_256</code> stream cipher with <code>poly1305</code> message authentication code.</p>
+<p>While <code>chacha20_256</code> and <code>poly1305</code> can also be combined via generic <code>aead_etm</code> combiner, <code>aead_ietf_chacha_poly</code> is provided for compatibility with RFC-8439.
+There are several minor differences between using <code>aead_ietf_chacha_poly</code> and combining <code>chacha20_256</code> and <code>poly1305</code> via <code>aead_etm</code>.
+The biggest difference is that <code>aead_ietf_chacha_poly</code> requires a single 256-bit key and derives Poly1305 key from it using ChaCha, while <code>aead_etm</code> requires a combined key, the first half of which is used for ChaCha and the second half is used for Poly1305.
+Additionally, there are some minor differences in the pre-authentication encoding, for example, <code>aead_ietf_chacha_poly</code> pads plaintext and associated data to 16-byte boundary while <code>aead_etm</code> does not.</p>
+<p>From the security standpoint there is no difference, both options are secure, so if you do not need compatibility with RFC-8439, you can just as well use the universal <code>aead_etm</code> combiner.
+<p><code>aead_ietf_chacha_poly</code> can be used not only with <code>chacha20_256</code>, but also with any variant of ChaCha or Salsa20, for example, with extended-nonce variant <code>xchacha20_256</code>. Just pass the required cipher variant to the constructor of <code>aead_ietf_chacha_poly</code>.</p>
+<p>Examples:</p>
+<pre>
+	aead_ietf_chacha_poly aead1;  <i>// chacha20-poly1305</i>
+	aead_ietf_chacha_poly aead2((xchacha20_256())); <i>// xchacha20-poly1305</i>
+	aead_ietf_chacha_poly aead3((salsa20_256())); <i>// xsalsa20/20-poly1305</i>
+	aead_ietf_chacha_poly aead4((salsa20_12_128())); <i>// xsalsa20/12/128-poly1305</i>
+</pre>
+<h3>8.6. Schwaemm</h3>
+<p><b>Schwaemm</b> is one of the finalists of the NIST Lightweight Cryptography Competition. We support three out of four proposed instances: schwaemm256-256, schwaemm256-128 and schwaemm192-192. All instances are implemented via <code>schwaemm</code> class.</p>
+<p>Examples:</p>
+<pre>
+	schwaemm aead1(schwaemm::variant::schwaemm256_256);
+	schwaemm aead2(schwaemm::variant::schwaemm256_128);
+	schwaemm aead3(schwaemm::variant::schwaemm256_192);
+</pre>
+
+
+<h2 id="chsaead">9. Streaming authenticated encryption with associated data (Streaming AEAD)</h2>
+<p>Class <code>streaming_aead</code> can be used to convert any <code>aead</code> into streaming (segmented) AEAD in order to encrypt/decrypt large input using multiple segments. Each segment will be authenticated separately and will have its own authentication tag.</p>
+<p>Streaming AEAD is useful for encrypting large files or other data that is too big to be encrypted in one step. The implementation uses the approach described in paper <a href="https://eprint.iacr.org/2015/189.pdf">Online Authenticated-Encryption and its Nonce-Reuse Misuse-Resistance</a>.
+It is similar but not identical to libsodium's crypto_secretstream or Google Tink's Streaming AEAD.</p>
+<p>To start streaming encryption, call <code>init_encryption()</code>, which creates the stream header, then call <code>encrypt_segment()</code> for each segment that needs to be encrypted. The last call to <code>encrypt_segment</code> must indicate that the segment being encrypted is the final segment of the stream.</p>
+<p>Segments can be of any size and different segments can have different sizes, however, the encryption code should match the decryption code. For example, if the encryption code encrypts a segment of 1 Mb followed by another segment of 4 Kb, then the decryption code should also decrypt a segment of 1 Mb (enlarged by <code>tag_bytes()</code>) followed by another segment of 4 Kb (enlarged by <code>tag_bytes()</code>).</p>
+<p>The encryption key is generated internally from the input key material using random salt and specified key derivation function. If you already have a key (not a password), you can use <code>hkdf</code> as the key derivation function. If you have a password, use password based kdf such as <code>argon2</code>.</p>
+<p>Format of the generated stream header is:
+<ul><li>header size in bytes (1 byte);</li><li>random salt (size equal to <code>salt_bytes()</code>);</li><li>random nonce prefix (size equal to <code>nonce_prefix_bytes()</code>).</li></ul></p>
+<p>Format of the generated stream is:<ul><li>header of size <code>header_bytes()</code></li><li>ciphertext 1 with authentication tag 1</li><li>ciphertext 2 with authentication tag 2</li><li>...</li><li>ciphertext N with authentication tag N</li></ul></p>
+<p>Each segment is encrypted using encryption key generated as described above and nonce. Nonce has the following format:<ul><li>nonce prefix from the stream header</li><li>segment counter (4 bytes)</li><li>final segment flag (1 byte)</li><li>block counter (4 bytes, present only if the underlying AEAD is a CTR mode with MAC)</li></ul></p>
+<p>To decrypt the stream, first call <code>init_decryption()</code> with the stream header, then call <code>decrypt_segment</code> for each segment. The last call to <code>decrypt_segment</code> must indicate that the segment being decrypted is the final segment of the stream.</p>
+<p>The ciphertext for each segment is longer than plaintext by <code>tag_bytes()</code>. The overall stream size is longer than plaintext by <code>header_bytes()</code> + N * <code>tag_bytes()</code>, where N is the number of segments.</p>
+<pre>
+    class streaming_aead
+    {
+    public:
+        enum class segment_type : uint8_t
+        {
+            non_final = 0,
+            final = 1
+        };
+
+        streaming_aead(const aead& aead);
+
+        ~streaming_aead();
+
+        <i>// Initialize streaming authenticated encryption.
+        // Must be done once before encryption or decryption.
+        // The key will be derived from the input key material ikm using key derivation function kdf.
+        // Header length must be equal to header_bytes().</i>
+        void init_encryption(const unsigned char* ikm, size_t ikmlen, unsigned char* header, size_t header_len, const crypto_kdf& kdf = hkdf(sha256()));
+
+        <i>// Initialize streaming authenticated decryption.
+        // Must be done once before encryption or decryption.
+        // The key will be derived from the input key material ikm using key derivation function kdf.
+        // Header length must be equal to header_bytes().</i>
+        void init_decryption(const unsigned char* ikm, size_t ikmlen, const unsigned char* header, size_t header_len, const crypto_kdf& kdf = hkdf(sha256()));
+
+        <i>// Encrypt a segment.
+        // The size of the result buffer must be equal to plaintext_len plus tag_bytes().
+        // Type must be set to streaming_aead::segment_type::final for the last segment in the stream.</i>
+        void encrypt_segment(segment_type type, const unsigned char* plaintext, size_t plaintext_len, const unsigned char* associated_data, size_t associated_data_len, unsigned char* result, size_t result_buffer_len);
+
+        <i>// Decrypt a segment.
+        // The size of the result buffer must be equal to ciphertext_len minus tag_bytes().
+        // Type must be set to streaming_aead::segment_type::final for the last segment in the stream.</i>
+        bool decrypt_segment(segment_type type, const unsigned char* ciphertext, size_t ciphertext_len, const unsigned char* associated_data, size_t associated_data_len, unsigned char* result, size_t result_buffer_len);
+
+        <i>// informational getters</i>
+
+        virtual size_t tag_bytes() const;
+        virtual size_t header_bytes() const;
+        virtual size_t nonce_prefix_bytes() const;
+        virtual size_t salt_bytes() const;
+    };
+
+</pre>
+<p>The following sample encrypts a file in segments of 1 Mb using Serpent algorithm with 256-bit key in CTR mode and authenticated using HMAC-Grøstl-256. The encryption key is derived from user-provided password using Argon2d key derivation function.</p>
+<pre>
+<span class="Type">void</span> encrypt_file(std::<span class="Type">string</span> in_filename, std::<span class="Type">string</span> out_filename, std::<span class="Type">string</span> password)
+{
+    <span class="Comment">// Initialize streaming AEAD encryption using password based key derivation function Argon2d</span>
+    streaming_aead aead(aead_etm(ctr(serpent256()), hmac(groestl(<span class="Constant">256</span>))));
+    argon2 kdf(argon2::type::argon2d, <span class="Constant">4</span>, <span class="Constant">4096</span>, <span class="Constant">1000</span>);
+    std::<span class="Type">vector</span>&lt;<span class="Type">char</span>&gt; header(aead.header_bytes());
+    aead.init_encryption(<span class="Statement">reinterpret_cast</span>&lt;<span class="Type">const</span> <span class="Type">unsigned</span> <span class="Type">char</span>*&gt;(password.data()), password.length(),
+        <span class="Statement">reinterpret_cast</span>&lt;<span class="Type">unsigned</span> <span class="Type">char</span>*&gt;(&amp;header[<span class="Constant">0</span>]), header.size(), kdf);
+
+    std::ifstream input_file(in_filename, std::ios::in | std::ios::binary);
+    <span class="Statement">if</span> (!input_file)
+    {
+        std::cerr &lt;&lt; <span class="Constant">&quot;cannot open input file&quot;</span> &lt;&lt; std::endl;
+        <span class="Statement">return</span>;
+    }
+
+    std::ofstream output_file(out_filename, std::ios::out | std::ios::binary);
+    <span class="Statement">if</span> (!output_file)
+    {
+        std::cerr &lt;&lt; <span class="Constant">&quot;cannot open output file&quot;</span> &lt;&lt; std::endl;
+        <span class="Statement">return</span>;
+    }
+
+    output_file.write(header.data(), header.size());
+
+    <span class="Comment">// Encrypt a file in blocks of </span><span class="Constant">1</span><span class="Comment"> megabyte</span>
+    std::<span class="Type">uintmax_t</span> segment_size = <span class="Constant">1024</span> * <span class="Constant">1024</span>;
+    std::<span class="Type">uintmax_t</span> file_size = std::filesystem::file_size(in_filename);
+    std::<span class="Type">uintmax_t</span> buffer_size = std::min(segment_size, file_size);
+    std::<span class="Type">vector</span>&lt;<span class="Type">char</span>&gt; in_buffer(buffer_size), out_buffer(buffer_size + aead.tag_bytes());
+    std::<span class="Type">uintmax_t</span> remaining = file_size;
+    <span class="Statement">do</span>
+    {
+        segment_size = std::min(remaining, buffer_size);
+        <span class="Statement">if</span> (!input_file.read(&amp;in_buffer[<span class="Constant">0</span>], segment_size))
+        {
+            std::cerr &lt;&lt; <span class="Constant">&quot;error reading input file&quot;</span> &lt;&lt; std::endl;
+            <span class="Statement">return</span>;
+        }
+        <span class="Type">size_t</span> output_size = segment_size + aead.tag_bytes();
+        aead.encrypt_segment(remaining == segment_size ? streaming_aead::segment_type::<span class="Type">final</span> : streaming_aead::segment_type::non_final,
+            <span class="Statement">reinterpret_cast</span>&lt;<span class="Type">const</span> <span class="Type">unsigned</span> <span class="Type">char</span>*&gt;(in_buffer.data()), segment_size, <span class="Constant">nullptr</span>, <span class="Constant">0</span>,
+            <span class="Statement">reinterpret_cast</span>&lt;<span class="Type">unsigned</span> <span class="Type">char</span>*&gt;(&amp;out_buffer[<span class="Constant">0</span>]), output_size);
+        output_file.write(out_buffer.data(), output_size);
+        remaining -= segment_size;
+    } <span class="Statement">while</span> (remaining);
+}
+
+<span class="Type">void</span> decrypt_file(std::<span class="Type">string</span> in_filename, std::<span class="Type">string</span> out_filename, std::<span class="Type">string</span> password)
+{
+    <span class="Comment">// Initialize streaming AEAD encryption using password based key derivation function Argon2d</span>
+    streaming_aead aead(aead_etm(ctr(serpent256()), hmac(groestl(<span class="Constant">256</span>))));
+    argon2 kdf(argon2::type::argon2d, <span class="Constant">4</span>, <span class="Constant">4096</span>, <span class="Constant">1000</span>);
+
+    std::<span class="Type">uintmax_t</span> file_size = std::filesystem::file_size(in_filename);
+    <span class="Statement">if</span> (file_size &lt; aead.header_bytes() + aead.tag_bytes())
+    {
+        std::cerr &lt;&lt; <span class="Constant">&quot;Invalid input file&quot;</span> &lt;&lt; std::endl;
+        <span class="Statement">return</span>;
+    }
+
+    std::ifstream input_file(in_filename, std::ios::in | std::ios::binary);
+    <span class="Statement">if</span> (!input_file)
+    {
+        std::cerr &lt;&lt; <span class="Constant">&quot;cannot open input file&quot;</span> &lt;&lt; std::endl;
+        <span class="Statement">return</span>;
+    }
+
+    std::<span class="Type">vector</span>&lt;<span class="Type">char</span>&gt; header(aead.header_bytes());
+    <span class="Statement">if</span> (!input_file.read(&amp;header[<span class="Constant">0</span>], header.size()))
+    {
+        std::cerr &lt;&lt; <span class="Constant">&quot;Invalid input file&quot;</span> &lt;&lt; std::endl;
+        <span class="Statement">return</span>;
+    }
+
+    aead.init_decryption(<span class="Statement">reinterpret_cast</span>&lt;<span class="Type">const</span> <span class="Type">unsigned</span> <span class="Type">char</span>*&gt;(password.data()), password.length(),
+        <span class="Statement">reinterpret_cast</span>&lt;<span class="Type">const</span> <span class="Type">unsigned</span> <span class="Type">char</span>*&gt;(&amp;header[<span class="Constant">0</span>]), header.size(), kdf);
+
+    <span class="Comment">// Decrypt a file in blocks of </span><span class="Constant">1</span><span class="Comment"> megabyte</span>
+    std::<span class="Type">uintmax_t</span> segment_size = <span class="Constant">1024</span> * <span class="Constant">1024</span>;
+    std::<span class="Type">uintmax_t</span> remaining = file_size - aead.header_bytes();
+    std::<span class="Type">uintmax_t</span> buffer_size = std::min(segment_size + aead.tag_bytes(), remaining);
+    std::<span class="Type">vector</span>&lt;<span class="Type">char</span>&gt; in_buffer(buffer_size), out_buffer(buffer_size - aead.tag_bytes());
+    std::ofstream output_file(out_filename, std::ios::out | std::ios::binary);
+
+    <span class="Statement">if</span> (!output_file)
+    {
+        std::cerr &lt;&lt; <span class="Constant">&quot;cannot open output file&quot;</span> &lt;&lt; std::endl;
+        <span class="Statement">return</span>;
+    }
+
+    <span class="Statement">do</span>
+    {
+        segment_size = std::min(remaining, buffer_size);
+        <span class="Statement">if</span> (segment_size &lt; aead.tag_bytes())
+        {
+            std::cerr &lt;&lt; <span class="Constant">&quot;Invalid input file&quot;</span> &lt;&lt; std::endl;
+            <span class="Statement">return</span>;
+        }
+        <span class="Statement">if</span> (!input_file.read(&amp;in_buffer[<span class="Constant">0</span>], segment_size))
+        {
+            std::cerr &lt;&lt; <span class="Constant">&quot;error reading input file&quot;</span> &lt;&lt; std::endl;
+            <span class="Statement">return</span>;
+        }
+        <span class="Type">size_t</span> output_size = segment_size - aead.tag_bytes();
+        aead.decrypt_segment(remaining == segment_size ? streaming_aead::segment_type::<span class="Type">final</span> : streaming_aead::segment_type::non_final,
+            <span class="Statement">reinterpret_cast</span>&lt;<span class="Type">const</span> <span class="Type">unsigned</span> <span class="Type">char</span>*&gt;(in_buffer.data()), segment_size, <span class="Constant">nullptr</span>, <span class="Constant">0</span>,
+            <span class="Statement">reinterpret_cast</span>&lt;<span class="Type">unsigned</span> <span class="Type">char</span>*&gt;(&amp;out_buffer[<span class="Constant">0</span>]), output_size);
+        output_file.write(out_buffer.data(), output_size);
+        remaining -= segment_size;
+    } <span class="Statement">while</span> (remaining);
+}
+
+</pre>
+<h2 id="chdu">10. Digest utility</h2>
 <p>Also included is a command-line utility 'digest.exe' which can be used to calculate message digest of any file(s) using any of the supported hash algorithms (similar to md5sum), for example, if you want to calculate
 Skein-512/256 hash of a file, you can run:</p>
 <pre>
@@ -763,7 +945,7 @@ by the previous command, you can run:</p>
 <pre>
    digest -c skein512/256 checksums.skein
 </pre>
-<h2 id="chcryptor">9. Cryptor utility</h2>
+<h2 id="chcryptor">11. Cryptor utility</h2>
 <p>Command-line utility 'cryptor.exe' is intended to demonstrate how cppcrypto library can be utilized to encrypt or decrypt a file.
 To encrypt a file, run:</p>
 <pre>
@@ -773,45 +955,32 @@ To encrypt a file, run:</p>
 <pre>
    cryptor dec file.ext
 </pre>
-<p>The utility demonstrates the steps needed for encryption:<p>
-<ul><li>Generate random salt and initialization vector.</li>
-<li>Ask for a password and derive keys for encryption and authentication using argon2d key derivation function.</li>
-<li>Encrypt a file using Serpent algorithm with 256-bit key in CBC mode.</li>
-<li>Authenticate the encryption using HMAC-Grøstl-256.</li>
-</ul>
+<p>The utility demonstrates the steps needed for encryption. The file is encrypted using <code>streaming_aead</code> mode with Serpent algorithm with 256-bit key in CTR mode and authenticated using HMAC-Grøstl-256. The encryption key is derived from user-provided password using argon2d key derivation function.</p>
 <p>The utility is provided mainly for demonstration purposes, algorithm choice is arbitrary.</p>
-<h2 id="chpn">10. Portability notes</h2>
+<h2 id="chpn">12. Portability notes</h2>
 <p>At the moment we support only x86 processors (in 32-bit or 64-bit mode).
 <br>To build cppcrypto from the sources you need to have yasm installed.
 <br>We have successfully compiled and tested cppcrypto under the following operating systems.</p>
-<h3>10.1. Windows</h3>
-<p>Tested OS versions: Windows 7, Windows 10.
-<br>Tested compilers: Visual C++ 2013, Visual C++ 2015, Visual C++ 2017.</p>
+<h3>12.1. Windows</h3>
+<p>Tested OS versions: Windows 10.
+<br>Tested compilers: Visual C++ 2017, Visual C++ 2019, Visual C++ 2022.</p>
 <p>First, download the latest yasm for Visual Studio and install it according to the instructions in its readme.txt.
 Note that the latest stable release of yasm (1.3.0) ships vsyasm.props file which is not compatible with Visual Studio 2013 or later. The fixed version of vsyasm.props is included in the cppcrypto source archive, so you just need to replace that single file. (Alternatively, use the development version of yasm from their git repository, which reportedly fixes the compatibility issue.)</p>
 <p>Then, open the supplied Visual C++ project files or solution file and build cppcrypto.
-If you're using Visual Studio 2015 or later, right-click each project and choose &quot;Upgrade VC Compilers and Libraries&quot; menu item, since the provided project files are from VS2013.</p>
-<p>If you use the precompiled static libraries then you don't need yasm.
-Just link against cppcryptomd.lib or cppcryptomt.lib depending on your /MT or /MD settings.
-</p>
+If you're using Visual Studio 2019 or later, right-click the solution and choose &quot;Retarget&quot; menu item, since the provided project files are from VS2017.</p>
 <p>Experimental support for Cygwin gcc builds has been added recently; to build in cygwin, run 'make UNAME=Cygwin' and 'make UNAME=Cygwin install'.</p>
-<h3>10.2. Linux</h3>
-<p>Tested OS versions: openSUSE Tumbleweed (x86_64 and i586), Debian Sid (x86_64), Fedora 23 (x86_64).<br>
-Tested compilers: gcc 5.1.1, gcc 5.2.1, gcc 7.1.1, clang 3.7.0, clang 4.0.1.</p>
+<h3>12.2. Linux</h3>
+<p>Tested OS versions: Fedora 37 (x86_64).<br>
+Tested compilers: gcc 12.2.1, clang 15.0.7.</p>
 <p>Make sure yasm is installed, then run make and [sudo] make install as usual.</p>
 <p>Note that if you do not use recent versions of libstdc++ and try to run the vectortest.sh script on Linux, you may get a crash during checking sha384 and sha512 test vectors. This is caused by a bug in libstdc++ (stack overflow on long regexes), which is fixed in latest versions. This bug does not affect the functionality of cppcrypto library anyhow, C++ regexes are only used in the test application for parsing the test vectors.</p>
-<h3>10.3. Mac OS X</h3>
-<p>Tested OS versions: OS X 10.11.1 El Capitan.
-<br>Tested compilers: Apple LLVM version 7.0.0 (clang-700.1.76).</p>
+<h3>12.3. Mac OS X</h3>
+<p>NOTE: Mac OS X is untested as of cppcrypto-0.20.</p>
 <p>Download and install yasm. Then run make and [sudo] make install to build and install cppcrypto.</p>
-<h3>10.4. FreeBSD</h3>
-<p>Tested OS versions: FreeBSD 10.2-RELEASE.
-<br>Tested compilers: clang 3.4.1.</p>
+<h3>12.4. FreeBSD</h3>
+<p>Tested OS versions: FreeBSD 13.1-RELEASE.
+<br>Tested compilers: clang 13.0.0.</p>
 <p>Install yasm (pkg install yasm) and GNU make (pkg install gmake). Then, run gmake and [sudo] gmake install to build and install cppcrypto.</p>
-<h3>10.5. Solaris</h3>
-<p>Tested OS versions: Solaris 11.3.
-<br>Tested compilers: Solaris Studio 12.4.</p>
-<p>Install yasm from OpenCSW. Be sure yasm, gmake, ginstall and Solaris Studio compiler (CC) are in the PATH. Then, run gmake and [sudo] gmake install to build and install cppcrypto.</p>
-<h2 id="chdl">11. Download link</h2>
+<h2 id="chdl">13. Download link</h2>
 <p><a href="https://sourceforge.net/projects/cppcrypto/files">Download cppcrypto from sourceforge</a></p>
 <p></p>
